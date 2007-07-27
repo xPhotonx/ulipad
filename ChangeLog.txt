@@ -1,518 +1,911 @@
-ï»¿$Rev: 2129 $
-[2007/07/19]
-DirBrowser.py       ä¿®æ­£åœ¨æ–‡ä»¶æµè§ˆä¸­æ— æ³•ä½¿ç”¨å…‰æ ‡é”®çš„bug
+$Rev: 497 $
+[2006/01/18]
+mRegister.py		ĞŞÕıÔÚLinuxÆ½Ì¨ÏÂµ¼Èë_winregµÄbug
 
-[2007/07/11]
-mFtp.py             å…è®¸Ftpçª—å£åœ¨ç›¸åº”çš„é¢æ¿æ‰“å¼€ï¼Œå½“é€šè¿‡é¢æ¿å³é”®èœå•æ‰“å¼€æ—¶
+[2006/01/17]
+					ĞÂ°æ±¾ÉÏÏß
+mPyRun.py			¸üĞÂ¹¤¾ß°´Å¥°ó¶¨´í
+mDDESupport.py DDE.py NewEdit.py	ĞŞÕıDDEÖ§³Ö
+mRegister.py		ĞŞÕı×¢²á±íÌîĞ´Ê±pythonwÃ»ÓĞÂ·¾¶µÄbug
+ModuleInfo.py		¸üĞÂÄ£¿éĞÅÏ¢bug
+			×¼±¸·¢²¼ĞÂ°æ±¾
+					
+[2006/01/12]
+					¸üĞÂ±àÒëÎÄ¼ş
+NewEdit.py NewEdit.pyw
+					½â¾öpyw²»ÄÜÆô¶¯Ïß³ÌµÄÎÊÌâ¡£
+MessageWindow.py	Ôö¼Ó×Ô¶¨ÒåÓÒ¼ü²Ëµ¥
+Editor.py			ĞŞÕıÄ³Ğ©²Ëµ¥UpdateUI×´Ì¬²»ÕıÈ·
+mMessageWindow.py	Ôö¼ÓÏûÏ¢´°¿ÚÖĞÌø×ªµ½³ö´íÎÄ¼şµÄ³ö´íĞĞ£¬Í¬Ê±Ôö¼Óµ±Ç°ĞĞ·´ÏÔ
+					
+[2006/01/11]
+DirBrowser.py		ÊµÏÖÁË´ò¿ªÔÚÄ³¸öÄ¿Â¼ÏÂµÄdos´°¿ÚµÄ¹¦ÄÜ£¬µ«Ö»ÔÚpywÔËĞĞµÃÍ¦ºÃ£¬Ö»ÔÚwindows
+					ÏÂ¿ÉÒÔÓÃ¡£Èç¹ûÊÇÔÚÃüÁîĞĞÆô¶¯NewEdit£¬´ò¿ªµÄ´°¿Ú±ä³ÉÔ­À´µÄdos´°¿ÚµÄ×Ó½ø³Ì
+mDirBrowser.py		Ôö¼Ó±£´æÉÏ´Î´ò¿ªÄ¿Â¼¹¦ÄÜ£¬ÔÚÏÂ´Î´ò¿ªÊ±×Ô¶¯´ò¿ª£¬ĞŞ¸Äµ±Ä¿Â¼Îª¿ÕÊ±²»´ò¿ª
+LexerBase.py		¿ÉÒÔÔÚconfig.iniÖĞÉèÖÃÈ±Ê¡±à¼­Æ÷µÄ×ÖÌå£¬ÔÚÖĞÎÄ»·¾³ÏÂÄ¬ÈÏÎª¡°ËÎÌå¡±
+mDocument.py mFormat.py
+					½øĞĞtabÓë¿Õ¸ñ×ª»»ºóÖØĞÂÉèÖÃtabÊ¹ÓÃÉèÖÃ£¬²¢½«²Ëµ¥ÓÉcheck¸ÄÎªnormal
+mShowLocale.py mUnicode.py
+					×Ô¶¯ÅĞ¶ÏpythonÎÄ¼şµÄ±àÂë²¢½øĞĞ×ª»»ºó±£´æ					
 
-[2007/07/09]
-RegexWindow.py      å¢åŠ findallä¸­æ­£åˆ™å¼è¿”å›ä¸ºtupleçš„listæ—¶çš„æ˜¾ç¤ºå¤„ç†,å¯¹äºtupleä½¿ç”¨\tè¿›è¡Œåˆ†å‰²
+[2006/01/10]
+NewEdit.py			ĞŞÕıconfig.iniÖĞdebugÑ¡Ïî´í£¬Ô­ÎªDEBUG£¬Ó¦Îªdebug
+Editor.py meditorCtrl.py mEncoding.py mUnicode.py
+					Ôö¼ÓĞÂ½¨ÎÄ¼şÊ±È±Ê¡±àÂëµÄÉèÖÃ£¬Èç¹ûÓÃ»§¶¨Òå±àÂë²»Îª¿Õ£¬ÔòÓÃ»§¶¨Òå±àÂë½«×÷ÎªÈ±Ê¡±àÂë¡£Èç¹ûÎª¿ÕÔòÊ¹ÓÃÈ±Ê¡±àÂë¡£
+mEncoding.py		ÔÚ±à¼­´°¿ÚµÄÓÒ¼ü²Ëµ¥ÉÏÔö¼ÓĞŞ¸ÄÎÄ¼ş±àÂë²Ëµ¥
+Pad.py mPad.py		±£´æMemo´°¿ÚµÄÎ»ÖÃºÍ´óĞ¡
+mTodoWindow.py		ĞŞÕı±£´æÎÄ¼şÊ±²»¸üĞÂtodoµÄbug
+mFormat.py			¸ù¾İÎÄ±¾ÀàĞÍ×Ô¶¯Ñ¡Ôñ×¢ÊÍ·û£¬²¢ÇÒ¿ÉÒÔÔÚconfig.iniÖĞÉèÖÃÊ¹ÓÃcomment_chars×÷Îª½Ú£¬Í¬Ê±ÓïÑÔÎªkey£¬¿ÉÒÔÓĞÒ»¸ödefault×÷ÎªÈ±Ê¡Öµ
 
-[2007/06/25]
-batchrenamefilenames_plugin
-                    å¢åŠ æ‰¹é‡æ”¹åæ’ä»¶
-                    
-[2007/06/24]
-mako_plugin mCommands.py
-                    å¢åŠ makoæ’ä»¶ï¼Œå°†ESCé”®è‡ªåŠ¨è¿›å…¥vimæ¨¡å¼æ”¹ä¸ºåŸæ¥çš„å¤„ç†æ–¹å¼ã€‚
-                    
-[2007/06/12]
-mLexer.py           å¢åŠ Luaè¯­æ³•è®¾ç½®
-
-[2007/05/15]
-                    å¢åŠ ç¹ä½“ä¸­æ–‡ç¿»è¯‘æ–‡ä»¶ æ„Ÿè°¢ï¼šè¶™æƒŸå€« <chaoweilun@gmail.com>
-                    
-[2007/05/10]
-InputAssistant.py mInputassistant.py Editor.py
-                    å®Œå–„è‡ªåŠ¨å®Œæˆåˆ—è¡¨å¤„ç†ã€‚å¯ä»¥å“åº”EVT_STC_AUTOCOMP_SELECTION
-                    äº‹ä»¶ã€‚åŒæ—¶å¢åŠ åœ¨acpä¸­å®šä¹‰\bè¡¨ç¤ºunindentåŠŸèƒ½ã€‚åŒæ—¶å»æ‰{##}
-                    çš„å¤„ç†
-                    è§£å†³å¤šè¡Œæ–‡æœ¬æ·»åŠ æ—¶ç¼©è¿‘çš„å¤„ç†
-SnipMixin.py InputAssistant.py mInputassistant.py
-                    å¢åŠ è‡ªåŠ¨ç‰‡æ®µåŸŸå®šä¹‰åŠè·³è½¬åŠŸèƒ½
-                    
-[2007/05/08]
-tts_plugin          å°†pyttsæ”¹åä¸ºtts_pluginï¼ŒåŒæ—¶å…è®¸ä¿®æ”¹è§’è‰²
-
-[2007/04/21]
-mReloadMixins.py    ä¿®æ­£Ctrl+Hå¿«æ·é”®å†²çªçš„bugï¼Œæ”¹ä¸ºCtrl+Mï¼ŒåŒæ—¶å»æ‰å­—ç¬¦å¤åˆ¶åŠŸèƒ½
-dict4ini.py         fix å•å¼•å·bug
-
-[2007/04/20]
-dict4ini.py         å¢åŠ å¯¹BOMçš„è¯†åˆ«
-
-[2007/04/19]
-dict4ini.py         Fix '\' escape
-mLexerFactory.py    Fix lexer highlight bug
-DirBrowser.py       Fix dir sort bug
-
-[2007/04/18]
-mDebug.py *         å°†winpdbä½œä¸ºæ ¸å¿ƒçš„ä¸€éƒ¨åˆ†
-DirBrowser.py LexerFactory.py
-                    ä¿®æ”¹æ–‡ä»¶åæ—¶è‡ªåŠ¨åˆ‡æ¢è¯­æ³•é«˜äº®
-emacskey            Add emacs key bind support thanks for weeloo
-
-[2007/04/16]
-DirBrowser.py       åœ¨æ·»åŠ ç›®å½•æ—¶è‡ªåŠ¨æ’åº
-Editor.py mView.py  å¢åŠ è¡Œå·æ˜¾ç¤ºé€‰é¡¹
-mTodoWindow.py TodoWindow.py
-                    å¢åŠ è®°å¿†ToDoçª—å£columnå¤§å°çš„åŠŸèƒ½
-                    
-[2007/04/09]
-Reload              å¢åŠ reloadåŠŸèƒ½ï¼Œå¯ä»¥åœ¨è¿è¡Œæ—¶ä¿®æ”¹ç¨‹åºè‡ªåŠ¨reloadï¼Œæ„Ÿè°¢ygaoçš„è´¡çŒ®ã€‚
-winpdb              ä¿®æ­£æ— æ³•æ‰“å¼€å¸¦ç©ºæ ¼çš„æ–‡ä»¶
-
-[2007/03/19]
-mLexerFactory.py    ä¿®å¤å¯¹æ— åç¼€çš„æ–‡ä»¶æœªä½¿ç”¨ç¼ºçœè¯­æ³•å™¨çš„bug
-mSearch.py          ä¿®å¤å¯ä»¥æ‰“å¼€å¤šä¸ªFindçª—å£çš„bug
-
-[2007/03/16]
-Calltip.py          å°†calltipæ”¹ä¸ºscrolledwindow
-FtpClass.py         ä¿®æ­£refreshç¼–ç è½¬æ¢bug
-
-[2007/03/10]
-import_utils.py     å¢åŠ calltipsçš„å¤„ç†å¯ä»¥æ”¯æŒç±»çš„__init__å’Œ__call__
-
-[2007/02/25]
-TodoWindow.py       Add Due Date column
-
-[2007/02/11]
-mDocument.py        ä¿®æ­£è‡ªåŠ¨wrapå¤±æ•ˆçš„bug
-
-[2007/02/10]
-faq.txt             Update documents
-
-[2007/02/07]
-mEditorCtrl.py      åœ¨ä¿å­˜æ–°æ–‡ä»¶æ—¶ï¼Œè‡ªåŠ¨åŠ ä¸Š.pyçš„åç¼€
-PyParse.py          åœ¨å¤„ç†macæ–‡ä»¶æ ¼å¼æ—¶ï¼Œå…ˆè¿›è¡Œ\rè½¬ä¸º\n
-
-[2007/02/02]
-LexerBase.py        ä¿®æ­£rulerçš„bug
-mFolder.py          ä¿®æ­£folderçš„bug
-config.txt          å¢åŠ æ–‡æ¡£
-*                   Bugs fix
-
-[2007/02/01]
-mSession.py EditorFactory.py mEditorCtrl.py
-                    å¢åŠ æ‰“å¼€æˆ–å…³é—­æ–‡ä»¶æ—¶è‡ªåŠ¨ä¿å­˜session
-obj2ini.py          ä¿å­˜å¯¹è±¡æ—¶æ— æ³•è¿›è¡Œç¼–ç è½¬æ¢æ—¶ï¼Œå¿½ç•¥
-PrefDialog.py       ä¿®æ­£bug
-Preference.py       è‡ªåŠ¨å¤„ç†ä¸ºutf-8
-                    
-[2007/01/30]
-AyncAction.py PyParse.py
-                    æ¶ˆå–å¼‚å¸¸
-acp/rst/utils.py    ä¿®å¤bug
-
-[2007/01/29]
-mCase.py            ä¿®æ­£å¤§å°å†™åè½¬æ— æ•ˆçš„bug
-import_utils.py mInputAssistant.py InputAssistant.py Editor.py
-                    é‡æ–°è®¾ç½®Input Assistantçš„å¤šçº¿ç¨‹å¤„ç†
-mDocument.py        ä¿®æ”¹Using Tab/Spaceä¸ºSwitch Tab/Space
-
-[2007/01/28]
-NewCustomLexer.py LexerClass.py
-                    ä½¿ç”¨ZestyParserè¿›è¡Œè¯­æ³•åˆ†æçš„å¤„ç†è¿›è¡Œxmlçš„å¤„ç†
-dynamicmenu.py      ä¿®æ­£åŠ¨æ€èœå•ä¸åˆ·æ–°çš„bug
-acp/import_utils.py ä¿®æ­£å¯¼å…¥from xxx import yyyç±»æ—¶ï¼Œä½œä¸ºåŸºç±»ä¸èƒ½æ­£ç¡®è·å¾—å±æ€§çš„bug
-
-[2007/01/27]
-NewCustomLexer.py plugins/FortranLexer.py
-                    ä½¿ç”¨ZestyParserè¿›è¡Œè¯­æ³•åˆ†æçš„å¤„ç†
-LexerRst.py         æ”¹ä¸ºZestyParserè¿›è¡Œå¤„ç†
-                    
-[2007/01/26]
-SyntaxDialog.py LexerClass.py
-                    ä¿®æ­£è¯­æ³•å‚æ•°è®¾ç½®å¯¹è¯æ¡†é”™
-                    
-[2007/01/25]
-mTodoWindow.py TodoWindow.py MyPanel.py
-                    Todo Windowçš„æ‰“å¼€ï¼Œå…³é—­çŠ¶æ€åˆ†Editorä¿å­˜äº†
-PyParse.py acp/import_utils.py mInputAssistant.py InputAssistant.py
-                    åœ¨æç¤ºç¬¦è‡ªåŠ¨æç¤ºä¸­åŠ å…¥å…¨æ–‡åŒ¹é…åŠŸèƒ½ï¼Œå¯é€‰
-                    
-[2007/01/24]
-LexerBase.py        ä¿®æ­£ç‚¹å‡»è¯­æ³•çª—å£ç¡®å®šæ— æ³•å…³é—­çš„é—®é¢˜ã€‚å› ä¸ºpreview_codeå¯èƒ½ä¸ºNoneã€‚
-
-[2007/01/23]
-TodoWindow.py       ä¿®æ­£è·³è½¬å‡ºé”™çš„bug
-mFileNew.py         ä¿®æ­£æ‰“å¼€æ–‡ä»¶æ—¶ï¼Œè¾“å…¥ç„¦ç‚¹ä¸æ­£ç¡®çš„é”™è¯¯
-
-[2007/01/21]
-                    å¢åŠ è¥¿ç­ç‰™è¯­è¨€æ”¯æŒ
-                    
-[2007/01/20]
-TodoWindow.py       å¢åŠ å¯¹é‡è¦åº¦çš„æ”¯æŒï¼Œå°†æ–‡ä»¶åæ˜¾ç¤ºå»æ‰ã€‚é‡è¦åº¦å°±æ˜¯åœ¨todoåé¢åŠ !
-
-[2007/01/19]
+[2006/01/04]
+InputAssistant.py dict4ini.py
+					ĞŞÕıauto extendµÄµ¼Èë£¬includeÖĞµÄÄÚÈİÔÚÇ°£¬´¦Àí°´iniÖĞ¶¨ÒåµÄË³Ğò½øĞĞ
+					
+[2006/01/03]
 TodoWindow.py mTodoWindow.py
-                    ä¿®æ­£å½“todoå†…å®¹ä¸ºç©ºæ—¶ï¼Œè‡ªåŠ¨å…³é—­todoçª—å£
-rst.acp mRestFileType.py rst/utils.py
-                    ä¿®æ­£rst html viewä¸­åœæ­¢åˆ·æ–°å¤±æ•ˆçš„bugã€‚åŒæ—¶ä¿®æ­£acpåŒ¹é…\.é”™ã€‚
-FindInFiles.py      å¢åŠ åªæ˜¾ç¤ºæ–‡ä»¶åé€‰é¡¹ï¼Œå¢åŠ å°†ç»“æœæ‹·è´åˆ°å‰ªç²˜æ¿æŒ‰é’®
-DirBrowser.py       ä¿®æ­£å½“æ‰“å¼€åº•è¾¹æ æ—¶ï¼ŒåŒå‡»ç›®å½•æµè§ˆæ—¶ï¼Œæ‰“å¼€æ–‡ä»¶è¾“å…¥ç„¦ç‚¹ä¸¢å¤±é”™
-SnippetWindow.py mSnippets.py
-                    ä¿å­˜snippetçš„çª—å£åˆ†éš”çº¿å’Œä»£ç åˆ†éš”çº¿çš„ä½ç½®
-                    
-[2007/01/17]
-obj2ini.py          ä¿®æ­£å¯¹å¯¹è±¡å’Œæ™®é€šå˜é‡çš„æ”¯æŒ
+					Ôö¼Ó TODO ´°¿Ú
+ruby ²å¼ş			Ôö¼Óruby classbrowser¹¦ÄÜ
+dynamicmenu.py FiletypeBase.py
+					Ôö¼Ó¶Ô¶¯Ì¬²Ëµ¥¿ì½İ¼üµÄ¶¨Òå¹¦ÄÜ
+Debug.py NewEdit.py	Ôö¼Ó¶ÔdebugÉú³ÉµÄ¿ØÖÆ£¬È±Ê¡Çé¿öÏÂdebug²»Êä³ö£¬ĞèÒªÔÚconfig.iniÖĞÉèÖÃ²ÅÊä³ö
+msyntaxPref.py PrefDialog.py
+					Ôö¼ÓÒ»¸öÉèÖÃdocumentÓï·¨¸ßÁÁµÄ°´Å¥
 
-[2007/01/13]
-mMultiView.py       ä¿®æ­£æ‰“å¼€ä¸»èœå•ä¸Šçš„multiviewé”™
-SnippetWindow.py    Snippet Categoryå…è®¸æœ‰ç©ºæ ¼
-resources           å°†catelogæ”¹ä¸ºcategory
+[2005/12/30]
+InputAssistant.py html.acp
+					ĞŞÕı×Ô¶¯À©Õ¹µÄbug
+dict4ini.py			Ôö¼ÓÖ»Ö§³ÖÒ»¼¶optionµÄ¹¦ÄÜ£¬ÕâÑùkeyÖĞ¿ÉÒÔÓĞsection·Ö¸ô·û
 
-[2007/01/10]
-mMessageWindow.py MessageWindow.py
-                    å¢åŠ è‡ªåŠ¨ä¿å­˜MessageWindowçš„æŠ˜è¡Œçš„åŠŸèƒ½ï¼ŒåŒæ—¶å¢åŠ æ¨ªå‘æ»šåŠ¨æ¡
+[2005/12/28]
+InputAssistant.py mInputAssistant.py html.acp django_html.acp
+					ĞŞÕı×Ô¶¯À©Õ¹¹¦ÄÜµÄbug
+					
+[2005/12/27]
+rss reader			¸üĞÂimageÓĞĞ§ĞÔµÄÅĞ¶Ï´¦Àí
 
-[2007/01/09]
-mWindow.py          å°†Ctrl+Alt+Læ”¹ä¸ºAlt+Z, å°†Ctrl+Alt+Bæ”¹ä¸ºAlt+X
-mRecentFile.py      æœ€è¿‘æ‰“å¼€æ–‡ä»¶ä¸ªæ•°æ”¹ä¸º20
-mFormat.py          ä¿®æ­£Ctrl+Qä¸ºCtrl+'
-mTodoWindow.py TodoWindow.py
-                    å°†åŸauto_todoçš„å¤„ç†æ”¹ä¸ºæ˜¯å¦è‡ªåŠ¨æ˜¾ç¤ºtodoçª—å£ã€‚å½“todoçª—å£å·²ç»æ˜¾ç¤ºæ—¶ï¼Œåœ¨ä¿å­˜æˆ–åˆ‡æ¢æ—¶ä¼šè‡ªåŠ¨æ˜¾ç¤ºã€‚å¦‚æœtodoçª—å£ä¸å­˜åœ¨æ—¶ï¼Œå½“auto_todoä¸ºTrueæ—¶ä¼šè‡ªåŠ¨æ‰“å¼€ã€‚
-create.py           Fixåœ¨Linuxä¸‹\ræ²¡æœ‰å»æ‰çš„bug
+[2005/12/26]
+rss reader			È¥µôÔÚÔö¼ÓfeedÊ±×Ô¶¯×êÈ¡¹¦ÄÜ£¬Í³Ò»ÓÉfeed¸üĞÂÊ±×Ô¶¯Íê³É
 
-[2007/01/06]
-mPythonContextIndent.py SnippetWindow.py
-                    ä¿®æ­£æ— ç¼©è¿‘ä»£ç å—çš„æ‹·è´é”™è¯¯
-                    
-[2007/01/05]
-mFormat.py          æ–°å¢ä¸€ä¸ªå‚æ•°é€‰é¡¹ï¼Œæ˜¯å¦æ˜¾ç¤ºæ³¨é‡Šç¬¦å¯¹è¯æ¡†ï¼Œç¼ºçœä¸ºä¸æ˜¾ç¤º
-CustomLexer.py LexerClass.py mLexer.py
-                    å°†xmlçš„lexeræ”¹ä¸ºè‡ªå®šä¹‰
+[2005/12/25]
+rss reader			Ôö¼Óµ¼Èë OPML µÄ¹¦ÄÜ µ÷ÕûShareWindow²å¼şÆô¶¯´¦Àí£¬Ìá¸ßÆô¶¯ËÙ¶È£¬¸üĞÂÒëÎÄ£¬Ö§³ÖÍøÕ¾Í¼±ê
+HtmlPage.py			Ôö¼ÓÏÔÊ¾IE×´Ì¬ĞÅÏ¢ÔÚ×´Ì¬ÌõÉÏ
 
-[2007/01/04]
-Calltip.py          ä¿®æ­£å½“calltipåœ¨å³è¾¹æ—¶ï¼Œä¼šæ ¹æ®æ˜¯å¦çœ‹ä¸è§è€Œè‡ªåŠ¨å‘å·¦ç§»åŠ¨ã€‚æ„Ÿè°¢Ye Naiquan
-mLineending.py      ä¿®æ­£ä¿å­˜åï¼ŒUndoæ—¶å…‰æ ‡å†µæ˜¯å…ˆè·³åˆ°æœ€åçš„bug
-mPythonContentIndex.py SnippetWindow.py
-                    ä¿®æ­£å½“Snippetæ·»åŠ æ—¶ï¼Œç¼©è¿‘æ— æ•ˆçš„bugã€‚å°†ç¼©è¿‘å¤„ç†ä¸ºä¸€ä¸ªmainframeçš„æ–¹æ³•Indent_paste.
+[2005/12/24]
+rss reader			¼ÌĞøÍêÉÆ RSS ReaderÔö¼ÓCategory, FeedµÄÊôĞÔ²Ëµ¥£¬¿ÉÒÔÓÃÀ´ĞŞ¸Ä±êÌâ£¬Ôö¼Óµ¼ÈëOPML¹¦ÒÔ£¬
+					Ôö¼ÓÇĞ»»FeedÊ±½«Î´¶ÁPostÈ«²¿ÖÃÎªÒÑ¶ÁµÄ¹¦ÄÜ£¬Ôö¼ÓÍ£Ö¹Ë¢ĞÂºÍ×Ô¶¯ÍÚ¾ò¹¦ÄÜ£¬µ÷ÕûFeedµÄË³Ğò
+Casing				ĞŞÕıbug
 
-[2006/12/22]
-OutlookBrowser.py   è·³è½¬æ—¶å°½é‡ä½¿å¯¹åº”çš„è¡Œåœ¨ä¸­é—´æ„Ÿè°¢Aleksey
+[2005/12/22]
+SnipperWindow.py mSnipper.py
+					Ôö¼Ó¼òµ¥Ä£°å¹¦ÄÜ£¬¿ÉÒÔÔÚcode snippetÖĞ¼ÓÈë <#{name=inputname,description=info,defult=value}#>£¬ÕâÑùÔÚË«»÷snippets»áµ¯³ö¶Ô»°¿òÈÃÄãÂ¼ÈëĞÅÏ¢¡£
+					
+Template.py ModulesInfo.py
+					½«À©Õ¹Ä£¿éÄ£¿éÖ±½Óµ¼Èë£¬²»ÔÙÊÇÊ¹ÓÃÎÄ¼ş·½Ê½¡£ÕâÑùÓ¦¸Ã¶ÔÓÚpy2exeÓĞºÃ´¦¡£
+					
+[2005/12/21]
+FtpClass.py			Fixed gif filename bug
 
-[2006/12/21]
-mLineending.py      ä¿®æ­£æ‰“å¼€æ··åˆæ¢è¡Œç¬¦å¤„ç†æ…¢çš„bug
+[2005/12/20] 
+					ĞŞ¸Ä·­ÒëÎÄ¼ş
+					
+[2005/12/19]
+rssreader ²å¼ş		È«²¿¸ÄÓÃ SQLAlchemy À´·ÃÎÊÊı¾İ¿â
 
-[2006/12/20]
-mFormat.py          ä¿®æ­£editorä¸­å³é”®èœå•ç¼©è¿‘åç¼©è¿‘æ— æ•ˆçš„bug
-SearchWin.py mSyntaxCheck.py
-                    å¢åŠ pep8çš„é£æ ¼æ£€æŸ¥
-Editor.py           Fix Linux saving file will change the permission bug, thanks to Mkdir
-Entry.py            ä¿®æ­£è¯»å–æ–‡ä»¶åå­˜ä¸ºå­—ç¬¦ä¸²çš„bug
-CustomLexer.py      ä¿®æ­£å¤„ç†ç¼ºçœæ ·å¼çš„bug
+[2005/12/14]
+EasyGui				¸ÄÃûÎªEasyGuider£¬ÏàÓ¦µÄÄ£¿é½øĞĞµ÷Õû
+Pad.py mPad.py		ÍêÉÆPad¹¦ÄÜ£¬Ôö¼ÓÒ»¸ö¹¤¾ßÌõ°´Å¥£¬²¢ÇÒÖ´ĞĞÎªCheck·½Ê½¡£µ×²ã¿Ø¼ş¸ÄÎªStyledTextCtrl¿Ø¼şÁË¡£
+mPythonProject.py DirBrowser.py djangoproj
+					Ôö¼Ó¶ÔÓÚÌí¼ÓÄ¿Â¼£¬ĞŞ¸ÄprojectÊ±¶ÔÓÚ³ÌĞòµÄµ÷ÓÃµã¹¦ÄÜ£¬ÒÑ¾­ÊµÏÖÔÚÄ¿Â¼ä¯ÀÀÖĞ´ò¿ªÒ»¸ödjangoÄ¿Â¼»á×Ô¶¯Ìí¼ÓDJANGO_SETTINGS_MODULEºÍsys.pathµÄ¹¦ÄÜ
 
-[2006/12/14]
-Globals.py, mMainFrame.py          
-                    å¢åŠ prefå¯¹è±¡
-                    
-[2006/12/10]
-mCTags.py           Fix å½“æ ‡è¯†ç¬¦è·³è½¬æ—¶å…‰æ ‡ä¸æ˜¾ç¤ºçš„bug
-djangoproj/dirborwser_ext.py
-                    ä¿®æ­£manage.pyæ— æ³•æ‰§è¡Œçš„bug
+[2005/12/13]
+docbook ²å¼ş¡¡		Ôö¼Ódocbook²å¼ş£¬Ôö¼Ódocbook¹¤³Ì£¬Ôö¼ÓÔªËØenclose»òÌí¼Ó¹¦ÄÜ¡£
+mPad.py Pad.py		Ôö¼Ó¼òÒ×Ìù¹¦ÄÜ£¬¿ÉÒÔËæÊ±Ôö¼ÓÄÚÈİ£¬Ëü»á×Ô¶¯±£´æµ½memo.txtÎÄ¼şÖĞ¡£Ê¹ÓÃutf-8±àÂë±£´æÎÄ±¾¡£
 
-[2006/12/08]
-mCTags.py           Fix ctag æ”¯æŒçš„bug
+[2005/12/12]
+DirBrowser.py		Ôö¼ÓÉèÖÃÄ³¸öÄ¿Â¼¹¤³ÌµÄ²Ëµ¥£¬¹¤³ÌÃû×ÖĞèÒªÊ¹ÓÃ²å¼şµÄ·½·¨Ìí¼Ó
 
--------------------------------------- 3.6 -----------------------------
-[2006/12/03]
-mEncoding.py        ä¿®æ­£å½“ä¿®æ”¹ç¼–ç æ—¶ï¼Œeditctrlçš„tagé¡µæ ‡é¢˜æ²¡æœ‰æ˜¾ç¤ºä¿®æ”¹çŠ¶æ€çš„bug
+[2005/12/09]
+RssReader			ÓÅ»¯,´ò¿ªÊ±×Ô¶¯¸üĞÂ,ÓÒ¼üÑ¡ÔñË¢ĞÂ,ÇĞ»»FeedÊ±´ò¿ªÎ´¶ÁhtmlÒ³Ãæ
+dict4ini.py			Ôö¼Ó×ª»»ÎªdictµÄ·½·¨
+Template.py			ĞŞ¸Ä£¬µ±Êı¾İÎª·ÇÒ»°ãÊı¾İÊ±£¬Å×³öExceptionÒì³£
 
-[2006/12/02]
-mLexer.py LexerClass1.py
-                    å¢åŠ Luaçš„è¯­æ³•é«˜äº®
-                    
-[2006/11/30]
-MusicListManage.py  ä¿®æ­£åŒå‡»æ’­æ”¾ä¸ºä¸‹ä¸€é¦–çš„bug
-mConcurrent.py Concurrent.py
-                    å¢åŠ ä¿å­˜æœåŠ¡å™¨åœ°å€ã€ç«¯å£ã€ç”¨æˆ·åçš„åŠŸèƒ½
+[2005/12/07]
+RssReader			RssÔÄ¶ÁÆ÷
 
-[2006/11/27]
-css.acp	            å¢åŠ cssçš„è‡ªåŠ¨æç¤º
+[2005/12/05]
+LexerClass.py LexerClass1.py mLexer.py
+					Ôö¼Óasp, phpÓï·¨¸ßÁÁÖ§³Ö
+					
+[2005/12/04]
+DocumentBase.py     ĞŞÕıÎÄ¼şÃûÊÇunicodeÊ±×ªÎªĞ¡Ğ´±¨´í
+LexerClass.py mLexer.py
+					Ôö¼ÓxmlÎÄ¼şÀàĞÍ
+InputAssistant.py mInputAssistant.py
+					ĞŞÕıacpµÄ´¦Àí£¬½«ÊäÈëÀàĞÍÉèÎªstring_replace, string_append, re_replace, re_append£¬²¢ÇÒ¶ÔÓÚlist¿ÉÒÔÔÚµ¥¶ÀµÄautovaluesÖĞµ¥¶ÀÉèÖÃÖµ¡£ÕâÑùlistÏÔÊ¾³öÀ´µÄÖ»ÊÇÒ»¸öÌáÊ¾£¬ÕæÕıµÄĞÅÏ¢¿ÉÒÔµ¥¶À¶¨Òå¡£
+common.py djangoproj-plugin
+					ĞŞÕıprojectµÄ·µ»ØÎªÒ»¸ölist
+DirBrowser.py		Ôö¼Ó´ò¿ªNewEdit user/work pathµÄ¹¦ÄÜ£¬Ôö¼ÓÇå³ırecent directoriesµÄ¹¦ÄÜ
+					
+[2005/12/01]
+mChangeFileType.py EditorFactory.py
+					ĞŞÕıµ÷ÕûÇĞ»»ºó²éÕÒ¹¦ÄÜÊ§Ğ§¡£Ôö¼ÓÓïÑÔÇĞ»»µÄ²åÈëµã£¬ÓëÎÄµµÇĞ»»·ÖÀë¡£
+Casing.py			Ôö¼ÓÏßË÷¹ÜÀí¹¦ÄÜ
+					
+[2005/11/30]
+ftplistparse.py		ĞŞÕıftpÄ¿Â¼·ÖÎöµÄÒ»¸öbug
 
-[2006/11/20]
-mPrint.py           æ”¹è¿›æ‰“å°å¤„ç†ã€‚æ„Ÿè°¢lin <actionthanword AT gmail.com>
+[2005/11/29]
+EditorFactory.py	µ÷ÕûÎÄµµÇĞ»»Ê±²Ëµ¥µÄ¶¯Ì¬Éú³É£¬¼°Óï·¨ÇĞ»»µÄÎÊÌâ
+mProxy.py			Ôö¼Ó´úÀí·şÎñÆ÷²ÎÊı
 
-[2006/11/19]
-PyParse.py mClassBrowser.py
-                    å¢åŠ åœ¨ç±»æµè§ˆä¸­æ˜¾ç¤ºFunction,Classçš„docstringçš„åŠŸèƒ½
-Concurrent.py       å¢åŠ ä¿å­˜èŠå¤©å†…å®¹çš„åŠŸèƒ½
-                    
-[2006/11/18]
-fortran             å¢åŠ fortranæ’ä»¶
+[2005/11/28]
+Mixin.py Debug.py NewEdit.py	Ôö¼ÓÔÚconfig.iniÖĞÅäÖÃdefault.DEBUG=0µÄÉèÖÃ¿ÉÒÔ¹Øµôµ÷ÊÔĞÅÏ¢µÄÉú³É¡£Í¬Ê±¸ÄÕıÁËµ½´¦Éú³Édebug.txt, error.txtÉú³ÉµÄÎÊÌâ
 
-[2006/11/17]
-CumtomLexer.py      ä¿®æ­£è¯­æ³•é«˜äº®çš„bug
+[2005/11/27]
+mShare.py ShareWindow.py
+					Ôö¼ÓÍøÂç·ÖÏí´°¿Ú
+					
+[2005/11/25]
+mWindow.py			Ôö¼ÓÇå³ıShell´°¿ÚµÄ²Ëµ¥£¬¿ì½İ¼üÎªAlt+C
 
-[2006/11/13]
-pairprog            å¢åŠ ä¸­æ–‡ç¿»è¯‘
+[2005/11/24]
+django-wizard		ĞŞÕıdjango-wizard£¬Ö§³ÖTEMPLATE_DEBUG±äÁ¿£¬portÈç¹ûÎª0Ôò×ªÎª''£¬secret_keyÊ¹ÓÃdjango·½·¨Éú³É
 
-[2006/11/12]
-pairprog            ç»“å¯¹ç¼–ç¨‹
+[2005/11/23] 
+run.bat new.bat		ÒÆµ½toolsÄ¿Â¼ÏÂ
 
-[2006/11/09]
-mRecentFile.py      åˆ é™¤æ‰“å¼€æœ€æ–°ç›®å½•åŠŸèƒ½
+mRecentFile.py DirBrowser.py
+					ĞŞÕı±£´æÌõÊı´¦Àí
+					
+mLexer.py mFileNew.py TextPanel.py mEditorCtrl.py
+					ĞŞ¸ÄĞÂ½¨¹¦ÄÜ£¬ÓÉ¶Ô»°¿ò¸ÄÎªµ¯³ö²Ëµ¥¡£Í¬Ê±ÔÚÎÄ¼ş²Ëµ¥ÖĞÔö¼ÓĞÂ½¨²Ëµ¥
+					
+[2005/11/22]
+django plugin		Ôö¼Ó´´½¨ app Ê±¿ÉÒÔÑ¡ÔñÊÇ·ñ´´½¨templateµÄÌáÊ¾
+					ĞŞ¸ÄÂ·¾¶·Ö¸ô·ûÍ³Ò»Îª'/'
 
-[2006/11/08]
-pyMusicæ’ä»¶         ä¿®æ­£Musicæ’ä»¶
+-------------------------------------- 3.1 -----------------------------
+[2005/11/22]
+					ĞŞÕıbug·¢²¼3.1 
+[2005/11/21]
+					×¼±¸·¢²¼3.1°æ
+mLexer.py mFileNew.py __init__.py
+					Ôö¼ÓNewÊ±¿ÉÒÔÑ¡ÔñÎÄ¼şµÄÓï·¨
+DirBrowser.py		ĞŞ¸Äbug
+DocumentBase.py Editor.py EditorFactory.py
+					Ôö¼ÓÔÚ´ò¿ªÎÄ¼şÊ±¿ÉÒÔÖ¸¶¨µ±¿ÕÎÄ¼şÊ±£¬ÊÇ·ñÊ¹ÓÃÒ»¸öÄ£°åÎÄ±¾½øĞĞÌî³ä
+					
+[2005/11/19]
+LexClass1.py mLexing.py
+					Ôö¼ÓjsÓï·¨Ö§³Ö
+					
+[2005/11/18]
+djangoproject		ÍêÉÆmodelÉú³É´¦Àí
 
-[2006/11/07]
-PyParse.py import_utils.py
-                    å¢åŠ å¯¹epydocæ³¨é‡Šä¸­å‚æ•°ç±»å‹çš„æ”¯æŒ
-                    
-[2006/11/06]
-DirBrowser.py mEditorCtrl.py
-                    ä¿®æ­£å½“æ–‡ä»¶æˆ–ç›®å½•ä¸UliPadä¸æ˜¯ä¸€ä¸ªç›˜ç¬¦æ—¶ï¼Œæ‰“å¼€å‘½ä»¤è¡Œçª—å£èœå•æ‰§è¡Œå¤±è´¥çš„é”™è¯¯ã€‚æ„Ÿè°¢nmweiziçš„patch.
-                    
-[2006/10/31]
-mDirBrowser.py      ä¿®æ­£å½“å…³é—­ç›®å½•æµè§ˆçª—å£æ—¶ï¼Œå†æ‰“å¼€ä¸èƒ½æ¢å¤ç›®å½•çš„bug
-import_utils.py PyParse.py
-                    ä¿®æ­£Pythonè¯­æ³•åˆ†æçš„bug
+[2005/11/17]
+django-project		ĞŞÕıbug
 
-[2006/10/30]
-PyParse.py InputAssistant.py RegexWindow.py
-                    ä¿®æ­£auto-complete bugï¼Œå¢åŠ æ­£åˆ™æœç´¢çš„èŒƒå›´è®¾å®š
-                    
-[2006/10/28]
-mClassBrowser.py mCTags.py
-                    å¢åŠ å½“ctagsæ— æ•ˆæ—¶çš„è·³è½¬ï¼Œå¯ä»¥åœ¨å½“å‰æ–‡ä»¶å†…è·³è½¬
-CustomLexer.py LexerRst.py
-                    æ”¹è¿›ReSTçš„è¯­æ³•é«˜äº®å¤„ç†
-                    
-[2006/10/27]
-acp/python/import.py acp/python/import_utils.py PyParse.py
-                    å¢å¼ºè‡ªåŠ¨å®ŒæˆåŠŸèƒ½å¯ä»¥è‡ªåŠ¨åˆ¤æ–­ç±»å‹ï¼Œè¯†åˆ«ç±»ç»“æ„ã€‚ç›®å‰å¯¹å¤šå€¼èµ‹å€¼å’Œå¸¦æ‹¬å·çš„å¯¼å…¥åŠå¸¦ç›¸å¯¹è·¯å¾„çš„å¯¼å…¥å°šä¸æ”¯æŒ
-mClassBrowser.py    æ”¹è¿›ç±»ç»“æ„æ˜¾ç¤ºï¼Œå¢åŠ ç±»å˜é‡çš„æ˜¾ç¤º
+[2005/11/15]
+Debug.py			È¥³ıcommonµÄ¹ØÁª
 
-[2006/10/26]
-Editor.py mInputAssistant.py
-                    å¢åŠ ä¸€ä¸ªdont_analysisæ ‡å¿—ï¼Œä»¥ä¾¿åœ¨ç¨‹åºæ›´æ–°æ–‡æœ¬æ—¶ä¸æ¿€æ´»è‡ªåŠ¨åˆ†æå¤„ç†
-                    åŒæ—¶é‡è½½äº†BeginUndoActionå’ŒEndUndoActionä»¥æ›´æ–°è¿™ä¸¤ä¸ªæ ‡å¿—
-                    
-[2006/10/25]
-mPyRun.py           ä¿®æ­£å¯¹å¼¹å‡ºè¿è¡Œå‚æ•°çª—å£ç‚¹å–æ¶ˆæ—¶ï¼Œä»ç„¶è¿è¡Œçš„bug
+[2005/11/14]
+			ĞŞ¸ÄÒëÎÄ¡£
 
-[2006/10/24]
-OutlookBrowser.py   æ”¹è¿›ç±»æµè§ˆçª—å£ä¸­ï¼Œå•å‡»classç±»å›¾æ ‡å¯ä»¥å±•å¼€å’ŒæŠ˜å 
+[2005/11/13]
+InputAssistant.py LexerBase.py
+					µ÷ÕûÅäÖÃÎÄ¼ş¿ÉÒÔ´ÓNewEdit°²×°Ä¿Â¼ºÍconfÄ¿Â¼ÏÂ¶ÁÈ¡
+Editor.py			ĞŞÕıÎŞ·¨Ñ¡Ôñ×Ô¶¯Ëõ½üºÍÊ¹ÓÃÖÆ±í·ûËõ½ü²Ëµ¥£¬ÒòÎªTextEditorÃ»ÓĞÉèÖÃcaneditÎªTrue
+DirBrowser.py		¿ÉÒÔÊ¹ÓÃÈ±Ê¡±à¼­Æ÷´ò¿ªÎÄ¼ş
+mFormat.py FindReplaceDialog.py
+					½«ĞŞ¸ÄÉèÎªÒ»´ÎĞÔ²Ù×÷£¬Ê¹ÓÃBeginUndoAction()ºÍEndUndoAction()
+FindInFiles.py		ĞŞ¸ÄGotoLine¸ÄÎªgoto
+mDocument.py		ĞŞÕıÇĞ»»×Ô¶¯Ëõ½ü·û²Ëµ¥bug
+					
+[2005/11/11]
+mComEdit.py Editor.py 
+					ĞŞ¸ÄEditor£¬Ôö¼Ó¿ÉÀ©Õ¹ÓÒ¼ü²Ëµ¥½Ó¿Ú
+mModuleFile.py		¸Ä³ÉÓëPythonÏà¹Ø
+LexerClass.py LexerClass1.py
+					È¥³ıÓï·¨¸ßÁÁ¹Ø¼ü×ÖµÄ¹ú¼Ê»¯´¦Àí
+					
+[2005/11/08]
+DirBrowser.py		ĞŞ¸ÄÔÚ¿ÕÄ¿Â¼ÏÂÔö¼ÓÎÄ¼şÏÔÊ¾³ö´í¡£ĞŞÕıµ±¸Ä±äÎÄ¼şºó×ºÊ±£¬ÎÄ¼şÍ¼±ê»á·¢Éú±ä»¯¡£
 
--------------------------------------- 3.5 -----------------------------
-[2006/10/23]
-mColumnMode.py      å°†Alt+Enteræ”¹ä¸ºShift+Enter
-mRun.py             ä¿®æ­£è¿è¡ŒPythonç¨‹åºæ—¶ï¼Œæ¬¡æ•°å¤šæ—¶ä¼šCrashã€‚ä¸»è¦åŸå› æ˜¯common.note()ï¼Œæ”¹ä¸ºSetStatusTextäº†ã€‚
-Editor.py           å»æ‰OnKeyDownä¸­å¯¹æŒ‰é”®çš„ç¼“å†²å¤„ç†ï¼Œç®€åŒ–å¤„ç†
+[2005/11/07]
+					×ª»»LineEnd¸ñÊ½Îª'\n'£¬ĞŞÕı°´Å¥ÖĞµÄ22, 20Îª-1£¬¸ĞĞ»lofµÄ°ïÖú
+RemoveBlankLine.py	É¾³ıµ±Ç°´°¿ÚÄÚÈİÖĞµÄ¿ÕĞĞ
+Editor.py ClassTree.py pycheck.py
+					Ôö¼ÓEditorÀàµÄgoto·½·¨£¬±£Ö¤ÊäÈë½¹µãÇĞ»»
+NewEdit.py			ĞŞ¸ÄÇĞ»»ÓïÑÔ²»ÕıÈ·µÄbug
+					
+[2005/11/06]
+Editor.py EditorFactory.py 
+					ĞŞÕı±£´æÊ±±êÌâÌõµÄĞÇºÅ²»¸Ä±äµÄbug
+i18n.py				ĞŞÕıÈ±Ê¡ÓïÑÔ´¦ÀíµÄbug
+					
+[2005/11/05]
+DirBrowser.py		ĞŞ¸ÄÀ©Õ¹²Ëµ¥plugin
 
-[2006/10/20]
-Casting.py InputAssistant.py
-                    è§£å†³è‡ªåŠ¨å¤„ç†æ€§èƒ½é—®é¢˜ã€‚å› ä¸ºæ¯æ¬¡æŒ‰äº‰é”®éƒ½é‡æ–°ç”Ÿæˆäº†auto_routinï¼Œé€ æˆçº¿ç¨‹é‡å¤ã€‚
-                    å¢åŠ å¯¹acpæ–‡ä»¶å˜åŒ–çš„åˆ¤æ–­ï¼Œå½“ä¸å˜æ—¶ï¼Œä¸ç”Ÿæˆæ–°çš„acpæ–‡ä»¶ã€‚
-                    
-[2006/10/19]
-EditorFactory.py mEditorCtrl.py mMultiView.py mRestFileType.py mHtmlFileType.py
-                    å¢åŠ editctrlçš„åŠ¨æ€å¼¹å‡ºèœå•åŠŸèƒ½ï¼ŒåŒæ—¶å¢åŠ æ‰“å¼€å½“å‰æ–‡æ¡£dosçª—å£çš„åŠŸèƒ½
-DirBrowser.py       å¢åŠ æ–‡ä»¶æ‹–æ”¾çš„åŠŸèƒ½ï¼Œå¯ä»¥æ‰“å¼€æ”¾å…¥çš„ä¸€ä¸ªç›®å½•
-Editor.py           å¢åŠ æ‹–æ‹½åŠŸèƒ½
-                    
-[2006/10/18]
-mEditorFactory.py   ä¿®æ­£å½“è¾“å…¥ç‚¹åœ¨viewä¸­æ—¶ï¼ŒæŒ‰Ctrl+Så‡ºé”™çš„bugã€‚å¢åŠ ä¸€ä¸ªæŸ¥æ‰¾æ­£ç¡®çš„documentçš„å¤„ç†ã€‚
+[2005/11/04]
+EditorFactory.py	ĞŞÕıÎÄµµÇĞ»»Ê±µÄbug
+FindReplaceDialog.py	ĞŞ¸ÄfindtextÎª¿ÕÊ±ËÀÑ­»·µÄ´íÎó
+djangoproj			Ôö¼Ódjango projectµÄ²å¼ş
 
-[2006/10/17]
-MyPanel.py mHtmlFileType.py HtmlPage.py mRestFileType.py
-                    æ”¹é€ å¯¹pageçš„å¤„ç†ï¼Œç”±dictæ”¹ä¸ºlistï¼Œè¿™æ ·å…è®¸é‡åæ–‡ä»¶å­˜åœ¨ã€‚
-SyntaxCheck.py      å¢åŠ è¯­æ³•æ£€æŸ¥æ­£ç¡®æ—¶è‡ªåŠ¨å…³é—­æ£€æŸ¥ç»“æœçª—å£
-MyPanel.py          å¢åŠ å›¾ç‰‡åˆ—è¡¨ï¼Œè¿™æ ·å¯ä»¥åœ¨ä¾§è¾¹æ çª—å£çš„tabé¡µä¸Šæ˜¾ç¤ºå›¾æ ‡
-mSmartNav.py        ä¿®æ­£Smart Navigationåˆ é™¤20ä¸ªå‰çš„bugã€‚åº”è¯¥æ˜¯del [:-20]
-mClassBrowser.py    ä¿®æ­£æ‰“å¼€Pythonç¨‹åºä¸æ˜¾ç¤ºclass browserçš„bug
-                    
-[2006/10/16]
-InputAssistant.py mInputAssistant.py rest
-                    æ›´æ–°Input Assistant, åªæœ‰åœ¨å¢åŠ æˆ–å‡å°‘æ–‡æœ¬æ—¶æ‰è‡ªåŠ¨è¿è¡Œåˆ†æå¤„ç†ã€‚æ›´æ–°restçš„åˆ†æå¤„ç†ï¼Œå¢åŠ è®¾ç½®åŸæ–‡æ¡£çš„focusçš„åŠŸèƒ½ã€‚
-rerange.py          æ›´æ–°å¯¹ä¸­æ–‡çš„æ”¯æŒã€‚
-mRestFileType.py    å¢åŠ ä¸€ä¸ªåœæ­¢è‡ªåŠ¨åˆ·æ–°çš„checkboxåœ¨rst html viewçª—å£ä¸Š
-    
-[2006/10/15]
-mSmartNav.py        å¢åŠ æ™ºèƒ½å¯¼èˆªçš„åŠŸèƒ½
-mRecentFile.py      å°†è‡ªåŠ¨åˆ›å»ºæœ€è¿‘æ–‡ä»¶å’Œè·¯å¾„çš„å¤„ç†æ”¹ä¸ºå¼¹å‡ºçª—å£ï¼Œæé«˜æ‰§è¡Œé€Ÿåº¦
-EditorFactory.py    ä¿®æ­£OnPopUpMenuä¸­çš„IDä¸æ­£ç¡®çš„é”™è¯¯ã€‚æ„Ÿè°¢nmweiziã€‚å¹¶æ„Ÿè°¢æä¾›CloseOtheræ’ä»¶ï¼Œå·²ç»æ”¾åœ¨trunkä¸­
-maketoolbar.py      æ”¹è¿›å¯¹è‡ªå®šä¹‰å·¥å…·æ¡æ§ä»¶çš„æ”¯æŒã€‚
+[2005/11/03]
+django(wizard)		Ôö¼ÓdjangoÏîÄ¿µÄwizard
+					Ò»Ğ©´úÂëµ÷Õû
 
-[2006/10/13]
-mRun.py             ä¿®æ­£æ‰§è¡Œpythonç¨‹åºä¸é‡å®šå‘çš„bug,åŒæ—¶å¢åŠ ä¸€ä¸ªé€‰é¡¹æ˜¯å¦æ¯æ¬¡éƒ½æ˜¾ç¤ºå‚æ•°è®¾ç½®çª—å£
-mRegex.py RegexWindow.py
-                    å¢åŠ åŠ¨æ€æœç´¢æ­£åˆ™è¡¨è¾¾å¼åŠŸèƒ½
+[2005/11/02]
+DocumentBase.py		Ôö¼ÓgetProjectName()·½·¨
+mAutoClose.py __init__.py
+					È¥µô×Ô¶¯¹Ø±Õ¹¦ÄÜ£¬ÓÃ»§ĞèÒª×ÔĞĞÊ¹ÓÃ×Ô¶¯À©Õ¹¹¦ÄÜÀ´ÊµÏÖ
+InputAssistant.py	Ôö¼ÓÇ¶Ì×acp¹¦ÄÜ£¬¿ÉÒÔ¸ù¾İprojectĞÅÏ¢À´×Ô¶¯Ê¹ÓÃ
 
-[2006/10/12]
-mSession.py EditorFactory.py mEditorCtrl.py
-                    å¢åŠ sessionç®¡ç†çš„åŠŸèƒ½ï¼ŒåŒæ—¶æ”¹è¿›æ–‡æ¡£tabæ–¹å‘å˜åŒ–æ—¶ä¸éœ€è¦é‡å¯
-mRecentFile.py      ä¿®æ­£åˆ›å»ºæœ€è¿‘èœå•é€Ÿåº¦æ…¢çš„bugã€‚å¢åŠ SafeYield()çš„è°ƒç”¨ã€‚
-mPersonalInfo.py    å¢åŠ ä¸ªäººä¿¡æ¯çš„ç®¡ç†ï¼Œç›®å‰åªæœ‰ä¸€ä¸ªå§“å
-mEPyDoc.py          å¢åŠ å¯¹ePyDocç”Ÿæˆå‡½æ•°è¯´æ˜çš„æ”¯æŒ
-common.py DirectoryBrowser.py mPythonProject.py mRstProject.py djangoproj
-                    å¢å¼ºå·¥ç¨‹è®¾ç½®å¤„ç†ï¼šé‡æ„ï¼Œå¢åŠ åˆ é™¤é…ç½®å¤„ç†
-mEditorCtrl.py      ä¿®æ­£Ctrl+F4ä¼šé€€å‡ºUliPadçš„bugï¼Œä¸è¿‡å¦‚æœé…æˆE=åˆ™æ— æ•ˆï¼Œå¥‡æ€ªï¼
-InputAssistant.py   å¢å¼ºacpæ ¼å¼ï¼Œå¯ä»¥é€šè¿‡{##}è¡¨ç¤ºé€‰ä¸­çš„æ–‡æœ¬äº†
-mEditorCtrl.py      åœ¨SaveFileä¸­åŠ å…¥SetFocus()è§£å†³äº†ä¿å­˜æ—¶æœ‰è¯­æ³•æ£€æŸ¥æ—¶ï¼Œè¾“å…¥é›†ç‚¹ä¸¢å¤±çš„bug
-EditorFactory.py MyPanel.py
-                    å¢åŠ åŒå‡»tabæœ€å¤§åŒ–çš„åŠŸèƒ½ï¼Œå¯¹äºä¾§è¾¹æ åªèƒ½æœ€å¤§åŒ–åˆ°50%
-mLastStatus.py      å¢åŠ ä¿å­˜ä¾§è¾¹æ å¤§å°çš„åŠŸèƒ½
-                    
-[2006/10/11]
-SpellCheck          å¢åŠ æ‹¼å†™æ£€æŸ¥æ’ä»¶
-                    æ›´æ–°FlatNotebookç»„ä»¶
-mFileNew.py         é‡æ„ï¼Œä¿®æ­£New...ä¸å·¥å…·æ¡èœå•ä¸ä¸€è‡´çš„bug
+[2005/10/29]
+EditorFactory.py	Ôö¼ÓÇĞ»»tabÊ±¹â±ê×ªÈëdocumentÖĞ
 
-[2006/10/10]
-SyntaxDialog.py LexerBase.py
-                    ä¿®æ­£è¯­æ³•é«˜å­—ä½“å¤„ç†bug
-mView.py mPyRun.py  ä¿®æ­£å·¥å…·æ¡EnableçŠ¶æ€ä¸æ­£ç¡®çš„bug
-mSearch.py          ä¿®æ­£æ‰“å¼€æ–‡æ¡£æ—¶æ— æ³•searchçš„bugã€‚ä¸»è¦æ˜¯å¤šè§†å›¾å
-                    mainframe.documenté€šè¿‡set_focusæ¥è®¾ç½®äº†ï¼ŒåŸæ¥çš„
-                    on_document_enterå°±å»æ‰äº†ï¼Œä½†åœ¨æ‰“å¼€æ–‡æ¡£æ—¶set_focusäº‹ä»¶å¹¶æœª
-                    æ¿€æ´»ã€‚
-mSyntaxCheck.py     ä¿®æ­£ä¿å­˜æ—¶ä¸æ£€æŸ¥è¯­æ³•å¤±è´¥çš„bug
-mRun.py mMessageWindow.py MessageWindow.py
-                    å¢åŠ ä¸è‡ªåŠ¨æ¸…é™¤Messageå†…å®¹çš„é€‰é¡¹ï¼Œå¢åŠ Shift+F5å¿«æ·é”®
-Editor.py           ä¿®æ­£åœ¨Linux editor ä¸‹çš„OnKeyDownå¯¹Ctrl, Alt, Shiftå¤„ç†ä¸æ­£ç¡®çš„Bug
+[2005/10/23]
+LexerClass1.py mLexer.py  
+					ĞŞ¸ÄÓï·¨¸ßÁÁÖ§³Ö£¬Ôö¼ÓCSSÓï·¨ 
 
--------------------------------------- 3.4 -----------------------------
-                    
-[2006/10/09]
-mEditorCtrl.py      ä¿®æ­£å½“ä¿å­˜æ–°å»ºæ–‡ä»¶æ—¶ï¼Œæ–‡ä»¶ç±»å‹æŒ‡ç¤ºä¸æ­£ç¡®çš„bug
+[2005/10/22]
+winpdb.__init__.py	ĞŞ¸ÄÂ·¾¶´íÎó
+mDClickCloseFile.py	ĞŞÕıÔÚnotebookµÄtab¿Õ°×´¦ÉÏË«»÷Ê±»á¹Ø±Õµ±Ç°ÎÄµµµÄbug
+LexerClass1.py mLexer.py 
+					Ôö¼Ójava, ruby, perlÓï·¨¸ßÁÁÖ§³Ö
 
-[2006/10/08]
-                    å®Œå–„å¯¹djangoé¡¹ç›®çš„æ”¯æŒã€‚å¢åŠ å¯¹djangoæ¨¡æ¿çš„é«˜äº®æ”¯æŒï¼Œæ‰©å±•é¡¹ç›®åˆ›å»ºçš„æ”¯æŒã€‚
-mRstProject.py      å¢åŠ å¯¹rsté¡¹ç›®çš„æ”¯æŒ
-                    
-[2006/10/05]
-MyPanel.py          fix æ›´æ¢FlatNoteBookä¹‹åå³é”®å…³é—­èœå•æ— æ³•å…³é—­çš„é”™è¯¯
-                    å°†è¯­æ³•æ£€æŸ¥æ’ä»¶ç§»åˆ°æ ¸å¿ƒä¸­å»äº†
+[2005/10/21]
+				ÍêÉÆ×Ô¶¯À©Õ¹¹¦ÄÜ
+mAutocomplete.py InputAssistant.py
+				Ôö¼ÓÊÇ·ñÆô¶¯×Ô¶¯À©Õ¹¹¦ÄÜµÄÅäÖÃÏî
+				ĞŞ¸Ä·­ÒëÎÄ¼ş
+CheckList.py PluginDialog.py
+				Ôö¼ÓCheckListÄ£¿é£¬¸Ä½ø²å¼ş¹ÜÀí½çÃæ
 
-[2006/10/03]
-mCTags.py ctags.py inputAssistant.py mInputAssistant.py Editor.py
-                    å¢åŠ å¯¹ctagsçš„æ”¯æŒ
-                    å¢åŠ FlatNotebook.pyçš„æ”¯æŒ
-                    
-[2006/10/02]
-mRestFileType.py HtmlPage.py rst.acp
-                    å¢åŠ Restçš„Html Viewï¼Œå¹¶ä¸”å¯ä»¥æ ¹æ®å†…å®¹å˜åŒ–è‡ªåŠ¨åˆ·æ–°
-                    
-[2006/09/30]
-LexerRst.py mCustomLexer.py Editor.py
-                    å¢åŠ è‡ªå®šä¹‰è¯­æ³•é«˜äº®åˆ†æåŠŸèƒ½
-                    
-[2006/09/29]
-mMultiView.py       å¢åŠ å½“æ–‡æ¡£æ”¹åæ—¶ï¼Œviewä¹Ÿè‡ªåŠ¨å˜åŒ–ã€‚
-MainFrame.py mAutoCheck.py
-                    å°†Idleçš„å¤„ç†ç½®ä¸ºçº¿ç¨‹æ–¹å¼ï¼ŒOnIdleä¸å†åšå¤„ç†
-mDirBrowser.py mClassBrowser.py 
-                    å…³é—­æ—¶è‡ªåŠ¨éšè—å…¶å®ƒçš„ä¾§è¾¹æ ï¼ŒåŠ å¿«å…³é—­é€Ÿåº¦
+[2005/10/20]
+EditorFactory.py Editor.py
+				ĞŞ¸Äµ±ÎÄµµ¸Ä±äÊ±£¬tabÃûÇ°¼Ó*ºÅ
+mInputAssistant.py InputAssistant.py Editor.py
+				Ôö¼Ó×Ô¶¯À©Õ¹¹¦ÄÜ
+
+				ÍêÉÆ×Ô¶¯À©Õ¹¹¦ÄÜ
+				
+[2005/10/18]
+pycheck			Ôö¼Ó×Ô¶¯¼ì²éÉèÖÃÏî¡£¿ÉÒÔÔÚ±£´æÊ±×Ô¶¯¼ì²éPythonÓï·¨¡£Í¬Ê±½á¹ûÏÔÊ¾¸ÄÎªListview
+makedot.py		Ôö¼Ó×ª»»dotÎÄ¼şºÍ²é¿´Í¼Æ¬µÄ½Å±¾
+mScript.py		ÌáÉıScript²Ëµ¥Îª¶¥¼¶²Ëµ¥
+showerror		Ôö¼ÓÏÔÊ¾error.txt (Alt+E)ºÍdebug.txt (Alt+D)²å¼ş
+mWindow.py		Ôö¼ÓÖ´ĞĞ×ó±ß´°Óëµ×±ß´°µÄ¿ì½İ¼üAlt+L(eft), Alt+B(ottom)
+
+[2005/10/17]
+setup_inno.py		ĞŞ¸ÄEXEÉú³É
+PluginDialog.py		ĞŞ¸Ä´ò¿ª²å¼ş¹ÜÀí¶Ô»°¿ò´í¡£ÒòÎªDict4IniĞŞ¸ÄËùÖÂ¡£
+					ĞŞ¸ÄWizardPanel²å¼ş£¬Ê¹ÆäÖ§³Öprogram´¦Àí¡£Í¬Ê±Ôö¼Óplugintmp²å¼ş£¬ËüÊÇÒ»¸öÉú³Éplugin¿ò¼ÜµÄÄ£°å
+pycheck			Ôö¼ÓÓï·¨¼ì²é²å¼ş, Ôö¼Ó·­ÒëÎÄ¼ş
+
+-------------------------------------- 3.0 -----------------------------
+[2005/10/16]
+Dict4Ini.py		Ôö¼Ó±£³ÖitemµÄË³ĞòºÍÔö¼ÓfloatÀàĞÍÊı¾İµÄ´¦Àí
+mFormat.py mComEdit.py mSearch.py
+			ĞŞ¸ÄÖ´ĞĞÎÄ¼şºó»áÇĞ»»Ä¿Â¼µ¼Èë´ò¿ªĞÂÎÄ¼şÊ±±¨´íµÄbug
+new.bat			Ôö¼ÓÖ´ĞĞÊ±×Ô¶¯½«toolsÏÂµÄstd_Version.py¿½±´µ½modulesÄ¿Â¼ÏÂµÄ´¦Àí£¬ÕâÑùRev¾Í»áÃ¿´Î¸üĞÂÁË£¬ÔÚÉı¼¶°æ±¾Ê±Ê¹ÓÃ
+			·¢²¼
+[2005/10/11]
+mAutoComplete.py
+				ĞŞ¸Äµ±³öÏÖ×Ô¶¯Íê³ÉÏÂÀ­ÁĞ±íÊ±£¬ÇĞ»»´°¿ÚÏÂÀ­ÁĞ±íÒÀÈ»ÏÔÊ¾µÄbug
+mDirBrowser.py DirBrowser.py
+				ÍêÉÆÄ¿Â¼ä¯ÀÀ¹¦ÄÜ, Ôö¼ÓÎÄ¼şÀàĞÍµÄÍ¼±êÏÔÊ¾¹¦ÄÜ£¬Ôö¼Ó¹ıÎÄ¼şºÍºó×º¹ıÂË¹¦ÄÜ
+Version.py		ĞŞ¸ÄÏÔÊ¾ĞÅÏ¢ÎªÖ÷°æ±¾ºÅ+RevºÅ
+mHelp.py		ĞŞ¸Ä°ïÖúĞÅÏ¢£¬Õ¾µãµØÖ·£¬blog£¬ÁªÏµ·½Ê½µÈ
+                ĞŞ¸ÄÎÄµµ
+
+[2005/10/10]	
+				Ôö¼ÓÄ¿Â¼ä¯ÀÀ¹¦ÄÜ
+				È¥³ıprojectºÍpath¹¦ÄÜ
+
+[2005/10/2]
+mMainFrame.py   ÏòmainframeÔö¼Óuserpath
+mModuleInfo.py ModulesInfo.py T_modulesinfo.py 
+                Ôö¼ÓÄ£¿éĞÅÏ¢ÏÔÊ¾£¬Ö÷ÒªÓÃÓÚÀ©Õ¹Ä£¿éµÄĞÅÏ¢ÏÔÊ¾
+                ½«Meteor×ªÎªÄÚÖÃÄ£¿é
+				Ôö¼Ó²å¼şµÄ·­ÒëÎÄ¼ş
+tools/makeplugin.bat tools/getfilelist.py
+				Ôö¼Ó¶Ô²å¼şµÄ·­ÒëÎÄ¼şÌá¹©´¦Àí¹¦ÄÜ
+                
+[2005/09/29]
+                µ÷Õûplugins½á¹¹
+                ĞŞ¸ÄÍ¼Æ¬´¦ÀíÖ§³Ögif, pngºÍimage¶ÔÏó
+                Ôö¼Ópytts²å¼ş
+
+[2005/09/28]
+                ×ªÒÆµ½svnÖĞÈ¥
+
+[2005/09/23]
+winpdb          Ôö¼Ówinpdb²å¼ş
+i18n.py         ĞŞ¸Äi18nµÄ´¦Àí£¬Ö§³Ö¶à¸ömoÎÄ¼ş´®ĞĞ´¦Àí
+wizard          Ôö¼ÓwizardµÄ´¦Àí
+
+[2005/07/27]
+mShowLocale.py  ĞŞÕıÇĞ»»ÎÄµµ²»¸Ä±äÎÄµµ±àÂëµÄÎÊÌâ¡£
+
+[2005/07/25]
+FtpClass.py     ĞŞ¸Äftp¶Ë¿ÚºÅ²»ÄÜ´óÓÚ100µÄÎÊÌâ¡£
+
+-------------------------------------- 2.9 -----------------------------
+[2005/07/24]
+mEditorCtrl.py  Ôö¼Ó¹Ø±Õ¿ì½İ¼üCtrl+F4
+                ĞŞÕıClose AllÊ±²»¶ÔÎ´´ò¿ªÎÄ¼ş½øĞĞ´¦Àí
+
+[2005/04/19]
+FtpClass.py     ĞŞ¸ÄÉÏ´«ÎÄ¼şÎÄ±¾ÎÄ¼şÎ´×ª»»´í
+mFormat.py      Ôö¼ÓĞĞ×¢ÊÍºÍ·´×¢ÊÍµÄ¿ì½İ¼ü
+
+[2005/03/29]
+NewEdit.py      ĞŞÕıÉú³É²å¼şÄ¿Â¼__init__.pyÎÄ¼şµÄ´íÎó
+mMainFrame.py   ĞŞÕıÎ´¸øframe.workpath¸³ÖµµÄ´íÎó
+
+[2005/03/21]
+NewEdit.py      µ÷Õû NewEdit µÄÓ¦ÓÃ½á¹¹¡£
+
+[2005/03/12]
+mModuleFile.py  Ôö¼Óµ¼ÈëÖ¸¶¨Ä£¿éÎÄ¼şµÄ¹¦ÄÜ£¬Ñ¡ÖĞÒ»¸ö×Ö·û´®£¬°´F6¿ÉÒÔµ¼Èë×Ö·û´®Ëù±íÊ¾µÄÄ£¿éÎÄ¼ş£¬Èç¹û´æÔÚµÄ»°
+
+[2005/02/15]
 FindReplaceDialog.py
-                    ä¿®æ­£å‘å›æŸ¥æ‰¾æ—¶çš„ä¸€ä¸ªbugã€‚æ²¡æœ‰æ ¹æ®æ ‡å¿—åˆ¤æ–­å¤§å°å†™ã€‚
-                    
-[2006/09/28]
-mCommands.py SearchWin.py Command.py Editor.py
-                    å¢åŠ å‘½ä»¤æœç´¢åŠŸèƒ½,æœ‰Impactå’Œæ­£å¸¸ä¸¤ç§æ¨¡å¼
-mMultiView.py       å¢åŠ å¤šè§†å›¾åŠŸèƒ½
-rerange.py          å¢åŠ ä¸€ä¸ªæŒ‰ç¬¬ä¸€è¡Œçš„ç©ºç™½é—´éš”å¯¹åç»­è¡Œè‡ªåŠ¨è°ƒæ•´çš„Script
-                    
-[2006/09/27]
-EditorFactory.py    ä¿®æ­£å½“å…³é—­ä¸€ä¸ªæœªå­˜æ–‡ä»¶æ—¶ï¼Œåœ¨ä¿ç•™åå­˜åœ¨documentä¸¢å¤±çš„é—®é¢˜ã€‚ä¸»è¦æ˜¯æœ‰äº›æ¶ˆæ¯æ˜¯ä½¿ç”¨wx.CallAfterè°ƒç”¨çš„ï¼Œ
-                    å› æ­¤å½“å¯¹è±¡åˆ é™¤äº†ï¼Œä½†æœ‰äº›æ–¹æ³•ä»ç„¶å»è°ƒç”¨äº†ã€‚åœ¨savefileåé¢å¢åŠ wx.SafeYield()è°ƒç”¨ï¼Œä»¥ç¡®ä¿æ¶ˆæ¯æ‰§è¡Œ
-MainFrame.py        ä¿®æ­£OnIdleï¼Œåœ¨ç©ºé—²æ—¶ä¸åšå¤„ç†
-
-[2006/09/26]
-mComEdit.py         å¢åŠ æ‹·è´èµ·å§‹ï¼Œç»“æŸçš„è®¾ç½®ï¼Œç”¨äºå­—ç¬¦çš„é€‰æ‹©ã€‚
-HtmlPage.py         ä¿®æ­£å½“ç¼–è¾‘å…¶å®ƒæ–‡ä»¶å†åˆ‡æ¢å›htmlçª—å£æ—¶ï¼Œçª—å£è‡ªåŠ¨æ¢å¤çš„bugã€‚å¢åŠ opened=True
-
-[2006/09/22]
-djangodot.py        å¢åŠ ç”Ÿæˆdjango app dotå›¾çš„åŠŸèƒ½
-djangoproj          ä¿®å¤åˆ›å»ºappå‡ºé”™çš„bug
-
-[2006/09/19]
-EditorFactory.py mEditCtrl.py
-                    å¢åŠ æ–‡æ¡£æ ‡ç­¾æ–¹å‘çš„è®¾ç½®ã€‚åœ¨å‚æ•°ä¸­æ–‡æ¡£é¡µé¢ä¸­å¯ä»¥è®¾ç½®ã€‚
-                    
-[2006/09/18]
-MessageWindow.py    è®©caretlinkbackå¯é…ç½®ï¼Œåœ¨config.iniä¸­è®¾ç½®[default]message_caretlinkback = #é¢œè‰²
-
-[2006/09/15]
-jQuery plugin       å¢åŠ jQueryæ’ä»¶ã€‚å¯ä»¥åœ¨dir borwserä¸­è®¾ç½®jQueryé¡¹ç›®ï¼Œç„¶åå°±å¯ä»¥åœ¨ç¼–è¾‘jsæ–‡ä»¶æ—¶ï¼Œåœ¨å³é”®
-                    èœå•ä¸­ä½¿ç”¨æ·»åŠ æ³¨é‡Šçš„åŠŸèƒ½äº†ã€‚å®ƒå¯ä»¥è‡ªåŠ¨åˆ¤æ–­å‡½æ•°çš„ä½ç½®ï¼Œå¹¶ç”Ÿæˆæ³¨é‡Šæ¨¡æ¿ã€‚
-html.acp xml.acp js.acp
-                    ä¿®æ­£æ ‡ç­¾çš„åŒ¹é…ï¼Œä¸åŒ¹é…/>çš„æƒ…å†µã€‚
-                    
-[2006/09/10]
-Editor.py           ä¿®æ­£åœ¨Linuxä¸‹è¿è¡Œæœ‰è¯¯çš„bug
-
-[2006/09/05]
-CallTip.py          ä¿®æ­£å½“ä¸Šä¸‹æ˜¾ç¤ºCallTipç©ºé—´ä¸è¶³æ—¶ï¼Œæ˜¾ç¤ºåœ¨ä¸‹é¢ã€‚
-
-[2006/09/04]
-InputAssistant.py mInputAssistant.py Editor.py python.acp
-                    è°ƒæ•´å¯¹on_charçš„InputAssistantçš„å¤„ç†ã€‚åŸæ¥æ˜¯åœ¨on_charäº‹ä»¶ä¸­è¿›è¡Œå¤„ç†ï¼Œå› æ­¤å½“è¾“å…¥å¾ˆå¿«æ—¶
-                    æ¯æ¬¡å¿…ç„¶è¦æ‰§è¡Œï¼Œå› æ­¤è¾“å…¥é€Ÿåº¦å¾ˆæ…¢ï¼Œå†åœ¨æ”¹ä¸ºåå°è¿›ç¨‹æ‰§è¡Œï¼Œå› æ­¤å¯ä»¥ä¸­æ–­å¹¶ä¸”æé«˜å½•å…¥é€Ÿåº¦ã€‚
-                    å¦‚æœä½ ä¸éœ€è¦è¾“åŠ©å½•å…¥ï¼Œåªè¦ç»§ç»­è¾“å…¥å³å¯ï¼Œä¸ä¼šåœé¡¿ã€‚
-                    
-[2006/09/02]
-mLastStatus.py      ä¿®æ­£æ‰“å¼€ä¸Šæ¬¡çª—å£ä½ç½®å¤§å°ä¸æ­£ç¡®çš„bug
-jquery.py           å¢åŠ jQueryçš„è¾“å…¥æ”¯æŒ
-
-[2006/09/01]
-mAutoCheck.py       å°†æ£€æŸ¥æ–‡ä»¶ç¼ºçœå€¼è®¾ä¸ºTrue
-InputAssistant.py mInputAssistant.py acp/import.py impor_utils.py
-                    å°†mAutoCompleteè½¬åˆ°Input Assistantæ¨¡å—ä¸­ï¼Œå¢åŠ Backé”®è‡ªåŠ¨æ˜¾ç¤ºç¼ºçœæ ‡è¯†ç¬¦åŠŸèƒ½ï¼Œå»æ‰mAutoComplete.pyæ¨¡å—
+                Find´°¿Ú°´ESC¿ÉÒÔ¹Ø±Õ
+                
+[2005/02/06]
+mRun.py         ÔÚNewEditÖĞÖ´ĞĞ³ÌĞòÊ±£¬²»½øĞĞÊäÈëÊä³öÖØ¶¨ÏòÊ±²ÉÓÃÒì²½Ö´ĞĞ
+Editor.py EditorFactory.py
+                ¸üĞÂÎÄµµÊ±ÔÚTagÉÏÏÔÊ¾*ºÅ
+                
+[2005/02/06]
+EditorFactory.py mSession.py Editor.py mEditorCtrl.py
+                Æô¶¯Ê±±à¼­´°¿ÚµÄÎÄ¼şÑÓ³Ù´ò¿ª
+DDE.py mDDESupport.py
+                DDEÖ§³ÖÊ¹ÓÃCallAfter´¦Àí
+                
+[2005/01/28]
 mPythonContextIndent.py
-                    ä¿®æ­£ç¼©è¿‘ç²˜è´´çš„bugã€‚ä¿®æ­£åˆ—æ‹·è´åœ¨æ–‡ä»¶å°¾æ—¶å°‘ä¸€è¡Œçš„é”™è¯¯ã€‚
-mColumnMode.py      å¢åŠ Ctrl+EnteråŠŸèƒ½ï¼Œç›´æ¥åœ¨ä¸‹ä¸€è¡Œå¢åŠ æ¢è¡Œ
-ShellWindow.py Editor.py mInputAssistant.py
-                    ä¿®æ­£å½“è¾“å…¥ç„¦ç‚¹æ¶ˆå¤±æ—¶ï¼Œå¼¹å‡ºçš„åˆ—è¡¨çª—å£å’ŒCalltipä¸æ¶ˆå¤±çš„Bugã€‚å¤„ç†EVT_KILL_FOCUSäº‹ä»¶å³å¯ã€‚
-Debug.py            ä¿®æ­£å½“DEBUG=Falseæ—¶ä»ç„¶å¯ä»¥åˆ›å»ºdebug.txtå’Œerror.txtçš„é—®é¢˜
+                ĞŞÕıµ±Ñ¡ÖĞÎÄ±¾Ê±£¬°´»Ø³µ²»Çå³ıÎÄ±¾µÄbug
+                
+[2004/12/23]
+InterpreterDialog.py mPyRun.py mRun.py
+                Ôö¼ÓÉèÖÃ½âÊÍÆ÷¹¦ÄÜ£¬¿ÉÒÔÔÚÔËĞĞÊ±Ö´ĞĞÒªÊ¹ÓÃµÄ½âÊÍÆ÷£¬Í¬Ê±¿ÉÒÔÉèÖÃÊÇ·ñÊ¹ÓÃÊäÈëÊä³öÖØ¶¨Ïò
+mShellRun.py    ĞŞÕıÖ´ĞĞÍâ²¿²Ëµ¥Ê±Ê¹ÓÃos.startfile()
 
-[2006/08/30]
-DocumentBase.py ... å¢åŠ ä¸€ä¸ªedittypeçš„å±æ€§ç”¨æ¥è¡¨ç¤ºæ˜¯å¦æ˜¯ç¼–è¾‘å™¨ç¯å¢ƒï¼ŒåŸdocumenttypeåªæ˜¯ç”¨æ¥æ ‡è¯†ä¸åŒçš„æ–‡æ¡£ç±»å‹ã€‚
-outline             å¢åŠ outlineç¼–è¾‘åŠŸèƒ½
+[2004/11/27]
+SnippetClass.py SnippetWindow.py
+                ĞŞÕıµ±snippet²»´æÔÚÊ±´´½¨Â·¾¶µÄ´¦Àí
+                
+[2004/11/26]
+ShellWindow.py  ĞŞÕıÈ¡ÏµÍ³È±Ê¡±àÂëµÄ´¦Àí
 
-[2006/08/28]
-mSplashWin.py       ä¿®æ­£æ˜¯å¦æ˜¾ç¤ºå¯åŠ¨ç”»é¢çš„é€‰é¡¹å¤„ç†æœ‰è¯¯çš„bugï¼Œæ„Ÿè°¢Cheng Xiaosanæç¤ºã€‚
-mTodoWindow.py      ä¿®æ­£æ‰“å¼€ToDoçª—å£ä¸æ˜¾ç¤ºçš„Bugï¼Œæ„Ÿè°¢Cheng Xiaosanæç¤ºã€‚
-mRun.py mPyRun.py   ä¿®æ­£æ‰§è¡ŒGUIç¨‹åºæ—¶çš„å¤„ç†é—®é¢˜ï¼Œä¸å†å¼¹å‡ºå¤šçš„dosçª—å£äº†ã€‚
-MainFrame.py mEditCtrl.py
-                    ä¿®æ­£å½“æœ€å°åŒ–åï¼Œå†åˆ‡æ¢å›æ¥æ—¶è¾“å…¥ç„¦ç‚¹æ¶ˆå¤±çš„bug. ä½†è¿™æ ·åˆå¼•èµ·æ¯æ¬¡åˆ‡æ¢çª—å£éƒ½å›åˆ°ç¼–è¾‘æ–‡æ¡£ä¸­äº†ï¼Œè€Œå¯èƒ½åŸæ¥æ˜¯åœ¨shellçª—å£ä¸­ã€‚å› æ­¤è¿˜æ˜¯æ”¹å›å»äº†ã€‚
-EditFactory.py mEditor.py
-                    å°†NotebookCtrlæ”¹ä¸ºwxæ‰€æä¾›çš„ï¼Œå¹¶ä¸”ä¿®æ­£Ctrl+Tabåˆ‡æ¢ä¸çµçš„bug
-InputAssistant.py mAutoComplete.py
-                    ä¿®æ­£åœ¨å¤„ç†on_charæ—¶å¯¹é€‰ä¸­æ–‡æœ¬çš„å¤„ç†ï¼Œeditorä¸å†åšå¤„ç†ï¼Œè€Œæ˜¯ç”±å„pluginè¿›è¡Œå¤„ç†
+[2004/11/25]
+SnippetWindow.py ĞŞÕı´úÂëÆ¬¶Î´°¿Ú°´Å¥×´Ì¬´¦Àí²»ÕıÈ·´íÎó
+common.py       ĞŞÕıasciÎªascii
 
-[2006/08/25]
-InputAssistant.py   ä¿®æ­£æ’åºæœªå¤„ç†ä¸åŒºåˆ†å¤§å°å†™çš„bug
+[2004/11/12]
+mEditorCtrl.py  ĞŞ¸Äµ±ÎÄ¼şĞŞ¸ÄÊ±±£´æÎÄ¼ş²»³É¹¦µÄBug
 
-[2006/08/24]
-mDDESuport.py       å°†DDEçš„å¤„ç†æ”¹å›æ¥äº†ï¼Œä¸ç”¨Singleçš„åˆ¤æ–­äº†
-LexerBase.py        å°†æ ·å¼å­—èŠ‚å…¨éƒ¨è®¾ä¸º7ä¸å†åˆ¤æ–­æ–‡ä»¶ç±»å‹äº†
-OutlookBrowser.py   ä¿®æ­£ç±»æµè§ˆå™¨ï¼Œå½“ä¿å­˜æ—¶æ”¹å˜ä½ç½®åˆ°æœ€åä¸€ä¸ªç±»çš„bugï¼ŒåŸå› æ˜¯åœ¨æ›´æ–°Treeæ§åˆ¶æ—¶ä¼šè‡ªåŠ¨è·³è½¬ï¼Œå¢åŠ ä¸€ä¸ªactiveflagæ ‡å‡†ç”¨æ¥æ§åˆ¶æ˜¯å¦åœ¨æ›´æ–°æ§åˆ¶
-PyParse.py Editor.py mAutoComplete.py
-                    å¢åŠ æ ‡è¯†ç¬¦è‡ªåŠ¨æç¤ºåŠŸèƒ½ï¼Œç›®å‰å½“æ‰“å¼€æ–‡ä»¶æˆ–è¾“å…¥=æ—¶è‡ªåŠ¨å¯åŠ¨çº¿ç¨‹è¿›è¡Œä¿¡æ¯çš„åˆ†æ
-InputAssistant.py PyParse.py mAutoComplete.py
-                    å°†æ ‡è¯†ç¬¦è‡ªåŠ¨æç¤ºæ‰©å±•åˆ°è‡ªåŠ¨å®ŒæˆåŠŸèƒ½ä¸­ï¼Œå› æ­¤ä¸åªæ˜¯å¯¹Pythonæœ‰æ•ˆï¼Œè€Œä¸”å¯ä»¥é€šè¿‡acpæ–‡ä»¶è¿›è¡Œæ§åˆ¶äº†
+[2004/11/10]
+mAutoComplete.py
+                ĞŞÕı×Ô¶¯Íê³ÉÖĞ£¬´ÓÎÄ±¾È¡³öÆ¥Åä´®ÅÅĞò²»ÕıÈ·µÄBug
+i18n.py         µ±´´½¨i18nÄ£¿éÊ±£¬Èç¹ûÈ±Ê¡±àÂëÎŞ·¨µ¼ÈëÔò
+common.py NewEdit.py
+                ĞŞ¸ÄÔÚ¶ÁÈ¡È±Ê¡±àÂëÓĞÎóÊ±£¬Ê¹ÓÃutf-8±àÂë
+                
+[2004/11/09]
+mPyRun.py       Ôö¼ÓÖ´ĞĞ³ÌĞòÊ±£¬×Ô¶¯ÇĞ»»µ½³ÌĞòËùÔÚµÄÄ¿Â¼¹¦ÄÜ
 
-[2006/08/23]
-dosprompt/__init__.py
-                    ä¿®æ­£åœ¨Tab Notebookä¸Šæ‰“å¼€dos promptçª—å£æ—¶çš„é”™è¯¯ã€‚
-UliPad.py           ä¿®æ­£Globals.app = selfçš„ä½ç½®
-InputAssistant.py   ä¿®æ­£2.4ä¸­çš„äº§ç”Ÿæˆä¸ºlist comprehension
+[2004/11/08]
+mDocument.py    ĞŞÕıµ±ÓĞÑ¡ÖĞÎÄ±¾Ê±£¬»Ø³µ²»É¾³ıµÄÎÊÌâ
+mRecentFile.py  Ôö¼Ó¼ÇÂ¼ÉÏ´Î´ò¿ªÂ·¾¶µÄ¹¦ÄÜ
 
--------------------------------------- 3.3 -----------------------------
-[2006/08/23]
-é¡¹ç›®æ›´åä¸ºUliPad
-setup_inno.py       å»æ‰upxçš„å¤„ç†ï¼Œä¿®æ­£%LåŒå¼•å·ï¼Œåœ¨innoä¸­å†…åµŒçš„åŒå¼•å·éœ€è¦ä¸¤ä¸ªå¼•å·è”å†™
-common.py           æ”¹ansiiä¸ºascii
-PluginDialog.py     ä¿®æ­£æ¨¡æ¿çš„é”™è¯¯
+[2004/10/25]
+LexerBase.py, SyntaxDialog.py
+                ĞŞÕı¸Ä±äÓï·¨ÑÕÉ«ºó£¬ÎÄµµ²»¸üĞÂµÄBug¡£ÔÚcolourizeÖĞÔö¼Óforce²ÎÊı£¬µ±ËüÎªTrueÊ±Ç¿ÖÆÖ´ĞĞ¡£
 
-...
-others ChangeLog see ChangeLog4newEdit.txt ...
-...
+[2004/10/20]
+EditorFactory.py
+                ĞŞ¸Äµ±ÔÚÒ»¼ş¿ÕÎÄµµÉÏ´ò¿ªÎÄ¼şÊ±£¬²»ÄÜÕıÈ·´¦ÀíÎÄ¼şÀàĞÍÇĞ»»µÄ´¦Àí
+mAutoBak.py     ĞŞ¸Äµ±×Ô¶¯±£´æÎÄµµÊ±£¬²»ÄÜÕıÈ·±£´æunicode±àÂëµÄÎÊÌâ¡£µ«¶ÔÓÚÆäËüµÄÏóftpµÄÎÄ¼ş±£´æ¿ÉÄÜÓĞÎÊÌâ¡£
+
+[2004/10/16]
+DocumentBase.py ĞŞ¸Ä¶ÔÏó±È½Ï´¦Àí£¬Ôö¼Ó__eq__, __ne__·½·¨
+
+[2004/10/15]
+LexerFactory.py mLexerFactory.py
+                ĞŞ¸Äµ±ÕÒ²»µ½ÎÄ¼ş¶ÔÓ¦µÄÓï·¨Æ÷Ê±£¬È±Ê¡Ê¹ÓÃoptionÖĞµÄÓï·¨Æ÷ÉèÖÃµÄ´¦Àí£¬¸ÄÎªÈ±Ê¡Ê¹ÓÃtextÓï·¨Æ÷
+                
+[2004/10/14]
+common.py       Ôö¼ÓÒ»¸ö¹«¹²Ä£¿é£¬¿ÉÒÔ´¦Àíunicode×ª»»ºÍÂ·¾¶×ª»»
+mAutoCheck.py   Ö»ÓĞdocumenttype=='edit'²Å¼ì²éÎÄ¼ş¸Ä±äÇé¿ö
+
+mAutoComplete.py
+                Ôö¼ÓÖĞÎÄÄ¿Â¼µÄÖ§³Ö
+
+[2004/10/12]
+mAutocomplete.py
+                ĞŞ¸Ä£¬µ±ÎÄµµÓĞÑ¡ÖĞÎÄ±¾Ê±£¬²»½øĞĞ×Ô¶¯Íê³ÉµÄ´¦Àí
+                
+EditorFactory.py
+                ĞŞ¸ÄÎÄµµÇĞ»»µÄ´¦Àí 
+LexerBase.py    ĞŞ¸ÄÓï·¨¸ßÁÁµÄ´¦Àí£¬µ±ÓïÑÔÀàĞÍÎ´±äÊ±²»ÔÙ½øĞĞÓï·¨¸ßÁÁ´¦Àí
+
+[2004/10/11]
+FtpClass.py ftplistparse.py
+                ĞŞ¸Äftp listµÄ·ÖÎö´¦Àí
+                
+[2004/10/10]
+NewEdit.py      Ôö¼Ó¶Ôµ¼ÈëmixinsµÄÒì³£±£»¤
+
+--------------------------------2.8-----------------------------------
+
+[2004/10/08]
+mHotKey.py      ĞŞ¸ÄÈÈ¼ü·½Ê½£¬Çø·ÖÖ÷´°ÌåÈÈ¼üºÍ±à¼­Æ÷ÈÈ¼ü
+
+[2004/10/07]
+mHotKey.py, makemenu.py, MainFrame.py
+                Ôö¼ÓÓÃ»§×Ô¶¨Òå¿ì½İ¼ü£¬±£´æÔÚconfig.ini
+PythonDoc.py wxPythonDocument.py
+                Ê¹ÓÃPythonÏµÍ³±äÁ¿ºÏ³ÉÎÄµµÂ·¾¶
+
+[2004/10/06]
+BlogManageWindow.py
+                Ôö¼Ó·ÖÀàÏÔÊ¾ÎªÃèÊöĞÅÏ¢
+                
+[2004/10/04]
+mConvert.py     Ôö¼ÓÖ±½ÓÊä³öÎÄ±¾µ½HTML´°¿ÚµÄ¹¦ÄÜ
+FindInFiles.py  ÖØĞÂÉè¼ÆÔÚÎÄ¼şÖĞ²éÕÒ½çÃæ
+
+[2004/10/02]
+MainFrame.py    ÔÚ×´Ì¬Ìõ×îºóÃæÔö¼ÓÏÔÊ¾ÄÚ´æ´óĞ¡µÄÀ¸Î»
+
+[2004/09/29]
+mAutoComplete.py
+                ×Ô¶¯Íê³É¹¦ÄÜ»ù±¾Íê³É
+                
+[2004/09/28]
+BlogPage.py     ĞŞ¸Äµ±BlogÕÊºÅÎª¿ÕÊ±µÄBug
+mAutoComplete.py
+                ×Ô¶¯Íê³É£¬Óï·¨ÌáÊ¾¹¦ÄÜ
+MyPanel.py ShellWindow.py SnippetWindow.py MessageWindow.py
+                ÔÊĞí¹Ø±Õshell, message ,snippet´°¿Ú
+
+[2004/09/27]
+*, PyBlosxomPlugin.py
+                Blog¹¦ÄÜÍêÉÆ
+ShellWindow.py mRun.py
+                ÃüÁîĞĞÖ§³ÖÖĞÎÄ£¬½Å±¾ÊäÈë¡¢Êä³öÖ§³ÖÖĞÎÄ
+ShellWindow.py  ĞŞ¸ÄÔö¼ÓĞÂShellÊ±£¬ÃèÊöÉèÎª±à¼­×´Ì¬
+ScriptWindow.py ĞŞ¸ÄÔö¼ÓĞÂScriptÊ±£¬ÃèÊöÉèÎª±à¼­×´Ì¬
+                
+[2004/09/26]
+BlogManageWindow.py BlogPage.py
+                ĞŞ¸ÄBlog±à¼­¹¦ÄÜ
+                
+[2004/09/25]
+mHelp.py        ĞŞÕıblogÁ´½Ó´í
+
+[2004/09/23]
+mUnicode.py     ²»ÔÙÊ¹ÓÃDetect_utf8.pyÀ´¼ì²âÊÔutf-8±àÂë¡£¸ÄÎªÖ±½Ó½øĞĞutf-8±àÂë×ª»»£¬Èç¹ûÊ§°Ü×ªÎªÏµÍ³È±Ê¡±àÂë
+FindReplaceDialog.py
+                Ôö¼ÓÌæ»»ÎÄ±¾ÊÇÕıÔò±í´ïÊ½µÄ¹¦ÄÜ
+
+[2004/09/22]
+SnippetWindow.py
+                ĞŞÕıÎ´Ñ¡ÖĞ·ÖÀàÊ±£¬±£´æ´úÂë³ö´íµÄBug
+                
+[2004/09/21]
+SnippetWindow.py
+                Fix the bug of saving of snippetwindow
+                
+[2004/09/20]
+BlogPanel.py Editor.py  
+                ĞŞÕıblog±à¼­´°¿Ú¿ÉÒÔ´ò¿ªĞÂÎÄµµµÄBug
+                
+--------------------------------2.7-----------------------------------
+
+[2004/09/19]
+NewEdit.py		comment the lines of CheckVersion of python and wxPython. So if you don't use unicode 
+                version of wxPython, it won't borther you. But I only develop and test under unicode version.
+mConvert.py     Fix converting text to html bug that complained unicode error
+
+[2004/09/18]
+Project.py		Add "Add All" function that can add all openned documents to current project.
+NewEdit.py		ĞŞÕıworkpath²»ÕıÈ·µÄBug¡£½«workpathºÍpluginsÖÃÈësys.pathÖĞ£¬ÒÔ±ãwindows°²×°°ü¿ÉÒÔÕıÈ·Ê¹ÓÃ¡£
+PluginDialog.py	¸Ä½øpluginµÄµ¼Èë´¦Àí£¬Ôö¼ÓÒì³£´¦Àí
+
+[2004/09/17]
+mConvert.py		½«×ª»»½á¹ûÖÃÓÚÏûÏ¢´°¿ÚÖĞ»òµ¯³öµÄHTML´°¿ÚÖĞ
+ClassTree.py	ĞŞ¸Äµ±ÔÚÀàä¯ÀÀ´°¿ÚÖĞ¿Õ°×´¦µã»÷Ê±³ö´íµÄBug
+
+[2004/09/16]
+mShellRun.py	ĞŞ¸ÄÖ´ĞĞShellÊ±£¬´ò¿ªÏûÏ¢´°¿Ú³ö´íµÄbug
+ShellDialog.py	ĞŞ¸ÄÎŞ·¨±à¼­ShellÃüÁîÌáÊ¾µÄbug
+
+[2004/09/14]
+HtmlPanel.py HtmlPage.py *
+				Ôö¼Ó²é¿´Html¹¦ÄÜ
+				
+[2004/09/12]
+mConvert.py		Ôö¼ÓÎÄ±¾×ª»»²Ëµ¥£¬Ôö¼Órest -> html, textil -> html, py -> html µÄ×ª»»¹¦ÄÜ
+
+[2004/09/11]
+mRegister.py	Ôö¼Ó½«NewEdit×¢²áµ½ExploreµÄÉÏÏÂÎÄ²Ëµ¥ºÍ·´×¢²áµÄ¹¦ÄÜ¡£
+Editor.py MainFrame.py mComEdit.py makemenu.py Accelerator.py
+				ÖØĞÂÉè¶¨ÏµÍ³ÈÈ¼ü£¬½«Óë±à¼­Æ÷ÓĞ¹ØµÄÈÈ¼ü·ÖÀë¶¨Òå£¬ĞŞ¸Ä¼ÓËÙ¼üÌáÈ¡·½Ê½£¬¶Ô\tºóÃæÓĞE=µÄ±íÊ¾Óë±à¼­Æ÷ÓĞ¹Ø
+				µÄÈÈ¼ü¡£´Ó¶øÊ¹ShellºÍÏûÏ¢´°¿Ú¿ÉÒÔÕıÈ·´¦ÀíCtrl+C, Ctrl+V, Ctrl+X, Ctrl+A
+				
+--------------------------------2.6.1-----------------------------------
+
+[2004/09/09]
+Blog.py BlogPanel.py
+				Ôö¼ÓĞ´BlogµÄ²å¼ş
+				
+[2004/09/08]
+mDocument.py	Ôö¼Ó×Ô¶¯ÅĞ¶ÏËõ½üµÄ¹¦ÄÜ
+
+[2004/09/07]
+mEditorCtrl.py	ĞŞ¸Äµ±ÎÄ¼şÎ´×öĞŞ¸Ä²»ÄÜÖØĞÂ´ò¿ªbug
+
+[2004/08/28]
+***				ĞŞ¸ÄOnUpdateÅĞ¶Ï´íÎó
+
+--------------------------------2.6-------------------------------------
+
+[2004/08/26]
+MyPanel.py		ĞŞÕı¹Ø±Õ³ÌĞò²»ÕıÈ·Bug
+
+[2004/08/25]
+Debug.py        ¸ÄÕıÉú³ÉµÄdebug.txtºÍerror.txtÎª¾ø¶ÔÂ·¾¶
+
+[2004/08/23]
+convert_opt2.6.py
+				Ôö¼Ó2.6°æÇĞ»»½Å±¾
+setup.py setup_inno.py
+				Ôö¼ÓÉú³É°²×°³ÌĞòµÄ½Å±¾
+mFtp.py FtpClass.py
+				Ftp¹¦ÄÜĞŞ¸Ä
+***				½«ËùÓĞÎÄ¼şÏà¹ØµÄ±äÁ¿´¦ÀíÎªÈ«¾Ö±äÁ¿
+mPath.py		Ôö¼ÓÉèÖÃµ±Ç°Â·¾¶µÄ¹¦ÄÜ
+				
+[2004/08/22]
+***				²¼¾Öµ÷Õû¡¢ĞÔÄÜµ÷ÓÅ
+				ËùÓĞMixin¾ùÒÔm¿ªÍ·¡£¾¡Á¿¼õÉÙÔÚÆô¶¯Ê±µ¼ÈëµÄÄ£¿é¡£½«Àà·ÅÔÚµ¥¶ÀµÄÎÄ¼şÖĞ¡£modulesÄ¿Â¼ÏÂÖ»ÓĞ×îÍ¨ÓÃµÄÄ£¿é¡£
+				mixinsÄ¿Â¼ÏÂÔòÎªÏà¹ØÄÚÈİµÄÄ£¿é¡£ËùÓĞm¿ªÍ·µÄmixinÄ£¿éÔÚ×îÖÕ¾ù½«ºÏ²¢µ½Ò»¸öÎÄ¼şÖĞÒÔ¼õÉÙ¶ÁÈ¡ÎÄ¼şµÄ¸öÊı¡£
+mBookmark.py	bookmarkÖ§³ÖÑ­»·Ìø×ª
+
+--------------------------------2.5-------------------------------------
+
+[2004/08/19]
+PrefDialog.py	ĞŞ¸ÄmaskednumÎªspinctrl
+SyntaxDialog.py SyntaxPref.py
+				´ò¿ªÎÄµµµÄÓï·¨¸ßÁÁ²ÎÊı´°¿ÚÊ±£¬×Ô¶¯¸ù¾İµ±Ç°ÎÄµµµÄÓï·¨ÀàĞÍÑ¡ÖĞ³õÊ¼Óï·¨ÖÖÀà
+
+[2004/08/18]
+mAutoClose.py	Ôö¼Ó×Ô¶¯¹Ø±Õ¹¦ÄÜ£¬ÈçÊäÈë(,[,{,',",<Ê±£¬×Ô¶¯²¹ÉÏ¶ÔÓ¦µÄ×Ö·û
+Ftp.py FtpClass.py
+				Ôö¼Óftp¹¤¾ßÌõ£¬Ôö¼ÓÉÏ´«¡¢ÏÂÔØ¹¦ÄÜ¡£
+
+[2004/08/17]
+Ftp.py FtpClass.py Editor.py
+				Ôö¼ÓFtpÖ§³Ö
+LexerBase.py	ĞŞ¸ÄÏÔÊ¾Óï·¨¸ßÁÁ¶Ô»°¿òÊ¾Àı¶ÔÏóÎŞprefÊôĞÔ´í
+Encoding.py		Ôö¼ÓĞŞ¸Ä±£´æ±àÂë¹¦ÄÜ
+				
+[2004/08/14]
+NewEdit.py		Ôö¼ÓÒ»¸öÆô¶¯»ò½ûÖ¹psycoÄ£¿éµÄÊ¹ÓÃµÄÃüÁîĞĞÑ¡Ïî -s
+***				½«modulesºÍmixins×÷ÎªÄ£¿é£¬²¢ĞŞ¸Äµ¼ÈëmixinsµÄµ÷ÓÃ·½Ê½
+PluginDialog.py	ÖØĞÂÉè¼Æ²å¼şµ¼Èë½á¹¹£¬¸ù¾İµ¼ÈëËã·¨ÖØĞÂĞŞ¸ÄÁË¶ÁÈ¡pluginºÍĞ´ÈëpluginµÄ·½·¨
+Lexers.py		Ôö¼ÓÊÇ·ñÏÔÊ¾¹â±êĞĞµÄÑ¡Ïî
+PythonLexer.py CLexer.py HtmlLexer.py LexerBase.py
+				ĞŞ¸ÄÍ¨ÓÃÑùÊ½µÄÉè¶¨£¬ÆäËüÓï·¨ÎÄ¼ş¿ÉÒÔ²»Éè´ËÏî
+PrefDialog.py	½«²ÎÊıÒ³ÓÉpanel¸ÄÎªscrolledwindow
+
+[2004/08/11]
+newedit_cn.po	·­ÒëÎÄ¼ş±àÂë×ª³Éutf-8
+Document.py MainFrame.py ComEdit.py Pref.py View.py Debug.py
+				ĞŞÕıOnUpdateUIÊÂ¼ş¹Ò½ÓµÄÎ»ÖÃ£¬ÔÚMainFrameÖĞÔö¼Óafterinit½Ó¿Ú£¬OnUpdateUIÊÂ¼ş·ÅÔÚ´Ë´¦½øĞĞ´¦Àí
+Lexers.py		ĞŞÕı±£´æÎÄ¼şºó£¬µ±ÕÒ²»µ½ÎÄ¼şÃû¶ÔÓ¦µÄÓï·¨½âÊÍÆ÷Ê±£¬»áÊ¹ÓÃÈ±Ê¡ÑùÊ½¸Ä±äµ±Ç°Ö¸¶¨µÄÑùÊ½¡£
+
+[2004/08/05]
+Project.py EditorCtrl.py
+				Ôö¼ÓÏòÏîÄ¿µ¼ÈëÎÄ¼şµÄ¹¦ÄÜ
+PythonLexer.py CLexer.py HtmlLexer.py
+				µ÷ÕûÓï·¨¸ñÊ½´®£¬±£ÁôÈ±Ê¡¸ñÊ½´®£¬½«ÆäËüµÄ¸ñÊ½´®ÖĞµÄ×ÖÌåºÍ´óĞ¡È¥µô
+				
+[2004/08/04]
+NewEdit.py DDE.py
+				ĞŞ¸ÄÎÄ¼şÃûÖĞÓĞºº×ÖµÄÇé¿ö¡£½«ÎÄ¼şÃû×Ô¶¯×ªÎªunicode´¦Àí£¬²¢ÔÚDDE´«ËÍÊ±×ªÎªutf-8¡£
+Folder.py		ĞŞ¸Äµ÷ÕûlexerÊ±Ôì³Éµ¯³öÓï·¨ÉèÖÃ´°¿Ú³ö´íµÄbug
+Project.py		Ôö¼Ó¼òµ¥ÏîÄ¿¹ÜÀí¹¦ÄÜ
+				
+[2004/08/03]
+Document.py PythonContextIndent.py
+				ĞŞ¸Äµ±¹â±êËùÔÚÎ»ÖÃÇ°Îª¿Õ°×Ê±£¬±£³ÖÔ­¿Õ°×²»±ä
+				
+[2004/08/01]
+PythonContextIndent.py
+				ÉÏÏÂÎÄËõ½ü
+Folder.py PythonLexer.py
+				ĞŞÕıFolderÊ§Ğ§µÄÎÊÌâ
+				
+--------------------------------2.4-------------------------------------
+[2004/07/25]
+Run.py MessageWindow.py
+				¿ÉÒÔ½ÓÊÕÔËĞĞÊ±ÊäÈëĞÅÏ¢
+PyRun.py		Ôö¼ÓÍ£Ö¹ÔËĞĞ²Ëµ¥ºÍ¹¤¾ßÌõ
+DDE.py DDESupport.py
+				ĞŞÕıÎŞ·¨´¦Àíconfig.iniÖĞ¶Ë¿ÚµÄ´íÎó
+Lineending.py	ĞŞÕıµ±³öÏÖ»ìºÏ»Ø³µ·ûÊ±£¬±£´æÎÄ¼ş³ö´íµÄ´íÎó
+FindInFile.py	ĞŞÕıË«»÷²éÕÒ½á¹ûÊ±£¬ĞĞÊıÌø×ª´í
+Lexers.py Editor.py
+				Ôö¼Ó¿ÉÒÔÖ¸¶¨È±Ê¡Óï·¨¸ßÁÁ
+				
+[2004/07/24]
+Plugins.py		Ôö¼Óplugin¹ÜÀí¹¦ÄÜ¡£ËùÓĞÆäËü¿Éµ÷Õûplugin¾ù·ÅÔÚpluginsÄ¿Â¼ÏÂ¡£
+PythonDoc.py	Ôö¼ÓÏÔÊ¾PythonÎÄµµµÄ²å¼ş¡£
+
+[2004/07/22]
+Help.py			ĞŞ¸Ädoc/index.htmÎªÈ«Â·¾¶£¬²¢¼ÓÉÏfile:///Í·
+NewEdit.py		Ôö¼ÓpsycoµÄ¼ÓËÙÖ§³Ö psycoµÄÖ÷Ò³£ºhttp://psyco.sourceforge.net/
+
+[2004/07/20]
+DDE.py	DDESupport.py
+				DDE Tcp serverµÄ¶Ë¿Ú¿ÉÒÔ´æ·ÅÔÚconfig.iniÖĞ¡£
+IniFile.py		IniÎÄ¼şÈ±Ê¡ÎÄ¼şÃûÎªconfig.ini,È±Ê¡±àÂëÎªutf-8
+Snippets.py		µ±snippetsÄ¿Â¼²»´æÔÚÊ±£¬´´½¨´ËÄ¿Â¼
+Print.py		Ôö¼ÓHTML¸ñÊ½´òÓ¡¹¦ÄÜ£¨ÆäËüÎÄµµ½«×ªÎªHTML¸ñÊ½£©
+SnippetClass.py	snippetsdialog.xrc snippetsdialog_cn.xrc
+				Ôö¼Ó´úÂëÆ¬¶Îµ¼Èë¡¢µ¼³ö¹¦ÄÜ
+
+--------------------------------2.3-------------------------------------
+[2004/07/19]
+PythonLexer.py CLexer.py HtmlLexer.py Lexers.py
+				µ÷ÕûÓï·¨ÑùÊ½µÄÈ±Ê¡ÑùÊ½ÊôĞÔ
+NewEdit.py Language.py
+				½«ÓïÑÔÑ¡Ôñ±£´æÔÚmodules/Lang.py¸ÄÎª±£´æÔÚconfig.iniÖĞ
+Snippets.py		È¥µôÏÔÊ¾´úÂëÆ¬¶Î´°¿Ú²Ëµ¥
+Language.py		¸ÄÕıÖØĞÂÑ¡¶¨ÓïÑÔÊ±²Ëµ¥¼ì²é×´Ì¬ÏÔÊ¾²»ÕıÈ·bug
+Lexerbase.py Folder.py
+				¸Ä±äÓï·¨¸ßÁÁÊ±£¬folderÏÔÊ¾ÎÊÌâ
+
+[2004/07/18]
+LexerBase.py PythonLexer.py CLexer.py HtmlLexer.py Lexers.py IniFile.py 
+				µ÷ÕûÓï·¨·ÖÎöÀà£¬²»Í¬ÓïÑÔµÄÓï·¨¼°ÏàÓ¦µÄ²ÎÊı´æÓÚstxÎÄ¼şÖĞ
+				
+SyntaxPref.py SyntaxDialog.py syntaxdialog.xrc
+				Óï·¨ÑÕÉ«¼°×ÖÌåÉèÖÃ¶Ô»°¿ò´¦Àí
+FindAndReplaceDialog.py
+				¸ÄÕı²éÕÒÊ±£¬µ¥´ÊÑ¡¶¨Ñ¡ÏîÎŞ·¨±£´æµÄÎÊÌâ
+								
+[2004/07/14]
+DocumentBase.py EditCtrl.py	½«ÎÄµµ´°¿Ú½øĞĞ·ÖÀà£¬ÒÔÔÊĞíĞÂĞÍÎÄµµ´°¿ÚµÄÉú³ÉºÍ´¦Àí¡£
+
+[2004/07/13]
+Lexers.py		Óï·¨¸ßÁÁÖ¸¶¨¹¦ÄÜ£¬¿ÉÒÔÖØĞÂÖ¸¶¨Ò»¸öÎÄ¼şÊ¹ÓÃµÄÓï·¨¸ßÁÁ
+LexerBase.py c.stx python.stx html.stx	¿ÉÒÔÖ§³ÖÍâ²¿¹Ø¼ü×ÖÖ¸¶¨¡£
+
+[2004/07/12]
+Debug.py		Ôö¼ÓtracebackĞ´ÈëÈÕÖ¾¹¦ÄÜ£¬Ôö¼Ó´íÎóÈÕÖ¾¶ÔÏóerror£¬Êä³öÎÄ¼şÎªerror.txt
+LexerBase.py Lexers.py PythonLexer.py CLexer.py HtmlLexer.py µ÷ÕûÓï·¨´¦Àí½á¹¹
+ChangeFileType.py FiletypeBase.py	µ÷ÕûÎÄ¼şÇĞ»»µÄ´¦Àí½á¹¹
+
+[2004/07/11]
+NewEdit.py		Ôö¼ÓÈ¡ÏûDDE¹¦ÄÜÃüÁîĞĞ²ÎÊı -n
+Shell.py		Ôö¼ÓÏÔÊ¾shell,message´°¿ÚµÄÏÔÊ¾º¯Êı
+CheckVersion.py	Ôö¼Ó°æ±¾¼ì²é¹¦ÄÜ£¬wxPython ±ØĞëÔÚ2.4uÒÔÉÏ£¬Pythoon±ØĞëÎª2.3²Å¿ÉÒÔÔËĞĞ
+PyRun.py Run.py	¿ÉÒÔÔËĞĞÍ¼ĞÎ½çÃæ³ÌĞò¡£¸ĞĞ»O.706µÄ´úÂë¡£
+
+[2004/07/10]
+DDE.py DDESupport.py	Ôö¼ÓÊÔÑéĞÔµÄDDE´¦Àí£¬Ê¹ÓÃsocket
+Mixin.py		ĞŞ¸ÄexecpluginµÄ´¦Àí¡£pluginµÄ·µ»ØÖµÈç¹ûÎª¼ÙÔò¼ÌĞøÏÂÒ»¸öpluginµÄ´¦Àí£¬Èç¹ûÎªÕæ£¬ÔòÈç¹ûÀàĞÍÎªtuple£¬ÔòÅĞ¶Ïtuple
+				µÄµÚÒ»¸öÔªËØ£¬Èç¹ûÎªÕæ£¬Ôò·µ»ØµÚ¶şÏî¡£Èç¹ûÎª¼Ù£¬¼ÌĞøÏÂÒ»¸öpluginµÄ´¦Àí¡£
+				
+[2004/07/08]
+Editor.py		±£´æĞÂÎÄ¼şÊ±Ö»ÓĞ.tmpÎÄ¼ş´í£¬¸ĞĞ»ibrickµÄÌá¹©
+Script.py		ĞŞ¸ÄtracebackÌáÊ¾Éú³É
+ClassBrowser.py	images/* ĞŞ¸ÄÍ¼ĞÎÎªÍ¸Ã÷£¬png¸ÄÎªgif¸ñÊ½
+Shell.py		È¥µôshell, messageÁ½¸ö²Ëµ¥£¬¸ÄÎªbottom window²Ëµ¥£¬Í¬Ê±Ôö¼Óleft windows²Ëµ¥ºÍ¹¤¾ßÌõ
+
+--------------------------------2.2-------------------------------------
+[2004/07/07]
+Unicode.py		ĞŞ¸ÄUnicode³ö´í´¦Àí
+Encoding.py EncodingDialog.py		Ôö¼Ó±àÂëÑ¡Ôñ
+Editor.py EditorCtrl.py	Ôö¼Ó±àÂëÑ¡Ôñ´¦Àí
+SnippetsClass.py	ĞŞÕıĞ´ÈëxmlÎÄ¼şÊ±utf-8±àÂë´í
+mergepo.py		ĞŞ¸ÄÉú³ÉµÄpoÎÄ¼ş£¬Î´·­ÒëµÄÌõÄ¿ÅÅÁĞÔÚÇ°
+MyUnicodeException.py	Ôö¼Ó´ò¿ª¡¢±£´æÊ±unicode×ª»»³ö´íÒì³£Àà
+ShowLocale.py	ÔÚ×´Ì¬ÌõÏÔÊ¾ÎÄµµµÄ±àÂë
+Lineending.py	ĞŞ¸ÄÔÚ±£´æÎÄ¼şÊ±×ª»»ĞĞ½áÊø·û
+
+[2004/07/06]
+Resource.py		ĞŞ¸ÄÉú³ÉµÄ×ÊÔ´¶ÔÏó²»ÕıÈ·
+
+[2004/07/05]
+SnippetClass.py Snippets.py snippetsdialog.xrc Ôö¼Ó´úÂëÆ¬¶Î¹¦ÄÜ
+
+[2004/06/30]
+Tool.py			Ôö¼Ótool²Ëµ¥£¬½«Script×ªÒÆµ½´Ë²Ëµ¥ÏÂ
+Run.py PyRun.py	½«Run²ğ·ÖÎªRun.pyºÍPyRun.pyÁ½¸öÄ£¿é
+ShellRun.py		Ôö¼ÓshellÃüÁîĞĞ¹¦ÄÜ
+Entry.py		Ôö¼ÓÑ¡ÔñÎÄ¼şÃûÑ¡Ïî¶Ô»°¿ò
+
+--------------------------------2.1-------------------------------------
+[2004/06/28]
+Language.py		ĞŞ¸Ä¶ÁÈ¡language.iniÎÄ¼şÊ±£¬¹ıÂËµô¿ÕĞĞ¼°#¿ªÍ·µÄĞĞ
+ComEdit.py		ĞŞ¸ÄÀ©Õ¹Ñ¡´Ê¹¦ÄÜÊ§Ğ§bug
+
+[2004/06/24]
+NewEdit.py		Ôö¼ÓÈ±Ê¡±àÂë²ÎÊı
+Unicode.py		Ôö¼Óunicode×ª»»´íÎó´¦Àí£¬ÒÑ¾­²»Ö§³Ö·Çunicode°æ±¾ÁË¡£
+EditorCtrl.py	Ôö¼ÓÖØĞÂ×°ÈëÎÄµµµÄ¹¦ÄÜ
+AutoBak.py		´ò¿ªÎÄ¼şÊ±×Ô¶¯±¸·İÎª.bakÎÄ¼ş
+AutoCheck.py	×Ô¶¯¼ì²éÎÄ¼şÊÇ·ñ±»±ğÈË¸üĞÂ¹ı
+
+[2004/06/22]
+NewEdit.py MainFrame.py	Ôö¼Ó´¦ÀíÃüÁîĞĞÎÄ¼ş¹¦ÄÜ
+-------			½«·­Òëº¯Êı¸ÄÎªtr
+
+---------------------------------2.0-------------------------------------
+[2004/06/20]
+FindInFiles.py SearchInFiles.py Ôö¼ÓÔÚÎÄ¼şÖĞËÑË÷µÄ¹¦ÄÜ
+Format.py		Ôö¼Ó½«ËùÓĞÖÆ±í·û×ªÎª¿Õ¸ñµÄ¹¦ÄÜ¡£ĞŞÕı½«Ç°µ¼ÖÆ±í·û×ªÎª¿Õ¸ñÊ±£¬»á×ª»»È«²¿ÖÆ±í·ûµÄ´íÎó¡£
+
+[2004/06/16]
+CLexer.py		Ôö¼Ó¶ÔCÓïÑÔµÄÓï·¨Ö§³Ö
+HtmlLexer.py	Ôö¼Ó¶ÔHtmlÓïÑÔµÄÓï·¨Ö§³Ö
+
+[2004/06/15]
+Langage.py i18n.py Ôö¼Ó¶Ô¹ú¼Ê»¯´¦ÀíµÄÖ§³Ö
+
+[2004/06/13]
+Run.py			Ôö¼ÓÔËĞĞµ±Ç°PythonÔ´³ÌĞòµÄ¹¦ÄÜ£¬ÉèÖÃÃüÁîĞĞ²ÎÊıµÄ¹¦ÄÜ£¬²»Ö§³Ö½»»¥¹¦ÄÜ
+Script.py		ÓÃ»§×Ô¶¨Òå½Å±¾¹¦ÄÜ¡£
+
+[2004/06/12]
+Lineending.py	ĞŞÕıµ±ÎÄ¼ş»»ĞĞ·ûÎªMIXÊ±£¬×´Ì¬ÉèÖÃ²»ÕıÈ·µÄbug
+
+[2004/06/11]
+maketoolbar.py PythonLexer.py ClassBrowser.py Ôö¼Ó¹¤¾ßÌõ¶¯Ì¬±ä»¯´¦Àí
+ClassBrowser.py	ĞŞ¸ÄÊ÷ÅÅĞò
+Calltip.py		ĞŞÕıÓĞÊ±ÏÔÊ¾¿´²»ÇåµÄbug
+Shell.py		ÊµÏÖPython½Å±¾ºÍmessage´°¿Ú
+Case.py			ĞŞ¸Äµ¥´ÊÊ××ÖÄ¸±ä´óĞ´µÄbug
+FileDrop.py		ÎÄ¼şÍÏ¶¯µ½±à¼­´°¿ÚÖĞ¿ÉÒÔ´ò¿ª
+
+[2004/06/10]
+ClassBrowser.py	Ôö¼Ó²é¿´PythonÔ´´úÂëÀàµÄÄÜÁ¦£¬ÔÚÊ÷½áµãÉÏµ¥»÷×ó¼ü¿ÉÒÔÌø×ªµ½ÏàÓ¦µÄÎ»ÖÃ¡£
+
+[2004/06/09]
+PythonLexer.py	Ôö¼ÓPythonLexerÀà£¬ÓÃÓÚ½ÓÊÕmenulistµÄmixin
+dynamicmenu.py	½«¶¯Ì¬Ôö¼Ó£¬É¾³ı²Ëµ¥µÄ¹¦ÄÜ¶ÀÁ¢ÎªÒ»¸öÄ£¿é
+
+[2004/06/07]
+EditorCtrl.py	ĞŞ¸ÄÊäÈë½¹µãÎŞ·¨×Ô¶¯ÇĞ»»µ½ÎÄµµÖĞµÄbug
+makemenu.py, PythonLexer.py	ÊµÏÖ¸ù¾İÎÄ¼şÃû²»Í¬Ôö¼Ó»òÈ¥³ı²Ëµ¥Ïî
+LastStatus.py	ĞŞ¸Ä×îĞ¡»¯Ê±´°¿Ú×ø±ê±£´æ²»ÕıÈ·bug
+EditorCtrl.py	ÎÄµµÇĞ»»plugin¸ÄÎªÁ½¸ö£¬Ò»¸ö±íÊ¾Àë¿ª£¬Ò»¸ö±íÊ¾½øÈë
+
+[2004/05/28]
+-------		Éı¼¶µ½wxpython 2.5.1.5°æ±¾
+
+---------------------------------1.0-------------------------------------
+[2004/05/26]
+-------		±àĞ´ÎÄµµ
+
+[2004/05/25]
+newedit.ico	ĞŞ¸Ä³ÌĞòÍ¼±ê
+
+[2004/05/24]
+-------		ĞŞ¸ÄunicodeµÄÖ§³Ö¹¦ÄÜ
+Calltip.py	ÊµÏÖ×ÔÒÑµÄµ÷ÓÃÌáÊ¾´°¿Ú£¬Ö§³Öunicode
+Bookmark.py	È¥µôÔÚMargin 0µÄÊó±êµ¥»÷ÉèÖÃ±êÇ©¹¦ÄÜ
+Folder.py	foldÈ±Ê¡Îª²»ÏÔÊ¾
+QuoteDialog.py Format.py	Ôö¼ÓÀ¨Æğ¹¦ÄÜ
+
+[2004/05/23]
+ComEdit.py	Ôö¼ÓÀ©Õ¹Ñ¡´Ê¹¦ÄÜ£¬'.'×÷Îªµ¥´ÊµÄÒ»²¿·Ö, Ctrl+Ë«»÷¿ÉÒÔÊµÏÖÀ©Õ¹Ñ¡´Ê¹¦ÄÜ
+Version.py	°æ±¾ºÅ¶ÀÁ¢
+Help.py		Ôö¼ÓAbout¶Ô»°¿ò
+Lineending.py	Ôö¼Ó×ª»»»»ĞĞ·û¹¦ÄÜ
+
+[2004/05/22]
+Format.py	¼Ç×¡ÉÏ´ÎÊ¹ÓÃµÄ×¢ÊÍ´®
+Duplicate.py	Ôö¼ÓÆ¥Åä²éÕÒ²¢²åÈë¹¦ÄÜ£¬°üÀ¨×Ö·û¡¢µ¥´ÊºÍ¾ä×Ó
+-------		¼ÓÈë°æÈ¨ÉùÃ÷
+
+[2004/05/21]
+Debug.py	ĞŞ¸ÄdebugÎªÒ»¸öÀà£¬Ôö¼ÓÏàÓ¦µÄÌáÊ¾´¦Àíº¯Êı
+Mixin.py	ĞŞ¸ÄsetPluginº¯Êı£¬Ôö¼ÓÓÅÏÈ¼¶±ğºÍÓÅÏÈ¼¶ÊıµÄ²ÎÊı
+		ĞŞ¸Äexecpluginº¯Êı£¬Èç¹ûÓĞ¶à¸öº¯Êı£¬ÔòÖ»ÒªÓĞÒ»¸ö·µ»ØÖµ²»Îª¿ÕÔò½«Ğ©Öµ·µ»Ø¡£
+
+[2004/05/20]
+EditorCtrl.py	¼Ç×¡ÉÏ´ÎÎÄµµµÄºó×º
+ComEdit.py	Ôö¼ÓÀ©Õ¹Ñ¡Ôñ¹¦ÄÜ
+
+[2004/05/19]
+Session.py	±£´æÉÏ´Î´ò¿ªÎÄ¼ş
+LastStatus.py	ÉÏ´Î´°¿Ú×´Ì¬
+
+[2004/05/18]
+Margin.py	¿ÉÒÔÔÚ×ó±ß½çÉÏ·ÅÖÃÍ¼±ê£¬½«ÓÃÀ´±£´æÊéÇ©
+Folder.py	¶ÔÓÚPython³ÌĞò¿ÉÒÔÕÛµş
+PythonLexer.py	PythonµÄÓï·¨¸ßÁÁ, Ôö¼ÓpythonµÄÎÄ¼şÍ¨Åä·û
+OnUpdateUI.py	É¾³ı
+CheckBrace.py	¶ÔÀ¨ºÅÆ¥Åä½øĞĞ¼ì²é
+Zoom.py		×ÖÌå·Å´ó£¬ËõĞ¡
+
+[2004/05/17]
+Format.py	Ôö¼Ó×¢ÊÍÓë·´×¢ÊÍµÄ´¦Àí, ĞĞÊ×¿Õ¸ñÓëTAB·û×ª»», ½ØÈ¡ĞĞÎ²¿Õ¸ñ
+Document.py 	Ôö¼ÓÎÄµµ²Ëµ¥£¬×Ô¶¯Ëõ½ü´¦Àí£¬×Ô¶¯»»ĞĞ
+
+[2004/05/16]
+View.py		Ôö¼Ó³¤ĞĞÖ¸Ê¾£¬»Ø³µ·ûÏÔÊ¾£¬Ëõ½üÏÔÊ¾¡£Æô¶¯Ê±ÊÇ·ñÏÔÊ¾³¤ĞĞÖ¸Ê¾£¬Ëõ½üÏÔÊ¾£¬¿Õ°×ÏÔÊ¾
+Format.py	Ôö¼Ó´¦ÀíËõ½üºÍ·´Ëõ½ü, ÓÃ»§ÉèÖÃtabÖµ
+makemenu.py	Ôö¼Ó²Ëµ¥Í¼±êµÄ´¦Àí£¬²»¹ıÏÖÔÚ²»Ê¹ÓÃ£¬ºÃÏóÏÔÊ¾ÓĞĞ©ÂÒ
+Mixin.py	ĞŞ¸Äbug
+DefaultMenu.py	É¾³ı²Ëµ¥ÒÆµ½MainFrame.pyÖĞ
+----------	ĞŞ¸Ä²Ëµ¥Mixin½á¹¹
+Case.py     	´óĞ¡Ğ´´¦Àí
+
+[2004/05/15]
+Search.py	Ôö¼Óreplace¹¤¾ß°´Å¥
+OnUpdateUI.py	Ôö¼Ó¶Ôcut, copy, paste, undo, redo, save¹¤¾ß¡¢²Ëµ¥µÄ¶¯Ì¬¸üĞÂ
+SetScrollWidth.py	Ôö¼Ó³õÊ¼ÉèÖÃStyledTextCtrlºáÏò¹ö¶¯Ìõ¿í¶È
+Editor.py	²åÈë¹â±ê¿í¶ÈÉèÎª3£¬µ÷ÕûµÚÒ»ÁĞmarginÎª·ûºÅ¶ø²»ÊÇĞĞºÅ
+ComEdit.py	¸´ÖÆÒ»ĞĞ,¸´ÖÆÉÏĞĞ×Ö·û
+maketoolbar.py	¸üĞÂtoolbar¸ñÊ½£¬Ôö¼ÓÑùÊ½Ïî
+Format.py	Ôö¼Ó¸ñÊ½²Ëµ¥
+DClickCloseFile.py	Ë«»÷tab½«¹Ø±ÕtabÒ³
+View.py		Ôö¼ÓÊÓÍ¼²Ëµ¥£¬¿ÉÒÔÏÔÊ¾/²»ÏÔÊ¾¿Õ°×ºÍÖÆ±í·û
+Toolbar.py	Ö§³Ötoggle¹¤¾ß
+
+[2004/05/14]
+Search.py	Ôö¼Ó²éÕÒ¡¢Ìæ»»¹¦ÄÜ£¬Ôö¼Ó¹¤¾ßÌõÏÔÊ¾£¬½«Ñ¡ÖĞÎÄ±¾Ö±½Ó½øĞĞ²éÕÒ¹¦ÄÜ
+EditorCtrl.py	Ôö¼Ó¹Ø±Õ´°¿ÚÊ±ÌáÊ¾±£´æÎÄ¼ş
+
+[2004/05/13]
+OnPosition.py	Ôö¼ÓĞĞ¡¢ÁĞ×ø±êÏÔÊ¾
+Lineending.py	ĞĞ½áÊøÄ£Ê½´¦Àí
+
+[2004/05/12]
+Ä¿Â¼±ä¸ü
+images  	´æ·ÅÍ¼Æ¬
+modules 	´æ·ÅÄ£¿é
+mixins  	´æ·ÅmixinºÍplugin
+resource	´æ·Å×ÊÔ´ÎÄ¼ş
+
+[2004/05/11]
+RecentFile.py   Ôö¼Ó×î½üÎÄ¼şµÄ²Ëµ¥Ïî´¦Àí
+CommEdit.py	Ôö¼ÓSelect All¹¦ÄÜ
+
+[2004/05/10]
+Preference.py   Ôö¼ÓÏµÍ³ÅäÖÃÑ¡Ïî¹ÜÀí£¬Ê¹ÓÃpickle
+PrefDialog.py   ´¦Àíprefercent¶Ô»°¿ò
+
+[2004/05/03]
+OnModified.py	Ôö¼ÓÎÄµµĞŞ¸ÄºónotebookºÍ´°ÌåµÄ±êÌâ±ä»¯
+EditorCtrl.py	Ôö¼ÓtabÇĞ»»ºó±êÌâµÄ±ä»¯
+
+[2004/05/02]
+EditorCtrl.py   Ôö¼ÓOnFileNewºÍOnFileOpen²Ëµ¥
+
+[2004/05/01]
+MainSubFrame.py ĞŞ¸ÄMainSubFrameÀà£¬ĞŞ¸Ämixin OnSashDragºÍOnSize£¬Ôö¼ÓÏàÓ¦µÄplugin
+Mixin.py        ĞŞ¸Äinitmixin·½·¨£¬µ±ÎŞ¶ÔÓ¦µÄmixinÊµÏÖÊ±£¬²åÈë¿Õ__plugins__
+Debug.py        Ôö¼Ó³õÊ¼»¯´úÂë£¬ĞÅÏ¢Êä³öÎª¼´Ê±¸üĞÂ
+EditorCtrl.py     Notebook½á¹¹ÓÃÓÚ±£´æÃ¿¸öÎÄµµ
+Editor.py       Ôö¼Ó±à¼­ÎÄµµ¿Ø¼ş
+
+[2004/04/25]
+Debug.py        Ôö¼ÓDebugÄ£¿é£¬ÓÃÓÚĞÅÏ¢Êä³ö
+Mixin.py        ĞŞ¸ÄMixinÄ£¿éĞÅÏ¢Êä³ö
+NewEdit.py      ½«ËùÓĞÉú³ÉMainFrameµÄ´úÂë¼ò´úÎªÒ»¸öinit½Ó¿Ú£¬É¾³ıÔ­getMainFrame½Ó¿Ú
+MainFrame.py    É¾³ıÔ­getMainFrame½Ó¿Ú£¬Ôö¼Óinit½Ó¿Ú£¬ÓÃÓÚÕû¸ömainframeµÄÉú³É
+StatusBar.py    ½«×´Ì¬Ìõ´úÂë·ÖÀë³öÀ´
 
 [2004/04/22]
-NewEdit     åˆå§‹æ¡†æ¶æ­å»º
-
-
+NewEdit		³õÊ¼¿ò¼Ü´î½¨

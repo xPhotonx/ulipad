@@ -1,3 +1,0 @@
-import winpdb
-
-winpdb.main()

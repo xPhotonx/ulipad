@@ -6,7 +6,7 @@
 #
 #   Distributed under the terms of the GPL (GNU Public License)
 #
-#   UliPad is free software; you can redistribute it and/or modify
+#   NewEdit is free software; you can redistribute it and/or modify
 #   it under the terms of the GNU General Public License as published by
 #   the Free Software Foundation; either version 2 of the License, or
 #   (at your option) any later version.
@@ -20,17 +20,15 @@
 #   along with this program; if not, write to the Free Software
 #   Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 #
-#   $Id: MainFrame.py 2013 2007-03-10 09:29:10Z limodou $
+#   $Id: MainFrame.py 486 2006-01-17 12:08:32Z limodou $
 
 import wx
 import copy
-import time
 #import locale
 from modules import Mixin
 from modules import makemenu
 from modules import Accelerator
 from modules import MyStatusBar
-from modules import Casing
 #from modules import common
 
 class MainFrame(wx.Frame, Mixin.Mixin):
@@ -44,7 +42,7 @@ class MainFrame(wx.Frame, Mixin.Mixin):
         ('IDM_FILE',
         [
             (900, '', '-', wx.ITEM_SEPARATOR, None, ''),
-            (910, 'wx.ID_EXIT', tr('Exit')+'\tCtrl+Q', wx.ITEM_NORMAL, 'OnExit', tr('Exit Program')),
+            (910, 'IDM_FILE_EXIT', tr('Exit\tAlt+X'),wx. ITEM_NORMAL, 'OnExit', tr('Exit Program')),
         ]),
     ]
     accellist = {}
@@ -57,15 +55,12 @@ class MainFrame(wx.Frame, Mixin.Mixin):
     ]
     toollist = []
     toolbaritems = {}
-    filenewtypes = []
 
     def __init__(self, app, filenames):
         self.initmixin()
-        
         self.app = app
         self.pref = app.pref
         self.filenames = filenames
-        self.closeflag = False
 
         self.callplugin_once('start', self)
 
@@ -79,9 +74,7 @@ class MainFrame(wx.Frame, Mixin.Mixin):
         self.callplugin_once('add_filewildchar', MainFrame.filewildchar)
         #@add_tool_list
         self.callplugin_once('add_tool_list', MainFrame.toollist, MainFrame.toolbaritems)
-        #@add_new_files
-        self.callplugin_once('add_new_files', MainFrame.filenewtypes)
-
+        
         self.id = self.GetId()
         self.menubar=makemenu.makemenu(self, self.menulist, MainFrame.accellist, MainFrame.editoraccellist, MainFrame.imagelist)
         self.SetMenuBar(self.menubar)
@@ -106,12 +99,8 @@ class MainFrame(wx.Frame, Mixin.Mixin):
         self.callplugin('beforeinit', self)
         self.callplugin('init', self)
         self.callplugin('show', self)
-#        wx.EVT_IDLE(self, self.OnIdle)
+        wx.EVT_IDLE(self, self.OnIdle)
         wx.EVT_CLOSE(self, self.OnClose)
-        wx.EVT_ACTIVATE(self, self.OnActive)
-
-        d = Casing.Casing(self.OnIdle)
-        d.start_thread()
         
     def afterinit(self):
         self.callplugin('afterinit', self)
@@ -123,30 +112,16 @@ class MainFrame(wx.Frame, Mixin.Mixin):
     def OnUpdateUI(self, event):
         self.callplugin('on_update_ui', self, event)
 
-    def OnIdle(self):
-        try:
-            while not self.closeflag:
-                if not self.app.wxApp.IsActive():
-                    self.callplugin('on_idle_non_active', self)
-                    time.sleep(0.1)
-                else:
-                    if wx.Platform == '__WXMSW__':
-                        wx.CallAfter(self.SetStatusText, "%dM" % (wx.GetFreeMemory()/1024/1024), 5)
-                    self.callplugin('on_idle', self)
-                    time.sleep(0.5)
-        except:
-            pass
-
+    def OnIdle(self, event):
+        if wx.Platform == '__WXMSW__':
+            self.SetStatusText("%dM" % (wx.GetFreeMemory()/1024/1024), 5)
+        self.callplugin('on_idle', self, event)
+        
     def OnClose(self, event):
         if not self.execplugin('on_close', self, event):
-            self.closeflag = True
             self.callplugin('afterclosewindow', self)
             event.Skip()
-            
-    def OnActive(self, event):
-        self.callplugin('on_active', self, event)
-        event.Skip()
-
+        
     def removeAccel(self):
         MainFrame.accellist = copy.deepcopy(MainFrame.default_accellist)
         MainFrame.editoraccellist = copy.deepcopy(MainFrame.default_editoraccellist)
@@ -160,3 +135,4 @@ class MainFrame(wx.Frame, Mixin.Mixin):
         self.editorkeycodes = {}
         Accelerator.getkeycodes(self.editoraccellist, self.editorkeycodes)
         Accelerator.initaccelerator(self, MainFrame.accellist)
+        
