@@ -124,5 +124,4 @@ More features are in development...
 
 == Documents ==
 
- Many documents ship with UliPad/NewEdit source code, and you can also find other document on [http://www.donews.net/limodou my blog].
-
+ Many documents ship with UliPad/NewEdit source code, and you can also find other document on [http://www.donews.net/limodou limodou blog]^chinese blog^.
