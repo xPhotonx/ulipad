@@ -38,3 +38,4 @@ def getWizardBitmap():
 def getWizardImage():
     stream = cStringIO.StringIO(getWizardData())
     return ImageFromStream(stream)
+

@@ -72,3 +72,4 @@ def getMusicplayBitmap():
 def getMusicplayImage():
     stream = cStringIO.StringIO(getMusicplayData())
     return ImageFromStream(stream)
+

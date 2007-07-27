@@ -1,11 +1,11 @@
-#   Programmer: limodou
-#   E-mail:     limodou@gmail.com
+#	Programmer:	limodou
+#	E-mail:		chatme@263.net
 #
-#   Copyleft 2006 limodou
+#	Copyleft 2004 limodou
 #
-#   Distributed under the terms of the GPL (GNU Public License)
+#	Distributed under the terms of the GPL (GNU Public License)
 #
-#   UliPad is free software; you can redistribute it and/or modify
+#   NewEdit is free software; you can redistribute it and/or modify
 #   it under the terms of the GNU General Public License as published by
 #   the Free Software Foundation; either version 2 of the License, or
 #   (at your option) any later version.
@@ -19,29 +19,28 @@
 #   along with this program; if not, write to the Free Software
 #   Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 #
-#   $Id: ChangeFileType.py 1457 2006-08-23 02:12:12Z limodou $
+#	$Id: ChangeFileType.py 93 2005-10-11 02:51:02Z limodou $
 
 from modules import Mixin
 
 class ChangeFileType(Mixin.Mixin):
-    __mixinname__ = 'changefiletype'
-    filetypes = []  #(name, filetypeobjclass)
+	__mixinname__ = 'changefiletype'
+	filetypes = []	#(name, filetypeobjclass)
 
-    def __init__(self):
-        self.initmixin()
-        self.objs = []
+	def __init__(self):
+		self.initmixin()
+		self.objs = []
 
-        self.callplugin_once('add_filetypes', ChangeFileType.filetypes)
+		for name, _class in self.filetypes:
+			self.objs.append(_class(name))
 
-        for name, _class in self.filetypes:
-            self.objs.append(_class(name))
+	def enter(self, mainframe, document):
+		for i, obj in enumerate(self.objs):
+			if obj.enter(mainframe, document):
+				break
 
-    def enter(self, mainframe, document):
-        for i, obj in enumerate(self.objs):
-            if obj.enter(mainframe, document):
-                break
+	def leave(self, mainframe, filename, languagename):
+		for obj in self.objs:
+			if obj.leave(mainframe, filename, languagename):
+				break
 
-    def leave(self, mainframe, filename, languagename):
-        for obj in self.objs:
-            if obj.leave(mainframe, filename, languagename):
-                break

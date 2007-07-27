@@ -1,6 +1,6 @@
 #coding=cp936
 #---------------------------------------------------
-#                   UliPad script
+#                   NewEdit script
 # Author  :limodou
 # Date    :2005/07/16
 # Version :0.1
@@ -32,55 +32,55 @@ class Converter(SGMLParser):
                 if value and value[0] != '#':
                     self.text.append('[' + value + ' ')
                     self.a_flag = True
-
+    
     def end_a(self):
         if self.a_flag:
             self.text.append(']')
         self.a_flag = False
-
+        
     def start_h1(self, attrs):
         self.text.append('= ')
-
+        
     def end_h1(self):
         self.text.append(' =')
-
+        
     def start_h2(self, attrs):
         self.text.append('== ')
-
+        
     def end_h2(self):
         self.text.append(' ==')
-
+        
     def start_h3(self, attrs):
         self.text.append('=== ')
-
+        
     def end_h3(self):
         self.text.append(' ===')
-
+        
     def start_h4(self, attrs):
         self.text.append('==== ')
-
+        
     def end_h4(self):
         self.text.append(' ====')
-
+        
     def start_h5(self, attrs):
         self.text.append('===== ')
-
+        
     def end_h5(self):
         self.text.append(' =====')
-
+        
     def start_pre(self, attrs):
         self.text.append('{{{#!python\n')
         self.pre = 1
-
+        
     def end_pre(self):
         self.text.append('}}}')
         self.pre = 0
-
+        
     def start_img(self, attrs):
         for attr, value in attrs:
             if attr.lower() == "src":
                 self.text.append(value)
-
+                
 #    def end_img(self):
 #        self.text.append("'''")
 #
@@ -96,46 +96,46 @@ class Converter(SGMLParser):
             else:
                 return t
         return ''.join([c(x) for x in self.text])
-
+    
     def handle_entityref(self, ref):
         if ref == 'nbsp':
             self.text.append(' ')
         else:
             self.text.append(htmlentitydefs.entitydefs[ref])
-
+        
     def start_ul(self, attrs):
         self.ul = 1
-
+        
     def start_li(self, attrs):
         if self.ul:
             self.text.append(" * ")
         elif self.ol:
             self.text.append(" 1. ")
-
+            
     def end_ul(self):
         self.ul = 0
-
+        
     def start_ol(self, attrs):
         self.ol = 1
-
+    
     def end_ol(self):
         self.ol = 0
-
+        
     def start_strong(self, attrs):
         self.text.append("'''")
-
+        
     def end_strong(self):
         self.text.append("'''")
 
     def start_em(self, attrs):
         self.text.append("'''")
-
+        
     def end_em(self):
         self.text.append("'''")
-
+        
     def do_hr(self, attrs):
         self.text.append("----\n")
-
+        
     def parse_file(self, filename):
         text=file(filename).read()
         self.parse_string(text)
@@ -163,7 +163,7 @@ def convert(text):
     con.parse_string(text)
     text = con.output()
     return text
-
+            
 def run(win):
     text = win.document.GetText()
     text = convert(text)
@@ -172,3 +172,4 @@ def run(win):
     win.messagewindow.SetText(text)
 
 run(win)
+

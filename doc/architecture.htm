@@ -3,291 +3,9 @@
 <html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
-<meta name="generator" content="Docutils 0.4: http://docutils.sourceforge.net/" />
+<meta name="generator" content="Docutils 0.3.9: http://docutils.sourceforge.net/" />
 <title>NewEdit的体系结构设计</title>
-<style type="text/css">
-
-/*
-:Author: David Goodger
-:Contact: goodger@users.sourceforge.net
-:Date: $Date: 2005-12-18 01:56:14 +0100 (Sun, 18 Dec 2005) $
-:Revision: $Revision: 4224 $
-:Copyright: This stylesheet has been placed in the public domain.
-
-Default cascading style sheet for the HTML output of Docutils.
-
-See http://docutils.sf.net/docs/howto/html-stylesheets.html for how to
-customize this style sheet.
-*/
-
-/* used to remove borders from tables and images */
-.borderless, table.borderless td, table.borderless th {
-  border: 0 }
-
-table.borderless td, table.borderless th {
-  /* Override padding for "table.docutils td" with "! important".
-     The right padding separates the table cells. */
-  padding: 0 0.5em 0 0 ! important }
-
-.first {
-  /* Override more specific margin styles with "! important". */
-  margin-top: 0 ! important }
-
-.last, .with-subtitle {
-  margin-bottom: 0 ! important }
-
-.hidden {
-  display: none }
-
-a.toc-backref {
-  text-decoration: none ;
-  color: black }
-
-blockquote.epigraph {
-  margin: 2em 5em ; }
-
-dl.docutils dd {
-  margin-bottom: 0.5em }
-
-/* Uncomment (and remove this text!) to get bold-faced definition list terms
-dl.docutils dt {
-  font-weight: bold }
-*/
-
-div.abstract {
-  margin: 2em 5em }
-
-div.abstract p.topic-title {
-  font-weight: bold ;
-  text-align: center }
-
-div.admonition, div.attention, div.caution, div.danger, div.error,
-div.hint, div.important, div.note, div.tip, div.warning {
-  margin: 2em ;
-  border: medium outset ;
-  padding: 1em }
-
-div.admonition p.admonition-title, div.hint p.admonition-title,
-div.important p.admonition-title, div.note p.admonition-title,
-div.tip p.admonition-title {
-  font-weight: bold ;
-  font-family: sans-serif }
-
-div.attention p.admonition-title, div.caution p.admonition-title,
-div.danger p.admonition-title, div.error p.admonition-title,
-div.warning p.admonition-title {
-  color: red ;
-  font-weight: bold ;
-  font-family: sans-serif }
-
-/* Uncomment (and remove this text!) to get reduced vertical space in
-   compound paragraphs.
-div.compound .compound-first, div.compound .compound-middle {
-  margin-bottom: 0.5em }
-
-div.compound .compound-last, div.compound .compound-middle {
-  margin-top: 0.5em }
-*/
-
-div.dedication {
-  margin: 2em 5em ;
-  text-align: center ;
-  font-style: italic }
-
-div.dedication p.topic-title {
-  font-weight: bold ;
-  font-style: normal }
-
-div.figure {
-  margin-left: 2em ;
-  margin-right: 2em }
-
-div.footer, div.header {
-  clear: both;
-  font-size: smaller }
-
-div.line-block {
-  display: block ;
-  margin-top: 1em ;
-  margin-bottom: 1em }
-
-div.line-block div.line-block {
-  margin-top: 0 ;
-  margin-bottom: 0 ;
-  margin-left: 1.5em }
-
-div.sidebar {
-  margin-left: 1em ;
-  border: medium outset ;
-  padding: 1em ;
-  background-color: #ffffee ;
-  width: 40% ;
-  float: right ;
-  clear: right }
-
-div.sidebar p.rubric {
-  font-family: sans-serif ;
-  font-size: medium }
-
-div.system-messages {
-  margin: 5em }
-
-div.system-messages h1 {
-  color: red }
-
-div.system-message {
-  border: medium outset ;
-  padding: 1em }
-
-div.system-message p.system-message-title {
-  color: red ;
-  font-weight: bold }
-
-div.topic {
-  margin: 2em }
-
-h1.section-subtitle, h2.section-subtitle, h3.section-subtitle,
-h4.section-subtitle, h5.section-subtitle, h6.section-subtitle {
-  margin-top: 0.4em }
-
-h1.title {
-  text-align: center }
-
-h2.subtitle {
-  text-align: center }
-
-hr.docutils {
-  width: 75% }
-
-img.align-left {
-  clear: left }
-
-img.align-right {
-  clear: right }
-
-ol.simple, ul.simple {
-  margin-bottom: 1em }
-
-ol.arabic {
-  list-style: decimal }
-
-ol.loweralpha {
-  list-style: lower-alpha }
-
-ol.upperalpha {
-  list-style: upper-alpha }
-
-ol.lowerroman {
-  list-style: lower-roman }
-
-ol.upperroman {
-  list-style: upper-roman }
-
-p.attribution {
-  text-align: right ;
-  margin-left: 50% }
-
-p.caption {
-  font-style: italic }
-
-p.credits {
-  font-style: italic ;
-  font-size: smaller }
-
-p.label {
-  white-space: nowrap }
-
-p.rubric {
-  font-weight: bold ;
-  font-size: larger ;
-  color: maroon ;
-  text-align: center }
-
-p.sidebar-title {
-  font-family: sans-serif ;
-  font-weight: bold ;
-  font-size: larger }
-
-p.sidebar-subtitle {
-  font-family: sans-serif ;
-  font-weight: bold }
-
-p.topic-title {
-  font-weight: bold }
-
-pre.address {
-  margin-bottom: 0 ;
-  margin-top: 0 ;
-  font-family: serif ;
-  font-size: 100% }
-
-pre.literal-block, pre.doctest-block {
-  margin-left: 2em ;
-  margin-right: 2em ;
-  background-color: #eeeeee }
-
-span.classifier {
-  font-family: sans-serif ;
-  font-style: oblique }
-
-span.classifier-delimiter {
-  font-family: sans-serif ;
-  font-weight: bold }
-
-span.interpreted {
-  font-family: sans-serif }
-
-span.option {
-  white-space: nowrap }
-
-span.pre {
-  white-space: pre }
-
-span.problematic {
-  color: red }
-
-span.section-subtitle {
-  /* font-size relative to parent (h1..h6 element) */
-  font-size: 80% }
-
-table.citation {
-  border-left: solid 1px gray;
-  margin-left: 1px }
-
-table.docinfo {
-  margin: 2em 4em }
-
-table.docutils {
-  margin-top: 0.5em ;
-  margin-bottom: 0.5em }
-
-table.footnote {
-  border-left: solid 1px black;
-  margin-left: 1px }
-
-table.docutils td, table.docutils th,
-table.docinfo td, table.docinfo th {
-  padding-left: 0.5em ;
-  padding-right: 0.5em ;
-  vertical-align: top }
-
-table.docutils th.field-name, table.docinfo th.docinfo-name {
-  font-weight: bold ;
-  text-align: left ;
-  white-space: nowrap ;
-  padding-left: 0 }
-
-h1 tt.docutils, h2 tt.docutils, h3 tt.docutils,
-h4 tt.docutils, h5 tt.docutils, h6 tt.docutils {
-  font-size: 100% }
-
-tt.docutils {
-  background-color: #eeeeee }
-
-ul.auto-toc {
-  list-style-type: none }
-
-</style>
+<link rel="stylesheet" href="default.css" type="text/css" />
 </head>
 <body>
 <div class="document" id="newedit">
@@ -300,6 +18,8 @@ ul.auto-toc {
 </tr>
 <tr class="field"><th class="docinfo-name">联系:</th><td class="field-body"><a class="reference" href="mailto:limodou&#64;gmail.com">limodou&#64;gmail.com</a></td>
 </tr>
+<tr class="field"><th class="docinfo-name">日期:</th><td class="field-body">2005-10-11 12:58:28 +0800 </td>
+</tr>
 <tr class="field"><th class="docinfo-name">版本:</th><td class="field-body">architecture.txt 42 2005-09-28 05:19:21Z limodou</td>
 </tr>
 <tr class="field"><th class="docinfo-name">主页:</th><td class="field-body"><a class="reference" href="http://wiki.woodpecker.org.cn/moin/NewEdit">http://wiki.woodpecker.org.cn/moin/NewEdit</a></td>
@@ -310,8 +30,8 @@ ul.auto-toc {
 </tr>
 </tbody>
 </table>
-<div class="contents topic">
-<p class="topic-title first"><a id="id1" name="id1">目录</a></p>
+<div class="contents topic" id="id1">
+<p class="topic-title first"><a name="id1">目录</a></p>
 <ul class="auto-toc simple">
 <li><a class="reference" href="#id2" id="id18" name="id18">1&nbsp;&nbsp;&nbsp;引言</a><ul class="auto-toc">
 <li><a class="reference" href="#id3" id="id19" name="id19">1.1&nbsp;&nbsp;&nbsp;编写目的</a></li>
@@ -343,18 +63,18 @@ ul.auto-toc {
 </li>
 </ul>
 </div>
-<div class="section">
-<h1><a class="toc-backref" href="#id18" id="id2" name="id2">1&nbsp;&nbsp;&nbsp;引言</a></h1>
-<div class="section">
-<h2><a class="toc-backref" href="#id19" id="id3" name="id3">1.1&nbsp;&nbsp;&nbsp;编写目的</a></h2>
+<div class="section" id="id2">
+<h1><a class="toc-backref" href="#id18" name="id2">1&nbsp;&nbsp;&nbsp;引言</a></h1>
+<div class="section" id="id3">
+<h2><a class="toc-backref" href="#id19" name="id3">1.1&nbsp;&nbsp;&nbsp;编写目的</a></h2>
 <p>NewEdit 中使用了大量的 Mixins 技术，因此本文档的大量篇幅是来讲解 Mixins 技术。同时对整体软件功能设计
 和结构，以及一些技术关键点进行了讲解。</p>
 </div>
 </div>
-<div class="section">
-<h1><a class="toc-backref" href="#id20" id="id4" name="id4">2&nbsp;&nbsp;&nbsp;项目需求</a></h1>
-<div class="section">
-<h2><a class="toc-backref" href="#id21" id="id5" name="id5">2.1&nbsp;&nbsp;&nbsp;需求分析</a></h2>
+<div class="section" id="id4">
+<h1><a class="toc-backref" href="#id20" name="id4">2&nbsp;&nbsp;&nbsp;项目需求</a></h1>
+<div class="section" id="id5">
+<h2><a class="toc-backref" href="#id21" name="id5">2.1&nbsp;&nbsp;&nbsp;需求分析</a></h2>
 <p>本项目的简单需求是开发一个通用的编辑工具，要求结构灵活，方便功能的维护和扩展。因此在设计上采用了分布式的
 Mixins开发框架，在功能上要求实现基本编辑工具的全部功能，同时还要针对 Python 语言的特点实现相应的支持功能。</p>
 <blockquote>
@@ -367,10 +87,10 @@ Mixins开发框架，在功能上要求实现基本编辑工具的全部功能�
 </blockquote>
 </div>
 </div>
-<div class="section">
-<h1><a class="toc-backref" href="#id22" id="id6" name="id6">3&nbsp;&nbsp;&nbsp;设计说明</a></h1>
-<div class="section">
-<h2><a class="toc-backref" href="#id23" id="id7" name="id7">3.1&nbsp;&nbsp;&nbsp;概述</a></h2>
+<div class="section" id="id6">
+<h1><a class="toc-backref" href="#id22" name="id6">3&nbsp;&nbsp;&nbsp;设计说明</a></h1>
+<div class="section" id="id7">
+<h2><a class="toc-backref" href="#id23" name="id7">3.1&nbsp;&nbsp;&nbsp;概述</a></h2>
 <p>软件开发是一件很痛苦的事情，大量新的需求与现有软件结构之间的冲突是造成软件难以维护的一个主要原因。很
 多软件在刚开始时可能结构很好，便于扩充，但随着软件功能的丰富，代码的增加，可能会造成结构也变得不再适应
 新需求的发展。对于编辑器软件来说，这样的问题更为明显。那么NewEdit就是想在如何构造一种灵活的结构方面进
@@ -423,7 +143,7 @@ import wx
 
 class MainFrame(wx.Frame, Mixin):
     __mixinname__ = 'mainframe'
-
+    
     def __init__(self, parent, title='Test'):
         self.initmixin()
         wx.Frame.__init__(self, parent, -1, title=title)
@@ -442,7 +162,7 @@ def init(win):
     win.ID_CLICK = wx.NewId()
     win.btnClick = wx.Button(win, win.ID_CLICK, 'Click Me')
     wx.EVT_BUTTON(win.btnClick, win.ID_CLICK, win.OnClick)
-
+    
 def OnClick(win, event):
     print 'Click Me'
     win.Close()
@@ -455,7 +175,7 @@ OnClick事件处理函数。如果我们不使用Mixin扩展，那么这两个�
 import wx
 
 class MainFrame(wx.Frame):
-
+    
     def __init__(self, parent, title='Test'):
         wx.Frame.__init__(self, parent, -1, title=title)
         self.ID_CLICK = wx.NewId()
@@ -477,7 +197,7 @@ def init(win):
     win.btnClick = wx.Button(win, win.ID_CLICK, 'Click Me')
     wx.EVT_BUTTON(win.btnClick, win.ID_CLICK, win.OnClick)
 Mixin.setPlugin('mainframe', 'init', init)
-
+    
 def OnClick(win, event):
     print 'Click Me'
     win.Close()
@@ -492,7 +212,7 @@ import wx
 
 class MainFrame(wx.Frame, Mixin):
     __mixinname__ = 'mainframe'
-
+    
     def __init__(self, parent, title='Test'):
         self.initmixin()
         wx.Frame.__init__(self, parent, -1, title=title)
@@ -504,16 +224,16 @@ class MainFrame(wx.Frame, Mixin):
 <p>因此Mixin与Plugin的区别就是：Mixin实现类的新方法和属性，而Plugin实现调用点的具体处理。更简单地理解：Mixin是对未知的扩展，而
 Plugin是对已知的扩展。</p>
 </div>
-<div class="section">
-<h2><a class="toc-backref" href="#id24" id="id8" name="id8">3.2&nbsp;&nbsp;&nbsp;槽类</a></h2>
+<div class="section" id="id8">
+<h2><a class="toc-backref" href="#id24" name="id8">3.2&nbsp;&nbsp;&nbsp;槽类</a></h2>
 <p>一个槽类就是可以允许实现Mixin的类，也叫目标类。一个类成为槽类必须从Mixin类进行派生，需要定义一个__mixinname__的类属性，这个
 属性就是用来关联Mixin和Plugin与槽类的唯一标识。同时在槽类的构造函数__init__中需要调用self.initmixin()(它是Mixin类的一个方法)
 。这样，当创建槽类的实例时，就会使用此方法将所有与此槽类相关的Mixin和Plugin与槽类进行融合，从而生成最终的类。此过程是对类本身，
 而非实例本身，并且通过内部机制可以保证只执行一次。因此一个槽类只有在运行时，并且在创建了一个实例时才会是真正完整的。这一些的实现
 都要感谢Python本身的动态特性。</p>
 </div>
-<div class="section">
-<h2><a class="toc-backref" href="#id25" id="mixin" name="mixin">3.3&nbsp;&nbsp;&nbsp;Mixin部件</a></h2>
+<div class="section" id="mixin">
+<h2><a class="toc-backref" href="#id25" name="mixin">3.3&nbsp;&nbsp;&nbsp;Mixin部件</a></h2>
 <p>这里所讲的Mixin部件包括：将成为槽类的类成员方法的方法，和成为槽类的类属性的属性。每一个Mixin部件都要在实现完成后，调用Mixin
 模块的setMixin方法来声明此Mixin部件将与哪一个槽类名进行融合、融合后的名称、及部件的对象实例。方法声明为:</p>
 <pre class="literal-block">
@@ -558,13 +278,13 @@ Mixin.setMixin('mainframe', 'OnClick', OnClick)
 </ol>
 <p>Mixin部件实例：即为此模块中的OnClick对象</p>
 </div>
-<div class="section">
-<h2><a class="toc-backref" href="#id26" id="plugin" name="plugin">3.4&nbsp;&nbsp;&nbsp;Plugin部件</a></h2>
+<div class="section" id="plugin">
+<h2><a class="toc-backref" href="#id26" name="plugin">3.4&nbsp;&nbsp;&nbsp;Plugin部件</a></h2>
 <p>在实现Plugin部件之前，应该在相应的类中加入调用点，即增加：self.callplugin()或self.execplugin()的调用。然后再在Mixin文件中定
 义相应的Plugin部件。callplugin和execplugin是Mixin模块的方法，两者很象，区别就是callplugin不处理返回值，而execplugin会处理返
 回值。Plugin部件均为方法或函数，而且一个调用点可以对应多个Plugin部件。</p>
-<div class="section">
-<h3><a class="toc-backref" href="#id27" id="callplugin-execplugin" name="callplugin-execplugin">3.4.1&nbsp;&nbsp;&nbsp;callplugin与execplugin</a></h3>
+<div class="section" id="callplugin-execplugin">
+<h3><a class="toc-backref" href="#id27" name="callplugin-execplugin">3.4.1&nbsp;&nbsp;&nbsp;callplugin与execplugin</a></h3>
 <p>方法声明为:</p>
 <pre class="literal-block">
 callplugin('plugin_call_name', *args, **kwargs)
@@ -588,8 +308,8 @@ self.callplugin('init', self)
 某个处理执行后，不再允许其它的处理继续，则要返回一个真值。在它后面的所有函数都不会再进行处理了。这样优先级和返回值就要仔细地考虑与
 调整。</p>
 </div>
-<div class="section">
-<h3><a class="toc-backref" href="#id28" id="id9" name="id9">3.4.2&nbsp;&nbsp;&nbsp;Plugin部件的定义</a></h3>
+<div class="section" id="id9">
+<h3><a class="toc-backref" href="#id28" name="id9">3.4.2&nbsp;&nbsp;&nbsp;Plugin部件的定义</a></h3>
 <p>首先定义一个函数，它的参数与相应的调用点的参数一致。然后定义完毕后，调用setPlugin来声明此函数将与哪个槽类的，哪个调用点相绑定。
 setPlugin的函数声明为:</p>
 <pre class="literal-block">
@@ -614,8 +334,8 @@ setPlugin(slot_class_name, binding_name, instance, priority, nice)
 点是有执行顺序的，因此也决定了Plugin部件在大的范围上的执行顺序。</p>
 </div>
 </div>
-<div class="section">
-<h2><a class="toc-backref" href="#id29" id="id10" name="id10">3.5&nbsp;&nbsp;&nbsp;Mixin的处理过程</a></h2>
+<div class="section" id="id10">
+<h2><a class="toc-backref" href="#id29" name="id10">3.5&nbsp;&nbsp;&nbsp;Mixin的处理过程</a></h2>
 <p>当我们按要求完成Mixin和Plugin的开发后，如何才可以实现槽类与相应的部件之间的融合或绑定呢，并且这些过程是如何被处理的呢？</p>
 <ol class="arabic">
 <li><p class="first">导入Mixin或Plugin部件模块</p>
@@ -636,8 +356,8 @@ setPlugin方法。那么这些方法会将传入的属性、方法收集到Mixin
 </li>
 </ol>
 </div>
-<div class="section">
-<h2><a class="toc-backref" href="#id30" id="id11" name="id11">3.6&nbsp;&nbsp;&nbsp;几点说明</a></h2>
+<div class="section" id="id11">
+<h2><a class="toc-backref" href="#id30" name="id11">3.6&nbsp;&nbsp;&nbsp;几点说明</a></h2>
 <ol class="arabic">
 <li><p class="first">为什么使用字符串作为槽类名，而不直接使用类本身呢？</p>
 <p>因为在Python中，类本身也是一个对象。如果要使用必须要先将其导入。但这样就不易将系统设计得比较松耦合，并且修改不方便。</p>
@@ -645,10 +365,10 @@ setPlugin方法。那么这些方法会将传入的属性、方法收集到Mixin
 </ol>
 </div>
 </div>
-<div class="section">
-<h1><a class="toc-backref" href="#id31" id="id12" name="id12">4&nbsp;&nbsp;&nbsp;NewEdit中的具体实现</a></h1>
-<div class="section">
-<h2><a class="toc-backref" href="#id32" id="id13" name="id13">4.1&nbsp;&nbsp;&nbsp;目录结构</a></h2>
+<div class="section" id="id12">
+<h1><a class="toc-backref" href="#id31" name="id12">4&nbsp;&nbsp;&nbsp;NewEdit中的具体实现</a></h1>
+<div class="section" id="id13">
+<h2><a class="toc-backref" href="#id32" name="id13">4.1&nbsp;&nbsp;&nbsp;目录结构</a></h2>
 <p>其本目录为:</p>
 <pre class="literal-block">
 src\
@@ -672,8 +392,8 @@ src\
 <p>在NewEdit与插件有关的内容就是mixins目录，plugins目录(不是必需)，modules/Mixin模块，NewEdit.py。其中NewEdit.py为启动脚本，用于处理
 命令行参数，一些环境的设定，导入Mixin和Plugin部件，创建应用实例。</p>
 </div>
-<div class="section">
-<h2><a class="toc-backref" href="#id33" id="id14" name="id14">4.2&nbsp;&nbsp;&nbsp;Mixin启动说明</a></h2>
+<div class="section" id="id14">
+<h2><a class="toc-backref" href="#id33" name="id14">4.2&nbsp;&nbsp;&nbsp;Mixin启动说明</a></h2>
 <p>下面是从NewEdit.py中取出的一个代码片段，它完成Mixin的初始化，及生成整个应用。</p>
 <p>　:</p>
 <pre class="literal-block">
@@ -692,7 +412,7 @@ class NewEditApp(wx.App, Mixin.Mixin):
         self.defaultencoding = encoding
         self.ddeflag = ddeflag
         self.skipsessionfile = skipsessionfile
-
+        
         return self.execplugin('init', self, files)
 
 import mixins
@@ -735,16 +455,16 @@ import wx
 
 def init(app, filenames):
     from MainFrame import MainFrame
-
+    
     app.frame = MainFrame(app, filenames)
     if app.frame:
         app.frame.workpath = app.workpath
         app.frame.Show(True)
         app.SetTopWindow(app.frame)
-
+        
         app.frame.afterinit()
         app.frame.editctrl.openPage()
-
+        
         return True, True
     else:
         return True, False
@@ -756,8 +476,8 @@ NewEdit的多文档编辑的基础。这样，NewEdit就一步步地生成了。
 <p>理解NewEdit，首先要理解Mixin和Plugin的机制以及生成方法。再有就是了解NewEdit中的各种槽类，有哪些调用点，这些槽类是如何关联的，也就是熟
 悉各种功能扩展点的作用、位置，从而可以实现你自已的Mixin部件。</p>
 </div>
-<div class="section">
-<h2><a class="toc-backref" href="#id34" id="id15" name="id15">4.3&nbsp;&nbsp;&nbsp;了解各种槽类</a></h2>
+<div class="section" id="id15">
+<h2><a class="toc-backref" href="#id34" name="id15">4.3&nbsp;&nbsp;&nbsp;了解各种槽类</a></h2>
 <p>在每次运行NewEdit都会在NewEdit的目录下生成一个debug.txt的文件，它是一些辅助信息，包括了所有Mixin和Plugin部件的信息，按槽类名进行分类，
 这是一个示例:</p>
 <pre class="literal-block">
@@ -787,10 +507,10 @@ NewEdit的多文档编辑的基础。这样，NewEdit就一步步地生成了。
 调用点进行分类，分个调用点对应的Plugin部件按优先级进行排序。这样，通过debug.txt，你可以了解某个槽类都实现了哪些Mixin和Plugin部件，并
 了解都是在哪里定义的，名字叫什么。</p>
 </div>
-<div class="section">
-<h2><a class="toc-backref" href="#id35" id="id16" name="id16">4.4&nbsp;&nbsp;&nbsp;窗口结构示例</a></h2>
+<div class="section" id="id16">
+<h2><a class="toc-backref" href="#id35" name="id16">4.4&nbsp;&nbsp;&nbsp;窗口结构示例</a></h2>
 <p>这里有一个示意图，表示基本的窗口框架。</p>
-<img alt="classes.png" src="classes.png" />
+<div class="image"><img alt="classes.png" src="classes.png" /></div>
 <p>上图只是一个示例，下面简单介绍一下每个窗口类:</p>
 <dl class="docutils">
 <dt>mainframe</dt>

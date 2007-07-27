@@ -1,5 +1,5 @@
 #---------------------------------------------------
-#                   UliPad script
+#                   NewEdit script
 # Author  :limodou
 # Date    :2005/03/29
 # Version :1.0
@@ -9,7 +9,7 @@
 #---------------------------------------------------
 def run(win):
     import common
-
+    
     delimeter = ';'
     dlg = wx.FileDialog(win, tr("Open Dict File"), "", "", "All files(*.*)|*.*", wx.OPEN|wx.HIDE_READONLY)
     if dlg.ShowModal() == wx.ID_OK:

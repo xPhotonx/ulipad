@@ -28,12 +28,12 @@
     <object class="wxButton" name="ID_OK">
       <label>确定</label>
       <pos>45, 70</pos>
-      <size>60, -1</size>
+      <size>60, 22</size>
     </object>
     <object class="wxButton" name="ID_CANCEL">
       <label>取消</label>
       <pos>120, 70</pos>
-      <size>60, -1</size>
+      <size>60, 22</size>
     </object>
     <object class="wxStaticLine">
       <pos>5, 60</pos>

@@ -1,11 +1,14 @@
+from modules import Mixin
 import wx
+import sys
 import pySonic
 import time
 import threading
+import os
 import VolumeDialog
 import locale
+from modules.Debug import error
 import images
-from modules import Mixin
 
 def afterinit(win):
     win.m3u=None
@@ -17,11 +20,14 @@ def afterinit(win):
     win.flag_pause = False
     win.playing = None
     win.playingid=None
-
+    
     wx.EVT_UPDATE_UI(win, win.IDM_MUSIC_PLAY, win.OnUpdateUI)
     wx.EVT_UPDATE_UI(win, win.IDM_MUSIC_STOP, win.OnUpdateUI)
     wx.EVT_UPDATE_UI(win, win.IDM_MUSIC_PAUSE, win.OnUpdateUI)
 Mixin.setPlugin('mainframe', 'afterinit', afterinit)
+
+menulist = [ (None, [(891, 'IDM_MUSIC', tr('Music'), wx.ITEM_NORMAL, None, ''),]),]
+Mixin.setMixin('mainframe', 'menulist', menulist)
 
 def afterclosewindow(win):
     if win.src:
@@ -34,26 +40,28 @@ def afterclosewindow(win):
             pass
 Mixin.setPlugin('mainframe', 'afterclosewindow', afterclosewindow)
 
-menulist = [(None,
-        [
-            (850, 'IDM_MUSIC', tr('Music'), wx.ITEM_NORMAL, None, ''),
-        ]),
-        ('IDM_MUSIC',
-        [
-            (210, 'IDM_MUSIC_PLAY', tr('Music Play'),wx.ITEM_NORMAL, 'OnMusicPlay', tr('Music Open Window.')),
-            (211, 'IDM_MUSIC_STOP', tr('Music Stop'),wx.ITEM_NORMAL, 'OnMusicStop', tr('Music Stop.')),
-            (212, 'IDM_MUSIC_PAUSE', tr('Music Pause'),wx.ITEM_NORMAL, 'OnMusicPause', tr('Music Pause.')),
-            (212, 'IDM_MUSIC_VOLUME', tr('Music Volume'),wx.ITEM_NORMAL, 'OnMusicVolume', tr('Music Volume.')),
-        ]),
-    ]
+menulist = [('IDM_MUSIC',
+                [
+                    (210, 'IDM_MUSIC_PLAY', tr('Music Play'),wx.ITEM_NORMAL, 'OnMusicPlay', tr('Music Open Window.'))
+                ]),('IDM_MUSIC',
+                [
+                    (211, 'IDM_MUSIC_STOP', tr('Music Stop'),wx.ITEM_NORMAL, 'OnMusicStop', tr('Music Stop.'))
+                ]),('IDM_MUSIC',
+                [
+                    (212, 'IDM_MUSIC_PAUSE', tr('Music Pause'),wx.ITEM_NORMAL, 'OnMusicPause', tr('Music Pause.'))
+                ]),('IDM_MUSIC',
+                [
+                    (212, 'IDM_MUSIC_VOLUME', tr('Music Volume'),wx.ITEM_NORMAL, 'OnMusicVolume', tr('Music Volume.'))
+                ]),
+            ]
 Mixin.setMixin('mainframe', 'menulist', menulist)
 
-toollist = [
-    (2201, 'musicplay'),
-    (2202, 'musicstop'),
-    (2203, 'musicpause'),
-    (2204, 'musicvolume'),
-    (2300,'|'),
+toollist = [ 
+	(2201, 'musicplay'),
+        (2202, 'musicstop'),
+        (2203, 'musicpause'),
+        (2204, 'musicvolume'),
+        (2300,'|'),
 ]
 Mixin.setMixin('mainframe', 'toollist', toollist)
 
@@ -84,6 +92,9 @@ def OnMusicPlay(win, event):
         win.playing=win.m3u[win.selectedid]
     else:
         return
+    filename=win.playing['Path']
+    encoding = locale.getdefaultlocale()[1]
+    filename = filename.encode(encoding)
     win.isloop=True
     win.flag_pause=False
     threading.Thread(target=playmusic, args=(win,)).start()
@@ -127,10 +138,7 @@ def playmusic(win):
             pass
         try:
             win.src=pySonic.Source()
-            filename=win.playing['Path']
-            encoding = locale.getdefaultlocale()[1]
-            filename = filename.encode(encoding)
-            win.src.Sound = pySonic.FileStream(filename, 0)
+            win.src.Sound = pySonic.FileStream(win.playing['Path'], 0)
             win.src.Play()
         except:
             dlg = wx.MessageDialog(win, tr('Can\'t play!'),
@@ -154,26 +162,26 @@ def playmusic(win):
             win.playingid=win.playingid+1
         time.sleep(0.2)
 
-menulist = [('IDM_MUSIC',
-    [
-        (209, 'IDM_MUSIC_LIST_OPEN', tr('Open Music List Window'), wx.ITEM_NORMAL, 'OnOpenMusicList', tr('Open Music List Window.')),
-    ]),
+menulist = [ 	('IDM_MUSIC',
+	[
+		(209, 'IDM_MUSIC_LIST_OPEN', tr('Open Music List Window'), wx.ITEM_NORMAL, 'OnOpenMusicList', tr('Open Music List Window.')),
+	]),
 ]
 Mixin.setMixin('mainframe', 'menulist', menulist)
 
-popmenulist = [(None,
-    [
-        (950, 'IDPM_MUSIC_WINDOW', tr('Open Music List Window'), wx.ITEM_NORMAL, 'OnOpenMusicWindow', tr('Open Music List Window.')),
-    ]),
+popmenulist = [ (None,
+	[
+		(950, 'IDPM_MUSIC_WINDOW', tr('Open Music List Window'), wx.ITEM_NORMAL, 'OnOpenMusicWindow', tr('Open Music List Window.')),
+	]),
 ]
 Mixin.setMixin('notebook', 'popmenulist', popmenulist)
 
-def createMusicListWindow(win):
+def createMusicListWindow(win):    
     page = win.panel.getPage(tr('MusicList'))
     if not page:
         from MusicListManage import MusicListManage
-        page = MusicListManage(win.panel.createNotebook('bottom'), win)
-        win.panel.addPage('bottom', page, tr('MusicList'))
+        page = MusicListManage(win.panel.createNotebook('left'), win)
+        win.panel.addPage('left', page, tr('MusicList'))
     win.musiclist = page
 Mixin.setMixin('mainframe', 'createMusicListWindow', createMusicListWindow)
 

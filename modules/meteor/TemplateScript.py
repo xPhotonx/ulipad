@@ -1,7 +1,7 @@
 #   Programmer: limodou
 #   E-mail:     limodou@gmail.com
 #
-#   Copyleft 2006 limodou
+#   Copyleft 2005 limodou
 #
 #   Distributed under the terms of the GPL (GNU Public License)
 #
@@ -33,37 +33,20 @@ __all__ = ['TemplateScript']
 class TemplateScript:
     def __init__(self):
         self.template = Template.Template()
-
-    def run(self, script, vars=None, runtemplate=False):
+        
+    def run(self, script, vars=None):
         if not vars:
             vars = {}
-
-        if isinstance(script, (str, unicode)):
-            f = file(script)
-        else:
-            f = script
-
-        self.oldworkpath = os.getcwd().replace('\\', '/')
-
-        vars['_workpath'] = self.oldworkpath
-
-        if runtemplate:
-            from StringIO import StringIO
-            buf = StringIO()
-            template = Template.Template()
-            template.load(f, 'text')
-            buf.write(template.value(values=vars))
-            buf.seek(0)
-            f = buf
-
+            
+        oldworkpath = os.getcwd()
         try:
-            lines = csv.reader(f, delimiter=' ')
+            lines = csv.reader(script, delimiter=' ')
             for v in lines:
                 if v:
                     self._do(vars, *v)
         finally:
-            os.chdir(self.oldworkpath)
-
+            os.chdir(oldworkpath)
+            
     def _do(self, vars, *args):
         para = args
         cmd = para[0].lower()
@@ -88,14 +71,12 @@ class TemplateScript:
         elif cmd == 'run':
             self.template.load(para[1], para[2])
             file(para[4], 'wb').write(self.template.value(para[3], vars))
-        elif cmd == 'shell':
-            os.system(' '.join(args[1:]))
 
 def my_copytree(src, dst, symlinks=False):
     """Recursively copy a directory tree using copy2().
 
     Modified from shutil.copytree
-
+    
     """
     names = os.listdir(src)
     if not os.path.exists(dst):
@@ -133,7 +114,7 @@ if __name__ == "__main__":
     }
 
     import StringIO
-
+    
     buf = StringIO.StringIO("""mkdir src/doc
 mkdir build
 copy dict.xml src/doc

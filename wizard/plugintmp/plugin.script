@@ -1,3 +1,0 @@
-mkdir <#neweditpath#>/plugins/<#pin_name#>
-run template_pin.py python "text" <#neweditpath#>/plugins/<#pin_name#>/<#pin_name#>.pin
-run template__init__.py python "text" <#neweditpath#>/plugins/<#pin_name#>/__init__.py

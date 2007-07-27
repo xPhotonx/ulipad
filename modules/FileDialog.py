@@ -8,11 +8,11 @@ def openfiledlg(title, message, defaultdir='', filefilter='*.*'):
         ('static', 'message', message, '', None),
         ('openfile', 'file', '', '', None),
     ]
-    from EasyGuider import EasyCommander
+    from EasyGui import EasyCommander
     easy = EasyCommander.EasyCommander(easyfile=obj)
     try:
         if easy.run():
-            f = easy.GetValue()['file']
+            f = easy.GetValue()['file'] 
             return f
         else:
             return None
@@ -26,11 +26,11 @@ def savefiledlg(title, message, defaultdir='', filefilter='*.*'):
         ('static', 'message', message, '', None),
         ('savefile', 'file', '', '', None),
     ]
-    from EasyGuider import EasyCommander
+    from EasyGui import EasyCommander
     easy = EasyCommander.EasyCommander(easyfile=obj)
     try:
         if easy.run():
-            f = easy.GetValue()['file']
+            f = easy.GetValue()['file'] 
             return f
         else:
             return None

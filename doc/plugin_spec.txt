@@ -4,7 +4,9 @@
 
 :作者: limodou
 :联系: limodou@gmail.com
-:主页: http://wiki.woodpecker.org.cn/moin/UliPad
+:日期: $Date: 2005-10-16 21:12:05 +0800 (Sun, 16 Oct 2005) $
+:版本: $Id: plugin_spec.txt 42 2005-09-28 05:19:21Z limodou $
+:主页: http://wiki.woodpecker.org.cn/moin/NewEdit
 :BLOG: http://www.donews.net/limodou
 :版权: GPL
 

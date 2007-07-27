@@ -29,3 +29,4 @@ def getBlogBitmap():
 def getBlogImage():
     stream = cStringIO.StringIO(getBlogData())
     return ImageFromStream(stream)
+

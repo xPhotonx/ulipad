@@ -1,7 +1,7 @@
 #   Programmer: limodou
 #   E-mail:     limodou@gmail.coms
 #
-#   Copyleft 2006 limodou
+#   Copyleft 2004 limodou
 #
 #   Distributed under the terms of the GPL (GNU Public License)
 #

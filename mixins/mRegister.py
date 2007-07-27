@@ -1,11 +1,11 @@
-#   Programmer: limodou
-#   E-mail:     limodou@gmail.com
+#	Programmer:	limodou
+#	E-mail:		chatme@263.net
 #
-#   Copyleft 2006 limodou
+#	Copyleft 2004 limodou
 #
-#   Distributed under the terms of the GPL (GNU Public License)
+#	Distributed under the terms of the GPL (GNU Public License)
 #
-#   UliPad is free software; you can redistribute it and/or modify
+#   NewEdit is free software; you can redistribute it and/or modify
 #   it under the terms of the GNU General Public License as published by
 #   the Free Software Foundation; either version 2 of the License, or
 #   (at your option) any later version.
@@ -19,54 +19,51 @@
 #   along with this program; if not, write to the Free Software
 #   Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 #
-#   $Id: mRegister.py 1633 2006-10-21 08:31:55Z limodou $
+#	$Id: mRegister.py 93 2005-10-11 02:51:02Z limodou $
 
 import wx
-import os
-import sys
-from modules import Mixin
-from modules.Debug import error
-from modules import common
-
 
 if wx.Platform == '__WXMSW__':
-    import _winreg
+	from modules import Mixin
+	from modules.Debug import error
+	import os.path
+	import sys
 
-    def add_mainframe_menu(menulist):
-        menulist.extend([ ('IDM_TOOL',
-            [
-                (890, '-', '', wx.ITEM_SEPARATOR, '', ''),
-                (900, 'IDM_TOOL_REGISTER', tr('Register to Explore'), wx.ITEM_NORMAL, 'OnToolRegister', tr('Registers to explore context menu.')),
-                (910, 'IDM_TOOL_UNREGISTER', tr('Unregister from Explore'), wx.ITEM_NORMAL, 'OnToolUnRegister', tr('Unregisters from explore context menu.')),
-            ]),
-        ])
-    Mixin.setPlugin('mainframe', 'add_menu', add_mainframe_menu)
+	import _winreg
 
-    def OnToolRegister(win, event):
-        try:
-            key = _winreg.OpenKey(_winreg.HKEY_CLASSES_ROOT, '*', _winreg.KEY_ALL_ACCESS)
-            filename = os.path.basename(sys.argv[0])
-            f, ext = os.path.splitext(filename)
-            if ext == '.exe':
-                command = '"%s" %%L' % os.path.normpath(common.uni_work_file(filename))
-            else:
-                path = os.path.normpath(common.uni_work_file('%s.pyw' % f))
-                execute = sys.executable.replace('python.exe', 'pythonw.exe')
-                command = '"%s" "%s" "%%L"' % (execute, path)
-            _winreg.SetValue(key, 'shell\\UliPad\\command', _winreg.REG_SZ, command)
-            common.note(tr('Successful!'))
-        except:
-            error.traceback()
-            wx.MessageDialog(win, tr('Register to explore context menu failed!'), tr("Error"), wx.OK | wx.ICON_INFORMATION).ShowModal()
-    Mixin.setMixin('mainframe', 'OnToolRegister', OnToolRegister)
+	menulist = [ ('IDM_OPTION',
+	[
+		(120, 'IDM_OPTION_REGISTER', tr('Register to Explore'), wx.ITEM_NORMAL, 'OnOptionRegister', tr('Registers to explore context menu.')),
+		(130, 'IDM_OPTION_UNREGISTER', tr('Unregister from Explore'), wx.ITEM_NORMAL, 'OnOptionUnRegister', tr('Unregisters from explore context menu.')),
+	]),
+	]
+	Mixin.setMixin('mainframe', 'menulist', menulist)
 
-    def OnToolUnRegister(win, event):
-        try:
-            key = _winreg.OpenKey(_winreg.HKEY_CLASSES_ROOT, '*\\shell', _winreg.KEY_ALL_ACCESS)
-            _winreg.DeleteKey(key, 'UliPad\\command')
-            _winreg.DeleteKey(key, 'UliPad')
-            common.note(tr('Successful!'))
-        except:
-            error.traceback()
-            wx.MessageDialog(win, tr('Unregister from explore context menu failed!'), tr("Error"), wx.OK | wx.ICON_INFORMATION).ShowModal()
-    Mixin.setMixin('mainframe', 'OnToolUnRegister', OnToolUnRegister)
+	def OnOptionRegister(win, event):
+		try:
+			key = _winreg.OpenKey(_winreg.HKEY_CLASSES_ROOT, '*\\shell', _winreg.KEY_ALL_ACCESS)
+			filename = os.path.basename(sys.argv[0])
+			f, ext = os.path.splitext(filename)
+			if ext == '.exe':
+				command = '"%s" %%L' % os.path.normpath(os.path.join(win.app.workpath, filename))
+			else:
+				path = os.path.normpath(os.path.join(win.app.workpath, '%s.pyw' % f))
+				command = '"pythonw.exe" "%s" "%%L"' % path
+			_winreg.SetValue(key, 'NewEdit\\command', _winreg.REG_SZ, command)
+			wx.MessageDialog(win, tr('Successful!'), tr("Message"), wx.OK | wx.ICON_INFORMATION).ShowModal()
+		except:
+			error.traceback()
+			wx.MessageDialog(win, tr('Register to explore context menu failed!'), tr("Error"), wx.OK | wx.ICON_INFORMATION).ShowModal()
+	Mixin.setMixin('mainframe', 'OnOptionRegister', OnOptionRegister)
+
+	def OnOptionUnRegister(win, event):
+		try:
+			key = _winreg.OpenKey(_winreg.HKEY_CLASSES_ROOT, '*\\shell', _winreg.KEY_ALL_ACCESS)
+			_winreg.DeleteKey(key, 'NewEdit\\command')
+			_winreg.DeleteKey(key, 'NewEdit')
+			wx.MessageDialog(win, tr('Successful!'), tr("Message"), wx.OK | wx.ICON_INFORMATION).ShowModal()
+		except:
+			error.traceback()
+			wx.MessageDialog(win, tr('Unregister from explore context menu failed!'), tr("Error"), wx.OK | wx.ICON_INFORMATION).ShowModal()
+	Mixin.setMixin('mainframe', 'OnOptionUnRegister', OnOptionUnRegister)
+

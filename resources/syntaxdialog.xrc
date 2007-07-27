@@ -87,7 +87,7 @@
     <object class="wxButton" name="ID_FORE">
       <label>Select Color</label>
       <pos>315, 118</pos>
-      <size>90,-1</size>
+      <size>80, 20</size>
     </object>
     <object class="wxCheckBox" name="ID_CHK_BACK">
       <label></label>
@@ -104,7 +104,7 @@
     <object class="wxButton" name="ID_BACK">
       <label>Select Color</label>
       <pos>315, 143</pos>
-      <size>90, -1</size>
+      <size>80, 20</size>
     </object>
     <object class="wxCheckBox" name="ID_BOLD">
       <label>Bold</label>
@@ -118,7 +118,7 @@
       <label>Underline</label>
       <pos>315, 171</pos>
     </object>
-    <size>410, 420</size>
+    <size>408, 420</size>
     <object class="wxStaticText">
       <label>Preview:</label>
       <pos>5, 195</pos>
@@ -131,17 +131,17 @@
       <label>Ok</label>
       <default>1</default>
       <pos>150,360</pos>
-      <size>60,-1</size>
+      <size>60,20</size>
     </object>
     <object class="wxButton" name="ID_CANCEL">
       <label>Cancel</label>
       <pos>210,360</pos>
-      <size>60,-1</size>
+      <size>60,20</size>
     </object>
     <object class="wxButton" name="ID_APPLY">
       <label>Apply</label>
       <pos>270,360</pos>
-      <size>60,-1</size>
+      <size>60,20</size>
     </object>
     <style>wxDEFAULT_DIALOG_STYLE</style>
   </object>

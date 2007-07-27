@@ -1,7 +1,7 @@
 #   Programmer: limodou
 #   E-mail:     limodou@gmail.coms
 #
-#   Copyleft 2006 limodou
+#   Copyleft 2004 limodou
 #
 #   Distributed under the terms of the GPL (GNU Public License)
 #
@@ -43,13 +43,13 @@ popmenulist = [ (None,
 Mixin.setMixin('notebook', 'popmenulist', popmenulist)
 
 toollist = [
-        (550, 'wizard'),
+	(550, 'wizard'),
 ]
 Mixin.setMixin('mainframe', 'toollist', toollist)
 
 #order, IDname, imagefile, short text, long text, func
 toolbaritems = {
-        'wizard':(wx.ITEM_NORMAL, 'IDM_WINDOW_WIZARD', images.getWizardBitmap(), tr('wizard'), tr('Opens wizard window.'), 'OnWindowWizard'),
+	'wizard':(wx.ITEM_NORMAL, 'IDM_WINDOW_WIZARD', images.getWizardBitmap(), tr('wizard'), tr('Opens wizard window.'), 'OnWindowWizard'),
 }
 Mixin.setMixin('mainframe', 'toolbaritems', toolbaritems)
 

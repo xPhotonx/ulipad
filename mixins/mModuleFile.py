@@ -1,11 +1,11 @@
 #   Programmer: limodou
-#   E-mail:     limodou@gmail.com
+#   E-mail:     chatme@263.net
 #
-#   Copyleft 2006 limodou
+#   Copyleft 2004 limodou
 #
 #   Distributed under the terms of the GPL (GNU Public License)
 #
-#   UliPad is free software; you can redistribute it and/or modify
+#   NewEdit is free software; you can redistribute it and/or modify
 #   it under the terms of the GNU General Public License as published by
 #   the Free Software Foundation; either version 2 of the License, or
 #   (at your option) any later version.
@@ -19,32 +19,31 @@
 #   along with this program; if not, write to the Free Software
 #   Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 #
-#   $Id: mModuleFile.py 1548 2006-10-03 06:57:31Z limodou $
+#   $Id: mModuleFile.py 93 2005-10-11 02:51:02Z limodou $
 
 from modules import Mixin
 import wx
 import wx.stc
 import os.path
+from modules import common
 
-def add_py_menu(menulist):
-    menulist.extend([
-        ('IDM_PYTHON', #parent menu id
-        [
-            (115, '', '-', wx.ITEM_SEPARATOR, None, ''),
-            (116, 'IDM_VIEW_OPEN_MODULE', tr('Open Module File') + '\tF6', wx.ITEM_NORMAL, 'OnViewOpenModuleFile', tr('Open current word as Python module file')),
-        ]),
-    ])
-Mixin.setPlugin('pythonfiletype', 'add_menu', add_py_menu)
+menulist = [
+    ('IDM_VIEW', #parent menu id
+    [
+        (200, '', '-', wx.ITEM_SEPARATOR, None, ''),
+        (210, 'IDM_VIEW_OPEN_MODULE', tr('Open Module File\tE=F6'), wx.ITEM_NORMAL, 'OnViewOpenModuleFile', tr('Open current word as Python module file')),
+    ]),
+]
+Mixin.setMixin('mainframe', 'menulist', menulist)
 
-def other_popup_menu(editor, projectname, menus):
-    if editor.languagename == 'python' :
-        menus.extend([(None, #parent menu id
-            [
-                (10, 'IDPM_OPEN_MODULE', tr('Open Module File') + '\tF6', wx.ITEM_NORMAL, 'OnOpenModuleFile', tr('Open current word as Python module file')),
-                (20, '', '-', wx.ITEM_SEPARATOR, None, ''),
-            ]),
-        ])
-Mixin.setPlugin('editor', 'other_popup_menu', other_popup_menu)
+popmenulist = [
+    (None, #parent menu id
+    [
+        (165, 'IDPM_OPEN_MODULE', tr('Open Module File\tF6'), wx.ITEM_NORMAL, 'OnOpenModuleFile', tr('Open current word as Python module file')),
+        (166, '', '-', wx.ITEM_SEPARATOR, None, ''),
+    ]),
+]
+Mixin.setMixin('editor', 'popmenulist', popmenulist)
 
 def OnViewOpenModuleFile(win, event):
     openmodulefile(win, getword(win))
@@ -72,26 +71,44 @@ def my_import(name):
     return mod
 
 def getword(mainframe):
-    doc = mainframe.document
-    if doc.GetSelectedText():
-        return doc.GetSelectedText()
-    pos = doc.GetCurrentPos()
-    start = doc.WordStartPosition(pos, True)
-    end = doc.WordEndPosition(pos, True)
+    pos = mainframe.document.GetCurrentPos()
+    start = mainframe.document.WordStartPosition(pos, True)
+    end = mainframe.document.WordEndPosition(pos, True)
     if end > start:
         i = start - 1
         while i >= 0:
-            if doc.getChar(i) in mainframe.getWordChars() + '.':
+            if mainframe.document.getChar(i) in mainframe.getWordChars() + '.':
                 start -= 1
                 i -= 1
             else:
                 break
         i = end
-        length = doc.GetLength()
+        length = mainframe.document.GetLength()
         while i < length:
-            if doc.getChar(i) in mainframe.getWordChars()+ '.':
+            if mainframe.document.getChar(i) in mainframe.getWordChars()+ '.':
                 end += 1
                 i += 1
             else:
                 break
-    return doc.GetTextRange(start, end)
+    return mainframe.document.GetTextRange(start, end)
+
+def init(win):
+	wx.EVT_UPDATE_UI(win, win.IDM_VIEW_OPEN_MODULE, win.OnUpdateUI)
+Mixin.setPlugin('mainframe', 'init', init)
+
+def OnUpdateUI(win, event):
+	eid = event.GetId()
+	if eid == win.IDM_VIEW_OPEN_MODULE:
+		event.Enable(win.document.languagename == 'python' and win.document.documenttype == 'edit')
+Mixin.setPlugin('mainframe', 'on_update_ui', OnUpdateUI)
+
+def init(win):
+	wx.EVT_UPDATE_UI(win, win.IDPM_OPEN_MODULE, win.OnUpdateUI)
+Mixin.setPlugin('editor', 'init', init)
+
+def OnUpdateUI(win, event):
+	eid = event.GetId()
+	if eid == win.IDPM_OPEN_MODULE:
+		event.Enable(win.languagename == 'python' and win.documenttype == 'edit')
+Mixin.setPlugin('editor', 'on_update_ui', OnUpdateUI)
+

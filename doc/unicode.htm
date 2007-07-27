@@ -1,0 +1,70 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<meta name="generator" content="Docutils 0.3.9: http://docutils.sourceforge.net/" />
+<title>wxStyledTextCtrl中Unicode的处理问题</title>
+<link rel="stylesheet" href="default.css" type="text/css" />
+</head>
+<body>
+<div class="document" id="wxstyledtextctrl-unicode">
+<h1 class="title">wxStyledTextCtrl中Unicode的处理问题</h1>
+<table class="docinfo" frame="void" rules="none">
+<col class="docinfo-name" />
+<col class="docinfo-content" />
+<tbody valign="top">
+<tr class="field"><th class="docinfo-name">作者:</th><td class="field-body">limodou</td>
+</tr>
+<tr class="field"><th class="docinfo-name">联系:</th><td class="field-body"><a class="reference" href="mailto:limodou&#64;gmail.com">limodou&#64;gmail.com</a></td>
+</tr>
+<tr class="field"><th class="docinfo-name">日期:</th><td class="field-body">2005-10-11 12:58:28 +0800 </td>
+</tr>
+<tr class="field"><th class="docinfo-name">版本:</th><td class="field-body">unicode.txt 42 2005-09-28 05:19:21Z limodou</td>
+</tr>
+<tr class="field"><th class="docinfo-name">主页:</th><td class="field-body"><a class="reference" href="http://wiki.woodpecker.org.cn/moin/NewEdit">http://wiki.woodpecker.org.cn/moin/NewEdit</a></td>
+</tr>
+<tr class="field"><th class="docinfo-name">BLOG:</th><td class="field-body"><a class="reference" href="http://www.donews.net/limodou">http://www.donews.net/limodou</a></td>
+</tr>
+<tr class="field"><th class="docinfo-name">版权:</th><td class="field-body">GPL</td>
+</tr>
+</tbody>
+</table>
+<p>NewEdit 现在应该已经可以很好的处理Unicode了，这其中也有一些波折。</p>
+<p>wxPython 现在一个版本号上有两个发布包，一个支持Unicode，另一个不支持。支持Unicode的全部都是Unicode。原来
+NewEdit对Unicode的支持仅限于打开文件和保存文件时可以正确地进行码制转换（因为这时中文的处理已经正常了），以
+为这样就可以了。而且我的源码中没有使用一个汉字，主要想与国际接轨嘛，现在对NewEdit的开发已经全部使用自已进行
+了，因此竟然也没有发现什么问题。但当我打开ChangeLog.txt(用中文写的)时，想试一试其中的部分功能，这才发现，
+中文处理有问题，字符串的长度与位置全不对了。于是赶紧找原因。主要出错原因如下：</p>
+<dl class="docutils">
+<dt>GetText() </dt>
+<dd>这个函数返回编辑器的全部文本，但在Unicode版本下它返回的是Unicode，这样一个汉字的长度为1，而不是2。因此使
+用len()函数得到的长度是Unicode字符的个数，而不是真正的文本的长度。</dd>
+<dt>GetCurrentPos() </dt>
+<dd>取得当前插入点位置的函数(还包括其它一些与位置有关的函数)不是在GetText()中的偏移量，而是实际字节的偏移量，
+我发现一个汉字要占3字节。因此，如果插入点放在第一个汉字后面，它的值不是1，而是3。</dd>
+<dt>GetLength() </dt>
+<dd>返回的不是Unicode的字符个数，而是实际字节的个数。</dd>
+</dl>
+<p>这下问题大了，有些情况下，我是先取到整个编辑器的全部文本，再使用 Python 的字符处理得到相应的位置值，再对编
+辑器进行相应的处理。通过上面可以得知，我得到的全部的文本是Unicode，这样我处理时并不会按我的意图进行精确的定
+位，也就是说偏移量计算有问题，这样我根据这个偏移量去显示选择文本的位置和长度可能都不对。如果能够仍然象半角字
+符一样地去处理Unicode，那么就可以解决这个问题。还有我发现了GetTextRange()函数，可以返回指定区间的字符串，
+返回值为Unicode，但如果传入的区间参数不是正好在Unicode字符的边缘，返回为空串。还有一个函数是GetCharAt()可
+以得到指定位置的字节数，为一个整数，如果想把它用作字符，要使用chr()函数进行转换。那么GetCharAt()可以精确地
+处理任意的位置，哪怕是在一个Unicode中间。</p>
+<p>那么为什么一个汉字要占三个字节呢？这是因为wxStyledTextCtrl保存文本使用的是UTF-8编码的，根据UTF-8编码规则一
+个汉字需要使用三个字节。这一点通过测试也可以得知。那么对UTF-8编码的处理可以按照半角字符的处理，比如：一个汉
+字转成UTF-8要占三个字节，那么我计算它的长度不再是1，而是3。很好，我得到了一个处理思路：对于要使用GetText()
+的函数，首先将其转换成UTF-8编码。这样，以前按ASC(半角)编码处理的查找代码都不用修改了。还有一点很重要的就是，
+在NewEdit的处理有些只支持英文，如对于单词匹配的处理。查找、替换是可以支持中文的。对于要显示、替换时，根据位
+置值，使用GetRangeText()或其它由编辑器提供的函数来得到Unicode的字符串，对编辑器进行修改。</p>
+<p>简单地说：查找一个串、或进行匹配时使用UTF-8得到位置值。再根据位置值调用相应的函数得到Unicode字符串。</p>
+<p>在Unicode环境下对中文进行处理时，的确要非常小心。我发现，wxStyledTextCtrl所提供的CallTip功能，当遇到中文
+Unicode时会退出，不得已，我自已实现了一个支持中文的CallTip。</p>
+<p>上述对Unicode问题的解决都是测试出来的，不一定是最好的解决方法。如果有更好的，更合理的方法请告诉我，我好加以
+改进。</p>
+<p><a class="reference" href="technical.htm">[返回]</a></p>
+</div>
+</body>
+</html>

@@ -4,6 +4,7 @@
 
 :作者: limodou
 :联系: limodou@gmail.com
+:日期: $Date: 2005-10-11 12:58:28 +0800 (Tue, 11 Oct 2005) $
 :版本: $Id: architecture.txt 42 2005-09-28 05:19:21Z limodou $
 :主页: http://wiki.woodpecker.org.cn/moin/NewEdit
 :BLOG: http://www.donews.net/limodou

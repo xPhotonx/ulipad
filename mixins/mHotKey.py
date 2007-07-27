@@ -1,11 +1,11 @@
-#   Programmer:     limodou
-#   E-mail:         limodou@gmail.com
-#  
-#   Copyleft 2006 limodou
-#  
-#   Distributed under the terms of the GPL (GNU Public License)
-#  
-#   UliPad is free software; you can redistribute it and/or modify
+#	Programmer:	limodou
+#	E-mail:		chatme@263.net
+#
+#	Copyleft 2004 limodou
+#
+#	Distributed under the terms of the GPL (GNU Public License)
+#
+#   NewEdit is free software; you can redistribute it and/or modify
 #   it under the terms of the GNU General Public License as published by
 #   the Free Software Foundation; either version 2 of the License, or
 #   (at your option) any later version.
@@ -19,33 +19,41 @@
 #   along with this program; if not, write to the Free Software
 #   Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 #
-#   $Id: mHotKey.py 1566 2006-10-09 04:44:08Z limodou $
+#	$Id: mHotKey.py 93 2005-10-11 02:51:02Z limodou $
 
 from modules import Mixin
-from modules import dict4ini
+import wx
+from modules import IniFile
 
 def init_accelerator(win, accellist, editoraccellist):
-    ini = dict4ini.DictIni('config.ini', onelevel=True)
+	ini = IniFile.IniFile('config.ini')
+	main_options = []
+	editor_options = []
+	if ini.has_section('main_hotkey'):
+		main_options = ini.options('main_hotkey')
+	if ini.has_section('editor_hotkey'):
+		editor_options = ini.options('editor_hotkey')
 
-    #mid can be a mainframe menu ID or a mainframe function name
-    #which should only has one parameter
-    for mid, hotkey in ini.main_hotkey.items():
-        if editoraccellist.has_key(mid):
-            keys, func = editoraccellist[mid]
-            del editoraccellist[mid]
-            accellist[mid] = (hotkey, func)
-        elif accellist.has_key(mid):
-            keys, func = accellist[mid]
-            accellist[mid] = (hotkey, func)
+	for mid in main_options:
+		mid = mid.upper()
+		hotkey = ini.get('main_hotkey', mid, '')
+		if editoraccellist.has_key(mid):
+			keys, func = editoraccellist[mid]
+			del editoraccellist[mid]
+			accellist[mid] = (hotkey, func)
+		elif accellist.has_key(mid):
+			keys, func = accellist[mid]
+			accellist[mid] = (hotkey, func)
 
-    #mid can be a editor menu ID or a editor function name
-    #which should only has one parameter
-    for mid, hotkey in ini.editor_hotkey.items():
-        if accellist.has_key(mid):
-            keys, func = accellist[mid]
-            del accellist[mid]
-            editoraccellist[mid] = (hotkey, func)
-        elif editoraccellist.has_key(mid):
-            keys, func = editoraccellist[mid]
-            editoraccellist[mid] = (hotkey, func)
+	for mid in editor_options:
+		mid = mid.upper()
+		hotkey = ini.get('editor_hotkey', mid, '')
+		if accellist.has_key(mid):
+			keys, func = accellist[mid]
+			del accellist[mid]
+			editoraccellist[mid] = (hotkey, func)
+		elif editoraccellist.has_key(mid):
+			keys, func = editoraccellist[mid]
+			editoraccellist[mid] = (hotkey, func)
 Mixin.setPlugin('mainframe', 'init_accelerator', init_accelerator)
+

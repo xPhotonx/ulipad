@@ -1,59 +1,40 @@
-=======================
- UliPad Document
-=======================
+==============
+ NewEdit 文档
+==============
 
-:Author: limodou
-:Contact: limodou@gmail.com
-:Homepage: http://wiki.woodpecker.org.cn/moin/UliPad
+:作者: limodou
+:联系: limodou@gmail.com
+:日期: $Date: 2005-10-11 12:58:28 +0800 (Tue, 11 Oct 2005) $
+:版本: $Id: index.txt 42 2005-09-28 05:19:21Z limodou $
+:主页: http://wiki.woodpecker.org.cn/moin/NewEdit
 :BLOG: http://www.donews.net/limodou
-:Copyright: GPL
+:版权: GPL
 
-Thanks for you downloading and using UliPad Editor Software. This software
-is keeping improvment, so please its mailing list or my blog to get the neweset
-information about it.
+感谢你下载并使用 NewEdit 软件。本软件还在不停地完善，请经常访问项目主页或作者的Blog以获得最新的信息。
 
-`Project Introduction`_ (Chinese)
-------------------------------------
+`项目介绍`_
+-----------
 
-.. _`Project Introduction`: introduce.htm 
+.. _`项目介绍`: introduce.htm 
 
-`User Manual`_ (Chinese)
---------------------------
+`用户手册`_
+-----------
 
-.. _`User Manual`: userguide.htm
+.. _`用户手册`: userguide.htm
 
-`Tech Manual`_ (Chinese)
---------------------------
+`技术手册`_
+-----------
 
-.. _`Tech Manual`: technical.htm
+.. _`技术手册`: technical.htm
 
-`Plugin Introduction`_
-------------------------
+`插件介绍`_
+-----------
 
-.. _`Plugin Introduction`: plugins.htm
+.. _`插件介绍`: plugins.htm
 
 `FAQ`_
 -------
 
 .. _FAQ: faq.htm
 
-`Config.ini Description`_
----------------------------
-
-.. _`Config.ini Description`: config.htm
-
-Contribute Documents
-------------------------
-
-`Snippets Howto`_
-~~~~~~~~~~~~~~~~~~~~
-
-.. _`Snippets Howto`: howto_snippet.htm
-
-'InputAssistant Howto`_
-~~~~~~~~~~~~~~~~~~~~~~~~
-
-.. _`InputAssistant Howto`: howto_input_assistant.htm
-
-This document is written in reStructuredText format, and convert to html by docutils tool。
-And all of them is written in UliPad.
+本文档使用reStructuredText格式编写，并使用docutil工具转换而成。本软件文档全部使用NewEdit编写。

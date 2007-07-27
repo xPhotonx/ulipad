@@ -39,26 +39,26 @@ class Tree:
         else:
             self.dicts = dicts
         self.tab = ' ' * 4
-
+        
     def __getitem__(self, key):
         path = self._path(key)
-
+        
         dict = self.getNode(self.dicts, path)
         return dict.get(path[-1], None)
-
+        
     def __setitem__(self, key, value):
         path = self._path(key)
-
+        
         dict = self.getNode(self.dicts, path)
         dict[path[-1]] = value
-
+        
     def append(self, key, value):
         path = self._path(key)
         key = path[-1]
 
         dict = self.getNode(self.dicts, path)
         print 'dict', dict
-
+        
         if dict.has_key(key):
             if isinstance(dict[key], types.ListType):
                 dict[key].append(value)
@@ -68,7 +68,7 @@ class Tree:
                 dict[key] = [dict[key], value]
         else:
             dict[key] = value
-
+        
     def getNode(self, dicts, path):
         if len(path) > 1:
             node = path[0]
@@ -76,12 +76,12 @@ class Tree:
                 dicts[node] = {}
             return self.getNode(dicts[node], path[1:])
         return dicts
-
+        
     def _path(self, key):
         if key.startswith('/'):
             key = key[1:]
         return key.split('/')
-
+    
     def write_to_xml(self):
         s = []
         s.append('<?xml version="1.0" encoding="utf-8"?>\n')
@@ -89,7 +89,7 @@ class Tree:
         self._write_dict(s, self.dicts, level = 1)
         s.append('</tree>\n')
         return ''.join(s)
-
+        
     def _write_dict(self, s, dicts, level):
         for key, value in dicts.items():
             if isinstance(value, types.DictType):
@@ -120,7 +120,7 @@ class Tree:
         dom = xml.dom.minidom.parseString(text)
         root = dom.documentElement
         self._read_from_xml(self.dicts, root)
-
+        
     def _read_from_xml(self, dicts, root):
         for node in root.childNodes:
             name = node.nodeName.encode('utf-8')
@@ -128,7 +128,7 @@ class Tree:
                 if node.hasAttribute('type'):
                     t = node.getAttribute('type')
                     content = self._getTagText(node)
-
+                    
                     if t == 'int':
                         value = int(content)
                     elif t == 'long':
@@ -146,7 +146,7 @@ class Tree:
                         value = float(content)
                     else:
                         raise UnsupportType, 'Unsupport type'
-
+                    
                     if dicts.has_key(name):
                         v = dicts[name]
                         if isinstance(v, types.ListType):
@@ -165,27 +165,27 @@ class Tree:
                             dicts[name] = [dicts[name], dic]
                     else:
                         dicts[name] = dic
-
+                    
                     self._read_from_xml(dic, node)
-
+                    
     def _getTagText(self, tag):
         rc = ''
         for node in tag.childNodes:
             if node.nodeType in ( node.TEXT_NODE, node.CDATA_SECTION_NODE):
                 rc = rc + node.data
         return rc
-
+    
     def _quoteText(self, text):
         text = text.replace('&', '&amp;')
         text = text.replace('<', '&lt;')
         return text
-
+    
     def getDict(self):
         return self.dicts
 
 if __name__ == '__main__':
     tree = Tree()
-
+    
     name = 'china'
     tree['/root/command/test1'] =[{ 'var':'<&amp;>'}, {'var':'limodou'}]
     tree['/root/command/ttt'] =[unicode(name, 'utf-8'), 100, {'a':False}]

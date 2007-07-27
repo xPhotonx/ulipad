@@ -136,3 +136,5 @@ if __name__ == "__main__":
 
     # write colorized version to "python.html"
     file('colourize.html', 'w').write(Parser(source).format(False))
+
+

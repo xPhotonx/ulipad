@@ -30,3 +30,4 @@ def getDosBitmap():
 def getDosImage():
     stream = cStringIO.StringIO(getDosData())
     return ImageFromStream(stream)
+

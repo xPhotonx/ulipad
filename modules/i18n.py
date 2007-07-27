@@ -1,11 +1,11 @@
 #   Programmer: limodou
-#   E-mail:     limodou@gmail.com
+#   E-mail:     chatme@263.net
 #
-#   Copyleft 2006 limodou
+#   Copyleft 2004 limodou
 #
 #   Distributed under the terms of the GPL (GNU Public License)
 #
-#   UliPad is free software; you can redistribute it and/or modify
+#   NewEdit is free software; you can redistribute it and/or modify
 #   it under the terms of the GNU General Public License as published by
 #   the Free Software Foundation; either version 2 of the License, or
 #   (at your option) any later version.
@@ -19,18 +19,21 @@
 #   along with this program; if not, write to the Free Software
 #   Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 #
-#   $Id: i18n.py 1457 2006-08-23 02:12:12Z limodou $
+#   $Id: i18n.py 93 2005-10-11 02:51:02Z limodou $
 
 import gettext
 import glob
 import os.path
 import locale
+import codecs
+from Debug import error
+import gettext
 import copy
 
 
 def install(localedir=None, languages=None):
     _translations = {}
-
+    
     class_ = gettext.GNUTranslations
     path = os.path.join(localedir, languages, '*.mo')
     mofiles = glob.glob(path)
@@ -59,7 +62,7 @@ class I18n:
 
         self.translation ={}
         self.localedir = localedir
-        self.lang = None
+        self.lang = ''
         self.keyfunc = keyfunc
 
         self.install(self.lang)
@@ -67,7 +70,7 @@ class I18n:
     def _install(self, lang=None):
         if lang is None:
             lang = locale.getdefaultlocale()[0]
-
+            
         self.lang = ''
         if not lang:
             return gettext.NullTranslations()
@@ -86,7 +89,7 @@ class I18n:
 
     def install(self, lang=None):
         obj = self._install(lang)
-
+        
         import __builtin__
         __builtin__.__dict__[self.keyfunc] = unicode and obj.ugettext
 
@@ -107,3 +110,4 @@ def makefilename(filename, lang):
 if __name__ == '__main__':
     a = I18n('i18ntest', './lang')
     a.printall()
+

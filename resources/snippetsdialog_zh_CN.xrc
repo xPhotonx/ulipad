@@ -23,42 +23,42 @@
     <object class="wxButton" name="ID_ADDITEM">
       <label>增加</label>
       <pos>220, 45</pos>
-      <size>80, -1</size>
+      <size>80, 20</size>
     </object>
     <object class="wxButton" name="ID_UP">
       <label>上移</label>
       <pos>302, 45</pos>
-      <size>80, -1</size>
+      <size>80, 20</size>
     </object>
     <object class="wxButton" name="ID_ADDSUBITEM">
       <label>增加子项</label>
       <pos>220, 65</pos>
-      <size>80, -1</size>
+      <size>80, 20</size>
     </object>
     <object class="wxButton" name="ID_DOWN">
       <label>下移</label>
       <pos>302, 65</pos>
-      <size>80, -1</size>
+      <size>80, 20</size>
     </object>
     <object class="wxButton" name="ID_DELETE">
       <label>删除</label>
       <pos>220, 85</pos>
-      <size>80, -1</size>
+      <size>80, 20</size>
     </object>
     <object class="wxButton" name="ID_LEFT">
       <label>左移</label>
       <pos>302, 85</pos>
-      <size>80, -1</size>
+      <size>80, 20</size>
     </object>
     <object class="wxButton" name="ID_UPDATE">
       <label>更新</label>
       <pos>220, 105</pos>
-      <size>80, -1</size>
+      <size>80, 20</size>
     </object>
     <object class="wxButton" name="ID_RIGHT">
       <label>右移</label>
       <pos>302, 105</pos>
-      <size>80, -1</size>
+      <size>80, 20</size>
     </object>
     <object class="wxStaticLine">
       <pos>5, 140</pos>
@@ -67,19 +67,19 @@
     <object class="wxButton" name="ID_OK">
       <label>确定</label>
       <pos>80, 145</pos>
-      <size>80, -1</size>
+      <size>80, 20</size>
     </object>
     <object class="wxButton" name="ID_CANCEL">
       <label>取消</label>
       <pos>160, 145</pos>
-      <size>80, -1</size>
+      <size>80, 20</size>
     </object>
     <object class="wxButton" name="ID_APPLY">
       <label>应用</label>
       <pos>240, 145</pos>
-      <size>80, -1</size>
+      <size>80, 20</size>
     </object>
-    <size>400, 210</size>
+    <size>400, 200</size>
     <style>wxDEFAULT_DIALOG_STYLE</style>
   </object>
   <object class="wxDialog" name="SnippetsCodeDialog">
@@ -157,52 +157,52 @@
     <object class="wxButton" name="ID_IMPORT">
       <label>导入</label>
       <pos>20, 270</pos>
-      <size>80, -1</size>
+      <size>80, 20</size>
     </object>
     <object class="wxButton" name="ID_EXPORT">
       <label>导出</label>
       <pos>105, 270</pos>
-      <size>80, -1</size>
+      <size>80, 20</size>
     </object>
     <object class="wxButton" name="ID_ADD">
       <label>增加</label>
       <pos>190, 270</pos>
-      <size>80,-1</size>
+      <size>80, 20</size>
     </object>
     <object class="wxButton" name="ID_DELETE">
       <label>删除</label>
       <pos>275, 270</pos>
-      <size>80, -1</size>
+      <size>80, 20</size>
     </object>
     <object class="wxButton" name="ID_UPDATE">
       <label>更新</label>
       <pos>360, 270</pos>
-      <size>80, -1</size>
+      <size>80, 20</size>
     </object>
     <object class="wxStaticLine">
-      <pos>5, 300</pos>
+      <pos>5, 295</pos>
       <size>450, -1</size>
     </object>
     <object class="wxButton" name="ID_OK">
       <label>确定</label>
       <pos>80, 305</pos>
-      <size>80, -1</size>
+      <size>80, 20</size>
     </object>
     <object class="wxButton" name="ID_CANCEL">
       <label>取消</label>
       <pos>160, 305</pos>
-      <size>80, -1</size>
+      <size>80, 20</size>
     </object>
     <object class="wxButton" name="ID_APPLY">
       <label>应用</label>
       <pos>240, 305</pos>
-      <size>80, -1</size>
+      <size>80, 20</size>
     </object>
     <style>wxDEFAULT_DIALOG_STYLE</style>
     <object class="wxButton" name="ID_DISCARD">
       <label>放弃</label>
       <pos>320, 305</pos>
-      <size>80, -1</size>
+      <size>80, 20</size>
     </object>
   </object>
 </resource>
