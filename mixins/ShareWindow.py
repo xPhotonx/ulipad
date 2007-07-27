@@ -5,7 +5,7 @@
 #
 #   Distributed under the terms of the GPL (GNU Public License)
 #
-#   UliPad is free software; you can redistribute it and/or modify
+#   NewEdit is free software; you can redistribute it and/or modify
 #   it under the terms of the GNU General Public License as published by
 #   the Free Software Foundation; either version 2 of the License, or
 #   (at your option) any later version.
@@ -48,14 +48,14 @@ class ShareWindow(wx.Panel, Mixin.Mixin):
         self.pref = mainframe.pref
         if not hasattr(self.pref, 'share_nodes'):
             self.pref.share_nodes = []
-
+        
         self.processors = {}
 #        self.callplugin('add_process_class', self, self.processors)
 
         self.sizer = wx.BoxSizer(wx.VERTICAL)
 
         self.shareimagelist = imagelist = wx.ImageList(16, 16)
-
+        
         #add share image list
         self.imagefiles = {}
         self.imageids = {}
@@ -73,7 +73,7 @@ class ShareWindow(wx.Panel, Mixin.Mixin):
         self.ID = 1
 
         self.read()
-
+        
         wx.EVT_TREE_SEL_CHANGING(self.tree, self.tree.GetId(), self.OnChanging)
         wx.EVT_TREE_SEL_CHANGED(self.tree, self.tree.GetId(), self.OnChanged)
         wx.EVT_TREE_BEGIN_LABEL_EDIT(self.tree, self.tree.GetId(), self.OnBeginChangeLabel)
@@ -90,7 +90,7 @@ class ShareWindow(wx.Panel, Mixin.Mixin):
 
         #add init process
         self.callplugin('init', self)
-
+        
         self.SetSizer(self.sizer)
         self.SetAutoLayout(True)
 
@@ -103,7 +103,7 @@ class ShareWindow(wx.Panel, Mixin.Mixin):
             event.Enable(item.IsOk())
             return
         self.callplugin('on_update_ui', self, event)
-
+        
     def addnode(self, parentnode, data, save=False):
         klass = self.processors.get(data.get('type', ''), None)
         if klass:
@@ -112,7 +112,7 @@ class ShareWindow(wx.Panel, Mixin.Mixin):
         else:
             n_image_index = self.imageids.get(data.get('normal_imagename', ''), -1)
             e_image_index = self.imageids.get(data.get('expand_imagename', ''), -1)
-
+            
         _id, obj = self.addtreenode(parentnode, data.get('caption', ''), n_image_index, e_image_index)
         self.nodes[_id] = data
         if save:
@@ -132,18 +132,18 @@ class ShareWindow(wx.Panel, Mixin.Mixin):
         if parent!= self.root and not self.tree.IsExpanded(parent):
             self.tree.Expand(parent)
         return _id, obj
-
+    
     def get_cur_node(self):
         item = self.tree.GetSelection()
         if not item.IsOk(): return
         _id = self.tree.GetPyData(item)
         return item, self.nodes.get(_id, None)
-
+    
     def get_node(self, item):
         if not item.IsOk(): return
         _id = self.tree.GetPyData(item)
         return self.nodes.get(_id, None)
-
+    
     def get_class(self, node):
         if node:
             if not self.processors.has_key(node.get('type', '')):
@@ -154,7 +154,7 @@ class ShareWindow(wx.Panel, Mixin.Mixin):
         _id = self.ID
         self.ID += 1
         return _id
-
+    
     def OnCloseWin(self):
         for klass in self.processors.values():
             if hasattr(klass, 'OnSharewinClose'):
@@ -177,7 +177,7 @@ class ShareWindow(wx.Panel, Mixin.Mixin):
         if not item.IsOk(): return
         if not self.execplugin('on_expanding', self, item):
             event.Skip()
-
+        
     def OnRClick(self, event):
         other_menus = []
         if self.popmenus:
@@ -191,7 +191,7 @@ class ShareWindow(wx.Panel, Mixin.Mixin):
             pop_menus = copy.deepcopy(ShareWindow.popmenulist)
         self.popmenus = pop_menus = makemenu.makepopmenu(self, pop_menus)
 
-        self.tree.PopupMenu(pop_menus)
+        self.tree.PopupMenu(pop_menus, event.GetPosition())
 
     def OnDeleteItem(self, event):
         item = event.GetItem()
@@ -215,7 +215,7 @@ class ShareWindow(wx.Panel, Mixin.Mixin):
     def OnDoubleClick(self, event):
         pt = event.GetPosition()
         item, flags = self.tree.HitTest(pt)
-        if flags in (wx.TREE_HITTEST_NOWHERE, wx.TREE_HITTEST_ONITEMRIGHT,
+        if flags in (wx.TREE_HITTEST_NOWHERE, wx.TREE_HITTEST_ONITEMRIGHT, 
             wx.TREE_HITTEST_ONITEMLOWERPART, wx.TREE_HITTEST_ONITEMUPPERPART):
             for item in self.getTopObjects():
                 self.tree.Collapse(item)
@@ -243,7 +243,7 @@ class ShareWindow(wx.Panel, Mixin.Mixin):
             if item and item['data'].has_key("save") and item['data']["save"]:
                 data = (item, [])
                 s.append(data)
-                self._save(child, data[1])
+                self._save(child, data[1]) 
             child, cookie = self.tree.GetNextChild(self.root, cookie)
         self.pref.share_nodes = s
         self.pref.save()
@@ -255,9 +255,9 @@ class ShareWindow(wx.Panel, Mixin.Mixin):
             if item and item['data'].has_key("save") and item['data']["save"]:
                 data = (item, [])
                 save_list.append(data)
-                self._save(child, data[1])
+                self._save(child, data[1]) 
             child, cookie = self.tree.GetNextChild(parent, cookie)
-
+    
     def read(self):
         if hasattr(self.pref, 'share_nodes'):
             for i in self.pref.share_nodes:
@@ -265,9 +265,9 @@ class ShareWindow(wx.Panel, Mixin.Mixin):
                 node = self.addnode(self.root, data, save=False)
                 if node and child:
                     self._read(node, child)
-
+                
             self.pref.save()
-
+            
     def _read(self, parent, nodes):
         for i in nodes:
             data, child = i
@@ -277,10 +277,10 @@ class ShareWindow(wx.Panel, Mixin.Mixin):
 
     def OnMenu(self, event):
         self.callplugin('on_menu', self, event.GetId())
-
+        
     def EditLabel(self, item):
         wx.CallAfter(self.tree.EditLabel, item)
-
+        
     def OnDelete(self, event):
         if wx.MessageBox(tr('Do you realy want to delete current item?'), tr('Message'), style=wx.YES_NO|wx.ICON_QUESTION) == wx.YES:
             v = self.get_cur_node()
@@ -293,18 +293,18 @@ class ShareWindow(wx.Panel, Mixin.Mixin):
                     self.tree.Delete(item)
                     self.tree.Thaw()
                     self.save()
-
+                
     def OnChanged(self, event):
         item = event.GetItem()
         if not item.IsOk(): return
         self.callplugin('on_changed', self, item)
-
+        
     def OnChanging(self, event):
         item = event.GetOldItem()
         if not item.IsOk(): return
         if not self.execplugin('on_changing', self, item):
             event.Skip()
-
+        
     def get_cur_class(self):
         v = self.get_cur_node()
         if v:
@@ -312,7 +312,7 @@ class ShareWindow(wx.Panel, Mixin.Mixin):
             klass = self.get_class(node)
             return klass
         return None
-
+    
     def reset_cur_item(self):
         item = self.tree.GetSelection()
         if item.IsOk():
@@ -321,17 +321,17 @@ class ShareWindow(wx.Panel, Mixin.Mixin):
             self.tree.Thaw()
             self.execplugin('on_expanding', self, item)
             self.save()
-
+        
     def import_class(self, item):
         if self.is_first_node(item):
             node = self.get_node(item)
             klass = self.get_class(node)
             if not klass:
                 self.callplugin('add_process_class', node['type'], self, self.processors)
-
+            
     def get_image_id(self, name):
         return self.imageids.get(name, -1)
-
+    
     def add_image(self, name, imagefile):
         if not self.imagefiles.has_key(name):
             self.imagefiles[name] = imagefile

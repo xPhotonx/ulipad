@@ -34,41 +34,41 @@ class IElement(object):
             self.enabled = None
         self.externinfo = externinfo
         self.checkbox = None
-
+    
     def getType(self):
         return self.type
-
+    
     def setValue(self, value):
         raise EasyException, "Not implemented!"
 
     def getValue(self):
         raise EasyException, "Not implemented!"
-
+    
     def isLarge(self):
         return False
-
+        
     def getObject(self):
         return self.obj
-
+    
     def getContainer(self):
         return self.obj
-
+    
     def getAlignFlag(self, flag):
         return flag
-
+    
     def __repr__(self):
         return self.__str__()
-
+        
     def __str__(self):
         return repr(self.getValue())
-
+    
     def setEnabled(self, flag):
         if flag is not None:
             self.enabled = flag
             self.obj.Enable(flag)
-
+        
     def getEnabled(self):
         return self.enabled
-
+    
     def getEnabledFlag(self):
-        return self.enabledflag is not None
+        return self.enabledflag is not None 

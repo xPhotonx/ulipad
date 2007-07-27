@@ -29,19 +29,19 @@ class EasyRichList(wx.Panel, EasyElements):
     def __init__(self, parent, datas=[], values=[], size=wx.DefaultSize):
         wx.Panel.__init__(self, parent, size=size)
         self._values = copy.deepcopy(values)
-
+        
         self.elements = datas['elements']
         if not datas.has_key('key'):    #not key attribute then use the first column
             self.keyname = self.elements[0][1]
         else:
             self.keyname = datas['key']
         EasyElements.__init__(self, self.elements, factor=3)
-
+            
 #        self.cols, self.cols_key = self.setColsId(self.elements)
         self.parent = parent
         self.sizer = wx.BoxSizer(wx.HORIZONTAL)
         self.SetSizer(self.sizer)
-
+        
         #add list
         self.list = self.createlist()
         self.list.Bind(wx.EVT_LISTBOX, self.OnSelect)
@@ -58,14 +58,14 @@ class EasyRichList(wx.Panel, EasyElements):
 
         #add sub controls
         self.addItems(self.sizer)
-
+        
         self.SetAutoLayout(True)
-
+        
     def SetValue(self, values):
         self.list.Clear()
         for i, v in enumerate(self._values):
             self.addRowValue(v)
-
+            
     def addButton(self, sizer, btn):
         item = EMPTY_CLASS()
         self.buttons[btn] = item
@@ -77,7 +77,7 @@ class EasyRichList(wx.Panel, EasyElements):
         obj.Bind(wx.EVT_BUTTON, self.OnCommand)
         if btn not in ('add', 'ins', 'save'):
             obj.Bind(wx.EVT_UPDATE_UI, self.OnUpdateUI)
-
+        
     def OnSelect(self, event):
         values = self._values[event.GetSelection()]
         for k, obj in self.items.items():
@@ -86,7 +86,7 @@ class EasyRichList(wx.Panel, EasyElements):
             if obj.checkbox:
                 obj.checkbox.SetValue(v is not None)
                 obj.setEnabled(v is not None)
-
+        
     def OnCommand(self, event):
         for key, obj in self.buttons.items():
             if obj.id == event.GetId():
@@ -94,10 +94,10 @@ class EasyRichList(wx.Panel, EasyElements):
                     func = getattr(self, obj.func_name)
                     func(event)
                     return
-
+       
     def OnUpdateUI(self, event):
         event.Enable(self.getSelection() > -1)
-
+        
     def OnAdd(self, event):
         from EasyDialog import EasyDialog
         dlg = EasyDialog(self, 'Add', self.elements)
@@ -120,13 +120,13 @@ class EasyRichList(wx.Panel, EasyElements):
         index = i = self.getSelection()
         self.list.Delete(index)
         del self._values[i]
-
+        
     def OnSave(self, event):
         values = self.getValues()
         index = self.getSelection()
         self._values[index] = values
         self.setRowValue(index, values)
-
+            
     def OnUp(self, event):
         index = self.getSelection()
         if index > 0:
@@ -135,7 +135,7 @@ class EasyRichList(wx.Panel, EasyElements):
             self.addRowValue(values, index - 1)
             self.setSelection(index - 1)
             self._values[index - 1], self._values[index] = self._values[index], self._values[index - 1]
-
+        
     def OnDown(self, event):
         index = self.getSelection()
         if index < self.list.GetCount() - 1:
@@ -144,7 +144,7 @@ class EasyRichList(wx.Panel, EasyElements):
             self.addRowValue(values, index + 1)
             self.setSelection(index + 1)
             self._values[index + 1], self._values[index] = self._values[index], self._values[index + 1]
-
+        
     def createlist(self):
         list = wx.ListBox(self, -1, size=(80, 20), style=wx.LB_SINGLE)
 
@@ -152,7 +152,7 @@ class EasyRichList(wx.Panel, EasyElements):
 
     def GetValue(self):
         return self._values
-
+    
     def str(self, s):
         if isinstance(s, (int, float, long)) :
             return "%s" % str(s)
@@ -161,14 +161,14 @@ class EasyRichList(wx.Panel, EasyElements):
 
     def getSelection(self):
         return self.list.GetSelection()
-
+    
     def setSelection(self, index):
         n = self.getSelection()
         self.list.Select(index)
 
     def getRowValue(self, index):
         return self._values[index]
-
+        
     def setRowValue(self, index, values):
         self.list.SetString(index, values.get(self.keyname))
 

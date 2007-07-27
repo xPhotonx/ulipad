@@ -46,7 +46,7 @@ def makesubmenu(win, alist, mlist, pid):
         obj = alist.get(obj_id, None)
         if not obj:
             raise EasyUtils.EasyException, 'You should define action[%s] first!' % obj_id
-
+        
         if mlist.has_key(obj_id):
             menu_id = makeid(win, obj_id)
             submenu = makesubmenu(mlist, win, obj_id, pid)
@@ -90,11 +90,11 @@ def _OnExecuteMenuCommand(win, event):
     idname = win._menuids.get(_id, None)
     if not idname:
         raise EasyUtils.EasyException, "Cann't find the id[%s]'s name!" % _id
-
+    
     obj = win._actionlist.get(idname, None)
     if not obj:
         raise EasyUtils.EasyException, 'You should define action[%s] first!' % idname
-
+    
     funcname = obj.funcname
     if not funcname:
         funcname = 'On' + idname
@@ -151,13 +151,13 @@ def maketoolbar(win, alist, toollist):
         obj = alist.get(obj_id, None)
         if not obj:
             raise EasyUtils.EasyException, 'You should define action[%s] first!' % obj_id
-
+    
         if obj_id == '-': continue
         image = EasyUtils.getimage(obj.image)
         size = wx.Size(image.GetWidth(), image.GetHeight())
         toolbar.SetToolBitmapSize(size)
         break
-
+        
     toollist.sort()
     for order, obj_id in toollist:
         obj = alist.get(obj_id, None)

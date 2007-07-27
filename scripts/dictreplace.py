@@ -1,5 +1,5 @@
 #---------------------------------------------------
-#                   UliPad script
+#                   NewEdit script
 # Author  :limodou
 # Date    :2005/03/29
 # Version :1.0

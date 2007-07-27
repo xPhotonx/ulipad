@@ -44,7 +44,7 @@ class RssPanel(wx.Panel, DocumentBase.PanelBase, Mixin.Mixin):
 
         self.SetSizer(box)
         self.SetAutoLayout(True)
-
+        
     def createDocument(self):
         from RssPage import RssPage
 

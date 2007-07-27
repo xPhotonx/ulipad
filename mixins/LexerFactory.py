@@ -5,7 +5,7 @@
 #
 #   Distributed under the terms of the GPL (GNU Public License)
 #
-#   UliPad is free software; you can redistribute it and/or modify
+#   NewEdit is free software; you can redistribute it and/or modify
 #   it under the terms of the GNU General Public License as published by
 #   the Free Software Foundation; either version 2 of the License, or
 #   (at your option) any later version.
@@ -19,7 +19,7 @@
 #   along with this program; if not, write to the Free Software
 #   Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 #
-#   $Id: LexerFactory.py 1457 2006-08-23 02:12:12Z limodou $
+#   $Id: LexerFactory.py 475 2006-01-16 09:50:28Z limodou $
 
 __doc__ = 'Lexer control'
 
@@ -40,7 +40,7 @@ class LexerFactory(Mixin.Mixin):
 
         #@add_lexer name, filewildchar, stxfile, lexerclass
         self.callplugin_once('add_lexer', LexerFactory.lexers)
-
+        
         self.lexers.sort()
         for name, filewildchar, syntaxtype, stxfile, lexerclass in self.lexers:
             lexobj = lexerclass(name, filewildchar, syntaxtype, stxfile)

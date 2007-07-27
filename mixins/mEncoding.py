@@ -5,7 +5,7 @@
 #
 #   Distributed under the terms of the GPL (GNU Public License)
 #
-#   UliPad is free software; you can redistribute it and/or modify
+#   NewEdit is free software; you can redistribute it and/or modify
 #   it under the terms of the GNU General Public License as published by
 #   the Free Software Foundation; either version 2 of the License, or
 #   (at your option) any later version.
@@ -19,7 +19,7 @@
 #   along with this program; if not, write to the Free Software
 #   Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 #
-#   $Id: mEncoding.py 1897 2007-02-03 10:33:43Z limodou $
+#   $Id: mEncoding.py 475 2006-01-16 09:50:28Z limodou $
 
 import wx
 from modules import Mixin
@@ -40,7 +40,7 @@ if 'utf-8' not in encodings:
 
 def add_pref(preflist):
     preflist.extend([
-        (tr('General'), 160, 'check', 'select_encoding', tr('Show encoding selection dialog when opening or saving file'), None),
+        (tr('General'), 160, 'check', 'select_encoding', tr('Show encoding selection dialog as openning or saving file.'), None),
         (tr('General'), 161, 'choice', 'default_encoding', tr('Default document encoding:'), encodings),
         (tr('General'), 162, 'text', 'custom_encoding', tr("Custom default encoding(if set, it'll be the default):"), None),
     ])
@@ -89,10 +89,10 @@ def OnDocumentChangeEncoding(win, event):
         win.document.locale = ret
         win.SetStatusText(win.document.locale, 4)
         win.document.modified = True
-        wx.CallAfter(win.editctrl.showTitle, win.document)
-        wx.CallAfter(win.editctrl.showPageTitle, win.document)
+        win.editctrl.showTitle(win.document)
 Mixin.setMixin('mainframe', 'OnDocumentChangeEncoding', OnDocumentChangeEncoding)
 
 def OnEditorDocumentChangeEncoding(win, event):
     win.mainframe.OnDocumentChangeEncoding(None)
 Mixin.setMixin('editor', 'OnEditorDocumentChangeEncoding', OnEditorDocumentChangeEncoding)
+    

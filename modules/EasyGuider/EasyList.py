@@ -33,14 +33,14 @@ class AutoWidthListCtrl(wx.ListView,listmix.ListCtrlAutoWidthMixin):
 class EasyList(wx.Panel):
     def __init__(self, parent, datas=[], values=[], style=wx.LC_REPORT, size=wx.DefaultSize, flag='edit'):
         wx.Panel.__init__(self, parent)
-
+        
         if flag == 'edit':
             self.columns = datas['columns']
             self.elements = datas['elements']
         else:
             self.columns = datas['columns']
             self.elements = []
-
+            
         self.cols, self.cols_key = self.setColsId(self.elements)
         self.values = copy.deepcopy(values)
         self.parent = parent
@@ -52,7 +52,7 @@ class EasyList(wx.Panel):
         self.list.Bind(wx.EVT_LIST_ITEM_ACTIVATED, self.OnEdit)
         self.sizer.Add(self.list, 1, wx.EXPAND|wx.ALL, 2)
         self.SetValue(self.values)
-
+        
         if flag == 'edit':
             self.button_names = ['add', 'ins', 'del', 'edit', 'up', 'down']
             self.buttons = {}
@@ -61,13 +61,13 @@ class EasyList(wx.Panel):
                 self.addButton(sizer1, btn)
             self.sizer.Add(sizer1)
         self.SetAutoLayout(True)
-
+        
     def SetValue(self, values):
         self.list.DeleteAllItems()
         self.values = values
         for i, v in enumerate(self.values):
             self.addRowValue(v)
-
+            
     def setColsId(self, elements):
         cols = {}
         keys = []
@@ -76,10 +76,10 @@ class EasyList(wx.Panel):
             cols[prefname] = i
             keys.append(prefname)
         return cols, keys
-
+    
     def getColIdValue(self, values, id):
         return values[self.cols_key[id]]
-
+            
     def addButton(self, sizer, btn):
         item = EMPTY_CLASS()
         self.buttons[btn] = item
@@ -91,7 +91,7 @@ class EasyList(wx.Panel):
         obj.Bind(wx.EVT_BUTTON, self.OnCommand)
         if btn not in ('add'):
             obj.Bind(wx.EVT_UPDATE_UI, self.OnUpdateUI)
-
+        
     def OnCommand(self, event):
         for key, obj in self.buttons.items():
             if obj.id == event.GetId():
@@ -99,10 +99,10 @@ class EasyList(wx.Panel):
                     func = getattr(self, obj.func_name)
                     func(event)
                     return
-
+       
     def OnUpdateUI(self, event):
         event.Enable(self.list.GetFirstSelected() > -1)
-
+        
     def OnAdd(self, event):
         from EasyDialog import EasyDialog
         dlg = EasyDialog(self, 'Add', self.elements)
@@ -131,7 +131,7 @@ class EasyList(wx.Panel):
             self.setSelection(index)
         elif index > 0:
             self.setSelection(index - 1)
-
+        
     def OnEdit(self, event):
         from EasyDialog import EasyDialog
         index = self.list.GetFirstSelected()
@@ -140,7 +140,7 @@ class EasyList(wx.Panel):
             values = dlg.GetValue()
             self.values[index] = values
             self.setRowValue(index, values)
-
+            
     def OnUp(self, event):
         index = self.list.GetFirstSelected()
         if index > 0:
@@ -149,7 +149,7 @@ class EasyList(wx.Panel):
             self.addRowValue(values, index - 1)
             self.setSelection(index - 1)
             self.values[index - 1], self.values[index] = self.values[index], self.values[index - 1]
-
+        
     def OnDown(self, event):
         index = self.list.GetFirstSelected()
         if index < self.list.GetItemCount() - 1:
@@ -158,7 +158,7 @@ class EasyList(wx.Panel):
             self.addRowValue(values, index + 1)
             self.setSelection(index + 1)
             self.values[index + 1], self.values[index] = self.values[index], self.values[index + 1]
-
+        
     def createlist(self, columns):
         self.columns_num = len(columns)
         list = AutoWidthListCtrl(self, style=self.style, size=self.size)
@@ -168,7 +168,7 @@ class EasyList(wx.Panel):
             info.m_mask = wx.LIST_MASK_TEXT | wx.LIST_MASK_FORMAT
 
             name, length, align = v
-
+            
             if align == 'left':
                 info.m_format = wx.LIST_FORMAT_LEFT
             elif align == 'center':
@@ -183,7 +183,7 @@ class EasyList(wx.Panel):
 
     def GetValue(self):
         return self.values
-
+    
     def str(self, s):
         if isinstance(s, (int, float, long)) :
             return "%s" % str(s)
@@ -192,7 +192,7 @@ class EasyList(wx.Panel):
 
     def getSelection(self):
         return self.list.GetFirstSelected()
-
+    
     def setSelection(self, index):
         n = self.list.GetFirstSelected()
         while n > -1:
@@ -203,13 +203,13 @@ class EasyList(wx.Panel):
 
     def getRowValue(self, index):
         return self.values[index]
-
+        
     def getRowText(self, index, col):
         if index >= 0:
             return self.list.GetItem(index, col).GetText()
         else:
             return ''
-
+    
     def getSelRowText(self, col):
         return self.getRowText(self.list.GetFirstSelected(), col)
 

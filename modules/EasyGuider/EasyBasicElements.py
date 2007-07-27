@@ -29,7 +29,7 @@ from EasyGlobal import element_register
 class EasyIntElement(IElement):
     def __init__(self, parent, value, message='', externinfo=None, size=(-1, -1), enabledflag=None):
         """create an Int input control
-
+        
         @type value: number or string
         @para m value: initial value
         @type externinfo: tuple or list
@@ -38,20 +38,20 @@ class EasyIntElement(IElement):
         @param size: control's size
         """
         IElement.__init__(self, parent, 'int', message, externinfo, size, enabledflag)
-
+        
         if not isinstance(value, int):
             try:
                 value = int(value)
             except ValueError:
                 value = 0
-
+        
         if externinfo:
             obj = wx.SpinCtrl(parent, min=externinfo["min"], max=externinfo["max"])
         else:
             obj = IntCtrl(parent)
         self.obj = obj
         self.setValue(value)
-
+    
     def setValue(self, value):
         if not value:
             value = 0
@@ -59,13 +59,13 @@ class EasyIntElement(IElement):
 
     def getValue(self):
         return self.obj.GetValue()
-
+    
 element_register('int', EasyIntElement)
 
 class EasyBoolElement(IElement):
     def __init__(self, parent, value, message='', externinfo=None, size=(-1, -1), enabledflag=None):
         """create an Bool input control
-
+        
         @type value: number or string
         @para m value: initial value
         @type externinfo: None
@@ -74,7 +74,7 @@ class EasyBoolElement(IElement):
         @param size: control's size
         """
         IElement.__init__(self, parent, 'bool', message, externinfo, size, enabledflag)
-
+        
         if isinstance(value, (str, unicode)):
             if value.lower() in ['y', '1', 'yes', 'ok']:
                 value = True
@@ -86,7 +86,7 @@ class EasyBoolElement(IElement):
         obj = wx.CheckBox(parent, -1, '')
         self.obj = obj
         self.setValue(value)
-
+    
     def setValue(self, value):
         if not value:
             value = False
@@ -94,7 +94,7 @@ class EasyBoolElement(IElement):
 
     def getValue(self):
         return self.obj.GetValue()
-
+    
     def getAlignFlag(self, flag):
         flag |= wx.EXPAND
         return flag
@@ -104,16 +104,16 @@ element_register('bool', EasyBoolElement)
 class EasySingleElement(IElement):
     def __init__(self, parent, value, message='', externinfo=None, size=(-1, -1), enabledflag=None):
         """create an Single input control
-
+        
         @type value: number or string
         @para m value: initial value
         @type externinfo: list or tuple or dict
-        @param externinfo: choice value may be ('one', 'two'),
+        @param externinfo: choice value may be ('one', 'two'), 
         @type size: tuple
         @param size: control's size
         """
         IElement.__init__(self, parent, 'single', message, externinfo, size, enabledflag)
-
+        
         if not externinfo:
             raise EasyException, 'Externinfo value cannot be None. You should supply a externinfo value list or tuple or dict'
         if not isinstance(externinfo, (list, tuple, dict)):
@@ -136,7 +136,7 @@ class EasySingleElement(IElement):
         key = [k for k, v in value_dict.items() if v == value][0]
         self.obj = obj
         self.setValue(key)
-
+    
     def setValue(self, value):
         if not value:
             value = self.value_list[0]
@@ -145,13 +145,13 @@ class EasySingleElement(IElement):
     def getValue(self):
         value = self.obj.GetValue()
         return self.value_dict[value]
-
+    
 element_register('single', EasySingleElement)
 
 class EasyStringElement(IElement):
     def __init__(self, parent, value, message='', externinfo=None, size=(-1, -1), enabledflag=None):
         """create an String input control
-
+        
         @type value: number or string
         @para m value: initial value
         @type externinfo: None
@@ -160,11 +160,11 @@ class EasyStringElement(IElement):
         @param size: control's size
         """
         IElement.__init__(self, parent, 'string', message, externinfo, size, enabledflag)
-
+        
         obj = wx.TextCtrl(parent, -1, value)
         self.obj = obj
         #self.setValue(value)
-
+    
     def setValue(self, value):
         if not value:
             value = ''
@@ -176,13 +176,13 @@ class EasyStringElement(IElement):
     def getAlignFlag(self, flag):
         flag |= wx.EXPAND
         return flag
-
+    
 element_register('string', EasyStringElement)
 
 class EasyPasswordElement(EasyStringElement):
     def __init__(self, parent, value, message='', externinfo=None, size=(-1, -1), enabledflag=None):
         """create an Password input control
-
+        
         @type value: number or string
         @para m value: initial value
         @type externinfo: None
@@ -191,7 +191,7 @@ class EasyPasswordElement(EasyStringElement):
         @param size: control's size
         """
         IElement.__init__(self, parent, 'password', message, externinfo, size, enabledflag)
-
+        
         obj = wx.TextCtrl(parent, -1, value, style=wx.TE_PASSWORD)
         self.obj = obj
         #self.setValue(value)
@@ -201,7 +201,7 @@ element_register('password', EasyPasswordElement)
 class EasyLinesElement(IElement):
     def __init__(self, parent, value, message='', externinfo=None, size=(-1, -1), enabledflag=None):
         """create an Lines input control
-
+        
         @type value: number or string
         @para m value: initial value
         @type externinfo: None
@@ -210,7 +210,7 @@ class EasyLinesElement(IElement):
         @param size: control's size
         """
         IElement.__init__(self, parent, 'lines', message, externinfo, size, enabledflag)
-
+        
         self.box = wx.BoxSizer(wx.VERTICAL)
         if message:
             self.box.Add(wx.StaticText(parent, -1, message), 0, wx.EXPAND|wx.BOTTOM, border=3)
@@ -219,7 +219,7 @@ class EasyLinesElement(IElement):
 
         self.obj = obj
         #self.setValue(value)
-
+    
     def setValue(self, value):
         if not value:
             value = ''
@@ -233,13 +233,13 @@ class EasyLinesElement(IElement):
 
     def getContainer(self):
         return self.box
-
+        
 element_register('lines', EasyLinesElement)
 
 class EasyStaticElement(IElement):
     def __init__(self, parent, value, message='', externinfo=None, size=(-1, -1), enabledflag=None):
         """create an Static input control
-
+        
         @type value: number or string
         @para m value: initial value
         @type externinfo: None
@@ -248,12 +248,12 @@ class EasyStaticElement(IElement):
         @param size: control's size
         """
         IElement.__init__(self, parent, 'static', message, externinfo, size, enabledflag)
-
+        
         obj = wx.StaticText(parent, -1, value)
 
         self.obj = obj
         #self.setValue(value)
-
+    
     def setValue(self, value):
         if not value:
             value = ''
@@ -261,7 +261,7 @@ class EasyStaticElement(IElement):
 
     def getValue(self):
         return self.obj.GetLabel()
-
+    
     def getAlignFlag(self, flag):
         return wx.ALIGN_CENTER_VERTICAL
 
@@ -270,7 +270,7 @@ element_register('static', EasyStaticElement)
 class EasyListElement(IElement):
     def __init__(self, parent, value, message='', externinfo=None, size=(-1, -1), enabledflag=None):
         """create an List input control
-
+        
         @type value: number or string
         @para m value: initial value
         @type externinfo: None
@@ -279,7 +279,7 @@ class EasyListElement(IElement):
         @param size: control's size
         """
         IElement.__init__(self, parent, 'list', message, externinfo, size, enabledflag)
-
+        
         self.box = wx.BoxSizer(wx.VERTICAL)
         if message:
             self.box.Add(wx.StaticText(parent, -1, message), 0, wx.EXPAND)
@@ -288,7 +288,7 @@ class EasyListElement(IElement):
 
         self.obj = obj
 #        self.setValue(value)
-
+    
     def setValue(self, value):
         if not value:
             value = []
@@ -302,13 +302,13 @@ class EasyListElement(IElement):
 
     def getContainer(self):
         return self.box
-
+        
 element_register('list', EasyListElement)
 
 class EasyFloatElement(IElement):
     def __init__(self, parent, value, message='', externinfo=None, size=(-1, -1), enabledflag=None):
         """create an Float input control
-
+        
         @type value: number or string
         @para m value: initial value
         @type externinfo: None
@@ -317,13 +317,13 @@ class EasyFloatElement(IElement):
         @param size: control's size
         """
         IElement.__init__(self, parent, 'float', message, externinfo, size, enabledflag)
-
+        
         from EasyFloat import FloatCtl
         obj = FloatCtl(parent, value)
 
         self.obj = obj
         #self.setValue(value)
-
+    
     def setValue(self, value):
         if not value:
             value = 0.0
@@ -337,7 +337,7 @@ element_register('float', EasyFloatElement)
 class EasyDateElement(IElement):
     def __init__(self, parent, value, message='', externinfo=None, size=(-1, -1), enabledflag=None):
         """create an Date input control
-
+        
         @type value: string
         @para m value: initial value (yyyy-mm-dd)
         @type externinfo: None
@@ -346,15 +346,15 @@ class EasyDateElement(IElement):
         @param size: control's size
         """
         IElement.__init__(self, parent, 'date', message, externinfo, size, enabledflag)
-
+        
         obj = wx.DatePickerCtrl(parent, size=(120,-1), style=wx.DP_DROPDOWN | wx.DP_SHOWCENTURY)
         self.obj = obj
 
         self.setValue(value)
-
+    
     def setValue(self, value):
         import time
-
+        
         if not value:
             date = wx.DateTimeFromTimeT(time.time())
         else:
@@ -371,7 +371,7 @@ element_register('date', EasyDateElement)
 class EasyTimeElement(IElement):
     def __init__(self, parent, value, message='', externinfo=None, size=(-1, -1), enabledflag=None):
         """create an Time input control
-
+        
         @type value: string
         @para m value: initial value (hh:mm:ss)
         @type externinfo: None
@@ -394,10 +394,10 @@ class EasyTimeElement(IElement):
         self.obj = obj
 
         self.setValue(value)
-
+    
     def setValue(self, value):
         import time
-
+        
         if not value:
             date = wx.DateTimeFromTimeT(time.time())
         else:
@@ -416,7 +416,7 @@ element_register('time', EasyTimeElement)
 class EasyOpenFileElement(IElement):
     def __init__(self, parent, value, message='', externinfo=None, size=(-1, -1), enabledflag=None):
         """create an OpenFile input control
-
+        
         @type value: string
         @para m value: initial value
         @type externinfo: None
@@ -433,7 +433,7 @@ class EasyOpenFileElement(IElement):
         self.obj = obj
 
         self.setValue(value)
-
+    
     def setValue(self, value):
         if not value:
             value = ''
@@ -451,7 +451,7 @@ element_register('openfile', EasyOpenFileElement)
 class EasySaveFileElement(IElement):
     def __init__(self, parent, value, message='', externinfo=None, size=(-1, -1), enabledflag=None):
         """create an SaveFile input control
-
+        
         @type value: string
         @para m value: initial value
         @type externinfo: None
@@ -468,7 +468,7 @@ class EasySaveFileElement(IElement):
         self.obj = obj
 
         self.setValue(value)
-
+    
     def setValue(self, value):
         if not value:
             value = ''
@@ -486,7 +486,7 @@ element_register('savefile', EasyOpenFileElement)
 class EasyDirElement(IElement):
     def __init__(self, parent, value, message='', externinfo=None, size=(-1, -1), enabledflag=None):
         """create an Dir input control
-
+        
         @type value: string
         @para m value: initial value
         @type externinfo: None
@@ -503,7 +503,7 @@ class EasyDirElement(IElement):
         self.obj = obj
 
         self.setValue(value)
-
+    
     def setValue(self, value):
         if not value:
             value = ''
@@ -521,7 +521,7 @@ element_register('dir', EasyDirElement)
 class EasyMultiElement(IElement):
     def __init__(self, parent, value, message='', externinfo=None, size=(-1, -1), enabledflag=None):
         """create an Multi input control
-
+        
         @type value: []
         @para m value: initial value
         @type externinfo: None
@@ -530,7 +530,7 @@ class EasyMultiElement(IElement):
         @param size: control's size
         """
         IElement.__init__(self, parent, 'multi', message, externinfo, size, enabledflag)
-
+        
         if not externinfo:
             raise EasyException, 'Externinfo value cannot be None. You should supply a externinfo value list or tuple or dict'
         if not isinstance(externinfo, (list, tuple, dict)):
@@ -551,9 +551,9 @@ class EasyMultiElement(IElement):
         self.value_dict = value_dict
         obj = wx.CheckListBox(parent, -1, choices = value_list, size=size)
         self.obj = obj
-
+        
         self.setValue(value)
-
+    
     def setValue(self, value):
         if not value:
             value = []
@@ -568,7 +568,7 @@ class EasyMultiElement(IElement):
         for i, k in enumerate(self.value_list):
             if self.obj.IsChecked(i):
                 value.append(self.value_dict[k])
-
+        
         return value
 
 element_register('multi', EasyMultiElement)
@@ -576,7 +576,7 @@ element_register('multi', EasyMultiElement)
 class EasyRichListElement(IElement):
     def __init__(self, parent, value, message='', externinfo=None, size=(-1, -1), enabledflag=None):
         """create an RichList input control
-
+        
         @type value: number or string
         @para m value: initial value
         @type externinfo: None
@@ -585,9 +585,9 @@ class EasyRichListElement(IElement):
         @param size: control's size
         """
         IElement.__init__(self, parent, 'richlist', message, externinfo, size, enabledflag)
-
+        
         from EasyRichList import EasyRichList
-
+        
         self.box = wx.BoxSizer(wx.VERTICAL)
         if message:
             self.box.Add(wx.StaticText(parent, -1, message), 0, wx.EXPAND)
@@ -595,7 +595,7 @@ class EasyRichListElement(IElement):
         self.box.Add(obj, 1, wx.EXPAND, border=0)
 
         self.obj = obj
-
+        
     def setValue(self, value):
         if not value:
             value = []
@@ -609,5 +609,5 @@ class EasyRichListElement(IElement):
 
     def getContainer(self):
         return self.box
-
+        
 element_register('richlist', EasyRichListElement)

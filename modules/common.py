@@ -1,11 +1,11 @@
-#   Programmer:     limodou
-#   E-mail:         limodou@gmail.com
+#	Programmer:	limodou
+#	E-mail:		limodou@gmail.com
 #
-#   Copyleft 2006 limodou
+#	Copyleft 2006 limodou
 #
-#   Distributed under the terms of the GPL (GNU Public License)
+#	Distributed under the terms of the GPL (GNU Public License)
 #
-#   UliPad is free software; you can redistribute it and/or modify
+#   NewEdit is free software; you can redistribute it and/or modify
 #   it under the terms of the GNU General Public License as published by
 #   the Free Software Foundation; either version 2 of the License, or
 #   (at your option) any later version.
@@ -19,7 +19,7 @@
 #   along with this program; if not, write to the Free Software
 #   Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 #
-#   $Id: common.py 1868 2007-01-27 07:19:29Z limodou $
+#	$Id: common.py 477 2006-01-16 14:26:49Z limodou $
 
 """Used to define commonly functions.
 """
@@ -32,11 +32,7 @@ import codecs
 import Globals
 import time
 
-try:
-    defaultencoding = locale.getdefaultlocale()[1]
-except:
-    defaultencoding = None
-
+defaultencoding = locale.getdefaultlocale()[1]
 if not defaultencoding:
     defaultencoding = 'utf-8'
 try:
@@ -44,17 +40,13 @@ try:
 except:
     defaultencoding = 'utf-8'
 
-try:
-    defaultfilesystemencoding = sys.getfilesystemencoding()
-except:
-    defaultfilesystemencoding = None
-
+defaultfilesystemencoding = sys.getfilesystemencoding()
 if not defaultfilesystemencoding:
-    defaultfilesystemencoding = 'ascii'
+    defaultfilesystemencoding = 'ansii'
 try:
     codecs.lookup(defaultfilesystemencoding)
 except:
-    defaultfilesystemencoding = 'ascii'
+    defaultfilesystemencoding = 'ansii'
 
 def unicode_abspath(path):
     """convert path to unicode
@@ -189,11 +181,11 @@ def getpngimage(filename):
             f = fname + '.png'
             if not os.path.exists(f):
                 f = filename
-        image = wx.Image(f)
-        if image.Ok():
-            return image.ConvertToBitmap()
-        else:
-            return filename
+            image = wx.Image(f)
+            if image.Ok():
+                return image.ConvertToBitmap()
+            else:
+                return filename
     else:
         return filename
 
@@ -242,25 +234,11 @@ def getProjectHome(filename):
         path = newpath
     return path
 
-def getProjectFile(filename):
-    if not filename:
-        return ''
-    if os.path.isfile(filename):
-        path = os.path.dirname(os.path.abspath(filename))
-    else:
-        path = filename
-    while not os.path.exists(os.path.join(path, '_project')):
-        newpath = os.path.dirname(path)
-        if newpath == path: #not parent path, so not found _project
-            return ''
-        path = newpath
-    return os.path.join(path, '_project')
-
-def getConfigPathFile(f, prefix=''):
-    filename = os.path.join(Globals.workpath, prefix, f)
+def getConfigPathFile(f):
+    filename = os.path.join(Globals.workpath, f)
     if os.path.exists(filename):
         return filename
-    filename = os.path.join(Globals.confpath, prefix, f)
+    filename = os.path.join(Globals.confpath, f)
     if os.path.exists(filename):
         return filename
     return ''
@@ -270,71 +248,14 @@ def uni_file(filename):
         return decode_string(filename, defaultfilesystemencoding)
     else:
         return filename
-
+    
 def normal_file(filename):
     if isinstance(filename, unicode):
         return encode_string(filename, defaultfilesystemencoding)
     else:
         return filename
-
+    
 def print_time(name, debug):
     if debug:
         print name, time.strftime("%H:%M:%S")
-
-
-def getCurrentDir(filename):
-    if os.path.isfile(filename):
-        dir = os.path.dirname(filename)
-    else:
-        dir = filename
-    return dir
-
-def show_in_message_window(text):
-    win = Globals.mainframe
-    win.createMessageWindow()
-    win.panel.showPage(tr('Message'))
-    win.messagewindow.SetText(text)
-
-def note(text):
-    wx.CallAfter(Globals.mainframe.statusbar.note, text)
-#    setmessage(Globals.mainframe, text)
-
-def warn(text):
-    wx.CallAfter(Globals.mainframe.statusbar.warn, text)
-#    setmessage(Globals.mainframe, text)
-
-def curry(*args, **kwargs):
-    def _curried(*moreargs, **morekwargs):
-        return args[0](*(args[1:]+moreargs), **dict(kwargs.items() + morekwargs.items()))
-    return _curried
-
-def set_acp_highlight(ini, suffix, acps, highlight):
-    if acps:
-        s = ini.acp.get(suffix, [])
-        if not isinstance(s, list):
-            s = [s]
-        if not isinstance(acps, list):
-            acps = [acps]
-        for i in acps:
-            if not i in s:
-                s.append(i)
-        ini.acp[suffix] = s
-    if highlight:
-        ini.highlight[suffix] = highlight
     
-def remove_acp_highlight(ini, suffix, acps, highlight):
-    if acps:
-        s = ini.acp.get(suffix, [])
-        if not isinstance(s, list):
-            s = [s]
-        if not isinstance(acps, list):
-            acps = [acps]
-        for i in acps:
-            if i in s:
-                s.remove(i)
-        if not s:
-            del ini.acp[suffix]
-        else:
-            ini.acp[suffix] = s
-    if highlight:
-        del ini.highlight[suffix]

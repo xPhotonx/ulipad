@@ -21,27 +21,18 @@
 #
 #   $Id$
 
+from modules import Mixin
 import wx
 import os.path
-from modules import Mixin
 
 menulist = [ ('IDM_HELP', #parent menu id
-    [
-        (103, 'IDM_HELP_SHOWERROR', tr('Show error.log'), wx.ITEM_NORMAL, 'OnHelpShowError', tr('Show error.log file content.')),
-        (104, 'IDM_HELP_SHOWDEBUG', tr('Show debug.log'), wx.ITEM_NORMAL, 'OnHelpShowDebug', tr('Show debug.log file content.')),
-    ]),
+	[
+		(103, 'IDM_HELP_SHOWERROR', tr('Show error.log')+'\tAlt+E', wx.ITEM_NORMAL, 'OnHelpShowError', tr('Show error.log file content.')),
+		(104, 'IDM_HELP_SHOWDEBUG', tr('Show debug.log')+'\tAlt+D', wx.ITEM_NORMAL, 'OnHelpShowDebug', tr('Show debug.log file content.')),
+	]),
 ]
 Mixin.setMixin('mainframe', 'menulist', menulist)
 
-#def add_editctrl_menu(popmenulist):
-#    popmenulist.extend([ (None,
-#        [
-#            (610, 'IDPM_SHOWERROR', tr('Show error.log'), wx.ITEM_NORMAL, 'OnEditCtrlHelpShowError', tr('Saves an opened document using the same filename')),
-#            (620, 'IDPM_SHOWDEBUG', tr('Show debug.log'), wx.ITEM_NORMAL, 'OnEditCtrlHelpShowDebug', tr('Show debug.log file content.')),
-#        ]),
-#    ])
-#Mixin.setPlugin('editctrl', 'add_menu', add_editctrl_menu)
-#
 def OnHelpShowError(win, event):
     win.editctrl.new(os.path.join(win.userpath, 'error.txt'))
 Mixin.setMixin('mainframe', 'OnHelpShowError', OnHelpShowError)
@@ -49,11 +40,3 @@ Mixin.setMixin('mainframe', 'OnHelpShowError', OnHelpShowError)
 def OnHelpShowDebug(win, event):
     win.editctrl.new(os.path.join(win.userpath, 'debug.txt'))
 Mixin.setMixin('mainframe', 'OnHelpShowDebug', OnHelpShowDebug)
-
-#def OnEditCtrlHelpShowError(win, event):
-#    win.new(os.path.join(Globals.userpath, 'error.txt'))
-#Mixin.setMixin('editctrl', 'OnEditCtrlHelpShowError', OnEditCtrlHelpShowError)
-#
-#def OnEditCtrlHelpShowDebug(win, event):
-#    win.new(os.path.join(Globals.userpath, 'debug.txt'))
-#Mixin.setMixin('editctrl', 'OnEditCtrlHelpShowDebug', OnEditCtrlHelpShowDebug)

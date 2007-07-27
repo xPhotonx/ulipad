@@ -5,17 +5,16 @@ page2 = [
 ('richlist', 'fields', [], u'', {
     'elements':[
         ('string', 'f_name', '', tr('Field Name:'), None),
-        ('single', 'f_type', 'CharField', tr('File Type:'),
+        ('single', 'f_type', 'CharField', tr('File Type:'), 
             ['AutoField', 'BooleanField', 'CharField', 'CommaSeparatedIntegerField', 'DateField',
             'DateTimeField', 'EmailField', 'FileField', 'FilePathField', 'FloatField', 'ImageField',
             'IntegerField', 'IPAddressField', 'NullBooleanField', 'PhoneNumberField', 'PositiveIntegerField',
-            'PositiveSmallIntegerField', 'SlugField', 'SmallIntegerField', 'TextField', 'TimeField',
+            'PositiveSmallIntegerField', 'SlugField', 'SmallIntegerField', 'TextField', 'TimeField', 
             'URLField', 'USStateField', 'XMLField']
         ),
-        ('string', 'f_verbose', '', tr('Field Verbose:'), None),
-        ('multi', 'f_bools', [], tr('Boolean parameter'),
-            ['null', 'blank', 'db_index', 'editable', 'primary_key',
-            'radio_admin', 'unique',
+        ('multi', 'f_bools', [], tr('Boolean parameter'), 
+            ['null', 'blank', 'core', 'db_index', 'editable', 'primary_key',
+            'radio_admin', 'unique', 
             ], (-1, 100)),
         (False, 'string', 'f_choices', '<choices tuple name>', tr('Para choices:'), None),
         (False, 'string', 'f_db_column', '', tr('Para db_column:'), None),

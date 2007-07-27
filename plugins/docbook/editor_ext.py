@@ -83,7 +83,7 @@ def OnDocbookEnclose(editor):
             editor.EndUndoAction()
     else:
         common.showerror(editor, tr("There are not tags defined in conf/docbook_xml.ini."))
-
+                
 def settext(win, text):
     cur_pos = -1
     for t in text:

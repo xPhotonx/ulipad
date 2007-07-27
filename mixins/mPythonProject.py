@@ -5,7 +5,7 @@
 #
 #   Distributed under the terms of the GPL (GNU Public License)
 #
-#   UliPad is free software; you can redistribute it and/or modify
+#   NewEdit is free software; you can redistribute it and/or modify
 #   it under the terms of the GNU General Public License as published by
 #   the Free Software Foundation; either version 2 of the License, or
 #   (at your option) any later version.
@@ -24,7 +24,6 @@
 import sys
 from modules import Mixin
 from modules.Debug import error
-from modules import common
 
 def add_project(project_names):
     project_names.extend(['python'])
@@ -34,7 +33,7 @@ def project_begin(dirwin, project_names, path):
     if 'python' in project_names:
         sys.path.insert(0, path)
 Mixin.setPlugin('dirbrowser', 'project_begin', project_begin)
-
+        
 def project_end(dirwin, project_names, path):
     if 'python' in project_names:
         try:
@@ -42,4 +41,3 @@ def project_end(dirwin, project_names, path):
         except:
             error.traceback()
 Mixin.setPlugin('dirbrowser', 'project_end', project_end)
-

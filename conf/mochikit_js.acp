@@ -1,3 +1,7 @@
 [default]
+projectname = django
 
 [autostring]
+meta. = CharField,ForeignKey,
+@ = Http404,
+@Http404<space> = from django.core.exceptions import Http404

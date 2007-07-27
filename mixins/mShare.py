@@ -5,7 +5,7 @@
 #
 #   Distributed under the terms of the GPL (GNU Public License)
 #
-#   UliPad is free software; you can redistribute it and/or modify
+#   NewEdit is free software; you can redistribute it and/or modify
 #   it under the terms of the GNU General Public License as published by
 #   the Free Software Foundation; either version 2 of the License, or
 #   (at your option) any later version.
@@ -19,24 +19,24 @@
 #   along with this program; if not, write to the Free Software
 #   Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 #
-#   $Id$
+#   $Id: mDirBrowser.py 184 2005-11-23 14:16:08Z limodou $
 
 import wx
 from modules import Mixin
 
 def add_mainframe_menu(menulist):
-    menulist.extend([
+    menulist = [
         ('IDM_WINDOW',
         [
-            (200, 'IDM_WINDOW_SHARE', tr('Open Share Resource Window'), wx.ITEM_NORMAL, 'OnWindowShare', tr('Opens share resource window.'))
+            (200, 'IDM_WINDOW_SHARE', tr('Open Share Resouce Window'), wx.ITEM_NORMAL, 'OnWindowShare', tr('Opens share resouce window.'))
         ]),
-    ])
+    ]
 Mixin.setPlugin('mainframe', 'add_menu', add_mainframe_menu)
 
 def add_notebook_menu(popmenulist):
     popmenulist.extend([(None,
         [
-            (180, 'IDPM_SHAREWINDOW', tr('Open Share Resource Window'), wx.ITEM_NORMAL, 'OnShareWindow', tr('Opens share resource window.')),
+            (180, 'IDPM_SHAREWINDOW', tr('Open Share Resouce Window'), wx.ITEM_NORMAL, 'OnShareWindow', tr('Opens share resouce window.')),
         ]),
     ])
 Mixin.setPlugin('notebook', 'add_menu', add_notebook_menu)
@@ -61,24 +61,24 @@ Mixin.setPlugin('mainframe', 'afterinit', afterinit)
 #Mixin.setMixin('mainframe', 'toolbaritems', toolbaritems)
 
 def createShareWindow(win):
-    if not win.panel.getPage(tr('Share Resource')):
+    if not win.panel.getPage(tr('Share Resouce')):
         from ShareWindow import ShareWindow
 
         page = ShareWindow(win.panel.createNotebook('left'), win)
-        win.panel.addPage('left', page, tr('Share Resource'))
+        win.panel.addPage('left', page, tr('Share Resouce'))
 Mixin.setMixin('mainframe', 'createShareWindow', createShareWindow)
 
 def OnWindowShare(win, event):
     win.createShareWindow()
-    win.panel.showPage(tr('Share Resource'))
+    win.panel.showPage(tr('Share Resouce'))
 Mixin.setMixin('mainframe', 'OnWindowShare', OnWindowShare)
 
 def OnShareWindow(win, event):
     win.mainframe.createShareWindow()
-    win.panel.showPage(tr('Share Resource'))
+    win.panel.showPage(tr('Share Resouce'))
 Mixin.setMixin('notebook', 'OnShareWindow', OnShareWindow)
 
 def close_page(page, name):
-    if name == tr('Share Resource'):
+    if name == tr('Share Resouce'):
         page.OnCloseWin()
 Mixin.setPlugin('notebook', 'close_page', close_page)

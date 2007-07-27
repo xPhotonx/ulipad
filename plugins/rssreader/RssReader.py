@@ -44,7 +44,7 @@ class RssReader:
         self.feeds = {}
         self.publisher = pubsub.Publisher()
         self.publisher.subscribe(self.OnUnreadChanged, 'rss_unread_changed')
-
+        
         self.casings = {}
 
         #check rss reader data dir
@@ -54,28 +54,23 @@ class RssReader:
         self.iconpath = path = os.path.join(Globals.userpath, 'rssreader/FavIcons')
         if not os.path.exists(path):
             os.mkdir(path)
-
+            
         for f in os.listdir(self.iconpath):
             imagefile = os.path.join(self.iconpath, f)
             name = os.path.splitext(f)[0]
-            nolog = wx.LogNull()
-            ok = wx.Image(imagefile, wx.BITMAP_TYPE_ANY).Ok()
-            del nolog
-            if not ok:
-                continue
             self.sharewin.add_image(name, imagefile)
-
+            
         Globals.rss_data_path = self.rootpath
         Globals.rss_dbfile = os.path.join(self.rootpath, Globals.mainframe.pref.rss_dbfile)
-
+        
         for name in ['RSS_ROOT_IMAGE', 'RSS_CATEGORY_IMAGE', 'RSS_FEED_IMAGE', 'RSS_RUN1',
                 'RSS_RUN2', 'RSS_RUN3', 'RSS_ERROR']:
             setattr(self, name, self.sharewin.get_image_id(name))
-
+    
     def get_item_image_index(self, item):
         node = self.sharewin.get_node(item)
         return self.get_image_index(node)
-
+            
     def get_image_index(self, data, imagetype=wx.TreeItemIcon_Normal):
         if data.get('type', '') == 'rss':
             if data.get('level', '') == 'root':
@@ -86,7 +81,7 @@ class RssReader:
                 homeurl = data['data'].get('homeurl', '')
                 return self.get_feed_image(homeurl)
         return -1
-
+    
     def delete(self, node):
         if node.get('type', '') == 'rss':
             if node.get('level', '') == 'root':
@@ -113,14 +108,14 @@ class RssReader:
         d = self.get_casting(item)
         d += Casing.Casing(self.update_content, item=item)
         d.start_sync_thread()
-
+        
     def stop_category(self, item):
         node = self.sharewin.get_node(item)
         cate_id = node['data']['id']
         for i in self.cate_items[cate_id]:
             c = self.feeds[i]
             self.stop_feed(c)
-
+        
     def stop_feed(self, item):
         d = self.casings.get(item, None)
         if d and d.isactive():
@@ -144,7 +139,7 @@ class RssReader:
 
     def get_feed(self, syncvar, feedurl, text):
         text.text = self.get_feed_text(feedurl)
-
+        
     def get_feed_text(self, feedurl):
         feedurl = str(feedurl)
         import pycurl
@@ -161,15 +156,15 @@ class RssReader:
             c.setopt(pycurl.PROXYUSERPWD, '%s:%s' % (str(self.pref.proxy_user), str(self.pref.proxy_password)))
         c.perform()
         return b.getvalue()
-
+        
     def parse_content(self, syncvar, rssid, text):
         if text.text:
             self.feed(rssid, text.text)
-
+            
     def update_feed_read(self, syncvar, item):
         node = self.sharewin.get_node(item)
         wx.CallAfter(self.refresh_feed_unread, node['data']['id'])
-
+        
     def update_content(self, syncvar, item):
         node = self.parent.get_node(item)
         editctrl = self.parent.mainframe.editctrl
@@ -181,7 +176,7 @@ class RssReader:
         else:
             wx.CallAfter(editctrl.new, rssid, documenttype='rssview')
 
-
+            
     def on_process(self, syncvar, item):
         tree = self.sharewin.tree
         if not hasattr(item, '_imageindex'):
@@ -193,11 +188,11 @@ class RssReader:
             item._imageindex = self.RSS_RUN3
         else:
             item._imageindex = self.RSS_RUN1
-
+                
     def on_exception(self, item):
         error.traceback()
         wx.CallAfter(self.sharewin.tree.SetItemImage, item, self.RSS_ERROR)
-
+        
     def on_success(self, item):
         wx.CallAfter(self.sharewin.tree.SetItemImage, item, self.get_item_image_index(item))
         item._imageindex = self.RSS_RUN1
@@ -205,13 +200,13 @@ class RssReader:
     def OnUnreadChanged(self, message):
         rssid = message.data['rssid']
         self.refresh_feed_unread(rssid)
-
+        
     def OnSharewinClose(self):
         self.publisher.unsubscribe(self.OnUnreadChanged, 'rss_unread_changed')
 
     def refresh_feed_unread(self, rssid):
         RssDb.init(Globals.rss_dbfile)
-
+    
         feed = RssDb.Feed.get(rssid)
         number = RssDb.Data.un_read_count(rssid)
         if number:
@@ -221,7 +216,7 @@ class RssReader:
         item = self.feeds[rssid]
         node = self.sharewin.get_node(item)
         node['caption'] = caption
-
+            
         self.sharewin.tree.SetItemText(item, caption)
         if number:
             self.sharewin.tree.SetItemBold(item, True)
@@ -230,7 +225,7 @@ class RssReader:
 
     def feed(self, rssid, text):
         RssDb.init(Globals.rss_dbfile)
-
+        
 #        b = r.match(text)
 #        if b:
 #            text = text[b.end():]
@@ -260,7 +255,7 @@ class RssReader:
                     data.read=False
                     new += 1
             else:
-                data = RssDb.Data(guid=i.guid, title=i.title, comments=i.comments,
+                data = RssDb.Data(guid=i.guid, title=i.title, comments=i.comments, 
                     description=i.description, link=i.link, pubDate=date, read=False, feed_id=rssid)
                 new += 1
         RssDb.objectstore.commit()
@@ -297,19 +292,19 @@ class RssReader:
                     d = self.get_casting(item)
                     mc.append(d)
                 mc.start_sync_thread()
-
+            
     def add_category_ids(self, cate_id, obj):
         self.categories[cate_id] = obj
         self.cate_items[cate_id] = []
-
+        
     def add_feed_ids(self, cate_id, feed_id, obj):
         self.cate_items[cate_id].append(feed_id)
         self.feeds[feed_id] = obj
-
+        
     def del_category_ids(self, cate_id):
         del self.cate_items[cate_id]
         del self.categories[cate_id]
-
+        
     def del_feed_ids(self, cate_id, feed_id):
         self.cate_items[cate_id].remove(feed_id)
         del self.feeds[feed_id]
@@ -327,11 +322,11 @@ class RssReader:
         node = self.sharewin.get_node(item)
         rssid = node['data']['id']
         RssDb.init(Globals.rss_dbfile)
-
+        
         RssDb.Data.set_read(rssid)
-
+                
         self.refresh_feed_unread(rssid)
-
+        
     def change_feed(self, item):
         data = self.sharewin.get_node(item)
         wx.CallAfter(self.sharewin.tree.SetItemImage, item, self.get_item_image_index(item))
@@ -347,12 +342,12 @@ class RssReader:
                         wx.CallAfter(d.openfile, rssid)
                 else:
                     wx.CallAfter(editctrl.new, rssid, documenttype='rssview')
-
+        
     def delete_all_posts(self, item):
         node = self.sharewin.get_node(item)
         rssid = node['data']['id']
         RssDb.init(Globals.rss_dbfile)
-
+        
         RssDb.Data.delete_posts(rssid)
 
     def import_opml(self, filename):
@@ -420,7 +415,7 @@ class RssReader:
             c.title = values['caption']
             c.commit()
             self.sharewin.tree.SetItemText(item, c.title)
-
+        
     def feed_properties(self, item):
         node = self.sharewin.get_node(item)
         feed_id = node['data']['id']
@@ -485,7 +480,7 @@ class RssReader:
         f.homelink = homelink
         f.commit()
         self.get_site_icon(homelink)
-
+        
     def get_site_icon(self, url):
         if url:
             from urlparse import urlparse, urlunparse
@@ -497,12 +492,12 @@ class RssReader:
                 text = self.get_feed_text(iconurl)
                 if text:
                     file(iconfile, 'wb').write(text)
-                    nolog = wx.LogNull()
-                    ok = wx.Image(iconfile, wx.BITMAP_TYPE_ANY).Ok()
+                    nolog = wx.LogNull() 
+                    ok = wx.Image(iconfile, wx.BITMAP_TYPE_ANY).Ok() 
                     del nolog
                     if not ok:
                         os.remove(iconfile)
-
+                
     def get_feed_image(self, homeurl):
         image_id = self.RSS_FEED_IMAGE
         if homeurl:
@@ -513,7 +508,7 @@ class RssReader:
             if _id != -1:
                 image_id = _id
         return image_id
-
+        
     def add_category(self):
         dialog = [
         ('string', 'caption', tr('New Category'), tr('Category Name:'), None),
@@ -530,8 +525,9 @@ class RssReader:
             RssDb.init(Globals.rss_dbfile)
             category = RssDb.Category(title=values["caption"])
             category.save()
-
+            
             data = {'type':'rss', 'level':'category', 'caption':values['caption'], 'data':{'save':False, 'id':category.id}}
             root, node = self.sharewin.get_cur_node()
             obj = self.sharewin.addnode(root, data=data)
             self.add_category_ids(category.id, obj)
+        

@@ -1,4 +1,3 @@
-#coding=utf-8
 #   Programmer: limodou
 #   E-mail:     limodou@gmail.com
 #
@@ -6,7 +5,7 @@
 #
 #   Distributed under the terms of the GPL (GNU Public License)
 #
-#   UliPad is free software; you can redistribute it and/or modify
+#   NewEdit is free software; you can redistribute it and/or modify
 #   it under the terms of the GNU General Public License as published by
 #   the Free Software Foundation; either version 2 of the License, or
 #   (at your option) any later version.
@@ -20,16 +19,17 @@
 #   along with this program; if not, write to the Free Software
 #   Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 #
-#   $Id: MessageWindow.py 1817 2007-01-10 10:02:56Z limodou $
+#   $Id: MessageWindow.py 475 2006-01-16 09:50:28Z limodou $
 
 __doc__ = 'message window'
 
+import os
 import wx
-import locale
+import wx.stc
 from modules import Mixin
 from modules import common
 from modules import makemenu
-from modules import dict4ini
+from modules import Globals
 
 class MessageWindow(wx.stc.StyledTextCtrl, Mixin.Mixin):
     __mixinname__ = 'messagewindow'
@@ -42,18 +42,15 @@ class MessageWindow(wx.stc.StyledTextCtrl, Mixin.Mixin):
             (140, 'IDPM_COPY', tr('Copy') + '\tCtrl+C', wx.ITEM_NORMAL, 'OnPopupEdit', tr('Copies text from the document to the clipboard')),
             (150, 'IDPM_PASTE', tr('Paste') + '\tCtrl+V', wx.ITEM_NORMAL, 'OnPopupEdit', tr('Pastes text from the clipboard into the document')),
             (160, '', '-', wx.ITEM_SEPARATOR, None, ''),
-            (170, 'IDPM_SELECTALL', tr('Select All') + '\tCtrl+A', wx.ITEM_NORMAL, 'OnPopupEdit', tr('Selects all text.')),
-            (175, 'IDPM_CLEAR', tr('Clear') + '\tShift+F5', wx.ITEM_NORMAL, 'OnClear', tr('Clear all the text.')),
-            (180, 'IDPM_WRAP', tr('Wrap Text'), wx.ITEM_CHECK, 'OnWrap', tr('Wrap text.')),
-            (185, 'IDPM_AUTO_CLEAR', tr('Auto Clear on Running Program'), wx.ITEM_CHECK, 'OnAutoClaer', tr('Auto clear text on run program.')),
+            (170, 'IDPM_SELECT_ALL', tr('Select All') + '\tCtrl+A', wx.ITEM_NORMAL, 'OnPopupEdit', tr('Selects all text.')),
         ]),
     ]
     imagelist = {
-        'IDPM_UNDO':'images/undo.gif',
-        'IDPM_REDO':'images/redo.gif',
-        'IDPM_CUT':'images/cut.gif',
-        'IDPM_COPY':'images/copy.gif',
-        'IDPM_PASTE':'images/paste.gif',
+        'IDPM_UNDO':'undo.gif',
+        'IDPM_REDO':'redo.gif',
+        'IDPM_CUT':'cut.gif',
+        'IDPM_COPY':'copy.gif',
+        'IDPM_PASTE':'paste.gif',
     }
 
     def __init__(self, parent, mainframe):
@@ -65,36 +62,15 @@ class MessageWindow(wx.stc.StyledTextCtrl, Mixin.Mixin):
         self.SetMarginWidth(0, 0)
         self.SetMarginWidth(1, 0)
         self.SetMarginWidth(2, 0)
-
-        #add default font settings in config.ini
-        inifile = common.getConfigPathFile('config.ini')
-        x = dict4ini.DictIni(inifile)
         font = wx.SystemSettings_GetFont(wx.SYS_DEFAULT_GUI_FONT)
-        fontname = x.default.get('message_font', font.GetFaceName())
-        fontsize = x.default.get('message_fontsize', 10)
-        #todo fontsize maybe changed for mac
-        if wx.Platform == '__WXMAC__':
-            fontsize = 13
-        #add chinese simsong support, because I like this font
-        if not x.default.has_key('message_font') and locale.getdefaultlocale()[0] == 'zh_CN':
-            fontname = u'宋体'
-        self.defaultfaces = {
-            'name':fontname,
-            'size':fontsize,
-        }
+        self.StyleSetSpec(wx.stc.STC_STYLE_DEFAULT, "face:%s,size:10" % font.GetFaceName())
 
-        self.StyleSetSpec(wx.stc.STC_STYLE_DEFAULT, "face:%(name)s,size:%(size)d" % self.defaultfaces)
-        self.StyleClearAll()
-        
         self.SetScrollWidth(1)
         self.maxline = 'WWWW'
 
-        #disable popup
-        self.UsePopUp(0)
-
         for key in MessageWindow.imagelist.keys():
             f = MessageWindow.imagelist[key]
-            MessageWindow.imagelist[key] = common.getpngimage(f)
+            MessageWindow.imagelist[key] = common.getpngimage(os.path.join(Globals.workpath, 'images/%s' % f))
 
         self.popmenu = makemenu.makepopmenu(self, MessageWindow.popmenulist, MessageWindow.imagelist)
 
@@ -106,21 +82,11 @@ class MessageWindow(wx.stc.StyledTextCtrl, Mixin.Mixin):
         wx.EVT_UPDATE_UI(self, self.IDPM_CUT, self.OnUpdateUI)
         wx.EVT_UPDATE_UI(self, self.IDPM_COPY, self.OnUpdateUI)
         wx.EVT_UPDATE_UI(self, self.IDPM_PASTE, self.OnUpdateUI)
-        wx.EVT_UPDATE_UI(self, self.IDPM_WRAP, self.OnUpdateUI)
-        wx.EVT_UPDATE_UI(self, self.IDPM_AUTO_CLEAR, self.OnUpdateUI)
 
 #        self.SetCaretForeground(')
-        if x.default.has_key('message_caretlineback'):
-            self.SetCaretLineBack(x.default.message_caretlineback)
-        else:
-            self.SetCaretLineBack('#FF8000')
+        self.SetCaretLineBack('#FF8000')
         self.SetCaretLineVisible(True)
-        if self.mainframe.pref.message_wrap:
-            self.SetWrapMode(wx.stc.STC_WRAP_WORD)
-        else:
-            self.SetWrapMode(wx.stc.STC_WRAP_NONE)
-        self.SetScrollWidth(5000)
-
+        
         self.callplugin('init', self)
 
     def SetText(self, text):
@@ -154,7 +120,7 @@ class MessageWindow(wx.stc.StyledTextCtrl, Mixin.Mixin):
 
     def canClose(self):
         return True
-
+    
     def OnPopUp(self, event):
         other_menus = []
         if self.popmenu:
@@ -169,7 +135,7 @@ class MessageWindow(wx.stc.StyledTextCtrl, Mixin.Mixin):
         self.popmenu = pop_menus = makemenu.makepopmenu(self, pop_menus, MessageWindow.imagelist)
 
         self.PopupMenu(self.popmenu, event.GetPosition())
-
+        
     def OnPopupEdit(self, event):
         eid = event.GetId()
         if eid == self.IDPM_CUT:
@@ -178,7 +144,7 @@ class MessageWindow(wx.stc.StyledTextCtrl, Mixin.Mixin):
             self.Copy()
         elif eid == self.IDPM_PASTE:
             self.Paste()
-        elif eid == self.IDPM_SELECTALL:
+        elif eid == self.IDPM_SELECT_ALL:
             self.SelectAll()
         elif eid == self.IDPM_UNDO:
             self.Undo()
@@ -197,28 +163,3 @@ class MessageWindow(wx.stc.StyledTextCtrl, Mixin.Mixin):
             event.Enable(bool(self.CanUndo()))
         elif eid == self.IDPM_REDO:
             event.Enable(bool(self.CanRedo()))
-        elif eid == self.IDPM_WRAP:
-            mode = self.GetWrapMode()
-            if mode == wx.stc.STC_WRAP_NONE:
-                event.Check(False)
-            else:
-                event.Check(True)
-        elif eid == self.IDPM_AUTO_CLEAR:
-            event.Check(self.mainframe.pref.clear_message)
-
-    def OnWrap(self, event):
-        mode = self.GetWrapMode()
-        if mode == wx.stc.STC_WRAP_NONE:
-            self.SetWrapMode(wx.stc.STC_WRAP_WORD)
-            self.mainframe.pref.message_wrap = True
-        else:
-            self.SetWrapMode(wx.stc.STC_WRAP_NONE)
-            self.mainframe.pref.message_wrap = False
-
-    def OnClear(self, event):
-        self.SetText('')
-        
-    def OnAutoClaer(self, event):
-        self.mainframe.pref.clear_message = not self.mainframe.pref.clear_message
-        self.mainframe.pref.save()
-        

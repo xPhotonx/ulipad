@@ -43,13 +43,13 @@ popmenulist = [ (None,
 Mixin.setMixin('notebook', 'popmenulist', popmenulist)
 
 toollist = [
-        (550, 'wizard'),
+	(550, 'wizard'),
 ]
 Mixin.setMixin('mainframe', 'toollist', toollist)
 
 #order, IDname, imagefile, short text, long text, func
 toolbaritems = {
-        'wizard':(wx.ITEM_NORMAL, 'IDM_WINDOW_WIZARD', images.getWizardBitmap(), tr('wizard'), tr('Opens wizard window.'), 'OnWindowWizard'),
+	'wizard':(wx.ITEM_NORMAL, 'IDM_WINDOW_WIZARD', images.getWizardBitmap(), tr('wizard'), tr('Opens wizard window.'), 'OnWindowWizard'),
 }
 Mixin.setMixin('mainframe', 'toolbaritems', toolbaritems)
 

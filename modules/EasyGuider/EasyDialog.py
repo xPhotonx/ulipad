@@ -29,11 +29,11 @@ class EasyDialog(wx.Dialog, EasyElements):
 
         wx.Dialog.__init__(self, parent, -1, title, style=wx.DEFAULT_DIALOG_STYLE|wx.RESIZE_BORDER)
         EasyElements.__init__(self, elements, self.values)
-
+        
         sizer = wx.BoxSizer(wx.VERTICAL)
-
+        
         self.addItems(sizer)
-
+        
         box1 = wx.BoxSizer(wx.HORIZONTAL)
 
         self.btnok = wx.Button(self, wx.ID_OK, 'OK')
@@ -41,7 +41,7 @@ class EasyDialog(wx.Dialog, EasyElements):
         box1.Add(self.btnok, 0, wx.ALL, 2)
         self.btncancel = wx.Button(self, wx.ID_CANCEL, 'Cancel')
         box1.Add(self.btncancel, 0, wx.ALL, 2)
-
+        
         sizer.Add(box1, 0, wx.ALIGN_CENTER | wx.ALL, 2)
 
         self.SetSizer(sizer)
@@ -49,6 +49,7 @@ class EasyDialog(wx.Dialog, EasyElements):
         sizer.Fit(self)
 
         self.Centre()
-
+        
     def GetValue(self):
         return self.getValues()
+    

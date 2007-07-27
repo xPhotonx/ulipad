@@ -57,7 +57,7 @@ class FileBrowseButton(wx.Panel):
         :param fileMode:       wx.OPEN or wx.SAVE, indicates type of file dialog to use
         :param changeCallback: Optional callback called for all changes in value of the control
         """
-
+      
         # store variables
         self.labelText = labelText
         self.buttonText = buttonText
@@ -194,18 +194,18 @@ class FileBrowseButtonWithHistory( FileBrowseButton ):
                 selection. If you discover this condition, please report it!
 
             As for a FileBrowseButton.__init__ otherwise.
-
+            
         GetHistoryControl()
             Return reference to the control which implements interfaces
             required for manipulating the history list.  See GetHistoryControl
             documentation for description of what that interface is.
-
+            
         GetHistory()
             Return current history list
-
+            
         SetHistory( value=(), selectionIndex = None )
             Set current history list, if selectionIndex is not None, select that index
-
+            
         """
     def __init__( self, *arguments, **namedarguments):
         self.history = namedarguments.get( "history" )
@@ -238,12 +238,12 @@ class FileBrowseButtonWithHistory( FileBrowseButton ):
         """
         Return a pointer to the control which provides (at least)
         the following methods for manipulating the history list:
-
+        
             Append( item ) -- add item
             Clear() -- clear all items
             Delete( index ) -- 0-based index to delete from list
             SetSelection( index ) -- 0-based index to select in list
-
+            
         Semantics of the methods follow those for the wxComboBox control
         """
         return self.textControl
@@ -328,7 +328,7 @@ class DirBrowseButton(FileBrowseButton):
         style=0
 
         if self.newDirectory:
-            style|=wx.DD_NEW_DIR_BUTTON
+          style|=wx.DD_NEW_DIR_BUTTON
 
         dialog = self.dialogClass(self,
                                   message = self.dialogTitle,

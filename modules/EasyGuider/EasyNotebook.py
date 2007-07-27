@@ -36,31 +36,31 @@ class EasyNotebook(wx.Dialog):
 
         self.notebook = wx.Notebook(self, -1)
         self.sizer.Add(self.notebook, 1, wx.EXPAND, 2)
-
+        
         line = wx.StaticLine(self, -1)
         self.sizer.Add(line, 0, wx.EXPAND, 2)
-
+        
         box = wx.BoxSizer(wx.HORIZONTAL)
         self.okbtn = wx.Button(self, wx.ID_OK, 'OK')
         self.okbtn.SetDefault()
         box.Add(self.okbtn, 0, wx.ALL, 2)
         self.cancelbtn = wx.Button(self, wx.ID_CANCEL, 'Cancel')
         box.Add(self.cancelbtn, 0, wx.ALL, 2)
-
+        
         self.sizer.Add(box, 0, wx.ALIGN_CENTER, 2)
 
         self.installPages()
         self.SetAutoLayout(True)
-
+        
         self.sizer.Fit(self)
-
+        
     def installPages(self):
         for i, page in enumerate(self.pagesinfo):
             if isinstance(page, EasyPage.EasyPage):
                 self.pages.append(page)
                 self.notebook.AddPage(p, page.title)
             else:
-                p = EasyPage.EasyPage(self.notebook, title=page.get("title", ""), description=page.get("description", ""),
+                p = EasyPage.EasyPage(self.notebook, title=page.get("title", ""), description=page.get("description", ""), 
                     elements=page.get("elements", []), theme=page.get("theme", 'simple'), values=self.values)
                 self.pages.append(p)
                 self.notebook.AddPage(p, page.get("title", "Page%d" % i))
@@ -70,3 +70,4 @@ class EasyNotebook(wx.Dialog):
         for page in self.pages:
             values.update(page.getValues())
         return values
+        

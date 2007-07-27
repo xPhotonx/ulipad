@@ -1,1 +1,1 @@
-python msgfmt.py -o ../lang/ulipad_cn.mo ulipad_cn.po
+python msgfmt.py -o ../lang/newedit_cn.mo newedit_cn.po

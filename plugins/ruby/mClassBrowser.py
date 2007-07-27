@@ -60,9 +60,9 @@ def OnRubyClassBrowser(win, event):
 Mixin.setMixin('mainframe', 'OnRubyClassBrowser', OnRubyClassBrowser)
 
 def aftersavefile(win, filename):
-    if (win.edittype == 'edit'
+    if (win.documenttype == 'edit' 
         and win.languagename == 'ruby'
-        and win.pref.ruby_classbrowser_refresh_as_save
+        and win.pref.ruby_classbrowser_refresh_as_save 
         and win.init_class_browser):
         win.outlookbrowser.show()
 Mixin.setPlugin('editor', 'aftersavefile', aftersavefile)
@@ -74,7 +74,7 @@ Mixin.setMixin('mainframe', 'OnRubyClassBrowserRefresh', OnRubyClassBrowserRefre
 def OnRubyUpdateUI(win, event):
     eid = event.GetId()
     if eid == win.IDM_RUBY_CLASSBROWSER:
-        event.Check(win.document.panel.LeftIsVisible and getattr(win.document, 'init_class_browser', False) and not win.document.multiview)
+        event.Check(win.document.panel.LeftIsVisible and getattr(win.document, 'init_class_browser', False))
 Mixin.setMixin('mainframe', 'OnRubyUpdateUI', OnRubyUpdateUI)
 
 def on_enter(mainframe, document):
@@ -104,7 +104,7 @@ def add_images(images):
 Mixin.setPlugin('outlookbrowser', 'add_images', add_images)
 
 def parsetext(win, editor):
-    if editor.edittype == 'edit' and editor.languagename == 'ruby':
+    if editor.documenttype == 'edit' and editor.languagename == 'ruby':
         import RbParse as Parser
         nodes = Parser.parseString(editor.GetText())
 

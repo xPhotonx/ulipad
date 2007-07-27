@@ -48,16 +48,16 @@ class EasyCommander:
         self.parent = parent
         self.values = values
         self.outputencoding = outputencoding
-
+        
         self.initlog()
         self.processCommandLineArguments()
         if not wx.GetApp():
             self.wxApp = wxApp(0)
         self.mod = self.getPageModule()
-
+        
     def run(self):
         mod = self.mod
-
+        
         #read config information from imported template module
         if hasattr(mod, 'scriptfile') and mod.scriptfile:
             self.scriptfile = mod.scriptfile
@@ -75,7 +75,7 @@ class EasyCommander:
                 import yaml
             except:
                 self.yamlfile = ''
-
+        
         if self.picklefile:
             try:
                 f = file(self.picklefile)
@@ -119,7 +119,7 @@ class EasyCommander:
                     yaml.dumpToFile(file(self.yamlfile, 'wb'), self.values)
                 except:
                     self.log.traceback()
-
+            
             if self.scriptfile:
                 #cal scriptpath
                 SCRIPTPATH = ''
@@ -162,11 +162,11 @@ class EasyCommander:
             return True
         else:
             return False
-
+        
     def Destroy(self):
         if self.easy:
             self.easy.Destroy()
-
+    
     def create_easy(self, mod, values):
         if hasattr(mod, 'wizard'):
             import EasyWizard
@@ -177,24 +177,24 @@ class EasyCommander:
         elif hasattr(mod, 'notebook'):
             import EasyNotebook
             return EasyNotebook.EasyNotebook(self.parent, title=getattr(mod, 'title', 'EasyDialog'), pagesinfo=mod.notebook, values=values)
-
+        
     def initlog(self):
 #        import logging
 #        self.log = log = logging.getLogger('EasyGuider')
 #        hdlr = logging.FileHandler('EasyAdmin.log')
 #        formatter = logging.Formatter('%(asctime)s [%(levelname)s] %(message)s')
 #        hdlr.setFormatter(formatter)
-#        log.addHandler(hdlr)
+#        log.addHandler(hdlr) 
 #        log.setLevel(logging.WARNING)
         self.log = log = EasyUtils.EMPTY_CLASS()
-
+        
         def trace():
 #            message = traceback.format_exception(*sys.exc_info())
 #            log.error(''.join(message))
             raise
-
+        
         log.traceback = trace
-
+        
     def processCommandLineArguments(self):
         #process command line
 
@@ -212,17 +212,17 @@ class EasyCommander:
             cmdstring = "Vvut:s:p:i:o:y:"
         if self.cmdoption is not None:
             cmdstring = self.cmdoption
-
+            
         if self.inline:
             return
-
+        
         try:
             opts, args = getopt.getopt(sys.argv[1:], cmdstring, [])
         except getopt.GetoptError:
             traceback.print_exc()
             self.Usage()
             sys.exit(1)
-
+         
         for o, a in opts:
             if o == '-V':       #version
                 self.Version()
@@ -246,14 +246,14 @@ class EasyCommander:
                 self.outputfile = a
             elif o == '-y':
                 self.yamlfile = a
-
+            
         if not self.inline:
             try:
                 self.easyfile = args[0]
             except:
                 self.Usage()
                 sys.exit(1)
-
+        
     def getPageModule(self):
         if isinstance(self.easyfile, (str, unicode)):
             dirname = os.path.dirname(os.path.abspath(self.easyfile))
@@ -273,10 +273,10 @@ class EasyCommander:
 
     def GetValue(self):
         return self.values
-
+        
     def Usage(self):
         print """Usage %s [options] EasyFilename
-
+    
     -V      Show version
     -v      Verbose output
     -u      Show usage
@@ -287,12 +287,12 @@ class EasyCommander:
     -i file ini format Pickle file used to save input data
     -y file Yaml format Pickle file used to save input data
     -o file Output template file to file
-
+    
     If you want to use template function you should install Meteor package which can
     be found at http://wiki.woodpecker.org.cn/moin.cgi/Meteor. The Meteor version must
     be above 0.1.3 .
     """ % sys.argv[0]
-
+    
     def Version(self):
         print """%s Copyleft GPL
 Author: %s
@@ -302,3 +302,4 @@ Version: %s""" % (__appname__, __author__, __version__)
 if __name__ == '__main__':
     easy = EasyCommander(False)
     easy.run()
+    

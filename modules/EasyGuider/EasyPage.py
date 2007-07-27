@@ -26,20 +26,20 @@ class EasyPage(wx.Panel, EasyElements.EasyElements):
     def __init__(self, parent, title="", description="", elements=[], theme='simple', values={}):
         wx.Panel.__init__(self, parent, -1)
         EasyElements.EasyElements.__init__(self, elements, values)
-
+        
         self.title = title
         self.description = description
-
+        
         self.sizer = wx.BoxSizer(wx.VERTICAL)
         self.SetSizer(self.sizer)
 
         func_name = 'makePageTitle_' + theme
         getattr(self, func_name, self.makePageTitle_classic)()
-
+        
         self.addItems(self.sizer)
         self.SetAutoLayout(True)
         self.sizer.Fit(self)
-
+        
     def makePageTitle_simple(self):
         if self.description:
             box = wx.StaticBox(self, -1, label = self.title)
@@ -58,3 +58,4 @@ class EasyPage(wx.Panel, EasyElements.EasyElements):
             self.sizer.Add(description, 0, wx.EXPAND|wx.ALL, 5)
         if self.title or self.description:
             self.sizer.Add(wx.StaticLine(self, -1), 0, wx.EXPAND|wx.ALL, 5)
+    

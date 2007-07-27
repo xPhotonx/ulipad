@@ -373,3 +373,4 @@ def getRun1Bitmap():
 def getRun1Image():
     stream = cStringIO.StringIO(getRun1Data())
     return ImageFromStream(stream)
+

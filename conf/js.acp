@@ -1,19 +1,13 @@
 [include]
+1 = mochiket_js.acp
 
 [autostring]
 
 [autostring_append]
 
 [autore]
-<(\w+)[^>]*(?<!/)> = \0!^</\1>
 
 [autore_append]
+<(\w+).*?> = !^</\1>
 
 [autovalues]
-
-[auto_default]
-1 = @acp.javascript.import.default_identifier
-
-[auto_complete]
-calltip = @acp.javascript.import.calltip
-autodot = @acp.javascript.import.autodot

@@ -5,7 +5,7 @@
 #
 #   Distributed under the terms of the GPL (GNU Public License)
 #
-#   UliPad is free software; you can redistribute it and/or modify
+#   NewEdit is free software; you can redistribute it and/or modify
 #   it under the terms of the GNU General Public License as published by
 #   the Free Software Foundation; either version 2 of the License, or
 #   (at your option) any later version.
@@ -19,14 +19,11 @@
 #   along with this program; if not, write to the Free Software
 #   Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 #
-#   $Id: mEditorCtrl.py 1909 2007-02-07 01:35:05Z limodou $
+#   $Id: mEditorCtrl.py 475 2006-01-16 09:50:28Z limodou $
 
+from modules import Mixin
 import wx
 import os.path
-from modules.wxctrl import FlatNotebook as FNB
-from modules import common
-from modules import Globals
-from modules import Mixin
 
 def add_mainframe_menu(menulist):
     menulist.extend([ ('IDM_FILE',
@@ -34,12 +31,12 @@ def add_mainframe_menu(menulist):
             (100, 'IDM_FILE_NEW', tr('New') + '\tCtrl+N', wx.ITEM_NORMAL, 'OnFileNew', tr('Creates a new document')),
             (105, 'IDM_FILE_NEWMORE', tr('New') + '...', wx.ITEM_NORMAL, None, tr('Creates a new document')),
             (110, 'IDM_FILE_OPEN', tr('Open') + '\tCtrl+O', wx.ITEM_NORMAL, 'OnFileOpen', tr('Opens an existing document')),
-            (120, 'IDM_FILE_REOPEN', tr('Reopen') + '\tE=Ctrl+Shift+O', wx.ITEM_NORMAL, 'OnFileReOpen', tr('Reopens an existing document')),
+            (120, 'IDM_FILE_REOPEN', tr('Reopen') + '\tCtrl+Shift+O', wx.ITEM_NORMAL, 'OnFileReOpen', tr('Reopens an existing document')),
             (140, 'IDM_FILE_CLOSE', tr('Close') + '\tCtrl+F4', wx.ITEM_NORMAL, 'OnFileClose', tr('Closes an opened document')),
             (150, 'IDM_FILE_CLOSE_ALL', tr('Close All'), wx.ITEM_NORMAL, 'OnFileCloseAll', tr('Closes all document windows')),
             (160, '', '-', wx.ITEM_SEPARATOR, None, ''),
-            (170, 'IDM_FILE_SAVE', tr('Save') + '\tE=Ctrl+S', wx.ITEM_NORMAL, 'OnFileSave', tr('Saves an opened document using the same filename')),
-            (180, 'IDM_FILE_SAVEAS', tr('Save As'), wx.ITEM_NORMAL, 'OnFileSaveAs', tr('Saves an opened document to a specified filename')),
+            (170, 'IDM_FILE_SAVE', tr('Save') + '\tCtrl+S', wx.ITEM_NORMAL, 'OnFileSave', tr('Saves an opened document using the same filename')),
+            (180, 'IDM_FILE_SAVE_AS', tr('Save As'), wx.ITEM_NORMAL, 'OnFileSaveAs', tr('Saves an opened document to a specified filename')),
             (190, 'IDM_FILE_SAVE_ALL', tr('Save All'), wx.ITEM_NORMAL, 'OnFileSaveAll', tr('Saves all documents')),
         ]),
     ])
@@ -48,14 +45,12 @@ Mixin.setPlugin('mainframe', 'add_menu', add_mainframe_menu)
 def add_editctrl_menu(popmenulist):
     popmenulist.extend([ (None,
         [
-            (100, 'IDPM_CLOSE', tr('Close') + '\tCtrl+F4', wx.ITEM_NORMAL, 'OnPopUpMenu', tr('Closes an opened document')),
-            (110, 'IDPM_CLOSE_ALL', tr('Close All'), wx.ITEM_NORMAL, 'OnPopUpMenu', tr('Closes all document windows')),
-            (120, '', '-', wx.ITEM_SEPARATOR, None, ''),
-            (130, 'IDPM_SAVE', tr('Save') + '\tCtrl+S', wx.ITEM_NORMAL, 'OnPopUpMenu', tr('Saves an opened document using the same filename')),
-            (140, 'IDPM_SAVEAS', tr('Save As'), wx.ITEM_NORMAL, 'OnPopUpMenu', 'tr(Saves an opened document to a specified filename)'),
-            (150, 'IDPM_FILE_SAVE_ALL', tr('Save All'), wx.ITEM_NORMAL, 'OnPopUpMenu', tr('Saves all documents')),
-            (160, '', '-', wx.ITEM_SEPARATOR, None, ''),
-            (170, 'IDPM_OPEN_CMD_WINDOW', tr('Open Command Window Here'), wx.ITEM_NORMAL, 'OnOpenCmdWindow', ''),
+            (100, 'IDPM_FILE_CLOSE', tr('Close') + '\tCtrl+F4', wx.ITEM_NORMAL, 'OnPopUpMenu', tr('Closes an opened document')),
+            (200, 'IDPM_FILE_CLOSE_ALL', tr('Close All'), wx.ITEM_NORMAL, 'OnPopUpMenu', tr('Closes all document windows')),
+            (250, '', '-', wx.ITEM_SEPARATOR, None, ''),
+            (300, 'IDPM_FILE_SAVE', tr('Save') + '\tCtrl+S', wx.ITEM_NORMAL, 'OnPopUpMenu', tr('Saves an opened document using the same filename')),
+            (400, 'IDPM_FILE_SAVE_AS', tr('Save As'), wx.ITEM_NORMAL, 'OnPopUpMenu', 'tr(Saves an opened document to a specified filename)'),
+            (500, 'IDPM_FILE_SAVE_ALL', tr('Save All'), wx.ITEM_NORMAL, 'OnPopUpMenu', tr('Saves all documents')),
         ]),
     ])
 Mixin.setPlugin('editctrl', 'add_menu', add_editctrl_menu)
@@ -72,8 +67,8 @@ Mixin.setPlugin('mainframe', 'add_menu_image_list', add_mainframe_menu_image_lis
 
 def add_editctrl_menu_image_list(imagelist):
     imagelist = {
-        'IDPM_CLOSE':'images/close.gif',
-        'IDPM_SAVE':'images/save.gif',
+        'IDPM_FILE_CLOSE':'images/close.gif',
+        'IDPM_FILE_SAVE':'images/save.gif',
         'IDPM_FILE_SAVEALL':'images/saveall.gif',
     }
 Mixin.setPlugin('editctrl', 'add_menu_image_list', add_editctrl_menu_image_list)
@@ -86,7 +81,7 @@ Mixin.setPlugin('mainsubframe', 'init', neweditctrl)
 
 def on_close(win, event):
     if event.CanVeto():
-        for document in win.editctrl.getDocuments():
+        for document in win.editctrl.list:
             r = win.CloseFile(document, True)
             if r == wx.ID_CANCEL:
                 return True
@@ -109,20 +104,6 @@ def OnFileOpen(win, event):
 Mixin.setMixin('mainframe', 'OnFileOpen', OnFileOpen)
 
 def getFilterIndex(win):
-    if hasattr(win, 'document') and win.document:
-        doc = win.document
-        if doc.languagename:
-            w = None
-            for wildchar, lang in win.filenewtypes:
-                if lang == doc.languagename:
-                    w = wildchar
-                    break
-            if w:
-                for i, v in enumerate(win.filewildchar):
-                    s = v.split('|')[0]
-                    if s.startswith(w):
-                        return i
-                
     if len(win.pref.recent_files) > 0:
         filename = win.pref.recent_files[0]
         ext = os.path.splitext(filename)[1]
@@ -138,42 +119,37 @@ Mixin.setMixin('mainframe', 'getFilterIndex', getFilterIndex)
 
 def OnFileReOpen(win, event):
     if win.document.isModified():
-        document = findDocument(win.document)
         dlg = wx.MessageDialog(win, tr("This document has been modified,\ndo you really want to reload the file?"), tr("Reopen file..."), wx.YES_NO|wx.ICON_QUESTION)
         answer = dlg.ShowModal()
         dlg.Destroy()
         if answer != wx.ID_YES:
             return
-        state = document.save_state()
-        document.openfile(document.filename)
-        document.editctrl.switch(document)
-        document.restore_state(state)
+    win.document.openfile(win.document.filename)
+    win.editctrl.switch(win.document)
 Mixin.setMixin('mainframe', 'OnFileReOpen', OnFileReOpen)
 
 def OnFileClose(win, event):
-    document = findDocument(win.document)
-    win.CloseFile(document)
-    if len(win.editctrl.getDocuments()) == 0:
+    win.CloseFile(win.document)
+    if len(win.editctrl.list) == 0:
         win.editctrl.new()
 Mixin.setMixin('mainframe', 'OnFileClose', OnFileClose)
 
 def OnFileCloseAll(win, event):
-    i = len(win.editctrl.getDocuments()) - 1
+    i = len(win.editctrl.list) - 1
     while i > -1:
-        document = win.editctrl.getDoc(i)
+        document = win.editctrl.list[i]
         if not document.opened:
-            win.editctrl.skip_closing = True
-            win.editctrl.skip_page_change = True
             win.editctrl.DeletePage(i)
+            del win.editctrl.list[i]
         i -= 1
 
-    k = len(win.editctrl.getDocuments())
+    k = len(win.editctrl.list)
     for i in range(k):
-        document = win.editctrl.getDoc(0)
+        document = win.editctrl.list[0]
         r = win.CloseFile(document)
         if r == wx.ID_CANCEL:
             break
-    if win.editctrl.GetPageCount() == 0:
+    if len(win.editctrl.list) == 0:
         win.editctrl.new()
 Mixin.setMixin('mainframe', 'OnFileCloseAll', OnFileCloseAll)
 
@@ -191,19 +167,17 @@ def CloseFile(win, document, checkonly = False):
 
     if checkonly == False:
         win.editctrl.lastdocument = None
-        win.callplugin('closefile', win, document, document.filename)
+        win.callplugin('closefile', win, document.filename)
         win.editctrl.closefile(document)
     return answer
 Mixin.setMixin('mainframe', 'CloseFile', CloseFile)
 
 def OnFileSave(win, event):
-    document = findDocument(win.document)
-    win.SaveFile(document)
-    document.SetFocus()
+    win.SaveFile(win.document)
 Mixin.setMixin('mainframe', 'OnFileSave', OnFileSave)
 
 def OnFileSaveAll(win, event):
-    for ctrl in win.editctrl.getDocuments():
+    for ctrl in win.editctrl.list:
         if ctrl.opened:
             r = win.SaveFile(ctrl)
 Mixin.setMixin('mainframe', 'OnFileSaveAll', OnFileSaveAll)
@@ -219,15 +193,14 @@ def SaveFile(win, ctrl, issaveas=False):
 
     if issaveas or len(ctrl.filename)<=0:
         encoding = win.execplugin('getencoding', win, win)
-        filename = get_suffix_filename(ctrl, ctrl.getFilename())
-        dlg = wx.FileDialog(win, tr("Save File %s As") % filename, win.pref.last_dir, filename, '|'.join(win.filewildchar), wx.SAVE|wx.OVERWRITE_PROMPT)
+        dlg = wx.FileDialog(win, tr("Save File %s As") % ctrl.getFilename(), win.pref.last_dir, '', '|'.join(win.filewildchar), wx.SAVE|wx.OVERWRITE_PROMPT)
         dlg.SetFilterIndex(getFilterIndex(win))
         if (dlg.ShowModal() == wx.ID_OK):
             filename = dlg.GetPath()
             dlg.Destroy()
 
             #check if the filename has been openned, if openned then fail
-            for document in win.editctrl.getDocuments():
+            for document in win.editctrl.list:
                 if (not ctrl is document ) and (filename == document.filename):
                     wx.MessageDialog(win, tr("Ths file %s has been openned!\nCann't save new file to it.") % document.getFilename(),
                         tr("Save As..."), wx.OK|wx.ICON_INFORMATION).ShowModal()
@@ -240,59 +213,6 @@ def SaveFile(win, ctrl, issaveas=False):
     return win.editctrl.savefile(ctrl, filename, encoding)
 Mixin.setMixin('mainframe', 'SaveFile', SaveFile)
 
-def get_suffix_filename(editor, filename):
-    fname, ext = os.path.splitext(filename)
-    if not ext:
-        if hasattr(editor, 'lexer'):
-            wildchar = editor.lexer.getFilewildchar()
-            pos = wildchar.find('|')
-            if pos > -1:
-                suffix = wildchar[pos+1:].split(';', 1)[0]
-                suffix = suffix.replace('*', '')
-                if suffix:
-                    if not suffix.startswith('.'):
-                        suffix = '.' + suffix
-                    return fname + suffix
-    return filename
-
 def pref_init(pref):
     pref.last_dir = ''
-    pref.notebook_direction = 0
 Mixin.setPlugin('preference', 'init', pref_init)
-
-def add_pref(preflist):
-    preflist.extend([
-        (tr('Document'), 290, 'choice', 'notebook_direction', tr('Document tabs direction'), [tr('Top'), tr('Bottom')])
-    ])
-Mixin.setPlugin('preference', 'add_pref', add_pref)
-
-def savepreference(mainframe, pref):
-    style = mainframe.editctrl.GetWindowStyleFlag()
-    if pref.notebook_direction:
-        style |= FNB.FNB_BOTTOM
-    else:
-        if style & FNB.FNB_BOTTOM:
-            style ^= FNB.FNB_BOTTOM
-    
-    mainframe.editctrl.SetWindowStyleFlag(style)
-    mainframe.editctrl.Refresh()
-Mixin.setPlugin('prefdialog', 'savepreference', savepreference)
-
-def findDocument(document):
-    if hasattr(document, 'multiview') and document.multiview:
-        return document.document
-    else:
-        return document
-    
-def OnOpenCmdWindow(win, event=None):
-    filename = win.getCurDoc().getFilename()
-    if not filename:
-        filename = Globals.userpath
-    else:
-        filename = os.path.dirname(filename)
-    if wx.Platform == '__WXMSW__':
-        cmdline = os.environ['ComSpec']
-        os.spawnl(os.P_NOWAIT, cmdline,r" /k %s && cd %s" % (os.path.split(filename)[0][:2], filename))
-    else:
-        common.showerror(win, tr('This features is only implemented in Windows Platform.\nIf you know how to implement in Linux please tell me.'))
-Mixin.setMixin('editctrl', 'OnOpenCmdWindow', OnOpenCmdWindow)

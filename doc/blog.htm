@@ -1,0 +1,142 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<meta name="generator" content="Docutils 0.3.9: http://docutils.sourceforge.net/" />
+<title>如何使用Blog插件</title>
+<link rel="stylesheet" href="default.css" type="text/css" />
+</head>
+<body>
+<div class="document" id="blog">
+<h1 class="title">如何使用Blog插件</h1>
+<table class="docinfo" frame="void" rules="none">
+<col class="docinfo-name" />
+<col class="docinfo-content" />
+<tbody valign="top">
+<tr class="field"><th class="docinfo-name">作者:</th><td class="field-body">limodou</td>
+</tr>
+<tr class="field"><th class="docinfo-name">联系:</th><td class="field-body"><a class="reference" href="mailto:limodou&#64;gmail.com">limodou&#64;gmail.com</a></td>
+</tr>
+<tr class="field"><th class="docinfo-name">版本:</th><td class="field-body">blog.txt 42 2005-09-28 05:19:21Z limodou</td>
+</tr>
+<tr class="field"><th class="docinfo-name">主页:</th><td class="field-body"><a class="reference" href="http://wiki.woodpecker.org.cn/moin/NewEdit">http://wiki.woodpecker.org.cn/moin/NewEdit</a></td>
+</tr>
+<tr class="field"><th class="docinfo-name">BLOG:</th><td class="field-body"><a class="reference" href="http://www.donews.net/limodou">http://www.donews.net/limodou</a></td>
+</tr>
+<tr class="field"><th class="docinfo-name">版权:</th><td class="field-body">GPL</td>
+</tr>
+</tbody>
+</table>
+<div class="contents topic" id="contents">
+<p class="topic-title first"><a name="contents">Contents</a></p>
+<ul class="simple">
+<li><a class="reference" href="#id1" id="id12" name="id12">安装</a></li>
+<li><a class="reference" href="#id2" id="id13" name="id13">使用</a><ul>
+<li><a class="reference" href="#id3" id="id14" name="id14">设置帐户</a></li>
+<li><a class="reference" href="#id4" id="id15" name="id15">编辑新的Blog</a></li>
+<li><a class="reference" href="#id5" id="id16" name="id16">编辑旧的Blog</a></li>
+<li><a class="reference" href="#id6" id="id17" name="id17">查看Blog信息</a></li>
+<li><a class="reference" href="#id7" id="id18" name="id18">提交</a></li>
+<li><a class="reference" href="#id8" id="id19" name="id19">下载贴子</a></li>
+<li><a class="reference" href="#id9" id="id20" name="id20">查看本地保存</a></li>
+<li><a class="reference" href="#id10" id="id21" name="id21">删除</a></li>
+</ul>
+</li>
+<li><a class="reference" href="#pyblosxom" id="id22" name="id22">PyBlosxom的其它功能支持</a><ul>
+<li><a class="reference" href="#id11" id="id23" name="id23">使用</a></li>
+</ul>
+</li>
+</ul>
+</div>
+<div class="section" id="id1">
+<h1><a class="toc-backref" href="#id12" name="id1">安装</a></h1>
+<p>按照FAQ中的说明安装插件。抄录如下:</p>
+<p>一个插件一般由两个文件组成，有的可有还要多一些。一个是xxx.pin，一个是xxx.py。</p>
+<ol class="arabic simple">
+<li>先将下载的插件解压后放到plugins目录下</li>
+<li>启动NewEdit，打开[工具]-&gt;[插件管理...]然后你会看到插件的名称和描述。在需要使用的插件上双击，或点击下面的[选择切换]
+按钮进行选中，保证要使用的插件前面有勾。然后点击确定。</li>
+<li>重新启动NewEdit即可。</li>
+<li>不过，使用BlogEdit插件你还要安装meteor模块才可以。它可以从: <a class="reference" href="http://wiki.woodpecker.org.cn/moin.cgi/Meteor">http://wiki.woodpecker.org.cn/moin.cgi/Meteor</a> 下载</li>
+</ol>
+</div>
+<div class="section" id="id2">
+<h1><a class="toc-backref" href="#id13" name="id2">使用</a></h1>
+<p>安装好Blog插件后，在工具条上会增加一个字母B样式的图标，同时在窗口菜单中会增加一个[打开Blog窗口]的菜单。点击后，会在窗屏
+底下显示Blog工作区。</p>
+<div class="section" id="id3">
+<h2><a class="toc-backref" href="#id14" name="id3">设置帐户</a></h2>
+<p>点击Blog工作区中的[管理]按钮，或点击Blog编辑窗口中的[站点]-&gt;[站点管理]，会进入设置窗口。需要输入Blog站点名称，用户名，口令，
+UTF-8编码是缺省选中的，XMLRPC服务的地址，对于啄木鸟社区的测试主机来说是：http://202.108.44.33/blog/&lt;yourname&gt;/pyblosxom.cgi/RPC，
+然后是数据保存目录。输入完毕后，点击[增加]，会自动进行验证。成功后确证即可。如果不成功，或发生改变，包括主机分类信息发生改变，
+都要点击[更新]进行重新验证，然后退出即可。</p>
+</div>
+<div class="section" id="id4">
+<h2><a class="toc-backref" href="#id15" name="id4">编辑新的Blog</a></h2>
+<ul class="simple">
+<li>点击工具条上的字母B样式的图标即会打开一个空的Blog编辑窗口。</li>
+<li>也可以在Blog工作区上点[新建]，这样会打开一个空的编辑窗口。</li>
+<li>编辑的内容目前应该是HTML文档，以后会增加新的文本格式。</li>
+</ul>
+</div>
+<div class="section" id="id5">
+<h2><a class="toc-backref" href="#id16" name="id5">编辑旧的Blog</a></h2>
+<ul class="simple">
+<li>如果已经存放到本地，则点击工作区中的[缓冲]，它会把本地保存的信息列出来。然后在想要修改的贴子上双击，会自动打开一个编辑窗口，
+其内容为贴子的内容，进行修改即可。</li>
+</ul>
+</div>
+<div class="section" id="id6">
+<h2><a class="toc-backref" href="#id17" name="id6">查看Blog信息</a></h2>
+<p>可以在Blog编辑窗口中点击[信息]来查看当前Blog的信息，如：标题、分类、创建日期、PostID、帐号、XMLrpc地址</p>
+</div>
+<div class="section" id="id7">
+<h2><a class="toc-backref" href="#id18" name="id7">提交</a></h2>
+<p>在Blog编辑窗口中点击发送即可发出新贴。如果在发送之前未设置Blog帐号请先进行设置。在发送前可以改变要发送的Blog站点，可以点击[站点]进行
+切换。如果要改变分类，可以在分类下接列表中进行选择。如果是一个旧贴，则分类是不能进行选择的。</p>
+<p>发贴完毕后，会自动将此贴从服务器取回，并更新到列表中。</p>
+</div>
+<div class="section" id="id8">
+<h2><a class="toc-backref" href="#id19" name="id8">下载贴子</a></h2>
+<p>你可以点击[获取贴子]得到最后一个提交的贴子。也可以点[&gt;]，输入想要得到贴子的个数。如果个数很大，会把所有贴子取回来。可能时间会很长。</p>
+</div>
+<div class="section" id="id9">
+<h2><a class="toc-backref" href="#id20" name="id9">查看本地保存</a></h2>
+<p>点击[缓冲]，就可以查看本地已经保存的贴子了。</p>
+</div>
+<div class="section" id="id10">
+<h2><a class="toc-backref" href="#id21" name="id10">删除</a></h2>
+<p>此功能会将选中的贴子从服务器删除（本地仍保留），因此建议不要轻易使用。</p>
+</div>
+</div>
+<div class="section" id="pyblosxom">
+<h1><a class="toc-backref" href="#id22" name="pyblosxom">PyBlosxom的其它功能支持</a></h1>
+<p>首先要安装pyblosxom插件，方法同一般插件安装相同。pyblosxom插件是专门用于我为pyblosxom新开发的xmlrpc_newedit.py插件定制的，主要有
+以下功能：</p>
+<blockquote>
+<ol class="arabic">
+<li><p class="first">分类管理</p>
+<p>可以新增、修改。每一个分类包括描述和路径两个域。路径用于存放Blog，是缺省的pyblosxom的分类标识。它对应Blog起始根目录，
+本身是一个子目录。描述用于给于相应的说明信息。如果设置此信息，此信息将显示为发贴的分类信息。</p>
+</li>
+<li><p class="first">编辑配置文件</p>
+<p>使用些功能，首先要在后台Blog系统中进行配置。具体见xmlrpc_newedit.py插件说明。然后，配置好的文件可以在远程被NewEdit进行编辑，编
+辑完成后会上传。</p>
+</li>
+<li><p class="first">上传文件</p>
+<p>可以向指定目录中上传文件或图片。</p>
+</li>
+<li><p class="first">获取文件列表</p>
+<p>可以得到上传文件的文件名和url信息，用于Blog的编辑工作。</p>
+</li>
+</ol>
+</blockquote>
+<div class="section" id="id11">
+<h2><a class="toc-backref" href="#id23" name="id11">使用</a></h2>
+<p>安装好pyblosxom插件后，会在Blog工作区出现一个[PyBlosxom]的按钮，点击它，会出现一个下拉菜单，功能同上述介绍。</p>
+</div>
+</div>
+</div>
+</body>
+</html>

@@ -5,7 +5,7 @@
 #
 #   Distributed under the terms of the GPL (GNU Public License)
 #
-#   UliPad is free software; you can redistribute it and/or modify
+#   NewEdit is free software; you can redistribute it and/or modify
 #   it under the terms of the GNU General Public License as published by
 #   the Free Software Foundation; either version 2 of the License, or
 #   (at your option) any later version.
@@ -19,38 +19,34 @@
 #   along with this program; if not, write to the Free Software
 #   Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 #
-#   $Id: mDirBrowser.py 1897 2007-02-03 10:33:43Z limodou $
+#   $Id: mDirBrowser.py 475 2006-01-16 09:50:28Z limodou $
 
 import wx
 from modules import Mixin
+from modules import common
 from modules import Globals
-
-def add_tool_list(toollist, toolbaritems):
-    toollist.extend([
-        (115, 'dir'),
-    ])
-
-    #order, IDname, imagefile, short text, long text, func
-    toolbaritems.update({
-        'dir':(wx.ITEM_NORMAL, 'IDM_WINDOW_DIRBROWSER', 'images/dir.gif', tr('directory browser'), tr('Opens directory browser window.'), 'OnWindowDirBrowser'),
-    })
-Mixin.setPlugin('mainframe', 'add_tool_list', add_tool_list)
 
 def add_mainframe_menu(menulist):
     menulist.extend([('IDM_FILE',
         [
-            (138, 'IDM_WINDOW_DIRBROWSER', tr('Open Directory Browser')+'\tF2', wx.ITEM_NORMAL, 'OnWindowDirBrowser', tr('Opens directory browser window.'))
+            (138, 'IDM_WINDOW_DIRBROWSER', tr('Directory Browser')+'\tF2', wx.ITEM_NORMAL, 'OnWindowDirBrowser', tr('Opens directory browser window.'))
         ]),
     ])
-Mixin.setPlugin('mainframe', 'add_menu', add_mainframe_menu)
+Mixin.setPlugin('mainframe', 'add_mainframe_menu', add_mainframe_menu)
 
 def add_notebook_menu(popmenulist):
     popmenulist.extend([(None,
         [
-            (170, 'IDPM_DIRBROWSERWINDOW', tr('Open Directory Browser'), wx.ITEM_NORMAL, 'OnDirBrowserWindow', tr('Opens directory browser window.')),
+            (170, 'IDPM_DIRBROWSERWINDOW', tr('Directory Browser'), wx.ITEM_NORMAL, 'OnDirBrowserWindow', tr('Opens directory browser window.')),
         ]),
     ])
-Mixin.setPlugin('notebook', 'add_menu', add_notebook_menu)
+Mixin.setPlugin('notebook', 'add_notebook_menu', add_notebook_menu)
+
+dirbrowser_imagelist = {
+    'close':common.unicode_abspath('images/folderclose.gif'),
+    'open':common.unicode_abspath('images/folderopen.gif'),
+    'item':common.unicode_abspath('images/file.gif'),
+}
 
 def afterinit(win):
     win.dirbrowser_imagelist = {
@@ -78,8 +74,6 @@ def createDirBrowserWindow(win, dirs=None):
     if not win.panel.getPage(tr('Dir Browser')):
         from DirBrowser import DirBrowser
 
-        if not dirs:
-            dirs = win.pref.last_dir_paths
         page = DirBrowser(win.panel.createNotebook('left'), win, dirs)
         win.panel.addPage('left', page, tr('Dir Browser'))
 Mixin.setMixin('mainframe', 'createDirBrowserWindow', createDirBrowserWindow)
@@ -104,7 +98,7 @@ Mixin.setPlugin('preference', 'init', pref_init)
 def add_pref(preflist):
     preflist.extend([
         (tr('General'), 115, 'num', 'recent_dir_paths_num', tr('Max number of recent browse directories:'), None),
-        (tr('General'), 240, 'check', 'open_last_dir_as_startup', tr('Open last directory browser upon startup'), None),
+        (tr('General'), 240, 'check', 'open_last_dir_as_startup', tr('Open last directory browser as startup'), None),
     ])
 Mixin.setPlugin('preference', 'add_pref', add_pref)
 
@@ -117,8 +111,3 @@ def after_closepath(dirbrowser, path):
     Globals.mainframe.pref.last_dir_paths = dirbrowser.getTopDirs()
     Globals.mainframe.pref.save()
 Mixin.setPlugin('dirbrowser', 'after_closepath', after_closepath)
-
-def afterclosewindow(win):
-    win.panel.showWindow('LEFT', False)
-    win.panel.showWindow('bottom', False)
-Mixin.setPlugin('mainframe', 'afterclosewindow', afterclosewindow)

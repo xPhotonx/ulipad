@@ -5,7 +5,7 @@
 #
 #   Distributed under the terms of the GPL (GNU Public License)
 #
-#   UliPad is free software; you can redistribute it and/or modify
+#   NewEdit is free software; you can redistribute it and/or modify
 #   it under the terms of the GNU General Public License as published by
 #   the Free Software Foundation; either version 2 of the License, or
 #   (at your option) any later version.
@@ -19,7 +19,7 @@
 #   along with this program; if not, write to the Free Software
 #   Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 #
-#   $Id: mWindow.py 1839 2007-01-19 12:15:56Z limodou $
+#   $Id: mWindow.py 475 2006-01-16 09:50:28Z limodou $
 
 import wx
 from modules import Mixin
@@ -31,8 +31,8 @@ def add_mainframe_menu(menulist):
         ]),
         ('IDM_WINDOW',
         [
-            (100, 'IDM_WINDOW_LEFT', tr('Left Window')+'\tAlt+Z', wx.ITEM_CHECK, 'OnWindowLeft', tr('Shows or hides the left Window')),
-            (110, 'IDM_WINDOW_BOTTOM', tr('Bottom Window')+'\tAlt+X', wx.ITEM_CHECK, 'OnWindowBottom', tr('Shows or hides the bottom Window')),
+            (100, 'IDM_WINDOW_LEFT', tr('Left Window')+'\tAlt+L', wx.ITEM_CHECK, 'OnWindowLeft', tr('Shows or hides the left Window')),
+            (110, 'IDM_WINDOW_BOTTOM', tr('Bottom Window')+'\tAlt+B', wx.ITEM_CHECK, 'OnWindowBottom', tr('Shows or hides the bottom Window')),
             (120, '-', '', wx.ITEM_SEPARATOR, '', ''),
             (130, 'IDM_WINDOW_SHELL', tr('Open Shell Window'), wx.ITEM_NORMAL, 'OnWindowShell', tr('Opens shell window.')),
             (140, 'IDM_WINDOW_MESSAGE', tr('Open Message Window'), wx.ITEM_NORMAL, 'OnWindowMessage', tr('Opens message window.')),
@@ -40,7 +40,7 @@ def add_mainframe_menu(menulist):
         ('IDM_EDIT',
         [
             (280, '-', '', wx.ITEM_SEPARATOR, '', ''),
-            (290, 'IDM_EDIT_CLEARSHELL', tr('Clear Shell Window') + '\tCtrl+Alt+R', wx.ITEM_NORMAL, 'OnEditClearShell', tr('Clears content of shell window.')),
+            (290, 'IDM_EDIT_CLEARSHELL', tr('Clear Shell Window') + u'\tAlt+C', wx.ITEM_NORMAL, 'OnEditClearShell', tr('Clears content of shell window.')),
         ]),
     ])
 Mixin.setPlugin('mainframe', 'add_menu', add_mainframe_menu)
@@ -59,7 +59,7 @@ def OnWindowBottom(win, event):
     flag = not win.panel.BottomIsVisible
     if flag:
         win.createShellWindow()
-#        win.createMessageWindow()
+        win.createMessageWindow()
 
     win.panel.showWindow('bottom', flag)
 Mixin.setMixin('mainframe', 'OnWindowBottom', OnWindowBottom)
@@ -84,11 +84,11 @@ def add_tool_list(toollist, toolbaritems):
         (450, 'left'),
         (500, 'bottom'),
     ])
-
+    
     #order, IDname, imagefile, short text, long text, func
     toolbaritems.update({
-        'left':(wx.ITEM_CHECK, 'IDM_WINDOW_LEFT', 'images/left.gif', tr('Left Window'), tr('Shows or hides the left Window'), 'OnWindowLeft'),
-        'bottom':(wx.ITEM_CHECK, 'IDM_WINDOW_BOTTOM', 'images/bottom.gif', tr('Bottom Window'), tr('Shows or hides the bottom Window'), 'OnWindowBottom'),
+        'left':(wx.ITEM_CHECK, 'IDM_WINDOW_LEFT', 'images/left.gif', tr('Left Window'), tr('Shows or hides the left Window'), 'OnViewToolWindowLeft'),
+        'bottom':(wx.ITEM_CHECK, 'IDM_WINDOW_BOTTOM', 'images/bottom.gif', tr('Bottom Window'), tr('Shows or hides the bottom Window'), 'OnViewToolWindowBottom'),
     })
 Mixin.setPlugin('mainframe', 'add_tool_list', add_tool_list)
 
@@ -145,3 +145,4 @@ def OnEditClearShell(win, self):
         shellwin.clear()
         shellwin.prompt()
 Mixin.setMixin('mainframe', 'OnEditClearShell', OnEditClearShell)
+    

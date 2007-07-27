@@ -29,7 +29,7 @@ class FloatValidator(wx.PyValidator):
                        valid=wx.Colour(red=255,green=255,blue=255),
                        invalid=wx.Colour(red=216,green=191,blue=216)):
         wx.PyValidator.__init__(self)
-
+        
         self.minimum = minimum
         self.maximum = maximum
         if self.minimum >= self.maximum:
@@ -40,21 +40,21 @@ class FloatValidator(wx.PyValidator):
         self.valid = valid
         self.invalid = invalid
         self.stringList = string.digits + '-.'
-
+        
         wx.EVT_CHAR(self, self.OnChar)
-
+    
     def Clone(self):
         return FloatValidator(self.minimum, self.maximum,
                               self.minstrict, self.maxstrict,
                               self.zero,
                               self.valid, self.invalid)
-
+    
     def TransferToWindow(self):
         return True
 
     def TransferFromWindow(self):
         return True
-
+    
     def Validate(self, win):
         tc = self.GetWindow()
         val = tc._getValue()
@@ -76,15 +76,15 @@ class FloatValidator(wx.PyValidator):
 
         tc.SetBackgroundColour(self.valid)
         tc.Refresh()
-
+        
         return True
 
     def OnChar(self, event):
-        key = event.GetKeyCode()
+        key = event.KeyCode()
         tc = self.GetWindow()
         val = tc._getValue()
         inpoint = tc.GetInsertionPoint()
-
+        
         if key == 8:
             if inpoint == 0:
                 event.Skip()
@@ -98,7 +98,7 @@ class FloatValidator(wx.PyValidator):
                     return
                 else:
                     number = float(number)
-
+                
                 if self.IsInRange(number) == 1:
                     tc.SetBackgroundColour(self.valid)
                     tc.Refresh()
@@ -124,7 +124,7 @@ class FloatValidator(wx.PyValidator):
                     tc.Refresh()
                     event.Skip()
                     return
-
+                        
         if key == wx.WXK_DELETE:
             if inpoint == 0:
                 number = val[1:]
@@ -135,7 +135,7 @@ class FloatValidator(wx.PyValidator):
                     return
                 else:
                     number = float(number)
-
+                
                 if self.IsInRange(number) == 1:
                     tc.SetBackgroundColour(self.valid)
                     tc.Refresh()
@@ -153,7 +153,7 @@ class FloatValidator(wx.PyValidator):
                 val1 = val[:inpoint]
                 val2 = val[inpoint+1:]
                 number = float(val1 + val2)
-
+                
                 if self.IsInRange(number) == 1:
                     tc.SetBackgroundColour(self.valid)
                     tc.Refresh()
@@ -179,12 +179,12 @@ class FloatValidator(wx.PyValidator):
             elif '.' not in val:
                 event.Skip()
                 return
-
+                
         if chr(key) == '-':
             if inpoint == 0 and self.minimum < 0:
                 event.Skip()
                 return
-
+        
         if chr(key) in string.digits:
             if inpoint == 0:
                 number = float(chr(key) + val)
@@ -194,7 +194,7 @@ class FloatValidator(wx.PyValidator):
                 val1 = val[:inpoint]
                 val2 = val[inpoint:]
                 number = float(val1 + chr(key) + val2)
-
+            
             if self.IsInRange(number) == 1:
                 tc.SetBackgroundColour(self.valid)
                 tc.Refresh()
@@ -205,9 +205,9 @@ class FloatValidator(wx.PyValidator):
                 tc.Refresh()
                 event.Skip()
                 return
-
+        
         return
-
+        
     def IsInRange(self, num):
         if self.minimum is None and self.maximum is None:
             return 1
@@ -240,11 +240,11 @@ class FloatCtl(wx.TextCtrl):
         self._getValue = self.GetValue
         self.GetValue = self._getValue
         self.SetValue = self._SetValue
-
+            
     def _GetValue(self):
         text = wx.TextCtrl.GetValue(self)
         return float(text)
-
+    
     def _SetValue(self, value):
         if not isinstance(value, float):
             wx.TextCtrl.SetValue(self, value)

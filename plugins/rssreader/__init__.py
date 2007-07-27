@@ -53,7 +53,7 @@ def add_images(images):
     for name, f in s:
         images[name] = os.path.join(Globals.workpath, 'plugins/rssreader/%s' % f)
 Mixin.setPlugin('sharewin', 'add_images', add_images)
-
+    
 def OnAddRssReader(win, event):
     data = {'type':'rss', 'level':'root', 'caption':tr('RSS Reader'), 'normal_imagename':'RSS_ROOT_IMAGE', 'expand_imagename':'RSS_ROOT_IMAGE', 'data':{'save':True}}
     item = win.addnode(None, data=data, save=True)
@@ -186,15 +186,15 @@ def on_menu(win, menu_id):
                 common.setmessage(Globals.mainframe, tr('Saving OPML...'))
                 klass.export_opml(dlg.GetFilename())
     elif hasattr(win, 'IDPM_RSS_STOP_FEED') and menu_id == win.IDPM_RSS_STOP_FEED:
-        klass = win.get_cur_class()
-        item, node = win.get_cur_node()
-        if klass:
-            klass.stop_feed(item)
+            klass = win.get_cur_class()
+            item, node = win.get_cur_node()
+            if klass:
+                klass.stop_feed(item)
     elif hasattr(win, 'IDPM_RSS_STOP_CATEGORY') and menu_id == win.IDPM_RSS_STOP_CATEGORY:
-        klass = win.get_cur_class()
-        item, node = win.get_cur_node()
-        if klass:
-            klass.stop_category(item)
+            klass = win.get_cur_class()
+            item, node = win.get_cur_node()
+            if klass:
+                klass.stop_category(item)
     elif hasattr(win, 'IDPM_RSS_RECREATE') and menu_id == win.IDPM_RSS_RECREATE:
         ret = wx.MessageBox(tr("Do you really want to re-create the rss database?\nAll data in it will be lost!"), tr("Confirm"),
             style=wx.YES_NO)

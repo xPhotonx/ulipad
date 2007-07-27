@@ -1,9 +1,9 @@
-#       Programmer:     limodou
-#       E-mail:         limodou@gmail.com
+#	Programmer:	limodou
+#	E-mail:		limodou@gmail.com
 #
-#       Copyleft 2006 limodou
+#	Copyleft 2006 limodou
 #
-#       Distributed under the terms of the GPL (GNU Public License)
+#	Distributed under the terms of the GPL (GNU Public License)
 #
 #   NewEdit is free software; you can redistribute it and/or modify
 #   it under the terms of the GNU General Public License as published by
@@ -19,7 +19,7 @@
 #   along with this program; if not, write to the Free Software
 #   Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 #
-#       $Id$
+#	$Id$
 
 import wx
 from modules import Mixin
@@ -27,14 +27,14 @@ from mixins import FiletypeBase
 
 class RubyFiletype(FiletypeBase.FiletypeBase):
 
-    __mixinname__ = 'rubyfiletype'
-    menulist = [ (None,
-            [
-                    (890, 'IDM_RUBY', 'Ruby', wx.ITEM_NORMAL, None, ''),
-            ]),
-    ]
-    toollist = []           #your should not use supperclass's var
-    toolbaritems= {}
+	__mixinname__ = 'rubyfiletype'
+	menulist = [ (None,
+		[
+			(890, 'IDM_RUBY', 'Ruby', wx.ITEM_NORMAL, None, ''),
+		]),
+	]
+	toollist = []		#your should not use supperclass's var
+	toolbaritems= {}
 
 filetype = [('ruby', RubyFiletype)]
 Mixin.setMixin('changefiletype', 'filetypes', filetype)

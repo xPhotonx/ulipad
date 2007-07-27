@@ -49,13 +49,13 @@ def parseString(string):
     stack = [] # stack of (class, indent) pairs
 
     lines = string.splitlines()
-
+    
     line_no = 0
-
+    
     for line in lines :
         line_no += 1
         ls = line.lstrip()
-
+        
         if ls[:4] == 'def ':
             thisindent = len(line)-len(ls)
             while stack and stack[-1][1] >= thisindent:
@@ -77,10 +77,10 @@ def parseString(string):
             thisindent = len(line)-len(ls)
             while stack and stack[-1][1] >= thisindent:
                 del stack[-1]
-
+                                        
             cur_class = Class(ls, ls, line_no)
             if not stack:
-                dict['class'][ls] = cur_class
+                dict['class'][ls] = cur_class                    
             stack.append((cur_class, thisindent))
 
     return dict
@@ -108,3 +108,4 @@ def main():
 
 if __name__ == "__main__":
     main()
+

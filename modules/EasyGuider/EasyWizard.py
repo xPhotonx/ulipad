@@ -28,23 +28,23 @@ class EasyWizardPage(wiz.PyWizardPage, EasyElements.EasyElements):
         wiz.PyWizardPage.__init__(self, parent)
         EasyElements.EasyElements.__init__(self, elements, values)
         self.next = self.prev = None
-
+        
         self.title = title
         if bitmap and isinstance(bitmap, (str, unicode)):
             self.bitmap = wx.Image(bitmap).ConvertToBitmap()
         else:
             self.bitmap = bitmap
         self.description = description
-
+        
         self.sizer = wx.BoxSizer(wx.VERTICAL)
         self.SetSizer(self.sizer)
 
         func_name = 'makePageTitle_' + theme
         getattr(self, func_name, self.makePageTitle_classic)()
-
+        
         self.addItems(self.sizer)
         self.SetAutoLayout(True)
-
+        
     def makePageTitle_simple(self):
         if self.description:
             box = wx.StaticBox(self, -1, label = self.title)
@@ -63,7 +63,7 @@ class EasyWizardPage(wiz.PyWizardPage, EasyElements.EasyElements):
             self.sizer.Add(description, 0, wx.EXPAND|wx.ALL, 5)
         if self.title or self.description:
             self.sizer.Add(wx.StaticLine(self, -1), 0, wx.EXPAND|wx.ALL, 5)
-
+    
     def SetNext(self, next):
         self.next = next
 
@@ -78,7 +78,7 @@ class EasyWizardPage(wiz.PyWizardPage, EasyElements.EasyElements):
 
     def GetBitmap(self):
         return self.bitmap
-
+    
 class EasyWizard:
     def __init__(self, parent, title="", pagesinfo=[], values={}, bitmap=wx.NullBitmap):
         self.title = title
@@ -93,39 +93,39 @@ class EasyWizard:
 
         self.installPages()
         self.wizard.FitToPage(self.page1)
-
+        
     def installPages(self):
         for page in self.pagesinfo:
             if isinstance(page, EasyWizardPage):
                 self.pages.append(page)
             else:
-                p = EasyWizardPage(self.wizard, title=page.get("title", ""), description=page.get("description", ""),
+                p = EasyWizardPage(self.wizard, title=page.get("title", ""), description=page.get("description", ""), 
                     elements=page.get("elements", []), bitmap=page.get("bitmap", wx.NullBitmap), theme=page.get("theme", 'simple'), values=self.values)
                 self.pages.append(p)
-
+    
         self.page1 = self.pages[0]
-
+        
         last_page = len(self.pages) - 1
         for i, page in enumerate(self.pages):
             if i != 0:
                 page.SetPrev(self.pages[i-1])
             if i != last_page:
                 page.SetNext(self.pages[i+1])
-
+    
 
     def GetValue(self):
         values = {}
         for page in self.pages:
             values.update(page.getValues())
         return values
-
+        
     def ShowModal(self):
         ret = self.wizard.RunWizard(self.page1)
         if ret:
             return wx.ID_OK
         else:
             return wx.ID_CANCEL
-
+        
     def Destroy(self):
         if self.wizard:
             self.wizard.Destroy()

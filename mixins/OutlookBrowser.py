@@ -5,7 +5,7 @@
 #
 #   Distributed under the terms of the GPL (GNU Public License)
 #
-#   UliPad is free software; you can redistribute it and/or modify
+#   NewEdit is free software; you can redistribute it and/or modify
 #   it under the terms of the GNU General Public License as published by
 #   the Free Software Foundation; either version 2 of the License, or
 #   (at your option) any later version.
@@ -19,7 +19,7 @@
 #   along with this program; if not, write to the Free Software
 #   Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 #
-#   $Id: OutlookBrowser.py 1792 2006-12-23 02:54:21Z limodou $
+#   $Id: OutlookBrowser.py 475 2006-01-16 09:50:28Z limodou $
 
 import wx
 from modules import common
@@ -32,25 +32,22 @@ class OutlookBrowser(wx.Panel, Mixin.Mixin):
 
     popmenulist = []
 
-    def __init__(self, parent, editor, autoexpand=True):
+    def __init__(self, parent, editor):
         self.initmixin()
-
+        
         wx.Panel.__init__(self, parent, -1)
         self.parent = parent
         self.editor = editor
-        self.autoexpand = autoexpand
         
-        self.activeflag = False
-
         psizer = wx.BoxSizer(wx.VERTICAL)
         psizer.Add(self, 1, wx.EXPAND)
         self.parent.SetSizer(psizer)
         self.parent.SetAutoLayout(True)
-
+        
         self.sizer = wx.BoxSizer(wx.VERTICAL)
 
         self.imagelist = wx.ImageList(16, 16)
-
+        
         #add share image list
         self.imagefilenames = {}
         self.imageids = {}
@@ -58,13 +55,7 @@ class OutlookBrowser(wx.Panel, Mixin.Mixin):
         for name, imagefile in self.imagefilenames.items():
             self.add_image(name, imagefile)
 
-        style = wx.TR_SINGLE|wx.TR_HIDE_ROOT|wx.TR_HAS_BUTTONS|wx.TR_TWIST_BUTTONS
-        if wx.Platform == '__WXMSW__':
-            style = style | wx.TR_ROW_LINES
-        elif wx.Platform == '__WXGTK__':
-            style = style | wx.TR_NO_LINES
-
-        self.tree = wx.TreeCtrl(self, -1, style = style)
+        self.tree = wx.TreeCtrl(self, -1, style = wx.TR_EDIT_LABELS|wx.TR_SINGLE|wx.TR_TWIST_BUTTONS|wx.TR_HAS_BUTTONS|wx.TR_ROW_LINES|wx.TR_HIDE_ROOT)
         self.tree.SetImageList(self.imagelist)
 
         self.sizer.Add(self.tree, 1, wx.EXPAND)
@@ -83,30 +74,26 @@ class OutlookBrowser(wx.Panel, Mixin.Mixin):
         wx.EVT_TREE_DELETE_ITEM(self.tree, self.tree.GetId(), self.OnDeleteItem)
 #        wx.EVT_LEFT_DCLICK(self.tree, self.OnDoubleClick)
 #        wx.EVT_TREE_ITEM_EXPANDING(self.tree, self.tree.GetId(), self.OnExpanding)
-        wx.EVT_LEFT_DOWN(self.tree, self.OnLeftDown)
-        self.tree.Bind(wx.EVT_TREE_ITEM_GETTOOLTIP, self.OnGetToolTip)
-        self.tooltip_func = None
+        wx.EVT_LEFT_DOWN(self, self.OnLeftDown)
 
         #add init process
         self.callplugin('init', self)
-
+        
         self.SetSizer(self.sizer)
         self.SetAutoLayout(True)
 
         self.popmenus = None
-
+        
     def OnUpdateUI(self, event):
         self.callplugin('on_update_ui', self, event)
-
+        
     def show(self):
-        self.activeflag = True
         self.tree.Freeze()
-        self.tree.DeleteChildren(self.root)
-
+        self.tree.DeleteAllItems()
+        
         #call plugin
         self.callplugin('parsetext', self, self.editor)
         self.tree.Thaw()
-        self.activeflag = False
 
     def addnode(self, parent, caption, imagenormal, imageexpand=None, data=None):
         if not parent:
@@ -119,26 +106,26 @@ class OutlookBrowser(wx.Panel, Mixin.Mixin):
             self.tree.SetItemImage(obj, imagenormal, wx.TreeItemIcon_Normal)
         if imageexpand > -1:
             self.tree.SetItemImage(obj, imageexpand, wx.TreeItemIcon_Expanded)
-        if parent!= self.root and not self.tree.IsExpanded(parent) and self.autoexpand:
+        if parent!= self.root and not self.tree.IsExpanded(parent):
             self.tree.Expand(parent)
         return _id, obj
-
+    
     def get_cur_node(self):
         item = self.tree.GetSelection()
-        if not self.is_ok(item): return
+        if not item.IsOk(): return
         _id = self.tree.GetPyData(item)
         return item, self.nodes.get(_id, None)
-
+    
     def get_node(self, item):
-        if not self.is_ok(item): return
+        if not item.IsOk(): return
         _id = self.tree.GetPyData(item)
         return self.nodes.get(_id, None)
-
+    
     def getid(self):
         _id = self.ID
         self.ID += 1
         return _id
-
+    
     def OnCloseWin(self):
         for klass in self.processors.values():
             if hasattr(klass, 'OnOutlookBrowserClose'):
@@ -146,21 +133,21 @@ class OutlookBrowser(wx.Panel, Mixin.Mixin):
 
     def OnChangeLabel(self, event):
         item = event.GetItem()
-        if not self.is_ok(item): return
+        if not item.IsOk(): return
         if not self.execplugin('on_change_label', self, item, event.GetLabel()):
             event.Veto()
 
     def OnSelected(self, event):
         item = event.GetItem()
-        if not self.is_ok(item): return
+        if not item.IsOk(): return
         self.callplugin('on_selected', self, item)
 
     def OnExpanding(self, event):
         item = event.GetItem()
-        if not self.is_ok(item): return
+        if not item.IsOk(): return
         if not self.execplugin('on_expanding', self, item):
             event.Skip()
-
+        
     def OnRClick(self, event):
         other_menus = []
         if self.popmenus:
@@ -178,16 +165,13 @@ class OutlookBrowser(wx.Panel, Mixin.Mixin):
 
     def OnDeleteItem(self, event):
         item = event.GetItem()
-        if self.is_ok(item):
-            try:
-                del self.nodes[self.tree.GetPyData(item)]
-            except:
-                pass
+        if item.IsOk():
+            del self.nodes[self.tree.GetPyData(item)]
         event.Skip()
 
     def OnBeginChangeLabel(self, event):
         item = event.GetItem()
-        if not self.is_ok(item): return
+        if not item.IsOk(): return
         if not self.execplugin('on_begin_change_label', self, item):
             event.Veto()
             return
@@ -201,7 +185,7 @@ class OutlookBrowser(wx.Panel, Mixin.Mixin):
     def OnDoubleClick(self, event):
         pt = event.GetPosition()
         item, flags = self.tree.HitTest(pt)
-        if flags in (wx.TREE_HITTEST_NOWHERE, wx.TREE_HITTEST_ONITEMRIGHT,
+        if flags in (wx.TREE_HITTEST_NOWHERE, wx.TREE_HITTEST_ONITEMRIGHT, 
             wx.TREE_HITTEST_ONITEMLOWERPART, wx.TREE_HITTEST_ONITEMUPPERPART):
             for item in self.getTopObjects():
                 self.tree.Collapse(item)
@@ -214,18 +198,11 @@ class OutlookBrowser(wx.Panel, Mixin.Mixin):
 
     def OnLeftDown(self, event):
         pt = event.GetPosition();
-        item, flags = self.tree.HitTest(pt)
-        if flags == wx.TREE_HITTEST_ONITEMICON:
-            if self.tree.ItemHasChildren(item):
-                if self.tree.IsExpanded(item):
-                    wx.CallAfter(self.tree.Collapse, item)
-                else:
-                    wx.CallAfter(self.tree.Expand, item)
-                return
-        if self.is_ok(item):
-            if item == self.tree.GetSelection():
-                self.tree.SelectItem(self.tree.GetSelection(), False)
-                wx.CallAfter(self.tree.SelectItem, item, True)
+        item, flags = self.HitTest(pt)
+        if item.IsOk():
+            if item == self.GetSelection():
+                self.SelectItem(self.GetSelection(), False)
+                wx.CallAfter(self.SelectItem, item, True)
                 return
         event.Skip()
 
@@ -239,48 +216,36 @@ class OutlookBrowser(wx.Panel, Mixin.Mixin):
 
     def OnMenu(self, event):
         self.callplugin('on_menu', self, event.GetId())
-
+        
     def EditLabel(self, item):
         wx.CallAfter(self.tree.EditLabel, item)
-
+        
     def OnChanged(self, event):
         item = event.GetItem()
         lineno = self.get_node(item)
-        if self.editor and not self.activeflag:
-            wx.CallAfter(self.editor.goto, lineno-5)
-            wx.CallAfter(self.editor.goto, lineno+10)
+        if self.editor:
             wx.CallAfter(self.editor.goto, lineno)
-
+        
     def OnChanging(self, event):
         item = event.GetOldItem()
-        if not self.is_ok(item): return
+        if not item.IsOk(): return
         if not self.execplugin('on_changing', self, item):
             event.Skip()
-
+        
     def reset_cur_item(self):
         item = self.tree.GetSelection()
-        if self.is_ok(item):
+        if item.IsOk():
             self.tree.Freeze()
             self.tree.CollapseAndReset(item)
             self.tree.Thaw()
             self.execplugin('on_expanding', self, item)
-
+        
     def get_image_id(self, name):
         return self.imageids.get(name, -1)
-
+    
     def add_image(self, name, imagefile):
         if not self.imagefilenames.has_key(name):
             self.imagefilenames[name] = imagefile
         if not self.imageids.has_key(name):
             image = common.getpngimage(imagefile)
             self.imageids[name] = self.imagelist.Add(image)
-
-    def is_ok(self, item):
-        return item.IsOk() and item != self.root
-    
-    def set_tooltip_func(self, func):
-        self.tooltip_func = func
-    
-    def OnGetToolTip(self, event):
-        if self.tooltip_func:
-            self.tooltip_func(self, event)

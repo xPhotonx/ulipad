@@ -15,8 +15,8 @@ def getmodel(win, values=None):
 
 ofields = {'f_choices':'choices',
     'f_db_column':'db_column', 'f_default':'default', 'f_help_text':'help_text',
-    'f_unique_for_date':'unique_for_date', 'f_unique_for_month':'unique_for_month',
-    'f_unique_for_year':'unique_for_year', 'f_validator_list':'validator_list',
+    'f_unique_for_date':'unique_for_date', 'f_unique_for_month':'unique_for_month', 
+    'f_unique_for_year':'unique_for_year', 'f_validator_list':'validator_list', 
     'f_maxlength':'maxlength', 'f_auto_now':'auto_now', 'f_auto_now_add':'auto_now_add',
     'f_upload_to':'upload_to',
     }
@@ -24,13 +24,11 @@ ofields = {'f_choices':'choices',
 def maketext(values):
     if values:
         text = ["""
-class %(f_model_name)s(models.Model):
+class %(f_model_name)s(meta.Model):
 """ % values]
         for d in values['fields']:
-            text.append('    %(f_name)s = models.%(f_type)s(' % d)
+            text.append('    %(f_name)s = meta.%(f_type)s(' % d)
             s = []
-            if 'f_verbose' in d:
-                s.append("'%s'" % d['f_verbose'])
             for key, value in d.items():
                 if key in ofields:
                     s.append('%s=%s' % (ofields[key], repr(value)))
@@ -42,3 +40,4 @@ class %(f_model_name)s(models.Model):
             text.append(')\n')
         return ''.join(text)
     return ''
+    

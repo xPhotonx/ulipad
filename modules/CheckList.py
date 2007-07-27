@@ -47,7 +47,6 @@ class List(wx.ListView, listmix.ListCtrlAutoWidthMixin):
         self.parent = parent
         self.columns = columns
 
-        self._id = 0
         self.createlist(self.columns)
 
     def createlist(self, columns):
@@ -78,14 +77,6 @@ class List(wx.ListView, listmix.ListCtrlAutoWidthMixin):
             for i, t in enumerate(v[1:]):
                 self.SetStringItem(index, i+1, t)
 
-    def addline(self, data):
-        self._id += 1
-        index = self.InsertStringItem(sys.maxint, data[0])
-        self.SetItemData(index, self._id)
-        for i, t in enumerate(data[1:]):
-            self.SetStringItem(index, i+1, t)
-        return index
-
     def GetValue(self):
         for i in range(self.GetItemCount()):
             s = []
@@ -105,7 +96,7 @@ class CheckListMixin:
         self.SetImageList(self.imagelist, wx.IMAGE_LIST_SMALL)
 
         wx.EVT_LEFT_DOWN(self, self.OnLeftDown)
-
+        
         self.on_check = None
 
         self.values = {}
@@ -113,24 +104,11 @@ class CheckListMixin:
     def load(self, getdata):
         self.values = {}
         for flag, v in getdata():
-            self.addline(v, flag)
-                
-    def addline(self, data, flag=False):
-        if flag != -1:
-            index = self.InsertImageStringItem(sys.maxint, data[0], int(flag))
-        else:
-            index = self.InsertStringItem(sys.maxint, data[0])
-        self._id += 1
-        self.values[self._id] = int(flag)
-        self.SetItemData(index, self._id)
-        for i, t in enumerate(data[1:]):
-            self.SetStringItem(index, i+1, t)
-        return index
-    
-    def delline(self, index):
-        _id = self.GetItemData(index)
-        del self.values[_id]
-        self.DeleteItem(index)
+            index = self.InsertImageStringItem(sys.maxint, v[0], int(flag))
+            self.values[index] = int(flag)
+            self.SetItemData(index, index)
+            for i, t in enumerate(v[1:]):
+                self.SetStringItem(index, i+1, t)
 
     def OnLeftDown(self,event):
         (index, flags) = self.HitTest(event.GetPosition())
@@ -167,7 +145,7 @@ class CheckListMixin:
         f = self.getFlag(index)
         self.setFlag(index, f ^ 1)
 
-class CheckList(CheckListMixin, List):
+class CheckList(List, CheckListMixin):
     def __init__(self, parent, columns, check_image=None, uncheck_image=None, style=wx.LC_REPORT):
         List.__init__(self, parent, columns, style=style)
         CheckListMixin.__init__(self, check_image, uncheck_image)
@@ -178,34 +156,3 @@ class CheckList(CheckListMixin, List):
     def GetValue(self):
         for i in CheckListMixin.GetValue(self):
             yield i
-
-if __name__ == '__main__':
-    class wxApp(wx.App):
-        def OnInit(self):
-            frame = MyFrame(None)
-            frame.Show()
-            self.SetTopWindow(frame)
-            return True
-
-    class MyFrame(wx.Frame):
-        def __init__(self, parent):
-            wx.Frame.__init__(self, parent)
-            self.list = CheckList(self, columns=[
-                (u'ID', 40, 'left'),
-                (u'Description', 100, 'right'),
-            ])
-            self.list.load(self.getdata)
-
-            wx.EVT_CLOSE(self, self.OnClose)
-
-        def getdata(self):
-            return [(True, ('a', 'b')), (False, ('c', 'd'))]
-
-        def OnClose(self, event):
-            for i in self.list.GetValue():
-                print i
-
-            event.Skip()
-
-    app = wxApp(0)
-    app.MainLoop()

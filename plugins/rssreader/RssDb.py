@@ -34,17 +34,17 @@ class BaseTable(object):
         else:
             return None
     get = classmethod(get)
-
+    
     def save(self):
         self.commit()
 
 class Category(BaseTable):
     def __init__(self, title=None):
         self.title = title
-
+        
     def __repr__(self):
         return "title=%s" % self.title
-
+    
     def delete_id(cate_id):
         engine.begin()
         feeds = Feed.mapper.select_by_category_id(cate_id)
@@ -53,8 +53,8 @@ class Category(BaseTable):
         RssCategory.delete(RssCategory.c.id == cate_id).execute()
         engine.commit()
     delete_id = staticmethod(delete_id)
-
-
+    
+        
 class Feed(BaseTable):
     def __init__(self, category_id=None, title='', link='', homelink='', imagelink='', description=''):
         self.category_id = category_id
@@ -70,10 +70,10 @@ class Feed(BaseTable):
         RssFeed.delete(RssFeed.c.id == feed_id).execute()
         engine.commit()
     delete_id = staticmethod(delete_id)
-
+    
     def __repr__(self):
         return "title=%s, link=%s, description=%s" % (self.title, self.link, self.description)
-
+        
 class Data(BaseTable):
     def __init__(self, feed_id=None, guid='', link='', pubDate=None, title='', comments='', description='', read=False):
         self.feed_id = feed_id
@@ -90,46 +90,46 @@ class Data(BaseTable):
 
     def __repr__(self):
         return "guid=%s, link=%s, pubDate=%s, title=%s, comments=%s, description=%s, read=%r" % (self.guid, self.link, self.pubDate.strftime("%Y-%m-%d %H:%M:%S"), self.title, self.comments, self.description, self.read)
-
+    
     def un_read_count(cls, feed_id):
         r = select([func.count(cls.c.id)], and_(cls.c.feed_id==feed_id, cls.c.read==False)).execute()
         return r.fetchone()[0]
     un_read_count = classmethod(un_read_count)
-
+    
     def set_read(cls, feed_id, *ids):
         if ids:
             RssData.update(and_(cls.c.feed_id == feed_id, cls.c.id.in_(ids))).execute(read=True)
         else:
             RssData.update(cls.c.feed_id == feed_id).execute(read=True)
     set_read = classmethod(set_read)
-
+    
     def delete_posts(feed_id):
         RssData.delete(RssData.c.feed_id == feed_id).execute()
     delete_posts = staticmethod(delete_posts)
-
+    
     def get_posts(cls, feed_id):
         return cls.mapper.select(cls.c.feed_id == feed_id, order_by=[desc(cls.c.pubDate)])
     get_posts = classmethod(get_posts)
-
+        
 def init(dbfile, create=False):
     global RssCategory, RssFeed, RssData, load_flag, engine
-
+    
     if load_flag and not create:
         return
-
+    
     engine = create_engine('sqlite://filename=%s' % dbfile, echo=False)
 
     if is_create('rss_category'):
         f = True
     else:
         f = False
-
+        
     RssCategory = Table('rss_category', engine,
         Column('id', Integer, primary_key = True),
         Column('title', String, nullable = False),
         redefine = True
     )
-
+    
     RssFeed = Table('rss_feed', engine,
         Column('id', Integer, primary_key = True),
         Column('category_id', Integer, ForeignKey("rss_category.id")),
@@ -140,7 +140,7 @@ def init(dbfile, create=False):
         Column('description', String),
         redefine = True
     )
-
+    
     RssData = Table('rss_data', engine,
         Column('id', Integer, primary_key = True),
         Column('feed_id', Integer, ForeignKey("rss_feed.id")),
@@ -162,7 +162,7 @@ def init(dbfile, create=False):
         RssCategory.create()
         RssFeed.create()
         RssData.create()
-
+        
 #    assign_mapper(Data, RssData, properties = {
 #                    'description':deferred(RssData.c.description)
 #                }
@@ -178,19 +178,20 @@ def init(dbfile, create=False):
             )
 
     load_flag = True
-
+    
 def is_create(tablename):
     table = Table(tablename, engine, autoload=True)
     return len(table.columns.keys()) > 0
-
+        
 if __name__ == '__main__':
     init('d:/test.db')
-
+    
     categories = Category.mapper.select()
     for i in categories:
         for f in i.feeds:
             number = len(Data.mapper.select(and_(Data.c.feed_id==f.id, Data.c.read==False)))
             print number
-
+            
     c = Category.get(1)
     print c
+    

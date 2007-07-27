@@ -8,7 +8,7 @@
 
 from distutils.core import setup
 import py2exe
-import os
+import sys, os
 
 ################################################################
 # A program using wxPython
@@ -50,48 +50,25 @@ RT_MANIFEST = 24
 ################################################################
 # arguments for the setup() call
 
-ulipad_wx = dict(
-    script = "UliPad.pyw",
-    other_resources = [(RT_MANIFEST, 1, manifest_template % dict(prog="UliPad"))],
-    dest_base = r"prog\ulipad_wx")
+newedit_wx = dict(
+    script = "NewEdit.pyw",
+    other_resources = [(RT_MANIFEST, 1, manifest_template % dict(prog="NewEdit"))],
+    dest_base = r"prog\newedit_wx")
 
 zipfile = r"lib\sharedlib.zip"
 
-import os
-from distutils.file_util import copy_file
-from distutils.dir_util import mkpath
-
-def gather_data_files(module, base_dir):
-    s = []
-    mod = __import__(module, [], [], [''])
-    path = mod.__path__[0]
-    length = len(os.path.dirname(path)) + 1 #include os.sep
-    
-    for root, dirs, files in os.walk(path):
-        for f in files:
-            fname, ext = os.path.splitext(f)
-            if ext not in ('.py', '.pyc', '.pyo'):
-                filename = os.path.join(root, f)
-                desfname = filename[length:]
-                sfilename = os.path.join(base_dir, desfname)
-                mkpath(os.path.dirname(sfilename))
-                copy_file(filename, os.path.join(base_dir, desfname))
-                s.append(desfname)
-    return s
-
 includes = ["modules.EasyGuider.*", "modules.meteor.*"]
-packages = ["docutils"]
 options = {
-        "py2exe":
-        {
-                "compressed": 0,
-                "optimize": 2,
-                "includes": includes,
-                "packages": packages,
-        }
+	"py2exe":
+	{
+		"compressed": 1,
+		"optimize": 2,
+		"includes": includes,
+	}
 }
 
 ################################################################
+import os
 
 class InnoScript:
     def __init__(self,
@@ -114,16 +91,16 @@ class InnoScript:
         assert pathname.startswith(self.dist_dir)
         return pathname[len(self.dist_dir):]
 
-    def create(self, pathname="dist\\ulipad.iss"):
+    def create(self, pathname="dist\\newedit.iss"):
         self.pathname = pathname
         ofi = self.file = open(pathname, "w")
         print >> ofi, "[Setup]"
         print >> ofi, "AppName=%s" % self.name
         print >> ofi, "AppVerName=%s" % self.name + ' ' + self.version
         print >> ofi, "AppPublisher=Limodou"
-        print >> ofi, "AppPublisherURL=http://wiki.woodpecker.org.cn/moin/UliPad"
+        print >> ofi, "AppPublisherURL=http://wiki.woodpecker.org.cn/moin/NewEdit"
         print >> ofi, "AppSupportURL=http://www.donews.net/limodou"
-        print >> ofi, "AppUpdatesURL=http://wiki.woodpecker.org.cn/moin/UliPad"
+        print >> ofi, "AppUpdatesURL=http://wiki.woodpecker.org.cn/moin/NewEdit"
         print >> ofi, "DefaultDirName={pf}\%s" % self.name
         print >> ofi, "DefaultGroupName=%s" % self.name
         print >> ofi, "AllowNoIcons=yes"
@@ -147,8 +124,8 @@ class InnoScript:
         print >> ofi, 'Name: "{userappdata}\Microsoft\Internet Explorer\Quick Launch\%s"; Filename: "{app}\%s.exe"; Tasks: quicklaunchicon' % (self.name, self.name)
         print >> ofi
         print >> ofi, "[Registry]"
-        print >> ofi, 'Root: HKCR; Subkey: "*\shell\UliPad"; Flags: uninsdeletekey deletekey;'
-        print >> ofi, 'Root: HKCR; Subkey: "*\\shell\\UliPad\\command"; Flags: uninsdeletekey deletekey; ValueType: string; ValueData: "{app}\\%s.exe \"\"%%L\"\""' % self.name
+        print >> ofi, 'Root: HKCR; Subkey: "*\shell\NewEdit"; Flags: uninsdeletekey deletekey;'
+        print >> ofi, 'Root: HKCR; Subkey: "*\\shell\\NewEdit\\command"; Flags: uninsdeletekey deletekey; ValueType: string; ValueData: "{app}\\%s.exe %%L"' % self.name
         print >> ofi
         print >> ofi, "[Run]"
         print >> ofi, 'Filename: "{app}\%s.exe"; Description: "{cm:LaunchProgram,%s}"; Flags: nowait postinstall skipifsilent' % (self.name, self.name)
@@ -156,8 +133,6 @@ class InnoScript:
         print >> ofi, r"[Files]"
         for path in self.windows_exe_files + self.lib_files:
             print >> ofi, r'Source: "%s"; DestDir: "{app}\%s"; Flags: ignoreversion' % (path, os.path.dirname(path))
-        for d in dirs:
-            print >> ofi, r'Source: "%s\*"; DestDir: "{app}\%s"; Flags: recursesubdirs' % (d, d)
         print >> ofi
 
         print >> ofi, r"[Icons]"
@@ -222,11 +197,13 @@ class build_installer(py2exe):
         # First, let py2exe do it's work.
         py2exe.run(self)
 
+        runother()
+
         lib_dir = self.lib_dir
         dist_dir = self.dist_dir
 
         # create the Installer, using the files py2exe has created.
-        script = InnoScript("UliPad",
+        script = InnoScript("NewEdit",
                             lib_dir,
                             dist_dir,
                             self.windows_exe_files,
@@ -235,72 +212,39 @@ class build_installer(py2exe):
         script.create()
         print "*** compiling the inno setup script***"
         script.compile()
-        
         # Note: By default the final setup.exe will be in an Output subdirectory.
-    def make_lib_archive(self, zip_filename, base_dir, files,
-                         verbose=0, dry_run=0):
-        datafiles = gather_data_files("docutils", base_dir)
-        files.extend(datafiles)
-        return py2exe.make_lib_archive(self, zip_filename, base_dir, files, verbose, dry_run)
 
 ################################################################
 
 import glob
-import shutil
-def my_copytree(src, dst):
-    """Recursively copy a directory tree using copy2().
 
-    Modified from shutil.copytree
-
-    """
-    base = os.path.basename(src)
-    dst = os.path.join(dst, base)
-    names = os.listdir(src)
-    if not os.path.exists(dst):
-        os.makedirs(dst)
-    for name in names:
-        srcname = os.path.join(src, name)
-        try:
-            if os.path.isdir(srcname):
-                my_copytree(srcname, dst)
-            else:
-                shutil.copy2(srcname, dst)
-        except:
-#            error.traceback()
-            raise
-
-dirs = ['acp', 'plugins', 'wizard', 'scripts']
-for d in dirs:
-    my_copytree(d, 'dist')
-    
 setup(
-        version = version,
-        description = "UliPad",
-        name = "UliPad",
-        author = "limodou",
-        author_email="limodou@gmail.com",
-        url="http://wiki.woodpecker.org.cn/moin/UliPad",
+	version = version,
+	description = "NewEdit",
+	name = "NewEdit",
+	author = "limodou",
+	author_email="limodou@gmail.com",
+	url="http://wiki.woodpecker.org.cn/moin/NewEdit",
 
-        options = options,
-        # The lib directory contains everything except the executables and the python dll.
-        zipfile = zipfile,
-        windows = [
-                {
-                        "script":"UliPad.pyw",
-                        "icon_resources": [(1, "ulipad.ico")]
-                }
-        ],
-        data_files = [
-                ('images', glob.glob('images/*gif') + glob.glob('images/*jpg') + glob.glob('images/*png')),
-                ('resources', glob.glob('resources/*.xrc')),
-                ('lang', glob.glob('lang/*.*')),
-                ('lang/zh_CN', glob.glob('lang/zh_CN/*.*')),
-                ('', ['ulipad.ico', 'COPYLEFT.txt', 'INFO.txt', 'UliPad.exe.manifest']),
-                ('tools', glob.glob('tools/*.*')),
-                ('doc', glob.glob('doc/*.htm')+glob.glob('doc/*.jpg')+glob.glob('doc/*.css')),
+	options = options,
+	# The lib directory contains everything except the executables and the python dll.
+	zipfile = zipfile,
+	windows = [
+		{
+			"script":"NewEdit.pyw",
+			"icon_resources": [(1, "newedit.ico")]
+		}
+	],
+	data_files = [
+		('images', glob.glob('images/*gif') + glob.glob('images/*jpg') + + glob.glob('images/*png')),
+		('resources', glob.glob('resources/*.xrc')),
+		('lang', glob.glob('lang/*.*')),
+		('lang/zh_CN', glob.glob('lang/zh_CN/*.*')),
+		('', ['newedit.ico', 'COPYLEFT.txt', 'INFO.txt']),
+		('tools', glob.glob('tools/*.*')),
+		('doc', glob.glob('doc/*.htm')+glob.glob('doc/*.jpg')+glob.glob('doc/*.css')),
         ('conf', glob.glob('conf/*.*')),
-        ],
+	],
     # use out build_installer class as extended py2exe build command
     cmdclass = {"py2exe": build_installer},
     )
-

@@ -1,5 +1,5 @@
 #---------------------------------------------------
-#                   UliPad script
+#                   NewEdit script
 # Author  :limodou(limodou@gmail.com)
 # Date    :2004/07/08
 # Version :1.0
@@ -8,6 +8,6 @@
 #
 #---------------------------------------------------
 def run(win):
-    win.document.AddText("Hello, UliPad")
+	win.document.AddText("Hello, NewEdit")
 
 run(win)

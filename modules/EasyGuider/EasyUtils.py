@@ -49,7 +49,7 @@ def str_object(obj, encoding=None):
         return obj
     else:
         return obj  #cann't deal class instance
-
+    
 def getimage(imageobj):
     if isinstance(imageobj, (str, unicode)):
         image = wx.Image(imageobj).ConvertToBitmap()

@@ -5,7 +5,7 @@
 #
 #   Distributed under the terms of the GPL (GNU Public License)
 #
-#   UliPad is free software; you can redistribute it and/or modify
+#   NewEdit is free software; you can redistribute it and/or modify
 #   it under the terms of the GNU General Public License as published by
 #   the Free Software Foundation; either version 2 of the License, or
 #   (at your option) any later version.
@@ -19,11 +19,12 @@
 #   along with this program; if not, write to the Free Software
 #   Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 #
-#   $Id: mClassBrowser.py 1897 2007-02-03 10:33:43Z limodou $
+#   $Id: mClassBrowser.py 475 2006-01-16 09:50:28Z limodou $
 
 import wx
 import os.path
 from modules import Mixin
+from modules import common
 from modules import Globals
 
 def pref_init(pref):
@@ -33,8 +34,8 @@ Mixin.setPlugin('preference', 'init', pref_init)
 
 def add_pref(preflist):
     preflist.extend([
-        ('Python', 100, 'check', 'python_classbrowser_show', tr('Show class browser window when opening python source file'), None),
-        ('Python', 105, 'check', 'python_classbrowser_refresh_as_save', tr('Refresh class browser window when saving python source file'), None),
+        ('Python', 100, 'check', 'python_classbrowser_show', tr('Show class browser window as open python source file'), None),
+        ('Python', 105, 'check', 'python_classbrowser_refresh_as_save', tr('Refresh class browser window as saved python source file'), None),
     ])
 Mixin.setPlugin('preference', 'add_pref', add_pref)
 
@@ -62,30 +63,25 @@ def OnPythonClassBrowser(win, event):
 Mixin.setMixin('mainframe', 'OnPythonClassBrowser', OnPythonClassBrowser)
 
 def aftersavefile(win, filename):
-    if (win.edittype == 'edit'
+    if (win.documenttype == 'edit' 
         and win.languagename == 'python'
-        and win.pref.python_classbrowser_refresh_as_save
+        and win.pref.python_classbrowser_refresh_as_save 
         and win.init_class_browser):
         win.outlookbrowser.show()
 Mixin.setPlugin('editor', 'aftersavefile', aftersavefile)
-
+        
 def OnPythonClassBrowserRefresh(win, event):
     win.document.outlookbrowser.show()
 Mixin.setMixin('mainframe', 'OnPythonClassBrowserRefresh', OnPythonClassBrowserRefresh)
 
 def OnPythonUpdateUI(win, event):
     eid = event.GetId()
-    if eid == win.IDM_PYTHON_CLASSBROWSER and hasattr(win, 'document') and win.document and not win.document.multiview:
+    if eid == win.IDM_PYTHON_CLASSBROWSER:
         event.Check(win.document.panel.LeftIsVisible and getattr(win.document, 'init_class_browser', False))
 Mixin.setMixin('mainframe', 'OnPythonUpdateUI', OnPythonUpdateUI)
 
 def on_enter(mainframe, document):
     wx.EVT_UPDATE_UI(mainframe, mainframe.IDM_PYTHON_CLASSBROWSER, mainframe.OnPythonUpdateUI)
-Mixin.setPlugin('pythonfiletype', 'on_enter', on_enter)
-
-def on_document_enter(mainframe, document):
-    if document.languagename != 'python':
-        return
     if mainframe.pref.python_classbrowser_show and document.init_class_browser == False:
         document.class_browser = not document.class_browser
         document.panel.showWindow('LEFT', document.class_browser)
@@ -93,7 +89,7 @@ def on_document_enter(mainframe, document):
             if document.init_class_browser == False:
                 document.init_class_browser = True
                 document.outlookbrowser.show()
-Mixin.setPlugin('editctrl', 'on_document_enter', on_document_enter)
+Mixin.setPlugin('pythonfiletype', 'on_enter', on_enter)
 
 def on_leave(mainframe, filename, languagename):
     mainframe.Disconnect(mainframe.IDM_PYTHON_CLASSBROWSER, -1, wx.wxEVT_UPDATE_UI)
@@ -105,98 +101,37 @@ def add_images(images):
         ('CLASS_CLOSE', 'plus.gif'),
         ('METHOD', 'method.gif'),
         ('MODULE', 'module.gif'),
-        ('VARIABLE', 'vars.gif'),
         ]
     for name, f in s:
         images[name] = os.path.join(Globals.workpath, 'images/%s' % f)
 Mixin.setPlugin('outlookbrowser', 'add_images', add_images)
 
-c = lambda x,y:cmp(x[0].upper(), y[0].upper())
-
 def parsetext(win, editor):
-    if editor.edittype == 'edit' and editor.languagename == 'python':
-        if not hasattr(editor, 'syntax_info') or not editor.syntax_info:
-            from modules import PyParse
-            nodes = PyParse.parseString(editor.GetText())
-        else:
-            nodes = editor.syntax_info
-            
-        #add doc_nodes to editor
-        editor.doc_nodes = {}
-        
-        imports = nodes.get_imports(1)
-        if imports:
-            for importline, lineno in imports:
-                win.addnode(None, importline, win.get_image_id('MODULE'), None, lineno)
-        functions = nodes.find('function')
-        #process locals
-        addlocals(win, nodes, nodes, None)
-        if functions:
-            funcs = [(x.name, x.info, x.lineno, x.docstring) for x in functions.values]
-            funcs.sort(c)
-            for name, info, lineno, docstring in funcs:
-                _id, obj = win.addnode(None, info, win.get_image_id('METHOD'), None,  lineno)
-                editor.doc_nodes[_id] = docstring
-        classes = nodes.find('class')
-        if classes:
-            clses = [(x.name, x.info, x.lineno, x) for x in classes.values]
-            clses.sort(c)
-            for name, info, lineno, obj in clses:
-                #process classes and functions
-                _id, node = win.addnode(None, name, win.get_image_id('CLASS_CLOSE'), win.get_image_id('CLASS_OPEN'), lineno)
-                editor.doc_nodes[_id] = obj.docstring
-                #process locals
-                addlocals(win, nodes, obj, node)
-                objs = [(x.name, x.type, x.info, x.lineno, x) for x in obj.values]
-                objs.sort(c)
-                for oname, otype, oinfo, olineno, oo in objs:
-                    imagetype = None
-                    if otype == 'class' or otype == 'function':
-                        _id, obj = win.addnode(node, oinfo, win.get_image_id('METHOD'), None,  olineno)
-                        editor.doc_nodes[_id] = oo.docstring
-#                win.tree.Expand(node)
+    if editor.documenttype == 'edit' and editor.languagename == 'python':
+        from modules import PyParse
+        nodes = PyParse.parseString(editor.GetText())
+
+        imports = nodes['import']
+        for info, lineno in imports:
+            win.addnode(None, info, win.get_image_id('MODULE'), None, lineno)
+        functions = nodes['function'].values()
+        functions.sort()
+        for info, lineno in functions:
+            win.addnode(None, info, win.get_image_id('METHOD'), None,  lineno)
+        classes = nodes['class'].values()
+        classes.sort()
+        for c in classes:
+            _id, node = win.addnode(None, c.info, win.get_image_id('CLASS_CLOSE'), win.get_image_id('CLASS_OPEN'), c.lineno)
+            functions = c.methods.values()
+            functions.sort()
+            for info, lineno in functions:
+                win.addnode(node, info, win.get_image_id('METHOD'), None,  lineno)
+            win.tree.Expand(node)
 Mixin.setPlugin('outlookbrowser', 'parsetext', parsetext)
 
-def addlocals(win, root, node, treenode):
-    s = []
-    names = []
-    for i in range(len(node.locals)):
-        name = node.locals[i]
-        t, v, lineno = node.local_types[i]
-        if t not in ('class', 'function', 'import'):
-            info = name + ' : ' + 'unknow'
-            if t == 'reference':
-                if v:
-                    if node.type == 'class':
-                        result = root.guess_type(lineno, 'self.' + name)
-                    else:
-                        result = root.guess_type(lineno, name)
-                    if result:
-                        
-                        if result[0] not in ('reference', 'class', 'function', 'import'):
-                            info = name + ' : ' + result[0]
-                        else:
-                            if result[1]:
-                                if result[0] in ('class', 'function'):
-                                    info = name + ' : ' + result[1].info
-                                else:
-                                    info = name + ' : ' + result[1]
-                            else:
-                                info = name + ' : ' + result[0]
-                    else:
-                        info = name + ' : ' + v
-            else:
-                info = name + ' : ' + t
-            s.append((info, lineno))
-            
-    s.sort(c)
-    for info, lineno in s:
-        win.addnode(treenode, info , win.get_image_id('VARIABLE'), None,  lineno)
-    
 def new_window(win, document, panel):
     from OutlookBrowser import OutlookBrowser
-    document.outlookbrowser = OutlookBrowser(panel.left, document, autoexpand=False)
-    document.outlookbrowser.set_tooltip_func(on_get_tool_tip)
+    document.outlookbrowser = OutlookBrowser(panel.left, document)
 Mixin.setPlugin('textpanel', 'new_window', new_window)
 
 def add_tool_list(toollist, toolbaritems):
@@ -205,44 +140,10 @@ def add_tool_list(toollist, toolbaritems):
         (2010, 'classbrowserrefresh'),
         (2050, '|'),
     ])
-
+    
     #order, IDname, imagefile, short text, long text, func
     toolbaritems.update({
-        'classbrowser':(wx.ITEM_CHECK, 'IDM_PYTHON_CLASSBROWSER', 'images/classbrowser.gif', tr('class browser'), tr('Class browser'), 'OnPythonClassBrowser'),
-        'classbrowserrefresh':(wx.ITEM_NORMAL, 'IDM_PYTHON_CLASSBROWSER_REFRESH', 'images/classbrowserrefresh.gif', tr('class browser refresh'), tr('Class browser refresh'), 'OnPythonClassBrowserRefresh'),
+        'classbrowser':(wx.ITEM_CHECK, 'IDM_PYTHON_CLASSBROWSER', common.unicode_abspath('images/classbrowser.gif'), tr('class browser'), tr('Class browser'), 'OnPythonClassBrowser'),
+        'classbrowserrefresh':(wx.ITEM_NORMAL, 'IDM_PYTHON_CLASSBROWSER_REFRESH', common.unicode_abspath('images/classbrowserrefresh.gif'), tr('class browser refresh'), tr('Class browser refresh'), 'OnPythonClassBrowserRefresh'),
     })
 Mixin.setPlugin('pythonfiletype', 'add_tool_list', add_tool_list)
-
-def afterclosewindow(win):
-    win.document.panel.showWindow('LEFT', False)
-Mixin.setPlugin('mainframe', 'afterclosewindow', afterclosewindow)
-
-#add identifier jump
-def on_jump_definition(editor, word):
-    if editor.edittype == 'edit' and editor.languagename == 'python':
-        if not hasattr(editor, 'syntax_info') or not editor.syntax_info:
-            from modules import PyParse
-            nodes = PyParse.parseString(editor.GetText())
-        else:
-            nodes = editor.syntax_info
-        lineno = editor.GetCurrentLine() + 1 #syntax line is based on 1, but editor line is base on 0
-        result = nodes.search_name(lineno, word)
-        if result:
-            t, v, line = result
-            editor.GotoLine(line-1)
-            editor.EnsureCaretVisible()
-Mixin.setPlugin('editor', 'on_jump_definition', on_jump_definition)
-
-def on_get_tool_tip(win, event):
-    if hasattr(win.editor, 'doc_nodes'):
-        nodes = win.editor.doc_nodes
-        item = event.GetItem()
-        if item.IsOk():
-            _id = win.tree.GetPyData(item)
-            tip = nodes.get(_id, '')
-            if tip:
-                try:
-                    tip = eval(tip).replace('\r\n', '\n')
-                    event.SetToolTip(tip)
-                except:
-                    pass

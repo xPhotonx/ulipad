@@ -29,3 +29,4 @@ from modules.Debug import error
 
 project_names = ['docbook']
 Mixin.setMixin('dirbrowser', 'project_names', project_names)
+

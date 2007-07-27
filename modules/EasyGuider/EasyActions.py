@@ -34,5 +34,5 @@ def makeactions(actions_list):
         obj = EasyUtils.EMPTY_CLASS()
         obj_id, obj.caption, obj.type, obj.shorttip, obj.longtip, obj.image, obj.funcname = i
         actions[obj_id] = obj
-
+        
     return actions

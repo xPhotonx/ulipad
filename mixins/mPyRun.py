@@ -5,7 +5,7 @@
 #
 #   Distributed under the terms of the GPL (GNU Public License)
 #
-#   UliPad is free software; you can redistribute it and/or modify
+#   NewEdit is free software; you can redistribute it and/or modify
 #   it under the terms of the GNU General Public License as published by
 #   the Free Software Foundation; either version 2 of the License, or
 #   (at your option) any later version.
@@ -19,7 +19,7 @@
 #   along with this program; if not, write to the Free Software
 #   Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 #
-#   $Id: mPyRun.py 1888 2007-02-01 14:47:13Z limodou $
+#   $Id: mPyRun.py 477 2006-01-16 14:26:49Z limodou $
 
 import wx
 import os
@@ -29,11 +29,10 @@ from modules import Mixin
 
 def pref_init(pref):
     cmd = sys.executable
-    if os.path.basename(sys.argv[0]) == os.path.basename(cmd):
+    if sys.argv[0] == os.path.basename(cmd):
         cmd = ''
     pref.python_interpreter = [('default', cmd)]
     pref.default_interpreter = 'default'
-    pref.python_show_args = False
 Mixin.setPlugin('preference', 'init', pref_init)
 
 def OnSetInterpreter(win, event):
@@ -45,7 +44,6 @@ Mixin.setMixin('prefdialog', 'OnSetInterpreter', OnSetInterpreter)
 def add_pref(preflist):
     preflist.extend([
         ('Python', 150, 'button', 'python_interpreter', tr('Setup python interpreter'), 'OnSetInterpreter'),
-        ('Python', 155, 'check', 'python_show_args', tr('Show arguments dialog when running python program'), None),
     ])
 Mixin.setPlugin('preference', 'add_pref', add_pref)
 
@@ -68,7 +66,7 @@ Mixin.setPlugin('editor', 'init', editor_init)
 def OnPythonRun(win, event):
     interpreters = dict(win.pref.python_interpreter)
     interpreter = interpreters[win.pref.default_interpreter]
-    if not interpreter:
+    if not interpreters:
         common.showerror(win, tr("You didn't setup python interpreter, \nplease setup it first in Preference dialog"))
         return
 
@@ -80,39 +78,37 @@ def OnPythonRun(win, event):
             win.OnFileSave(event)
         else:
             return
-        
-    if win.pref.python_show_args:
-        if not get_python_args(win):
-            return
-        
     args = win.document.args.replace('$path', os.path.dirname(win.document.filename))
     args = args.replace('$file', win.document.filename)
     ext = os.path.splitext(win.document.filename)[1].lower()
-    command = interpreter + ' -u "%s" %s' % (win.document.filename, args)
+    i_main, i_ext = os.path.splitext(interpreter)
+    if ext == '.pyw':
+        if not i_main.endswith('w'):
+            i_main += 'w'
+        command = i_main + i_ext + ' -u "%s" %s' % (win.document.filename, args)
+        guiflag = True
+    else:
+        if i_main.endswith('w'):
+            i_main = i_main[:-1]
+        command = i_main + i_ext + ' -u "%s" %s' % (win.document.filename, args)
+        guiflag = False
     #chanage current path to filename's dirname
     path = os.path.dirname(win.document.filename)
     os.chdir(common.encode_string(path))
 
-    win.RunCommand(command, redirect=win.document.redirect)
+    win.RunCommand(command, guiflag, redirect=win.document.redirect)
 Mixin.setMixin('mainframe', 'OnPythonRun', OnPythonRun)
 
-def get_python_args(win):
+def OnPythonSetArgs(win, event):
     from InterpreterDialog import PythonArgsDialog
-    
+
     dlg = PythonArgsDialog(win, win.pref, tr('Set Python Arguments'),
         tr("Enter the command line arguments:\n$file will be replaced by current document filename\n$path will be replaced by current document filename's directory"),
         win.document.args, win.document.redirect)
     answer = dlg.ShowModal()
-    dlg.Destroy()
     if answer == wx.ID_OK:
         win.document.args = dlg.GetValue()
         win.document.redirect = dlg.GetRedirect()
-        return True
-    else:
-        return False
-    
-def OnPythonSetArgs(win, event=None):
-    get_python_args(win)
 Mixin.setMixin('mainframe', 'OnPythonSetArgs', OnPythonSetArgs)
 
 def OnPythonEnd(win, event):
@@ -131,27 +127,23 @@ def add_tool_list(toollist, toolbaritems):
         (2120, 'stop'),
         (2150, '|'),
     ])
-
+    
     #order, IDname, imagefile, short text, long text, func
     toolbaritems.update({
-        'run':(wx.ITEM_NORMAL, 'IDM_PYTHON_RUN', 'images/run.gif', tr('run'), tr('Run python program'), 'OnPythonRun'),
-        'setargs':(wx.ITEM_NORMAL, 'IDM_PYTHON_SETARGS', 'images/setargs.gif', tr('set arguments'), tr('Set python program command line arugments'), 'OnPythonSetArgs'),
-        'stop':(wx.ITEM_NORMAL, 'IDM_PYTHON_END', 'images/stop.gif', tr('Stop Program'), tr('Stop current python program.'), 'OnPythonEnd'),
+        'run':(wx.ITEM_NORMAL, 'IDM_PYTHON_RUN', common.unicode_abspath('images/run.gif'), tr('run'), tr('Run python program'), 'OnPythonRun'),
+        'setargs':(wx.ITEM_NORMAL, 'IDM_PYTHON_SETARGS', common.unicode_abspath('images/setargs.gif'), tr('set arguments'), tr('Set python program command line arugments'), 'OnPythonSetArgs'),
+        'stop':(wx.ITEM_NORMAL, 'IDM_PYTHON_END', common.unicode_abspath('images/stop.gif'), tr('Stop Program'), tr('Stop current python program.'), 'OnPythonEnd'),
     })
-Mixin.setPlugin('pythonfiletype', 'add_tool_list', add_tool_list)
+Mixin.setPlugin('mainframe', 'add_tool_list', add_tool_list)
 
 def OnPythonRunUpdateUI(win, event):
     eid = event.GetId()
+    if not win.messagewindow:
+        return
     if eid in [ win.IDM_PYTHON_RUN, win.IDM_PYTHON_SETARGS ]:
-        if not hasattr(win, 'messagewindow') or not win.messagewindow or not (win.messagewindow.pid > 0):
-            event.Enable(True)
-        else:
-            event.Enable(False)
+        event.Enable(not (win.messagewindow.pid > 0))
     elif eid == win.IDM_PYTHON_END:
-        if hasattr(win, 'messagewindow') and win.messagewindow and (win.messagewindow.pid > 0):
-            event.Enable(True)
-        else:
-            event.Enable(False)
+        event.Enable(win.messagewindow.pid > 0)
 Mixin.setMixin('mainframe', 'OnPythonRunUpdateUI', OnPythonRunUpdateUI)
 
 def on_enter(mainframe, document):

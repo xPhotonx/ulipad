@@ -22,6 +22,7 @@
 #   $Id: SnippetWindow.py,v 1.11 2004/11/27 15:52:08 limodou Exp $
 
 import wx
+import os.path
 import os
 import sys
 from modules import common
@@ -39,13 +40,7 @@ class WizardPanel(wx.Panel):
         self.Bind(wx.EVT_BUTTON, self.OnRefresh, id=self.refresh.GetId())
         self.sizer.Add(self.refresh, 0, wx.LEFT, 2)
 
-        style = wx.TR_SINGLE|wx.TR_HAS_BUTTONS|wx.TR_TWIST_BUTTONS
-        if wx.Platform == '__WXMSW__':
-            style = style | wx.TR_ROW_LINES
-        elif wx.Platform == '__WXGTK__':
-            style = style | wx.TR_NO_LINES
-
-        self.tree = wx.TreeCtrl(self, -1, style = style)
+        self.tree = wx.TreeCtrl(self, -1, style = wx.TR_SINGLE|wx.TR_TWIST_BUTTONS|wx.TR_HAS_BUTTONS|wx.TR_ROW_LINES)
         self.sizer.Add(self.tree, 1, wx.EXPAND)
         self.root = self.tree.AddRoot(tr('Wizard'))
         self.tree.SetPyData(self.root, 0)
@@ -99,7 +94,7 @@ class WizardPanel(wx.Panel):
     def _addNode(self, root, wizfile):
         from modules import dict4ini
 
-        x = dict4ini.DictIni(wizfile, encoding='utf-8')
+        x = dict4ini.DictIni(wizfile)
         obj = self.tree.AppendItem(root, x.options.name)
         self.items[self.ids] = x
         self.tree.SetPyData(obj, self.ids)

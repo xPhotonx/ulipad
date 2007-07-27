@@ -5,7 +5,7 @@
 #
 #   Distributed under the terms of the GPL (GNU Public License)
 #
-#   UliPad is free software; you can redistribute it and/or modify
+#   NewEdit is free software; you can redistribute it and/or modify
 #   it under the terms of the GNU General Public License as published by
 #   the Free Software Foundation; either version 2 of the License, or
 #   (at your option) any later version.
@@ -19,7 +19,7 @@
 #   along with this program; if not, write to the Free Software
 #   Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 #
-#   $Id: FtpClass.py 2018 2007-03-16 03:14:55Z limodou $
+#   $Id: FtpClass.py 475 2006-01-16 09:50:28Z limodou $
 
 __doc__ = 'ftp class'
 
@@ -150,7 +150,7 @@ class Ftp(wx.Panel, Mixin):
     def OnUpdateUI(self, event):
         eid = event.GetId()
         if eid == self.ID_CONNECT:
-            event.Enable(bool(not self.cmbSite.IsEmpty() and not self.alive and not self.running))
+            event.Enable(bool(self.cmbSite.GetValue() and not self.alive and not self.running))
         elif eid == self.ID_DISCONNECT:
             event.Enable(self.alive or self.running)
         elif eid == self.ID_SITE:
@@ -337,10 +337,10 @@ class Ftp(wx.Panel, Mixin):
             path = self.txtPath.GetValue()
         try:
             common.setmessage(self.mainframe, tr('changing current directory'))
-            self.ftp.cwd(common.encode_string(path))
+            self.ftp.cwd(common.decode_string(path))
             self.data = []
             self.ftp.retrlines('LIST', self.receivedData)
-            self.curpath = common.decode_string(self.ftp.pwd())
+            self.curpath = common.encode_string(self.ftp.pwd())
             self.txtPath.SetValue(self.curpath)
             self.loadFile(self.data)
         except Exception, msg:

@@ -4,7 +4,7 @@
 # Copyleft GPL
 # $Id: obj2ini.py,v 1.2 2005/04/21 15:42:39 limodou Exp $
 #
-# 2005/07/31
+# 2005/07/31 
 #            1. 增加变量的支持。
 #            2. 修改输出的ini格式为第一行为#obj表示是对象，#var表示是变量。
 #            同时为了兼容性，当第一行不是#var或#obj时默认为#obj。
@@ -13,6 +13,7 @@
 import types
 import sys
 import locale
+import types
 
 def dump(obj, filename, encoding=None):
     encoding = __getdefaultencoding(encoding)
@@ -21,8 +22,8 @@ def dump(obj, filename, encoding=None):
         f = filename
     else:
         f = file(filename, "w")
-
-    if hasattr(obj, '__dict__'):
+    
+    if isinstance(obj, types.InstanceType):
         objects = {}
         f.write("#obj\n")
         f.write("[=%s.%s]\n" % (obj.__class__.__module__, obj.__class__.__name__))
@@ -30,13 +31,13 @@ def dump(obj, filename, encoding=None):
             if isinstance(value, types.InstanceType):
                 objects[key] = value
             else:
-                __write_var(f, key, value, encoding)
+                __write_var(f, key, value, encoding) 
         for key, value in objects.items():
             __dumpsubobj(value, key, '', f, encoding)
     else:
         f.write("#var\n")
         f.write(__uni_prt(obj, encoding))
-
+    
 class EmptyClass:
     pass
 
@@ -71,7 +72,7 @@ def load(filename, obj=None, encoding=None):
             if not line: continue
             if line[0] in ('#', ';'): continue
             if line.startswith('[') and line.endswith(']'): #sub object
-                #set original class
+                #set original class 
                 classname, classinfo = line[1:-1].split('=')
                 module, _class = __getmoduleandclass(classinfo)
                 __import__(module)
@@ -112,7 +113,7 @@ def __dumpsubobj(obj, objname, parentname, filename, encoding=None):
         f = filename
     else:
         f = file(filename, "w")
-
+    
     if parentname:
         f.write("\n[%s.%s=%s.%s]\n" % (parentname, objname, obj.__class__.__module__, obj.__class__.__name__))
     else:
@@ -122,22 +123,22 @@ def __dumpsubobj(obj, objname, parentname, filename, encoding=None):
         if isinstance(value, types.InstanceType):
             objects[key] = value
         else:
-            __write_var(f, key, value, encoding)
+            __write_var(f, key, value, encoding) 
     for key, value in objects.items():
-        __dumpsubobj(value, key, objname, f, encoding)
-
+        __dumpsubobj(value, key, objname, f, encoding)    
+        
 def __write_var(f, key, var, encoding):
     f.write("%s=%s\n" % (key, __uni_prt(var, encoding)))
-
+    
 def __getdefaultencoding(encoding):
     if not encoding:
         encoding = locale.getdefaultlocale()[1]
     if not encoding:
         encoding = sys.getfilesystemencoding()
     return encoding
-
+        
 def __uni_prt(a, encoding=None):
-    escapechars = [("\\", "\\\\"), ("'", r"\'"), ('\"', r'\"'), ('\b', r'\b'),
+    escapechars = [("\\", "\\\\"), ("'", r"\'"), ('\"', r'\"'), ('\b', r'\b'), 
         ('\t', r"\t"), ('\r', r"\r"), ('\n', r"\n")]
     s = []
     encoding = __getdefaultencoding(encoding)
@@ -171,11 +172,7 @@ def __uni_prt(a, encoding=None):
         t = a
         for i in escapechars:
             t = t.replace(i[0], i[1])
-        try:
-            s.append("u'%s'" % t.encode(encoding))
-        except:
-            import traceback
-            traceback.print_exc()
+        s.append("u'%s'" % t.encode(encoding))
     else:
         s.append(str(a))
     return ''.join(s)
@@ -184,7 +181,7 @@ def __filter(s, encoding):
     import StringIO
     import tokenize
     import token
-
+    
     f = StringIO.StringIO(s)
     g = tokenize.generate_tokens(f.readline)
     slist = []
@@ -199,7 +196,7 @@ def __filter(s, encoding):
         else:
             slist.append(t)
     return ''.join(slist)
-
+                
 if __name__ == '__main__':
     class A:
         a = 1
@@ -209,7 +206,7 @@ if __name__ == '__main__':
             self.d = (self.c, self.b)
             self.e = [self.b, self.c, self.d]
             self.f = {self.b:self.c, self.d:self.e}
-
+    
     a = A()
     #f = sys.stdout
     f = "test1.ini"
@@ -219,11 +216,11 @@ if __name__ == '__main__':
     a.obj = b
     a.obj.obj = c
     dump(a, f)
-
+    
     s = load(f)
     print vars(s)
     print s.__class__.__name__
-
+    
 #    f = sys.stdout
 #    dump(s, f)
 

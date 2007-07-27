@@ -5,7 +5,7 @@
 #
 #   Distributed under the terms of the GPL (GNU Public License)
 #
-#   UliPad is free software; you can redistribute it and/or modify
+#   NewEdit is free software; you can redistribute it and/or modify
 #   it under the terms of the GNU General Public License as published by
 #   the Free Software Foundation; either version 2 of the License, or
 #   (at your option) any later version.
@@ -19,17 +19,16 @@
 #   along with this program; if not, write to the Free Software
 #   Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 #
-#   $Id: DirBrowser.py 2129 2007-07-19 09:37:15Z limodou $
+#   $Id: DirBrowser.py 475 2006-01-16 09:50:28Z limodou $
 
 import wx
 import os
 import copy
-import shutil
 from modules import common
 from modules import makemenu
 from modules import Mixin
 from modules.Debug import error
-from modules import Globals
+
 
 class DirBrowser(wx.Panel, Mixin.Mixin):
 
@@ -37,21 +36,16 @@ class DirBrowser(wx.Panel, Mixin.Mixin):
 
     popmenulist = [ (None,
         [
-            (80, 'IDPM_CUT', tr('Cut')+'\tCtrl+X', wx.ITEM_NORMAL, 'OnDirCut', ''),
-            (81, 'IDPM_COPY', tr('Copy')+'\tCtrl+C', wx.ITEM_NORMAL, 'OnDirCopy', ''),
-            (82, 'IDPM_PASTE', tr('Paste')+'\tCtrl+V', wx.ITEM_NORMAL, 'OnDirPaste', ''),
-            (90, '', '-', wx.ITEM_SEPARATOR, None, ''),
             (100, 'IDPM_ADD', tr('Add Directory'), wx.ITEM_NORMAL, '', ''),
             (110, 'IDPM_CLOSE', tr('Close Directory'), wx.ITEM_NORMAL, 'OnCloseDirectory', ''),
             (115, 'IDPM_SETPROJ', tr('Set Project'), wx.ITEM_NORMAL, 'OnSetProject', ''),
-            (116, 'IDPM_SEARCHDIR', tr('Search Directory'), wx.ITEM_NORMAL, 'OnSearchDir', ''),
-            (117, 'IDPM_COMMANDLINE', tr('Open Command Window Here'), wx.ITEM_NORMAL, 'OnCommandWindow', ''),
+            (116, 'IDPM_COMMANDLINE', tr('Open Command Window Here'), wx.ITEM_NORMAL, 'OnCommandWindow', ''),
             (120, '', '-', wx.ITEM_SEPARATOR, None, ''),
             (125, 'IDPM_OPENDEFAULT', tr('Open with Default Editor'), wx.ITEM_NORMAL, 'OnOpenDefault', ''),
-            (130, 'IDPM_ADDPATH', tr('Create Sub Directory'), wx.ITEM_NORMAL, 'OnAddSubDir', ''),
-            (140, 'IDPM_ADDFILE', tr('Create File'), wx.ITEM_NORMAL, 'OnAddFile', ''),
+            (130, 'IDPM_ADDPATH', tr('Add Sub Directory'), wx.ITEM_NORMAL, 'OnAddSubDir', ''),
+            (140, 'IDPM_ADDFILE', tr('Add File'), wx.ITEM_NORMAL, 'OnAddFile', ''),
             (150, 'IDPM_RENAME', tr('Rename'), wx.ITEM_NORMAL, 'OnRename', ''),
-            (160, 'IDPM_DELETE', tr('Delete')+'\tDel', wx.ITEM_NORMAL, 'OnDelete', ''),
+            (160, 'IDPM_DELETE', tr('Delete'), wx.ITEM_NORMAL, 'OnDelete', ''),
             (170, 'IDPM_REFRESH', tr('Refresh'), wx.ITEM_NORMAL, 'OnRefresh', ''),
             (180, '', '-', wx.ITEM_SEPARATOR, None, ''),
             (190, 'IDPM_IGNORETHIS', tr('Ignore This'), wx.ITEM_NORMAL, 'OnIgnoreThis', ''),
@@ -60,22 +54,15 @@ class DirBrowser(wx.Panel, Mixin.Mixin):
         ('IDPM_ADD',
         [
             (100, 'IDPM_ADD_NEWDIR', tr('Open new directory'), wx.ITEM_NORMAL, 'OnAddNewPath', ''),
-            (110, 'IDPM_ADD_ULIPADWORK', tr('Open UliPad Work Path'), wx.ITEM_NORMAL, 'OnAddUliPadWorkPath', ''),
-            (120, 'IDPM_ADD_ULIPADUSER', tr('Open UliPad User Path'), wx.ITEM_NORMAL, 'OnAddUliPadUserPath', ''),
+            (110, 'IDPM_ADD_NEWEDITWORK', tr('Open NewEdit Work Path'), wx.ITEM_NORMAL, 'OnAddNewEditWorkPath', ''),
+            (120, 'IDPM_ADD_NEWEDITUSER', tr('Open NewEdit User Path'), wx.ITEM_NORMAL, 'OnAddNewEditUserPath', ''),
             (130, '', '-', wx.ITEM_SEPARATOR, None, ''),
             (140, 'IDPM_ADD_CLEAN', tr('Clean Recently Directoris'), wx.ITEM_NORMAL, 'OnCleanDirectories', ''),
             (150, '', '-', wx.ITEM_SEPARATOR, None, ''),
             (160, 'IDPM_ADD_DIRS', tr('(empty)'), wx.ITEM_NORMAL, '', ''),
         ]),
     ]
-    if wx.Platform == '__WXMSW__':
-        popmenulist.extend([(None,
-        [
-            (118, 'IDPM_EXPLORER', tr('Open Explorer Window Here'), wx.ITEM_NORMAL, 'OnExplorerWindow', ''),
-        ]),
-    ]
-        )
-
+    
     project_names = []
 
     def __init__(self, parent, mainframe, dirs=None):
@@ -95,42 +82,28 @@ class DirBrowser(wx.Panel, Mixin.Mixin):
 
         self.deal_file_images()
 
-        style = wx.TR_EDIT_LABELS|wx.TR_SINGLE|wx.TR_HIDE_ROOT|wx.TR_HAS_BUTTONS|wx.TR_TWIST_BUTTONS
-        if wx.Platform == '__WXMSW__':
-            style = style | wx.TR_ROW_LINES
-        elif wx.Platform == '__WXGTK__':
-            style = style | wx.TR_NO_LINES
-
-        self.tree = wx.TreeCtrl(self, -1, style = style)
+        self.tree = wx.TreeCtrl(self, -1, style = wx.TR_EDIT_LABELS|wx.TR_SINGLE|wx.TR_TWIST_BUTTONS|wx.TR_HAS_BUTTONS|wx.TR_ROW_LINES|wx.TR_HIDE_ROOT)
         self.tree.SetImageList(self.dirbrowserimagelist)
 
         self.sizer.Add(self.tree, 1, wx.EXPAND)
         self.root = self.tree.AddRoot('DirBrowser')
-        
-        #add drop target
-        self.SetDropTarget(MyFileDropTarget(self))
-        
 
 #        wx.EVT_TREE_SEL_CHANGED(self.tree, self.tree.GetId(), self.OnChanged)
         wx.EVT_TREE_BEGIN_LABEL_EDIT(self.tree, self.tree.GetId(), self.OnBeginChangeLabel)
         wx.EVT_TREE_END_LABEL_EDIT(self.tree, self.tree.GetId(), self.OnChangeLabel)
         wx.EVT_TREE_ITEM_ACTIVATED(self.tree, self.tree.GetId(), self.OnSelected)
-#        wx.EVT_TREE_ITEM_RIGHT_CLICK(self.tree, self.tree.GetId(), self.OnRClick)
+        wx.EVT_TREE_ITEM_RIGHT_CLICK(self.tree, self.tree.GetId(), self.OnRClick)
         wx.EVT_RIGHT_UP(self.tree, self.OnRClick)
-        wx.EVT_RIGHT_DOWN(self.tree, self.OnRightDown)
         wx.EVT_TREE_DELETE_ITEM(self.tree, self.tree.GetId(), self.OnDeleteItem)
         wx.EVT_LEFT_DCLICK(self.tree, self.OnDoubleClick)
         wx.EVT_TREE_ITEM_EXPANDING(self.tree, self.tree.GetId(), self.OnExpanding)
-        wx.EVT_KEY_DOWN(self.tree, self.OnKeyDown)
-        wx.EVT_CHAR(self.tree, self.OnChar)
 
         self.SetSizer(self.sizer)
         self.SetAutoLayout(True)
 
         self.nodes = {}
         self.ID = 1
-        self.cache = None
-
+        
         #@add_project
         self.callplugin_once('add_project', DirBrowser.project_names)
 
@@ -139,9 +112,6 @@ class DirBrowser(wx.Panel, Mixin.Mixin):
 
         self.dirmenu_ids = [self.IDPM_ADD_DIRS]
 
-        wx.EVT_UPDATE_UI(self, self.IDPM_CUT, self.OnUpdateUI)
-        wx.EVT_UPDATE_UI(self, self.IDPM_COPY, self.OnUpdateUI)
-        wx.EVT_UPDATE_UI(self, self.IDPM_PASTE, self.OnUpdateUI)
         wx.EVT_UPDATE_UI(self, self.IDPM_CLOSE, self.OnUpdateUI)
         wx.EVT_UPDATE_UI(self, self.IDPM_ADDFILE, self.OnUpdateUI)
         wx.EVT_UPDATE_UI(self, self.IDPM_ADDPATH, self.OnUpdateUI)
@@ -155,30 +125,26 @@ class DirBrowser(wx.Panel, Mixin.Mixin):
         wx.EVT_UPDATE_UI(self, self.IDPM_COMMANDLINE, self.OnUpdateUI)
 
         self.popmenus = None
-
+        
         if dirs:
             for i in dirs:
-                self.addpath(i, False)
+                self.addpath(i)
 
         self.callplugin('init', self)
 
     def OnUpdateUI(self, event):
         eid = event.GetId()
         item = self.tree.GetSelection()
-        if not self.is_ok(item):
-            event.Enable(self.is_ok(item))
+        if not item.IsOk():
+            event.Enable(False)
             return
-        if eid in [self.IDPM_CUT, self.IDPM_COPY]:
-            event.Enable(not self.is_first_node(item))
-        elif eid == self.IDPM_PASTE:
-            event.Enable(bool(self.cache))
-        elif eid == self.IDPM_CLOSE:
+        if eid == self.IDPM_CLOSE:
             if self.is_first_node(item):
                 event.Enable(True)
             else:
                 event.Enable(False)
         elif eid in [self.IDPM_ADDFILE, self.IDPM_ADDPATH]:
-            event.Enable(self.is_ok(item))
+            event.Enable(item.IsOk())
         elif eid in [self.IDPM_REFRESH, self.IDPM_COMMANDLINE]:
             filename = self.get_node_filename(item)
             if os.path.isdir(filename):
@@ -249,9 +215,8 @@ class DirBrowser(wx.Panel, Mixin.Mixin):
     def OnCleanDirectories(self, event):
         self.pref.recent_dir_paths = []
         self.pref.save()
-
-    def addpath(self, path, expand=True):
-        self.tree.Freeze()
+        
+    def addpath(self, path):
         dirs = self.getTopDirs()
         path = common.uni_file(path)
         if path not in dirs:
@@ -260,12 +225,9 @@ class DirBrowser(wx.Panel, Mixin.Mixin):
             self.pref.recent_dir_paths.insert(0, path)
             self.pref.recent_dir_paths = self.pref.recent_dir_paths[:self.pref.recent_dir_paths_num]
             self.pref.save()
-            node = self.add_first_level_node(self.root, '', path, self.close_image, self.open_image, self.getid())
-            self.tree.SetItemHasChildren(node, True)
-            if expand:
-                self.addpathnodes(path, node)
+            node = self.addnode(self.root, '', path, self.close_image, self.open_image, self.getid())
+            self.addpathnodes(path, node)
         self.callplugin('after_addpath', self)
-        self.tree.Thaw()
 
     def addpathnodes(self, path, node):
         try:
@@ -304,27 +266,6 @@ class DirBrowser(wx.Panel, Mixin.Mixin):
         else:
             return self.item_image
 
-    def add_first_level_node(self, parent, path, name, imagenormal, imageexpand=None, data=None):
-        objs = self.getTopObjects()
-        p = name.lower()
-        path = ''
-        pos = -1
-        for i,o in enumerate(objs):
-            path = self.tree.GetItemText(o).lower()
-            if p<path:
-                pos = i
-                break
-        if pos>-1:
-            obj = self.tree.InsertItemBefore(parent, pos, name) 
-        else:
-            obj = self.tree.AppendItem(parent, name)
-        self.nodes[data] = (path, name, obj)
-        self.tree.SetPyData(obj, data)
-        self.tree.SetItemImage(obj, imagenormal, wx.TreeItemIcon_Normal)
-        if imageexpand:
-            self.tree.SetItemImage(obj, imageexpand, wx.TreeItemIcon_Expanded)
-        return obj
-            
     def addnode(self, parent, path, name, imagenormal, imageexpand=None, data=None):
         obj = self.tree.AppendItem(parent, name)
         self.nodes[data] = (path, name, obj)
@@ -359,7 +300,7 @@ class DirBrowser(wx.Panel, Mixin.Mixin):
 
     def OnChangeLabel(self, event):
         item = event.GetItem()
-        if not self.is_ok(item): return
+        if not item.IsOk(): return
         data = self.tree.GetPyData(item)
         path, name, obj = self.nodes[data]
         text = event.GetLabel()
@@ -379,34 +320,28 @@ class DirBrowser(wx.Panel, Mixin.Mixin):
                     error.traceback()
                     common.showerror(self, tr('Cannot change the filename %s to %s!') % (name, text))
                     return
-            doc = None
             for d in self.mainframe.editctrl.getDocuments():
                 if (os.path.exists(os.path.join(path, text)) and d.getFilename() == os.path.join(path, name)) or d.getFilename() == name:
                     d.setFilename(os.path.join(path, text))
                     self.mainframe.editctrl.showPageTitle(d)
-                    doc = d
-                    if d is self.mainframe.editctrl.getCurDoc():
+                    if d is self.mainframe.document:
                         self.mainframe.editctrl.showTitle(d)
             self.nodes[data] = path, text, obj
             if self.isFile(item):
                 item_index = self.get_file_image(text)
                 self.tree.SetItemImage(item, item_index, wx.TreeItemIcon_Normal)
-                if doc:
-                    self.callplugin('call_lexer', doc, name, text, doc.languagename)
         wx.CallAfter(self.tree.SelectItem, item)
 
     def OnSelected(self, event):
         item = event.GetItem()
-        if not self.is_ok(item): return
+        if not item.IsOk(): return
         filename = self.get_node_filename(item)
         if self.isFile(item):
-            document = self.mainframe.editctrl.new(filename)
-            if document:
-                wx.CallAfter(document.SetFocus)
+            wx.CallAfter(self.mainframe.editctrl.new, filename)
 
 #    def OnChanged(self, event):
 #        item = event.GetItem()
-#        if not self.is_ok(item): return
+#        if not item.IsOk(): return
 #        filename = self.get_node_filename(item)
 #        if os.path.isdir(filename):
 #            if self.tree.GetChildrenCount(item) == 0: #need expand
@@ -421,13 +356,7 @@ class DirBrowser(wx.Panel, Mixin.Mixin):
             self.addpathnodes(self.get_node_filename(item), item)
         else:
             event.Skip()
-
-    def OnRightDown(self, event):
-        pt = event.GetPosition();
-        item, flags = self.tree.HitTest(pt)
-        if item:
-            self.tree.SelectItem(item)
-
+        
     def OnRClick(self, event):
         other_menus = []
         if self.popmenus:
@@ -444,12 +373,12 @@ class DirBrowser(wx.Panel, Mixin.Mixin):
         self.dirmenu_ids = [self.IDPM_ADD_DIRS]
 
         self.create_recent_path_menu()
-        self.tree.PopupMenu(pop_menus)
+        self.tree.PopupMenu(pop_menus, event.GetPosition())
 
     def OnCloseDirectory(self, event):
         item = self.tree.GetSelection()
         path = self.get_node_filename(item)
-        if not self.is_ok(item): return
+        if not item.IsOk(): return
         if self.is_first_node(item):
             self.tree.Delete(item)
 
@@ -460,7 +389,7 @@ class DirBrowser(wx.Panel, Mixin.Mixin):
 
     def OnAddSubDir(self, event):
         item = self.tree.GetSelection()
-        if not self.is_ok(item): return
+        if not item.IsOk(): return
         filename = self.get_node_filename(item)
 
         foldername = 'NewFolder'
@@ -478,46 +407,37 @@ class DirBrowser(wx.Panel, Mixin.Mixin):
             common.showerror(self, tr('Create directory %s error!') % os.path.join(filename, foldername))
             return
         node = self.addnode(item, filename, foldername, self.close_image, self.open_image, self.getid())
-        wx.CallAfter(self.tree.Expand, item)
-        wx.CallAfter(self.tree.EditLabel, node)
+        self.tree.EditLabel(node)
 
     def OnAddFile(self, event):
         item = self.tree.GetSelection()
-        if not self.is_ok(item): return
+        if not item.IsOk(): return
         filename = self.get_node_filename(item)
         if self.isFile(item):
             item = self.tree.GetItemParent(item)
             filename = self.get_node_filename(item)
         document = self.mainframe.editctrl.new()
         node = self.addnode(item, filename, document.getShortFilename(), self.item_image, None, self.getid())
-        try:
-            filename = self.get_node_filename(node)
-            file(filename, 'w')
-        except:
-            error.traceback()
-            common.showerror(self, tr("Cann't open the file %(filename)s") % {'filename':filename})
-            return
         wx.CallAfter(self.tree.Expand, item)
         wx.CallAfter(self.tree.EditLabel, node)
 
     def OnDeleteItem(self, event):
         item = event.GetItem()
-        if self.is_ok(item):
+        if item.IsOk():
             del self.nodes[self.tree.GetPyData(item)]
         event.Skip()
 
     def OnDelete(self, event):
         item = self.tree.GetSelection()
-        if not self.is_ok(item): return
+        if not item.IsOk(): return
         parent = self.tree.GetItemParent(item)
         filename = self.get_node_filename(item)
         dlg = wx.MessageDialog(self, tr('Do you want to delete %s ?') % filename, tr("Message"), wx.YES_NO | wx.ICON_INFORMATION)
         if dlg.ShowModal() == wx.ID_YES:
             if os.path.exists(filename):
                 if os.path.isdir(filename):
-                    import shutil
                     try:
-                        shutil.rmtree(filename)
+                        os.rmdir(filename)
                     except:
                         error.traceback()
                         common.showerror(self, tr('Cannot delete directory %s!') % filename)
@@ -537,19 +457,19 @@ class DirBrowser(wx.Panel, Mixin.Mixin):
 
     def OnRefresh(self, event):
         item = self.tree.GetSelection()
-        if not self.is_ok(item): return
+        if not item.IsOk(): return
         path = self.get_node_filename(item)
         self.tree.DeleteChildren(item)
         self.addpathnodes(path, item)
 
     def OnRename(self, event):
         item = self.tree.GetSelection()
-        if not self.is_ok(item): return
+        if not item.IsOk(): return
         self.tree.EditLabel(item)
 
     def OnBeginChangeLabel(self, event):
         item = event.GetItem()
-        if not self.is_ok(item): return
+        if not item.IsOk(): return
         if self.is_first_node(item):
             event.Veto()
             return
@@ -591,7 +511,7 @@ class DirBrowser(wx.Panel, Mixin.Mixin):
 
     def OnIgnoreThis(self, event):
         item = self.tree.GetSelection()
-        if not self.is_ok(item): return
+        if not item.IsOk(): return
         filename = self.get_node_filename(item)
         if filename not in self.filter:
             self.filter.append(filename)
@@ -604,7 +524,7 @@ class DirBrowser(wx.Panel, Mixin.Mixin):
 
     def OnIgnoreThisType(self, event):
         item = self.tree.GetSelection()
-        if not self.is_ok(item): return
+        if not item.IsOk(): return
         filename = self.get_node_filename(item)
         fname, ext = os.path.splitext(filename)
         if ext not in self.filter:
@@ -621,7 +541,7 @@ class DirBrowser(wx.Panel, Mixin.Mixin):
 
     def getCurrentProjectName(self):
         item = self.tree.GetSelection()
-        if not self.is_ok(item):
+        if not item.IsOk():
             projectname = ''
         else:
             projectname = common.getProjectName(self.get_node_filename(item))
@@ -630,29 +550,27 @@ class DirBrowser(wx.Panel, Mixin.Mixin):
 
     def getCurrentProjectHome(self):
         item = self.tree.GetSelection()
-        if not self.is_ok(item):
+        if not item.IsOk():
             path = ''
         else:
             path = common.getProjectHome(self.get_node_filename(item))
 
         return path
-
+    
     def OnDoubleClick(self, event):
         pt = event.GetPosition()
         item, flags = self.tree.HitTest(pt)
-        if flags in (wx.TREE_HITTEST_NOWHERE, wx.TREE_HITTEST_ONITEMRIGHT,
+        if flags in (wx.TREE_HITTEST_NOWHERE, wx.TREE_HITTEST_ONITEMRIGHT, 
             wx.TREE_HITTEST_ONITEMLOWERPART, wx.TREE_HITTEST_ONITEMUPPERPART):
-            self.tree.Freeze()
             for item in self.getTopObjects():
                 self.tree.Collapse(item)
-            self.tree.Thaw()
         else:
             event.Skip()
 
     def getTopObjects(self):
         objs = []
         child, cookie = self.tree.GetFirstChild(self.root)
-        while self.is_ok(child):
+        while child.IsOk():
             objs.append(child)
             child, cookie = self.tree.GetNextChild(self.root, cookie)
         return objs
@@ -665,51 +583,60 @@ class DirBrowser(wx.Panel, Mixin.Mixin):
 
     def OnOpenDefault(self, event):
         item = self.tree.GetSelection()
-        if self.is_ok(item):
+        if item.IsOk():
             os.startfile(self.get_node_filename(item))
-
+            
     def isFile(self, item):
-        if not self.is_ok(item): return False
+        if not item.IsOk(): return False
         index = self.tree.GetItemImage(item)
         return index != self.open_image and index != self.close_image
-
-    def OnAddUliPadWorkPath(self, event):
+    
+    def OnAddNewEditWorkPath(self, event):
         from modules import Globals
         path = Globals.workpath
         self.addpath(path)
-
-    def OnAddUliPadUserPath(self, event):
+        
+    def OnAddNewEditUserPath(self, event):
         from modules import Globals
         path = Globals.userpath
         self.addpath(path)
-
+        
     def OnSetProject(self, event):
         item = self.tree.GetSelection()
         from modules import dict4ini
         filename = self.get_node_filename(item)
         proj_file = os.path.join(filename, '_project')
         name = []
+        values = []
         if os.path.exists(proj_file):
             ini = dict4ini.DictIni(proj_file)
             name = ini.default.get('projectname', [])
+            if name:
+                if isinstance(name, list):
+                    values = [{'name':x} for x in name]
+                else:
+                    values = [{'name':name}]
         dialog = [
-                ('multi', 'project_name', name, tr('Project Names'), self.project_names),
+                ('list', 'project_name', [], tr('Project Names'), {
+                    'columns':[(tr('Project Name'), 60, 'right')],
+                    'elements':[
+                        ('single', 'name', self.project_names[0], tr('Name'), self.project_names),
+                    ]
+                }),
             ]
         from modules.EasyGuider import EasyDialog
-        dlg = EasyDialog.EasyDialog(self, title=tr("Project Setting"), elements=dialog)
+        dlg = EasyDialog.EasyDialog(self, title=tr("Project Setting"), elements=dialog, values={'project_name':values})
         values = None
         if dlg.ShowModal() == wx.ID_OK:
             values = dlg.GetValue()
         dlg.Destroy()
-        if values is not None:
+        if values:
             filename = self.get_node_filename(item)
             proj_file = os.path.join(filename, '_project')
             ini = dict4ini.DictIni(proj_file)
-            ini.default.projectname = values['project_name']
-            self.callplugin('remove_project', ini, list(set(name) - set(values['project_name'])))
-            self.callplugin('set_project', ini, values['project_name'])
+            ini.default.projectname = [v['name'] for v in values['project_name']]
             ini.save()
-
+            
             old_project_name = name
             new_project_name = ini.default.projectname
             #add check project plugin call point
@@ -717,188 +644,16 @@ class DirBrowser(wx.Panel, Mixin.Mixin):
             project_names = common.getCurrentPathProjectName(path)
             self.callplugin('project_end', self, list(set(old_project_name) - set(new_project_name)), path)
             self.callplugin('project_begin', self, list(set(new_project_name) - set(old_project_name)), path)
-
+            
     def OnCommandWindow(self, event):
         item = self.tree.GetSelection()
-        if not self.is_ok(item): return
+        if not item.IsOk(): return
         filename = self.get_node_filename(item)
         if self.isFile(item):
             item = self.tree.GetItemParent(item)
             filename = self.get_node_filename(item)
         if wx.Platform == '__WXMSW__':
             cmdline = os.environ['ComSpec']
-            os.spawnl(os.P_NOWAIT, cmdline,r" /k %s && cd %s" % (os.path.split(filename)[0][:2], filename))
+            os.spawnl(os.P_NOWAIT, cmdline, r"cmd.exe /k cd %s" % filename)
         else:
             common.showerror(self, tr('This features is only implemented in Windows Platform.\nIf you know how to implement in Linux please tell me.'))
-
-    def is_ok(self, item):
-        return item.IsOk() and item != self.root
-
-    def OnExplorerWindow(self, event):
-        item = self.tree.GetSelection()
-        if not self.is_ok(item): return
-        filename = self.get_node_filename(item)
-        dir = common.getCurrentDir(filename)
-        wx.Execute(r"explorer.exe %s" % dir)
-
-    def OnSearchDir(self, event):
-        item = self.tree.GetSelection()
-        if not self.is_ok(item): return
-        filename = self.get_node_filename(item)
-        dir = common.getCurrentDir(filename)
-
-        import FindInFiles
-
-        dlg = FindInFiles.FindInFiles(self.mainframe, self.pref, dir)
-        dlg.Show()
-
-    def OnDirCut(self, event):
-        item = self.tree.GetSelection()
-        if not self.is_ok(item): return
-        self.cache = 'cut', item
-
-    def OnDirCopy(self, event):
-        item = self.tree.GetSelection()
-        if not self.is_ok(item): return
-        self.cache = 'copy', item
-
-    def OnDirPaste(self, event):
-        if not self.cache:
-            return
-        action, item = self.cache
-        dstobj = self.tree.GetSelection()
-        if not self.is_ok(dstobj): return
-
-        src = self.get_node_filename(item)
-        if self.isFile(dstobj):
-            dstobj = self.tree.GetItemParent(dstobj)
-        dst = self.get_node_filename(dstobj)
-
-        if os.path.isfile(src):
-            fname = os.path.basename(src)
-            flag = False
-            while os.path.exists(os.path.join(dst, fname)):
-                fname = 'CopyOf' + fname
-                flag = True
-            if flag:
-                from modules.Entry import MyTextEntry
-                dlg = MyTextEntry(self, tr("Save File"), tr("Change the filename:"), fname)
-                result = dlg.ShowModal()
-                if result == wx.ID_OK:
-                    dst = os.path.join(dst, dlg.GetValue())
-                    dlg.Destroy()                
-                else:
-                    dlg.Destroy()               
-                    return
-        if src == dst:
-            common.showerror(self, tr("Source file or directory can not be the same as destination file or directory"))
-            return
-
-        if action == 'copy':
-            try:
-                if self.isFile(item):
-                    shutil.copy(src, dst)
-                else:
-                    my_copytree(src, dst)
-            except:
-                error.traceback()
-                common.showerror(self, tr("Copy %(filename)s to %(dst)s failed!") % {'filename':src, 'dst':dst})
-                return
-        elif action == 'cut':
-            try:
-                my_move(src, dst)
-            except:
-                error.traceback()
-                common.showerror(self, tr("Move %(filename)s to %(dst)s failed!") % {'filename':src, 'dst':dst})
-                return
-            self.tree.Delete(item)
-        self.tree.DeleteChildren(dstobj)
-        if os.path.isfile(dst):
-            dst = os.path.dirname(dst)
-        self.addpathnodes(dst, dstobj)
-        wx.CallAfter(self.tree.Expand, dstobj)
-
-    def OnKeyDown(self, event):
-        key = event.GetKeyCode()
-        ctrl = event.ControlDown()
-        alt = event.AltDown()
-        shift = event.ShiftDown()
-        if key == ord('X') and ctrl:
-            wx.CallAfter(self.OnDirCut, None)
-        elif key == ord('C') and ctrl:
-            wx.CallAfter(self.OnDirCopy, None)
-        elif key == ord('V') and ctrl:
-            wx.CallAfter(self.OnDirPaste, None)
-        event.Skip()
-
-    def OnChar(self, event):
-        key = event.GetKeyCode()
-        ctrl = event.ControlDown()
-        alt = event.AltDown()
-        shift = event.ShiftDown()
-        if key == wx.WXK_DELETE:
-            wx.CallAfter(self.OnDelete, None)
-        else:
-            event.Skip()
-            
-    def __del__(self):
-        self.tree.Freeze()
-        self.tree.DeleteAllItems()
-        self.tree.Thaw()
-        
-
-def my_copytree(src, dst):
-    """Recursively copy a directory tree using copy2().
-
-    Modified from shutil.copytree
-
-    """
-    base = os.path.basename(src)
-    dst = os.path.join(dst, base)
-    names = os.listdir(src)
-    if not os.path.exists(dst):
-        os.mkdir(dst)
-    for name in names:
-        srcname = os.path.join(src, name)
-        try:
-            if os.path.isdir(srcname):
-                my_copytree(srcname, dst)
-            else:
-                shutil.copy2(srcname, dst)
-        except:
-            error.traceback()
-            raise
-
-class MyFileDropTarget(wx.FileDropTarget):
-    def __init__(self, dirwin):
-        wx.FileDropTarget.__init__(self)
-        self.dirwin = dirwin
-
-    def OnDropFiles(self, x, y, filenames):
-        for filename in filenames:
-            if os.path.isdir(filename):
-                self.dirwin.addpath(filename)
-            else:
-                Globals.mainframe.editctrl.new(filename)
-
-def my_move(src, dst):
-    """Recursively move a file or directory to another location.
-
-    If the destination is on our current filesystem, then simply use
-    rename.  Otherwise, copy src to the dst and then remove src.
-    A lot more could be done here...  A look at a mv.c shows a lot of
-    the issues this implementation glosses over.
-
-    """
-
-    try:
-        os.rename(src, dst)
-    except OSError:
-        if os.path.isdir(src):
-            if os.path.abspath(dst).startswith(os.path.abspath(src)):
-                raise Exception, "Cannot move a directory '%s' into itself '%s'." % (src, dst)
-            my_copytree(src, dst)
-            shutil.rmtree(src)
-        else:
-            shutil.copy2(src,dst)
-            os.unlink(src)

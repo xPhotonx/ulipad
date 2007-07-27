@@ -12,7 +12,7 @@ import sys
 class OPML(dict):
     def __init__(self):
         self.outlines = []
-
+    
     def output(self, stream = sys.stdout):
         xg = XMLGenerator(stream)
         def elemWithContent(name, content):
@@ -36,7 +36,7 @@ class OPML(dict):
 
 class Outline(dict):
     __slots__ = ('_children')
-
+    
     def __init__(self):
         self._children = []
 
@@ -73,7 +73,7 @@ class OutlineList:
     def __init__(self):
         self._roots = []
         self._stack = []
-
+    
     def add_outline(self, outline):
         if len(self._stack):
             self._stack[-1].add_child(outline)
@@ -118,7 +118,7 @@ class OPMLHandler(handler.ContentHandler):
             if name == key:
                 self._opml[key] = self._content
                 return
-
+        
     def characters(self, ch):
         self._content += ch
 

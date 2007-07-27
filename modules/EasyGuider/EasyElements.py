@@ -30,7 +30,7 @@ class EasyElements(object):
         self.items = {}
         self.values = values
         self.factor = factor
-
+        
     def addItems(self, sizer):
         number = len(self.elements)
         if not number:
@@ -39,9 +39,9 @@ class EasyElements(object):
             elements = self.getNewElements(self.values)
         else:
             elements = self.elements
-
+            
         self.gbs = wx.GridBagSizer(2, 2)
-
+        
         for i, item in enumerate(elements):
             enabledflag = None
             size = (-1, -1)
@@ -82,7 +82,7 @@ class EasyElements(object):
             check.SetValue(enabledflag)
             obj.setEnabled(enabledflag)
             self.gbs.Add(check, (i, 0), flag=wx.ALIGN_CENTER_VERTICAL|wx.RIGHT, border=4)
-
+            
         if not obj.isLarge():
             self.gbs.Add(wx.StaticText(self, -1, message), (i, 1), flag=wx.ALIGN_CENTER_VERTICAL, border=2)
             self.gbs.Add(obj.getContainer(), (i, 2), flag=obj.getAlignFlag(flag), border=2)
@@ -96,7 +96,7 @@ class EasyElements(object):
             if not obj.getEnabledFlag() or obj.getEnabled():
                 values[key] = obj.getValue()
         return values
-
+    
 class EnableFlagBox(wx.CheckBox):
     def __init__(self, parent, target):
         wx.CheckBox.__init__(self, parent, -1)
@@ -104,6 +104,6 @@ class EnableFlagBox(wx.CheckBox):
         self.target = target
         target.checkbox = self
         wx.EVT_CHECKBOX(self, self.GetId(), self.OnCheck)
-
+        
     def OnCheck(self, event):
         self.target.setEnabled(self.GetValue())

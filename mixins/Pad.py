@@ -1,11 +1,11 @@
-#   Programmer:     limodou
-#   E-mail:         limodou@gmail.com
-# 
-#   Copyleft 2006 limodou
-# 
-#   Distributed under the terms of the GPL (GNU Public License)
-# 
-#   UliPad is free software; you can redistribute it and/or modify
+#	Programmer:	limodou
+#	E-mail:		limodou@gmail.com
+#
+#	Copyleft 2006 limodou
+#
+#	Distributed under the terms of the GPL (GNU Public License)
+#
+#   NewEdit is free software; you can redistribute it and/or modify
 #   it under the terms of the GNU General Public License as published by
 #   the Free Software Foundation; either version 2 of the License, or
 #   (at your option) any later version.
@@ -19,7 +19,7 @@
 #   along with this program; if not, write to the Free Software
 #   Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 #
-#   $Id$
+#	$Id$
 
 import wx
 import os.path
@@ -56,14 +56,14 @@ class PAD(wx.MiniFrame):
         wx.EVT_KEY_UP(self.text, self.OnKeyUp)
         wx.EVT_LEFT_UP(self.text, self.OnMouseUp)
         wx.EVT_CLOSE(self, self.OnClose)
-
+        
     def OnModified(self, event):
         self.save()
-
+            
     def save(self):
         file(self.filename, 'w').write(self.text.GetText().encode('utf-8'))
         self.save_pos()
-
+        
     def save_pos(self):
         Globals.mainframe.pref.easy_memo_lastpos = self.text.GetCurrentLine()
         Globals.mainframe.pref.save()
@@ -71,11 +71,11 @@ class PAD(wx.MiniFrame):
     def OnKeyUp(self, event):
         self.save_pos()
         event.Skip()
-
+    
     def OnMouseUp(self, event):
         self.save_pos()
         event.Skip()
-
+        
     def OnClose(self, event):
         Globals.mainframe.pref.memo_pos = self.GetPosition()
         Globals.mainframe.pref.memo_size = self.GetSize()

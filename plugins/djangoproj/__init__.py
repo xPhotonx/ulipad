@@ -21,22 +21,5 @@
 #
 #   $Id$
 
-import wx
-from modules import Mixin
 import editor_ext
 import dirbrowser_ext
-import DjangoTMPLexer
-
-def add_lexer(lexer):
-    lexer.extend([
-        (DjangoTMPLexer.DjangoTmpLexer.metaname, tr('Django Template|*.dmp'),
-            wx.stc.STC_LEX_CONTAINER, 'djangotmp.stx', DjangoTMPLexer.DjangoTmpLexer),
-    ])
-Mixin.setPlugin('lexerfactory', 'add_lexer', add_lexer)
-
-def add_new_files(new_files):
-    new_files.extend([
-        ('Django Template', DjangoTMPLexer.DjangoTmpLexer.metaname),
-    ])
-Mixin.setPlugin('mainframe', 'add_new_files', add_new_files)
-

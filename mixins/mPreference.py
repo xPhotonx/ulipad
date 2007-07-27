@@ -1,11 +1,11 @@
-#   Programmer:     limodou
-#   E-mail:         limodou@gmail.com
-#  
-#   Copyleft 2006 limodou
-#  
-#   Distributed under the terms of the GPL (GNU Public License)
-#  
-#   UliPad is free software; you can redistribute it and/or modify
+#	Programmer:	limodou
+#	E-mail:		limodou@gmail.com
+#
+#	Copyleft 2006 limodou
+#
+#	Distributed under the terms of the GPL (GNU Public License)
+#
+#   NewEdit is free software; you can redistribute it and/or modify
 #   it under the terms of the GNU General Public License as published by
 #   the Free Software Foundation; either version 2 of the License, or
 #   (at your option) any later version.
@@ -19,34 +19,34 @@
 #   along with this program; if not, write to the Free Software
 #   Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 #
-#   $Id: mPreference.py 1757 2006-12-14 01:20:35Z limodou $
+#	$Id: mPreference.py 475 2006-01-16 09:50:28Z limodou $
 
 import wx
 from modules import Mixin
 
 def add_mainframe_menu(menulist):
-    menulist.extend([
-        ('IDM_EDIT',
+    menulist.extend([ (None,
         [
-            (300, '-', '', wx.ITEM_SEPARATOR, '', ''),
-            (310, 'wx.ID_PREFERENCES', tr('Preferences...'), wx.ITEM_NORMAL, 'OnOptionPreference', tr('Setup program preferences')),
+            (600, 'IDM_OPTION', tr('Option'), wx.ITEM_NORMAL, None, ''),
+        ]),
+        ('IDM_OPTION',
+        [
+            (100, 'IDM_OPTION_PREFERENCE', tr('Preference...'), wx.ITEM_NORMAL, 'OnOptionPreference', tr('Setup program preferences')),
         ]),
     ])
 Mixin.setPlugin('mainframe', 'add_menu', add_mainframe_menu)
 
 def beforegui(win):
-    import Preference
-    from modules import Globals
+	import Preference
 
-    win.pref = Preference.Preference()
-    win.pref.load()
-    win.pref.printValues()
-    Globals.pref = win.pref
+	win.pref = Preference.Preference()
+	win.pref.load()
+	win.pref.printValues()
 Mixin.setPlugin('app', 'beforegui', beforegui, Mixin.HIGH)
 
 def OnOptionPreference(win, event):
-    import PrefDialog
+	import PrefDialog
 
-    dlg = PrefDialog.PrefDialog(win)
-    dlg.ShowModal()
+	dlg = PrefDialog.PrefDialog(win)
+	dlg.ShowModal()
 Mixin.setMixin('mainframe', 'OnOptionPreference', OnOptionPreference)

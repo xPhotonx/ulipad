@@ -30,13 +30,12 @@ def other_popup_menu(editor, projectname, menus):
     if editor.languagename == 'python' and 'django' in common.getProjectName(editor.filename):
         menus.extend([(None, #parent menu id
             [
-                (30, 'IDPM_DJANGO_PROJECT', tr('&Django'), wx.ITEM_NORMAL, '', ''),
+                (30, 'IDPM_DJANGO_PROJECT', tr('Django'), wx.ITEM_NORMAL, '', ''),
                 (40, '', '-', wx.ITEM_SEPARATOR, None, ''),
             ]),
             ('IDPM_DJANGO_PROJECT',
             [
-                (100, 'IDPM_DJANGO_PROJECT_NEW_MODEL', tr('&New Model'), wx.ITEM_NORMAL, 'OnDjangoProjectFunc', tr('Create a new model.')),
-                (110, '', '-', wx.ITEM_SEPARATOR, None, ''),
+                (100, 'IDPM_DJANGO_PROJECT_NEW_MODEL', tr('New Model'), wx.ITEM_NORMAL, 'OnDjangoProjectFunc', tr('Create a new model.')),
             ]),
         ])
 Mixin.setPlugin('editor', 'other_popup_menu', other_popup_menu)
@@ -58,3 +57,4 @@ def OnDjangoProjectNewModel(win):
         win.GotoPos(win.GetTextLength() - 1)
         win.EnsureCaretVisible()
         win.AddText(text)
+
