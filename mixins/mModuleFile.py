@@ -1,11 +1,11 @@
 #   Programmer: limodou
 #   E-mail:     limodou@gmail.com
 #
-#   Copyleft 2006 limodou
+#   Copyleft 2005 limodou
 #
 #   Distributed under the terms of the GPL (GNU Public License)
 #
-#   UliPad is free software; you can redistribute it and/or modify
+#   NewEdit is free software; you can redistribute it and/or modify
 #   it under the terms of the GNU General Public License as published by
 #   the Free Software Foundation; either version 2 of the License, or
 #   (at your option) any later version.
@@ -19,22 +19,21 @@
 #   along with this program; if not, write to the Free Software
 #   Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 #
-#   $Id: mModuleFile.py 1548 2006-10-03 06:57:31Z limodou $
+#   $Id: mModuleFile.py 176 2005-11-22 02:46:37Z limodou $
 
 from modules import Mixin
 import wx
 import wx.stc
 import os.path
 
-def add_py_menu(menulist):
-    menulist.extend([
-        ('IDM_PYTHON', #parent menu id
-        [
-            (115, '', '-', wx.ITEM_SEPARATOR, None, ''),
-            (116, 'IDM_VIEW_OPEN_MODULE', tr('Open Module File') + '\tF6', wx.ITEM_NORMAL, 'OnViewOpenModuleFile', tr('Open current word as Python module file')),
-        ]),
-    ])
-Mixin.setPlugin('pythonfiletype', 'add_menu', add_py_menu)
+menulist = [
+    ('IDM_PYTHON', #parent menu id
+    [
+        (115, '', '-', wx.ITEM_SEPARATOR, None, ''),
+        (116, 'IDM_VIEW_OPEN_MODULE', tr('Open Module File') + '\tF6', wx.ITEM_NORMAL, 'OnViewOpenModuleFile', tr('Open current word as Python module file')),
+    ]),
+]
+Mixin.setMixin('pythonfiletype', 'menulist', menulist)
 
 def other_popup_menu(editor, projectname, menus):
     if editor.languagename == 'python' :

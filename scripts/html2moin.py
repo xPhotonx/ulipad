@@ -1,6 +1,6 @@
 #coding=cp936
 #---------------------------------------------------
-#                   UliPad script
+#                   NewEdit script
 # Author  :limodou
 # Date    :2005/07/16
 # Version :0.1

@@ -1,11 +1,11 @@
-#   Programmer:     limodou
-#   E-mail:         limodou@gmail.com
-#  
-#   Copyleft 2006 limodou
-#  
-#   Distributed under the terms of the GPL (GNU Public License)
-#  
-#   UliPad is free software; you can redistribute it and/or modify
+#	Programmer:	limodou
+#	E-mail:		chatme@263.net
+#
+#	Copyleft 2004 limodou
+#
+#	Distributed under the terms of the GPL (GNU Public License)
+#
+#   NewEdit is free software; you can redistribute it and/or modify
 #   it under the terms of the GNU General Public License as published by
 #   the Free Software Foundation; either version 2 of the License, or
 #   (at your option) any later version.
@@ -19,25 +19,22 @@
 #   along with this program; if not, write to the Free Software
 #   Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 #
-#   $Id: mShowLocale.py 1566 2006-10-09 04:44:08Z limodou $
+#	$Id: mShowLocale.py 176 2005-11-22 02:46:37Z limodou $
 
 __doc__ = 'show document locale in statusbar'
 
 from modules import Mixin
+import wx
 
 def on_document_enter(win, document):
-    if document.edittype == 'edit':
-        win.mainframe.SetStatusText(win.document.locale, 4)
+	if document.documenttype == 'edit':
+		win.mainframe.SetStatusText(win.document.locale, 4)
 Mixin.setPlugin('editctrl', 'on_document_enter', on_document_enter)
 
 def fileopentext(win, stext):
-    win.mainframe.SetStatusText(win.locale, 4)
+	win.mainframe.SetStatusText(win.locale, 4)
 Mixin.setPlugin('editor', 'openfiletext', fileopentext)
 
-def savefiletext(win, stext):
-    win.mainframe.SetStatusText(win.locale, 4)
-Mixin.setPlugin('editor', 'savefiletext', savefiletext)
-
 def afteropenfile(win, filename):
-    win.mainframe.SetStatusText(win.locale, 4)
+	win.mainframe.SetStatusText(win.locale, 4)
 Mixin.setPlugin('editor', 'afteropenfile', afteropenfile)

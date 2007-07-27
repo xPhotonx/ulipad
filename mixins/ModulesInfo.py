@@ -1,11 +1,11 @@
-#       Programmer:     limodou
-#       E-mail:         limodou@gmail.com
+#	Programmer:	limodou
+#	E-mail:		limodou@gmail.com
 #
-#       Copyleft 2006 limodou
+#	Copyleft 2005 limodou
 #
-#       Distributed under the terms of the GPL (GNU Public License)
+#	Distributed under the terms of the GPL (GNU Public License)
 #
-#   UliPad is free software; you can redistribute it and/or modify
+#   NewEdit is free software; you can redistribute it and/or modify
 #   it under the terms of the GNU General Public License as published by
 #   the Free Software Foundation; either version 2 of the License, or
 #   (at your option) any later version.
@@ -19,10 +19,12 @@
 #   along with this program; if not, write to the Free Software
 #   Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 #
-#       $Id: ModulesInfo.py 1457 2006-08-23 02:12:12Z limodou $
+#	$Id: ModulesInfo.py 176 2005-11-22 02:46:37Z limodou $
 
+import wx
 import glob
 import os.path
+import re
 from modules import dict4ini
 from modules import common
 from modules.Debug import error
@@ -51,11 +53,10 @@ def show_modules_info(win):
             'description':x[k].get('description', ''), 'version':x[k].get('version', ''), 't_color':t_color})
         p['modules'] = m
 
-    from modules.meteor import Template
+    from meteor import Template
 
     template = Template()
-    import T_modulesinfo
-    template.load(T_modulesinfo, 'python')
+    template.load(os.path.join(win.workpath, 'mixins/T_modulesinfo.py'))
 
     f = os.path.join(win.app.userpath, 'modulesinfo.html')
     try:

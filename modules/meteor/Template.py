@@ -1,7 +1,7 @@
 #   Programmer: limodou
 #   E-mail:     limodou@gmail.com
 #
-#   Copyleft 2006 limodou
+#   Copyleft 2005 limodou
 #
 #   Distributed under the terms of the GPL (GNU Public License)
 #
@@ -72,26 +72,23 @@ class Preprocessor:
 
     def process(self, modulename):
         """process a template object and return template elements and relation nodes set"""
-        if isinstance(modulename, (str, unicode)):
-            dirname = os.path.dirname(os.path.abspath(modulename))
-            filename, ext = os.path.splitext(os.path.basename(modulename))
-            if ext.lower() not in ('.py', '.pyc', '.pyo'):
-                return {}, {}
-            if sys.modules.has_key(filename):
-                del sys.modules[filename]
-            if dirname:
-                sys.path.insert(0, dirname)
-            mod = __import__(filename)
-            if dirname:
-                del sys.path[0]
-        else:
-            mod = modulename
+        dirname = os.path.dirname(os.path.abspath(modulename))
+        filename, ext = os.path.splitext(os.path.basename(modulename))
+        if ext.lower() not in ('.py', '.pyc', '.pyo'):
+            return {}, {}
+        if sys.modules.has_key(filename):
+            del sys.modules[filename]
+        if dirname:
+            sys.path.insert(0, dirname)
+        mod = __import__(filename)
+        if dirname:
+            del sys.path[0]
 
         vars = {}
         nodes = {}
         for vn in dir(mod):
             v = getattr(mod, vn)
-            if hasattr(v, '__class__') and v.__class__.__name__.split('.')[-1] == 'T':
+            if isinstance(v, T): #hasattr(v, '__class__') and v.__class__.__name__ == 'T':
                 vars[vn] = v
                 nodes[vn] = self.get_rely_on_node(v.getText())
 
@@ -101,7 +98,7 @@ class Preprocessor:
 
     def getPattern(self):
         """get template variable pattern"""
-        return r'%s(.*?)%s' % (self.beginchars, self.endchars)
+        return r'%s(\w+)%s' % (self.beginchars, self.endchars)
 
     def get_rely_on_node(self, s):
         """get relation nodes set"""
@@ -132,32 +129,12 @@ class SimpleTextPreprocessor(Preprocessor):
 
     def process(self, content):
         """content can be a file object or text"""
-        if hasattr(content, 'read'):
+        if isinstance(content, types.FileType):
             text = content.read()
         else:
             text = file(content).read()
 
         t= T(text)
-        vars = {'text':t}
-        nodes = {'text':self.get_rely_on_node(t.getText())}
-        return vars, nodes
-
-    def get_default_target(self):
-        return 'text'
-
-class SimpleStringPreprocessor(SimpleTextPreprocessor):
-    """Simple text pre-processor"""
-
-    def __init__(self, ptype='string', beginchars='<#', endchars='#>'):
-        """ptype is processor name
-        beginchars defines template var's left delimeter chars
-        endchars defines template var's right delimeter chars
-        """
-        SimpleTextPreprocessor.__init__(self, ptype, beginchars, endchars)
-
-    def process(self, content):
-        """content can be a file object or text"""
-        t= T(content)
         vars = {'text':t}
         nodes = {'text':self.get_rely_on_node(t.getText())}
         return vars, nodes
@@ -197,18 +174,17 @@ class Template:
         self.vars.update(vars)
         self.nodes.update(nodes)
 
-    def value(self, target=None, values={}, encoding=None):
+    def value(self, target=None, values={}):
         """get a template variable 's value"""
-        values = self.str_object(values, encoding=encoding)
-        if not target or not self.nodes.has_key(target):
+        values = self.str_object(values)
+        if not target:
             target = self.pre.get_default_target()
         self.values_stack = [values]
         self.target = target
         if isinstance(values, types.DictType):
-            ret = self._value(target, values.get(target, values))
+            return self._value(target, values.get(target, values))
         else:
-            ret = self._value(target, values)
-        return ret
+            return self._value(target, values)
 
     def str_object(self, obj, encoding=None):
         if not encoding:
@@ -230,7 +206,7 @@ class Template:
                 obj[key] = self.str_object(value, encoding)
             return obj
         else:
-            raise Exception, "Cann't deal with other object type %s" % type(obj)
+            return obj  #cann't deal class instance
 
     def _value(self, target, values):
         self.values_stack.append(values)
@@ -260,11 +236,7 @@ class Template:
                         vals[node] = self._value(node, v[node])
                     else:
                         vals[node] = v[node]
-            try:
-                s.append(self._replace(target, self.vars[target].getText(), vals))
-            except:
-                print "target=", target, 'vals=', vals, 'v=', values
-                raise
+            s.append(self._replace(target, self.vars[target].getText(), vals))
 
         del self.values_stack[-1]
 
@@ -294,11 +266,7 @@ class Template:
 
         if not text:
             return text
-        try:
-            return re.sub(self.pre.getPattern(), dosup, text)
-        except:
-            print 'name=', name, 'text=', text, 'values=', values
-            raise
+        return re.sub(self.pre.getPattern(), dosup, text)
 
     def writeDot(self, f=None):
         s = []
@@ -319,9 +287,3 @@ def register(preprocess):
 
 register(Preprocessor('python'))
 register(SimpleTextPreprocessor('text'))
-register(SimpleStringPreprocessor('string'))
-
-def render(templatename, values, type='text', target=None, encoding=None):
-    t = Template()
-    t.load(templatename, type)
-    return t.value(values=values, target=target, encoding=encoding)

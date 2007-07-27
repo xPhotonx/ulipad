@@ -1,11 +1,11 @@
-#   Programmer:     limodou
-#   E-mail:         limodou@gmail.com
-#   
-#   Copyleft 2006 limodou
-#   
-#   Distributed under the terms of the GPL (GNU Public License)
-#   
-#   UliPad is free software; you can redistribute it and/or modify
+#	Programmer:	limodou
+#	E-mail:		limodou@gmail.com
+#
+#	Copyleft 2005 limodou
+#
+#	Distributed under the terms of the GPL (GNU Public License)
+#
+#   NewEdit is free software; you can redistribute it and/or modify
 #   it under the terms of the GNU General Public License as published by
 #   the Free Software Foundation; either version 2 of the License, or
 #   (at your option) any later version.
@@ -19,68 +19,33 @@
 #   along with this program; if not, write to the Free Software
 #   Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 #
-#   $Id: mEditorCtrl.py 154 2005-11-07 04:48:15Z limodou $
+#	$Id: mEditorCtrl.py 154 2005-11-07 04:48:15Z limodou $
 
 import wx
-import os
 from modules import Mixin
+import os.path
 from modules import common
-from modules import makemenu
-
-def add_tool_list(toollist, toolbaritems):
-    #order, IDname, imagefile, short text, long text, func
-    toolbaritems.update({
-        'new':(wx.ITEM_NORMAL, 'IDM_FILE_NEWS', 'images/new.gif', tr('new'), tr('Creates a new document'), 'OnFileNews'),
-    })
-Mixin.setPlugin('mainframe', 'add_tool_list', add_tool_list, Mixin.LOW)
-
-def OnFileNews(win, event):
-#    if win.pref.syntax_select:
-    eid = event.GetId()
-    size = win.toolbar.GetToolSize()
-    pos = win.toolbar.GetToolPos(eid)
-    menu = wx.Menu()
-    create_menu(win, menu)
-    win.PopupMenu(menu, (size[0]*pos, size[1]))
-    menu.Destroy()
-#    else:
-#        document = win.editctrl.new()
-#        if document:
-#            document.SetFocus()
-Mixin.setMixin('mainframe', 'OnFileNews', OnFileNews)
-
-#def pref_init(pref):
-#    pref.syntax_select = True
-#Mixin.setPlugin('preference', 'init', pref_init)
-
-#def add_pref(preflist):
-#    preflist.extend([
-#        (tr('General'), 175, 'check', 'syntax_select', tr('Enable syntax selection as new file'), None),
-#    ])
-#Mixin.setPlugin('preference', 'add_pref', add_pref)
-
-def add_mainframe_menu(menulist):
-    menulist.extend([ ('IDM_FILE_NEWMORE',
-        [
-           (100, 'IDM_FILE_NEWMORE_NULL', tr('(empty)'), wx.ITEM_NORMAL, '', ''),
-        ]),
-    ])
-Mixin.setPlugin('mainframe', 'add_menu', add_mainframe_menu)
 
 def init(win):
-#    if win.pref.syntax_select:
-    menu = makemenu.findmenu(win.menuitems, 'IDM_FILE_NEWMORE')
-    menu.Delete(win.IDM_FILE_NEWMORE_NULL)
-    create_menu(win, menu)
-Mixin.setPlugin('mainframe', 'init', init)
+    win.filenewtypes = []
+Mixin.setMixin('mainframe', 'init', init)
 
-def create_menu(win, menu):
-    ids = {}
-    def _OnFileNew(event, win=win, ids=ids):
-        lexname = ids.get(event.GetId(), '')
+def OnFileNew(win, event):
+    if win.pref.syntax_select:
+        dialog = [
+            ('single', 'lexer', 'text', tr('Syntax Selection:'), win.filenewtypes),
+            ]
+        from EasyGui import EasyDialog
+        dlg = EasyDialog.EasyDialog(win, tr('Please select a Lexer'), dialog)
+        result = dlg.ShowModal()
+        lexname = None
+        if result == wx.ID_OK:
+            lexname = dlg.GetValue()
+        dlg.Destroy()
+        if result == wx.ID_CANCEL:
+            return
         if lexname:
-            lexer = win.lexers.getNamedLexer(lexname)
-            text = ''
+            lexer = win.lexers.getNamedLexer(lexname['lexer'])
             if lexer:
                 templatefile = common.getConfigPathFile('template.%s' % lexer.name)
                 if os.path.exists(templatefile):
@@ -88,13 +53,18 @@ def create_menu(win, menu):
                     text = common.decode_string(text)
                 else:
                     text = ''
-            document = win.editctrl.new(defaulttext=text, language=lexer.name)
+            document = win.editctrl.new(defaulttext=text)
             if document:
-                document.SetFocus()
-    
-    for name, lexname in win.filenewtypes:
-        _id = wx.NewId()
-        menu.Append(_id, "%s" % name)
-        ids[_id] = lexname
-        wx.EVT_MENU(win, _id, _OnFileNew)
-    
+                lexer.colourize(document)
+    else:
+        win.editctrl.new()
+Mixin.setMixin('mainframe', 'OnFileNew', OnFileNew)
+
+def init(pref):
+	pref.syntax_select = True
+Mixin.setPlugin('preference', 'init', init)
+
+preflist = [
+	(tr('General'), 175, 'check', 'syntax_select', tr('Enable syntax selection as new file'), None),
+]
+Mixin.setMixin('preference', 'preflist', preflist)

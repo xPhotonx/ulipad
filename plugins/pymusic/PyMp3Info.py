@@ -1,5 +1,8 @@
+import os
+import sys
+from UserDict import UserDict
+import locale
 from modules.Debug import error
-from modules import common
 
 def stripnulls(data):
     "strip whitespace and nulls"
@@ -18,11 +21,15 @@ class MP3FileInfo:
         self.info={}
         self.ishasinfo=False
 
+    def encode(self,text):
+        encoding = locale.getdefaultlocale()[1]
+        return text.encode(encoding)
+
     def parse(self, filepath=None):
         "parse ID3v1.0 tags from MP3 file"
         if filepath:
             self.filepath=filepath
-        self.filepath=common.decode_string(self.filepath, common.defaultfilesystemencoding)
+        self.filepath=self.encode(self.filepath)
         self.info.clear()
         try:
             fsock = open(self.filepath, "rb", 0)

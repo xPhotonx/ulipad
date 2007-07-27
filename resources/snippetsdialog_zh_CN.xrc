@@ -79,7 +79,7 @@
       <pos>240, 145</pos>
       <size>80, -1</size>
     </object>
-    <size>400, 210</size>
+    <size>400, 200</size>
     <style>wxDEFAULT_DIALOG_STYLE</style>
   </object>
   <object class="wxDialog" name="SnippetsCodeDialog">

@@ -1,11 +1,11 @@
 #   Programmer: limodou
-#   E-mail:     limodou@gmail.com
+#   E-mail:     chatme@263.net
 #
-#   Copyleft 2006 limodou
+#   Copyleft 2004 limodou
 #
 #   Distributed under the terms of the GPL (GNU Public License)
 #
-#   UliPad is free software; you can redistribute it and/or modify
+#   NewEdit is free software; you can redistribute it and/or modify
 #   it under the terms of the GNU General Public License as published by
 #   the Free Software Foundation; either version 2 of the License, or
 #   (at your option) any later version.
@@ -19,197 +19,72 @@
 #   along with this program; if not, write to the Free Software
 #   Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 #
-#   $Id: mSession.py 1892 2007-02-02 05:19:37Z limodou $
+#   $Id: mSession.py 176 2005-11-22 02:46:37Z limodou $
 
-import os
-import wx
 from modules import Mixin
-from modules.Debug import error
-from modules import common
-from modules import Globals
-from modules import makemenu
+import wx
+import wx.stc
 
-def pref_init(pref):
+def init(pref):
     pref.load_session = True
     pref.sessions = []
     pref.last_tab_index = -1
     pref.screen_lines = 0
-Mixin.setPlugin('preference', 'init', pref_init)
+Mixin.setPlugin('preference', 'init', init)
 
-def add_pref(preflist):
-    preflist.extend([
-        (tr('General'), 130, 'check', 'load_session', tr('Auto load the files of last session'), None),
-    ])
-Mixin.setPlugin('preference', 'add_pref', add_pref)
-
-def save_session(win):
-    if Globals.starting: return
-    win.pref.sessions, win.pref.last_tab_index = [], -1
-    if win.pref.load_session:
-        win.pref.sessions, win.pref.last_tab_index = gather_status()
-    win.pref.save()
+preflist = [
+    (tr('General'), 130, 'check', 'load_session', tr('Auto load the files of last session'), None),
+]
+Mixin.setMixin('preference', 'preflist', preflist)
 
 def afterclosewindow(win):
-    save_session(win)
+    win.pref.sessions = []
+    win.pref.last_tab_index = -1
+    if win.pref.load_session:
+        for document in win.editctrl.getDocuments():
+            if document.documenttype != 'edit':
+                continue
+            win.pref.screen_lines = document.LinesOnScreen()
+            if document.filename and document.savesession:
+                win.pref.sessions.append(getStatus(document))
+        win.pref.last_tab_index = win.editctrl.GetSelection()
+    win.pref.save()
 Mixin.setPlugin('mainframe', 'afterclosewindow', afterclosewindow)
 
-def afterclosefile(win, *args):
-    save_session(win)
-Mixin.setPlugin('editctrl', 'afterclosefile', afterclosefile)
+def getStatus(document):
+    """filename, pos, bookmarks"""
+    row = document.GetCurrentLine()
+    col = document.GetColumn(document.GetCurrentPos())
+    bookmarks = []
+    start = 0
+    line = document.MarkerNext(start, 1)
+    while line > -1:
+        bookmarks.append(line)
+        start = line + 1
+        line = document.MarkerNext(start, 1)
+    return document.filename, row, col, bookmarks
 
-def afternewfile(win, *args):
-    save_session(win.mainframe)
-Mixin.setPlugin('editctrl', 'afternewfile', afternewfile)
+def setStatus(document, row, col, bookmarks):
+    document.GotoLine(row)
+    for line in bookmarks:
+        document.MarkerAdd(line, 0)
 
-def gather_status():
-    sessions = []
-    last_tab_index = -1
-    win = Globals.mainframe
-    for document in win.editctrl.getDocuments():
-        if document.documenttype != 'texteditor':
-            continue
-        if document.filename and document.savesession:
-            sessions.append(document.get_full_state())
-    last_tab_index = win.editctrl.GetSelection()
-    return sessions, last_tab_index
-    
 def openPage(win):
     n = 0
     if win.mainframe.pref.load_session and not win.mainframe.app.skipsessionfile:
-        for v in win.mainframe.pref.sessions:
-            if len(v) == 4:
-                filename, row, col, bookmarks = v
-                state = row
-            else:
-                filename, state, bookmarks = v
+        for filename, row, col, bookmarks in win.mainframe.pref.sessions:
             document = win.new(filename, delay=True)
             if document:
+                setStatus(document, row, col, bookmarks)
                 n += 1
         index = win.mainframe.pref.last_tab_index
-        if index < 0:
-            index = 0
-        elif index >= len(win.getDocuments()):
-            index = len(win.getDocuments()) -1
-        if index > -1 and index < len(win.getDocuments()):
-            wx.CallAfter(win.switch, win.getDoc(index), delay=False)
+        if index > -1 and index < len(win.list):
+           wx.CallAfter(win.switch, win.list[index], delay=False)
+#            while index > -1:
+#                if not win.switch(win.list[index], delay=False):
+#                    index=len(win.list)-1
+#                else:
+#                    break
+
     return n > 0
 Mixin.setPlugin('editctrl', 'openpage', openPage)
-
-#add session manager
-def pref_init(pref):
-    pref.recent_sessions = []
-    pref.last_session_dir = ''
-Mixin.setPlugin('preference', 'init', pref_init)
-
-def add_mainframe_menu(menulist):
-    menulist.extend([ ('IDM_FILE', #parent menu id
-        [
-            (202, 'IDM_FILE_SESSION_OPEN', tr('Open Session'), wx.ITEM_NORMAL, 'OnFileSessionOpen', tr('Opens session.')),
-            (203, 'IDM_FILE_SESSION_SAVE', tr('Save Session'), wx.ITEM_NORMAL, 'OnFileSessionSave', tr('Saves session.')),
-            (204, 'IDM_FILE_SESSION_RECENT', tr('Open Recent Session'), wx.ITEM_NORMAL, '', ''),
-            (205, '', '-', wx.ITEM_SEPARATOR, None, ''),
-        ]),
-        ('IDM_FILE_SESSION_RECENT',
-        [
-            (100, 'IDM_FILE_SESSION_RECENT_ITEMS', tr('(empty)'), wx.ITEM_NORMAL, '', tr('There is no recent session.')),
-        ]),
-        
-    ])
-Mixin.setPlugin('mainframe', 'add_menu', add_mainframe_menu)
-
-from modules.EasyGuider import obj2ini
-
-def OnFileSessionOpen(win, event=None, filename=None):
-    if not filename:
-        dlg = wx.FileDialog(win, tr("Open"), win.pref.last_session_dir, "", 'UliPad Session File|*.ses', wx.OPEN|wx.HIDE_READONLY)
-        filename = None
-        if dlg.ShowModal() == wx.ID_OK:
-            filename = dlg.GetPath()
-        dlg.Destroy()
-    if filename:
-        try:
-            get_recent_session_file(win, filename)
-            d = obj2ini.load(filename)
-            sessions, last_file = d['sessions'], d['last_file']
-            win.pref.sessions.extend(sessions)
-            for v in sessions:
-                win.editctrl.new(v[0], delay=True)
-            for document in win.editctrl.getDocuments():
-                if document.documenttype == 'texteditor' and document.filename == last_file:
-                    wx.CallAfter(win.editctrl.switch, document, delay=False)
-        except:
-            error.traceback()
-            common.warn(tr('There are something wrong as loading session file.'))
-Mixin.setMixin('mainframe', 'OnFileSessionOpen', OnFileSessionOpen)
-
-def OnFileSessionSave(win, event=None):
-    dlg = wx.FileDialog(win, tr("Save Session"), win.pref.last_session_dir, "", 'UliPad Session File|*.ses', wx.SAVE|wx.OVERWRITE_PROMPT)
-    filename = None
-    if dlg.ShowModal() == wx.ID_OK:
-        filename = dlg.GetPath()
-    dlg.Destroy()
-    if filename:
-        try:
-            get_recent_session_file(win, filename)
-            sessions, last_index = gather_status()
-            last_file = win.editctrl.getDoc(last_index).filename
-            obj2ini.dump({'sessions':sessions, 'last_file':last_file}, filename)
-        except:
-            error.traceback()
-            common.warn(tr('There are something wrong as saving session file.'))
-Mixin.setMixin('mainframe', 'OnFileSessionSave', OnFileSessionSave)
-
-def afterinit(win):
-    win.recentsession_ids = [win.IDM_FILE_SESSION_RECENT_ITEMS]
-    create_recent_session_menu(win)
-Mixin.setPlugin('mainframe', 'afterinit', afterinit)
-
-def create_recent_session_menu(win):
-    menu = makemenu.findmenu(win.menuitems, 'IDM_FILE_SESSION_RECENT')
-
-    for id in win.recentsession_ids:
-        menu.Delete(id)
-
-    win.recentsession_ids = []
-    if len(win.pref.recent_sessions) == 0:
-        id = win.IDM_FILE_SESSION_RECENT_ITEMS
-        menu.Append(id, tr('(empty)'))
-        menu.Enable(id, False)
-        win.recentsession_ids = [id]
-    else:
-        for i, filename in enumerate(win.pref.recent_sessions):
-            id = wx.NewId()
-            win.recentsession_ids.append(id)
-            menu.Append(id, "%d %s" % (i+1, filename))
-            wx.EVT_MENU(win, id, win.OnOpenRecentSession)
-
-def OnOpenRecentSession(win, event):
-    eid = event.GetId()
-    index = win.recentsession_ids.index(eid)
-    filename = win.pref.recent_sessions[index]
-    try:
-        f = file(filename)
-        f.close()
-    except:
-        common.showerror(win, tr("Can't open the file [%s]!") % filename)
-        del win.pref.recent_sessions[index]
-        win.pref.save()
-        create_recent_session_menu(win)
-        return
-    win.OnFileSessionOpen(filename=filename)
-Mixin.setMixin('mainframe', 'OnOpenRecentSession', OnOpenRecentSession)
-
-def get_recent_session_file(win, filename):
-    if filename:
-        #deal recent files
-        if filename in win.pref.recent_sessions:
-            win.pref.recent_sessions.remove(filename)
-        win.pref.recent_sessions.insert(0, filename)
-        win.pref.recent_sessions = win.pref.recent_sessions[:10]
-        win.pref.last_session_dir = os.path.dirname(filename)
-
-        #save pref
-        win.pref.save()
-
-        #create menus
-        create_recent_session_menu(win)

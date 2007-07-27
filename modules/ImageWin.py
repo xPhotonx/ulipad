@@ -1,11 +1,11 @@
 #   Programmer: limodou
 #   E-mail:     limodou@gmail.com
 #
-#   Copyleft 2006 limodou
+#   Copyleft 2005 limodou
 #
 #   Distributed under the terms of the GPL (GNU Public License)
 #
-#   UliPad is free software; you can redistribute it and/or modify
+#   NewEdit is free software; you can redistribute it and/or modify
 #   it under the terms of the GNU General Public License as published by
 #   the Free Software Foundation; either version 2 of the License, or
 #   (at your option) any later version.

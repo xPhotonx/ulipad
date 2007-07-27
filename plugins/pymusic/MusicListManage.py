@@ -1,20 +1,19 @@
 __doc__ = 'Music List'
 
+from modules import Mixin
 import wx
 from modules.Debug import error
 import os
+import codecs
 import PyM3u
+import locale
 import threading
 import time
-from modules import common
-from modules import CheckList
-from modules import Globals
-
 class MusicListManage(wx.Panel):
     def __init__(self, parent, mainframe):
         self.parent = parent
         self.mainframe = mainframe
-        self.defm3u = os.path.join(Globals.userpath, 'default.m3u')
+        self.defm3u='default.m3u'
         if not os.path.isfile(self.defm3u):
             fout=open(self.defm3u,'w')
             fout.write('#EXTM3U\n')
@@ -34,36 +33,41 @@ class MusicListManage(wx.Panel):
 
         #add button
         self.ID_ADD = wx.NewId()
-        self.btnAdd = wx.Button(self, self.ID_ADD, tr('Add'))
+        self.btnAdd = wx.Button(self, self.ID_ADD, tr('Add'), size=(40, -1))
         box1.Add(self.btnAdd, 0, wx.RIGHT, 2)
 
         self.ID_ADDDIR =wx.NewId()
-        self.btnAddDir = wx.Button(self, self.ID_ADDDIR, tr('AddDir'))
+        self.btnAddDir = wx.Button(self, self.ID_ADDDIR, tr('AddDir'), size=(60,-1))
         box1.Add(self.btnAddDir, 0, wx.RIGHT, 2)
 
         self.ID_DEL = wx.NewId()
-        self.btnDel = wx.Button(self, self.ID_DEL, tr('Delete'))
+        self.btnDel = wx.Button(self, self.ID_DEL, tr('Delete'), size=(40, -1))
         box1.Add(self.btnDel, 0, wx.RIGHT, 2)
 
         self.ID_OPEN = wx.NewId()
-        self.btnOpen = wx.Button(self, self.ID_OPEN, tr('OpenList'))
+        self.btnOpen = wx.Button(self, self.ID_OPEN, tr('OpenList'), size=(60, -1))
         box1.Add(self.btnOpen, 0, wx.RIGHT, 2)
 
 
         self.ID_SAVE = wx.NewId()
-        self.btnSave = wx.Button(self, self.ID_SAVE, tr('SaveList'))
+        self.btnSave = wx.Button(self, self.ID_SAVE, tr('SaveList'), size=(60, -1))
         box1.Add(self.btnSave, 0, wx.RIGHT, 2)
 
         box.Add(box1, 0, wx.ALL, 3)
 
 
         #create listctrl
-        self.musiclist = CheckList.List(self, columns=[
-                (tr("Id"), 30, 'left'),
-                (tr("Author - Title"), 280, 'left'),
-                (tr("Time"), 80, 'right'),
-                (tr("Path"), 400, 'left'),
-                ], style=wx.LC_REPORT | wx.SUNKEN_BORDER)
+        self.musiclist=wx.ListCtrl(self, -1, style=wx.LC_REPORT|wx.LC_SINGLE_SEL)
+
+        self.musiclist.InsertColumn(0, tr("Id"))
+        self.musiclist.InsertColumn(1, tr("Author - Title"))
+        self.musiclist.InsertColumn(2, tr("Time(S)"))
+        self.musiclist.InsertColumn(3, tr("Path"))
+
+        self.musiclist.SetColumnWidth(0,30)
+        self.musiclist.SetColumnWidth(1, 180)
+        self.musiclist.SetColumnWidth(2, 55)
+        self.musiclist.SetColumnWidth(3, 120)
 
         box.Add(self.musiclist, 1, wx.EXPAND)
 
@@ -79,6 +83,10 @@ class MusicListManage(wx.Panel):
         self.SetAutoLayout(True)
         self.OnUpdateData()
 
+    def encode(self,text):
+        encoding = locale.getdefaultlocale()[1]
+        return text.encode(encoding)
+
     def OnActivated(self,event):
         if self.mainframe.src:
             if self.mainframe.src.IsPlaying():
@@ -86,15 +94,16 @@ class MusicListManage(wx.Panel):
                 self.mainframe.flag_pause=False
                 self.mainframe.src.Stop()
                 time.sleep(0.2)
-        self.mainframe.selectedid=int(event.GetText()-1)
-        from plugins.pymusic import playmusic
+        self.mainframe.selectedid=int(event.GetText())
+        from PyMusic import playmusic
         self.mainframe.playing=self.m3u[self.mainframe.selectedid]
+        encoding = locale.getdefaultlocale()[1]
+        filename = self.mainframe.playing['Path'].encode(encoding)
         threading.Thread(target=playmusic, args=(self.mainframe,)).start()
         self.setplaying(self.mainframe.playing['Author-Title'])
 
     def OnSelected(self,event):
         self.mainframe.selectedid=int(event.GetText())
-        
     def OnAdd(self, event):
         dialog = wx.FileDialog(self.mainframe,
                                "Add Media File To Music List",
@@ -109,8 +118,7 @@ class MusicListManage(wx.Panel):
         dialog.Destroy()
         record={}
         for filename in filenames:
-            if self.m3u.isExists(filename):
-                continue
+#            filename = self.encode(filename)
             if filename.lower().endswith(".mp3"):
                 from PyMp3Info import MP3FileInfo
                 fi=MP3FileInfo(filename)
@@ -122,12 +130,12 @@ class MusicListManage(wx.Panel):
                 record['Author-Title']=os.path.split(filename)[-1]
             try:
                 from pySonic import FileStream
-                f=FileStream(common.encode_string(filename, common.defaultfilesystemencoding),0)
+                f=FileStream(self.encode(filename),0)
                 record['Time']=str(int(f.Duration))
                 del f
             except:
                 error.traceback()
-                dlg = wx.MessageDialog(self, tr('Can\'t add file [%s] or this file isn\'t a media file!') % filename,
+                dlg = wx.MessageDialog(self, tr('Can\'t add this file or this file isn\'t a media file!'),
                                tr('Error'),
                                wx.OK | wx.ICON_ERROR
                                #wx.YES_NO | wx.NO_DEFAULT | wx.CANCEL | wx.ICON_INFORMATION
@@ -139,8 +147,6 @@ class MusicListManage(wx.Panel):
             record['Path']=filename
             self.m3u.Append(record)
             self.addrecord(record)
-        self.m3u.SaveToFile(self.defm3u)
-            
     def OnAddDir(self,event):
         dialog = wx.DirDialog(self.mainframe,
                                "Add Dir\All Media files to Music List",
@@ -151,19 +157,16 @@ class MusicListManage(wx.Panel):
         path=[]
         if dialog.ShowModal() == wx.ID_OK:
             path = dialog.GetPath()
-        else:
-            return
+        path=self.encode(path)
         for root, dirs, files in os.walk(path):
             for file in files:
                 filename=os.path.join(root,file)
-                if self.m3u.isExists(filename):
-                    continue
                 if filename[-4:].lower() in ['.mp3','.wav','.mid','.wma','.asf']:
-                    file = common.decode_string(filename, common.defaultfilesystemencoding)
+                    file = self.encode(filename)
                     record={}
                     if filename.lower().endswith(".mp3"):
                         from PyMp3Info import MP3FileInfo
-                        fi = MP3FileInfo(filename)
+                        fi=MP3FileInfo(filename)
                         if fi.parse():
                             record['Author-Title']=(fi['author'] and fi['author']+' - ' or '')+fi['title']
                         else:
@@ -172,43 +175,38 @@ class MusicListManage(wx.Panel):
                         record['Author-Title']=os.path.split(filename)[-1]
                     try:
                         from pySonic import FileStream
-                        f=FileStream(common.encode_string(filename, common.defaultfilesystemencoding), 0)
+                        f=FileStream(filename,0)
                         record['Time']=str(int(f.Duration))
                         del f
                     except:
-                        dlg = wx.MessageDialog(self, tr('Can\'t add file [%s] or this file isn\'t a media file!') % filename,
+                        dlg = wx.MessageDialog(win, tr('Can\'t add this file or this file isn\'t a media file!'),
                                        tr('Error'),
                                        wx.OK | wx.ICON_ERROR
                                        )
                         dlg.ShowModal()
                         dlg.Destroy()
                         continue
-                    record['Path'] = filename
+                    record['Path']=filename
                     self.m3u.Append(record)
                     self.addrecord(record)
-        self.m3u.SaveToFile(self.defm3u)
 
     def OnDel(self, event):
-        item = self.musiclist.GetNextItem(-1, wx.LIST_NEXT_ALL, wx.LIST_STATE_SELECTED)
-        while item > -1:
-            self.musiclist.DeleteItem(item)
-            self.m3u.Delete(item)
-            item = self.musiclist.GetNextItem(-1, wx.LIST_NEXT_ALL, wx.LIST_STATE_SELECTED)
-        self.mainframe.selectedid = -1
-        self.m3u.SaveToFile(self.defm3u)
-        
-        for i in range(self.musiclist.GetItemCount()):
-            self.musiclist.SetStringItem(i,0,str(i).rjust(3))
+        if self.mainframe.selectedid==-1:
+            return
+        self.m3u.Delete(self.mainframe.selectedid)
+        self.delrecord(self.mainframe.selectedid)
+        self.mainframe.selectedid=-1
 
     def OnSave(self, event):
-        filepath=os.path.split(self.m3u.filepath)
+        filepath=self.encode(self.m3u.filepath)
+        filepath=os.path.split(filepath)
         dialog = wx.FileDialog(self.mainframe, "Save M3u File", filepath[0], filepath[1], "M3u files(*.m3u)|*.m3u", wx.SAVE|wx.OVERWRITE_PROMPT )
         filename = ''
         if dialog.ShowModal() == wx.ID_OK:
             filename = dialog.GetPath()
         dialog.Destroy()
         if filename:
-            self.m3u.SaveToFile(filename)
+            self.m3u.SaveToFile(self.encode(filename))
 
     def OnOpen(self, event):
         if self.m3u.IsModify():
@@ -222,20 +220,24 @@ class MusicListManage(wx.Panel):
             filename = dialog.GetPath()
         dialog.Destroy()
         if filename:
+            filename = self.encode(filename)
             self.m3u.ClearAll()
             self.m3u.Load(filename)
             self.OnUpdateData()
 
     def addrecord(self,record):
         lastid=self.musiclist.GetItemCount()
-        self.musiclist.InsertStringItem(lastid,str(lastid+1))
-        self.musiclist.SetStringItem(lastid,1,common.decode_string(record['Author-Title'], common.defaultfilesystemencoding))
-        self.musiclist.SetStringItem(lastid,2,timeformat(record['Time']))
-        self.musiclist.SetStringItem(lastid,3,common.decode_string(record['Path'], common.defaultfilesystemencoding))
+        self.musiclist.InsertStringItem(lastid,str(int(lastid)).rjust(3))
+        self.musiclist.SetStringItem(lastid,1,record['Author-Title'])
+        self.musiclist.SetStringItem(lastid,2,record['Time'])
+        self.musiclist.SetStringItem(lastid,3,record['Path'])
 
+    def delrecord(self,id):
+        self.musiclist.DeleteItem(id)
+        for i in range(self.musiclist.GetItemCount()):
+            self.musiclist.SetStringItem(i,0,str(i).rjust(3))
     def setplaying(self,playing):
         self.playingname.SetLabel('Playing : %s'%playing)
-        
     def OnUpdateData(self):
         self.m3u_filename.SetLabel('M3U File : '+self.m3u.GetFilePath())
         if self.mainframe.playing:
@@ -244,27 +246,14 @@ class MusicListManage(wx.Panel):
             self.setplaying('Playing : No Playing')
         self.musiclist.DeleteAllItems()
         for id in range(len(self.m3u.data)):
-            self.musiclist.InsertStringItem(id,str(id+1))
+            self.musiclist.InsertStringItem(id,str(id).rjust(3))
             record=self.m3u.data[id]
             try:
                 self.musiclist.SetStringItem(id,1,record['Author-Title'])
             except:
                 self.musiclist.SetStringItem(id,1,os.path.split(record['Path'])[-1])
-            self.musiclist.SetStringItem(id,2,timeformat(record['Time']))
+            self.musiclist.SetStringItem(id,2,record['Time'])
             try:
                 self.musiclist.SetStringItem(id,3,record['Path'])
             except:
                 self.musiclist.SetStringItem(id,3,'?'*len(record['Path']))
-
-def timeformat(s):
-    t = int(s)
-    h, t = divmod(t, 3600)
-    s = ''
-    if h:
-        s += '%dh' % h
-    m, t = divmod(t, 60)
-    if m:
-        s += "%d'" % m
-    if t:
-        s += '%d"' % t
-    return s

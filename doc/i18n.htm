@@ -3,291 +3,9 @@
 <html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
-<meta name="generator" content="Docutils 0.4: http://docutils.sourceforge.net/" />
+<meta name="generator" content="Docutils 0.3.9: http://docutils.sourceforge.net/" />
 <title>i18n的实现</title>
-<style type="text/css">
-
-/*
-:Author: David Goodger
-:Contact: goodger@users.sourceforge.net
-:Date: $Date: 2005-12-18 01:56:14 +0100 (Sun, 18 Dec 2005) $
-:Revision: $Revision: 4224 $
-:Copyright: This stylesheet has been placed in the public domain.
-
-Default cascading style sheet for the HTML output of Docutils.
-
-See http://docutils.sf.net/docs/howto/html-stylesheets.html for how to
-customize this style sheet.
-*/
-
-/* used to remove borders from tables and images */
-.borderless, table.borderless td, table.borderless th {
-  border: 0 }
-
-table.borderless td, table.borderless th {
-  /* Override padding for "table.docutils td" with "! important".
-     The right padding separates the table cells. */
-  padding: 0 0.5em 0 0 ! important }
-
-.first {
-  /* Override more specific margin styles with "! important". */
-  margin-top: 0 ! important }
-
-.last, .with-subtitle {
-  margin-bottom: 0 ! important }
-
-.hidden {
-  display: none }
-
-a.toc-backref {
-  text-decoration: none ;
-  color: black }
-
-blockquote.epigraph {
-  margin: 2em 5em ; }
-
-dl.docutils dd {
-  margin-bottom: 0.5em }
-
-/* Uncomment (and remove this text!) to get bold-faced definition list terms
-dl.docutils dt {
-  font-weight: bold }
-*/
-
-div.abstract {
-  margin: 2em 5em }
-
-div.abstract p.topic-title {
-  font-weight: bold ;
-  text-align: center }
-
-div.admonition, div.attention, div.caution, div.danger, div.error,
-div.hint, div.important, div.note, div.tip, div.warning {
-  margin: 2em ;
-  border: medium outset ;
-  padding: 1em }
-
-div.admonition p.admonition-title, div.hint p.admonition-title,
-div.important p.admonition-title, div.note p.admonition-title,
-div.tip p.admonition-title {
-  font-weight: bold ;
-  font-family: sans-serif }
-
-div.attention p.admonition-title, div.caution p.admonition-title,
-div.danger p.admonition-title, div.error p.admonition-title,
-div.warning p.admonition-title {
-  color: red ;
-  font-weight: bold ;
-  font-family: sans-serif }
-
-/* Uncomment (and remove this text!) to get reduced vertical space in
-   compound paragraphs.
-div.compound .compound-first, div.compound .compound-middle {
-  margin-bottom: 0.5em }
-
-div.compound .compound-last, div.compound .compound-middle {
-  margin-top: 0.5em }
-*/
-
-div.dedication {
-  margin: 2em 5em ;
-  text-align: center ;
-  font-style: italic }
-
-div.dedication p.topic-title {
-  font-weight: bold ;
-  font-style: normal }
-
-div.figure {
-  margin-left: 2em ;
-  margin-right: 2em }
-
-div.footer, div.header {
-  clear: both;
-  font-size: smaller }
-
-div.line-block {
-  display: block ;
-  margin-top: 1em ;
-  margin-bottom: 1em }
-
-div.line-block div.line-block {
-  margin-top: 0 ;
-  margin-bottom: 0 ;
-  margin-left: 1.5em }
-
-div.sidebar {
-  margin-left: 1em ;
-  border: medium outset ;
-  padding: 1em ;
-  background-color: #ffffee ;
-  width: 40% ;
-  float: right ;
-  clear: right }
-
-div.sidebar p.rubric {
-  font-family: sans-serif ;
-  font-size: medium }
-
-div.system-messages {
-  margin: 5em }
-
-div.system-messages h1 {
-  color: red }
-
-div.system-message {
-  border: medium outset ;
-  padding: 1em }
-
-div.system-message p.system-message-title {
-  color: red ;
-  font-weight: bold }
-
-div.topic {
-  margin: 2em }
-
-h1.section-subtitle, h2.section-subtitle, h3.section-subtitle,
-h4.section-subtitle, h5.section-subtitle, h6.section-subtitle {
-  margin-top: 0.4em }
-
-h1.title {
-  text-align: center }
-
-h2.subtitle {
-  text-align: center }
-
-hr.docutils {
-  width: 75% }
-
-img.align-left {
-  clear: left }
-
-img.align-right {
-  clear: right }
-
-ol.simple, ul.simple {
-  margin-bottom: 1em }
-
-ol.arabic {
-  list-style: decimal }
-
-ol.loweralpha {
-  list-style: lower-alpha }
-
-ol.upperalpha {
-  list-style: upper-alpha }
-
-ol.lowerroman {
-  list-style: lower-roman }
-
-ol.upperroman {
-  list-style: upper-roman }
-
-p.attribution {
-  text-align: right ;
-  margin-left: 50% }
-
-p.caption {
-  font-style: italic }
-
-p.credits {
-  font-style: italic ;
-  font-size: smaller }
-
-p.label {
-  white-space: nowrap }
-
-p.rubric {
-  font-weight: bold ;
-  font-size: larger ;
-  color: maroon ;
-  text-align: center }
-
-p.sidebar-title {
-  font-family: sans-serif ;
-  font-weight: bold ;
-  font-size: larger }
-
-p.sidebar-subtitle {
-  font-family: sans-serif ;
-  font-weight: bold }
-
-p.topic-title {
-  font-weight: bold }
-
-pre.address {
-  margin-bottom: 0 ;
-  margin-top: 0 ;
-  font-family: serif ;
-  font-size: 100% }
-
-pre.literal-block, pre.doctest-block {
-  margin-left: 2em ;
-  margin-right: 2em ;
-  background-color: #eeeeee }
-
-span.classifier {
-  font-family: sans-serif ;
-  font-style: oblique }
-
-span.classifier-delimiter {
-  font-family: sans-serif ;
-  font-weight: bold }
-
-span.interpreted {
-  font-family: sans-serif }
-
-span.option {
-  white-space: nowrap }
-
-span.pre {
-  white-space: pre }
-
-span.problematic {
-  color: red }
-
-span.section-subtitle {
-  /* font-size relative to parent (h1..h6 element) */
-  font-size: 80% }
-
-table.citation {
-  border-left: solid 1px gray;
-  margin-left: 1px }
-
-table.docinfo {
-  margin: 2em 4em }
-
-table.docutils {
-  margin-top: 0.5em ;
-  margin-bottom: 0.5em }
-
-table.footnote {
-  border-left: solid 1px black;
-  margin-left: 1px }
-
-table.docutils td, table.docutils th,
-table.docinfo td, table.docinfo th {
-  padding-left: 0.5em ;
-  padding-right: 0.5em ;
-  vertical-align: top }
-
-table.docutils th.field-name, table.docinfo th.docinfo-name {
-  font-weight: bold ;
-  text-align: left ;
-  white-space: nowrap ;
-  padding-left: 0 }
-
-h1 tt.docutils, h2 tt.docutils, h3 tt.docutils,
-h4 tt.docutils, h5 tt.docutils, h6 tt.docutils {
-  font-size: 100% }
-
-tt.docutils {
-  background-color: #eeeeee }
-
-ul.auto-toc {
-  list-style-type: none }
-
-</style>
+<link rel="stylesheet" href="default.css" type="text/css" />
 </head>
 <body>
 <div class="document" id="i18n">
@@ -300,7 +18,9 @@ ul.auto-toc {
 </tr>
 <tr class="field"><th class="docinfo-name">联系:</th><td class="field-body"><a class="reference" href="mailto:limodou&#64;gmail.com">limodou&#64;gmail.com</a></td>
 </tr>
-<tr class="field"><th class="docinfo-name">主页:</th><td class="field-body"><a class="reference" href="http://wiki.woodpecker.org.cn/moin/UliPad">http://wiki.woodpecker.org.cn/moin/UliPad</a></td>
+<tr class="field"><th class="docinfo-name">版本:</th><td class="field-body">i18n.txt 42 2005-09-28 05:19:21Z limodou</td>
+</tr>
+<tr class="field"><th class="docinfo-name">主页:</th><td class="field-body"><a class="reference" href="http://wiki.woodpecker.org.cn/moin/NewEdit">http://wiki.woodpecker.org.cn/moin/NewEdit</a></td>
 </tr>
 <tr class="field"><th class="docinfo-name">BLOG:</th><td class="field-body"><a class="reference" href="http://www.donews.net/limodou">http://www.donews.net/limodou</a></td>
 </tr>
@@ -308,8 +28,8 @@ ul.auto-toc {
 </tr>
 </tbody>
 </table>
-<div class="contents topic">
-<p class="topic-title first"><a id="contents" name="contents">Contents</a></p>
+<div class="contents topic" id="contents">
+<p class="topic-title first"><a name="contents">Contents</a></p>
 <ul class="simple">
 <li><a class="reference" href="#id1" id="id6" name="id6">一、通常的实现方法</a></li>
 <li><a class="reference" href="#id2" id="id7" name="id7">二、遇到的问题</a></li>
@@ -319,8 +39,8 @@ ul.auto-toc {
 <li><a class="reference" href="#id4" id="id11" name="id11">i18n的一个小问题</a></li>
 </ul>
 </div>
-<div class="section">
-<h1><a class="toc-backref" href="#id6" id="id1" name="id1">一、通常的实现方法</a></h1>
+<div class="section" id="id1">
+<h1><a class="toc-backref" href="#id6" name="id1">一、通常的实现方法</a></h1>
 <p>什么是i18n，它是国际化的简称(Internationalization，去掉开始的I和最后的N，中间一共18个字符)。对于它的实现，
 在 Python 的文档关于 gettext 中有详细的描述。同时我在wxPyWiki上找到关于wxPyCookbook上关于国际化实现的教程，
 我便按文档和教程开始了我的实验。</p>
@@ -395,7 +115,7 @@ msgstr &quot;&quot;
 msgid &quot;&quot;
 &quot;This is a multiline\n&quot;
 &quot;test&quot;
-如果msgid内容为空，则表示msgstr是文档的信息
+如果msgid内容为空，则表示msgstr是文档的信息 
 </pre>
 </li>
 <li><p class="first">msgstr行，表明一个译文，可以为多行，格式同msgid。如果msgid为空，则为文档信息。在文档信息中可以录入关
@@ -414,8 +134,8 @@ python msgfmt.py messages_cn.po
 </li>
 <li><p class="first">安装mo文件。其实就是将mo文件放在正确的位置。gettext要求翻译文件组织成如下目录:</p>
 <pre class="literal-block">
-./locale/en/LC_MESSAGES
-./locale/cn/LC_MESSAGES
+./locale/en/LC_MESSAGES 
+./locale/cn/LC_MESSAGES 
 </pre>
 <p>locale是在gettext.translation中指定的。en, cn是语言分类。LC_MESSAGES是要求的。同时mo文件应改为与作用域
 名相同，如i18ntest.mo。</p>
@@ -424,8 +144,8 @@ python msgfmt.py messages_cn.po
 </li>
 </ol>
 </div>
-<div class="section">
-<h1><a class="toc-backref" href="#id7" id="id2" name="id2">二、遇到的问题</a></h1>
+<div class="section" id="id2">
+<h1><a class="toc-backref" href="#id7" name="id2">二、遇到的问题</a></h1>
 <p>采用通常的方法存在一些不方便的地方，感觉有以下几点：</p>
 <ol class="arabic simple">
 <li>pygettext.py可以一次读取多个文件，但当文件太多时，在命令行下不容易放下。不支持目录和文件列表的处理。</li>
@@ -433,8 +153,8 @@ python msgfmt.py messages_cn.po
 <li>local/en/LC_MESSAGE这种目录组织有些麻烦。</li>
 </ol>
 </div>
-<div class="section">
-<h1><a class="toc-backref" href="#id8" id="id3" name="id3">三、解决方法</a></h1>
+<div class="section" id="id3">
+<h1><a class="toc-backref" href="#id8" name="id3">三、解决方法</a></h1>
 <p>对于第一个问题，我的解决方法是修改pygettext.py源程序。我没有实现目录的处理，实现的是文件列表的处理。首先将
 需要进行处理的 Python 源文件名生成一个文件，一个文件占一行。然后在pygettext.py中增加处理文件列表的命令行选
 项。修改后的文件如果有感兴趣的可以下载最新的 NewEdit.py 源代码(在本文发表时，只可以从cvs下载)。</p>
@@ -465,8 +185,8 @@ localedir/lang/LC_MESSAGES/domain.mo
 <li>mergepo.py(合并po语言文件)</li>
 </ul>
 </div>
-<div class="section">
-<h1><a class="toc-backref" href="#id9" id="newedit" name="newedit">四、NewEdit中的具体使用</a></h1>
+<div class="section" id="newedit">
+<h1><a class="toc-backref" href="#id9" name="newedit">四、NewEdit中的具体使用</a></h1>
 <p>在NewEdit的启动程序--NewEdit.py中靠近前面的地方加入:</p>
 <pre class="literal-block">
 1    sys.path.append('./modules')
@@ -501,8 +221,8 @@ localedir/lang/LC_MESSAGES/domain.mo
 的语言，调用相应的资源文件。因为资源文件是xml文件，因此文本的编码应与xml的encoding声明相一致。对于中文的翻
 译文件，建议使用utf-8编码。因为utf-8是xml缺省使用的编码。</p>
 </div>
-<div class="section">
-<h1><a class="toc-backref" href="#id10" id="gettext" name="gettext">附：gettext的实现原理</a></h1>
+<div class="section" id="gettext">
+<h1><a class="toc-backref" href="#id10" name="gettext">附：gettext的实现原理</a></h1>
 <p>只是本人的理解!</p>
 <p>gettext的功能其实挺简单：定义_()函数并安装，根据传入的翻译项从mo文件中取得译文，并根据uniocde标识进行应用
 的unicode编码处理。</p>
@@ -517,7 +237,7 @@ __buildin__.__dict__['_']=unicode and self.ugettext or self.gettext
 <p>这样就将_()函数变成一个内置函数了，在其它的后续的模块中就可以直接使用它了。因此，使用gettext时，安装要很靠
 前，并且只需要在启动模块中装入即可。</p>
 <p>后记：为什么 NewEdit 不动态更新界面</p>
-<p>既然实现了国际化处理，如果用户改变了使用的语言，如果整个应用立即改变不是更好吗？当然是很吸引人，但对于 NewEdit
+<p>既然实现了国际化处理，如果用户改变了使用的语言，如果整个应用立即改变不是更好吗？当然是很吸引人，但对于 NewEdit 
 存在问题。一方面所有界面与国际化处理相关的地方，都要用代码去实现更新过程，工作量大。另外，除非测试，一个用户
 不会总是在各种语言之间切换来切换去，一般都是固定使用某种语言，因此，在重新启动后启用新的语言设置是可以接受的
 方案。还有一个重要的原因就是：使用_()这种方式只适合函数调用方式，对于全局变量或模块变量无能为力。为什么呢？比如:</p>
@@ -532,11 +252,11 @@ message = _('Chinese')
 call(_('Chinese'))
 </pre>
 <p>这是因为，当调用函数时参数是动态计算的，因此每次调用call时都会重新计算参数的值，因此这种方式可以的。总的来
-说，如果在执行时可以每次调用_()函数的话，这样就可以实现动态语言切换。如果不行，则使用静态语言切换。因此 NewEdit
+说，如果在执行时可以每次调用_()函数的话，这样就可以实现动态语言切换。如果不行，则使用静态语言切换。因此 NewEdit 
 使用了静态语言的切换。</p>
 </div>
-<div class="section">
-<h1><a class="toc-backref" href="#id11" id="id4" name="id4">i18n的一个小问题</a></h1>
+<div class="section" id="id4">
+<h1><a class="toc-backref" href="#id11" name="id4">i18n的一个小问题</a></h1>
 <p>不仅是我发现，别的使用 NewEdit 的人也发现，有时在 Shell 窗口中执行过一些语句后，再回到文档窗口中时，随着鼠
 标的移动文本自动会选中，甚至按键都不起作用。这个问题很有趣，为什么执行过Shell命令就不行了呢？后来我发现，这
 是因为i18n中使用的_()函数与Shell中的_变量冲突所致。在Shell中，执行完一条命令后，命令的结果就保存在_变量中。

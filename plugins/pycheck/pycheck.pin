@@ -1,0 +1,17 @@
+[info]
+author = limodou
+date = 2005-10-17
+version = "1.0"
+description = "Python source code syntax check."
+homepage = 
+
+[modules]
+pyflake = pyflakes
+
+[winpdb]
+name = pyflakes
+homepage = http://www.divmod.com/
+download = http://www.divmod.org/static/projects/pyflakes/pyflakes-0.2.1.tar.gz
+description = " Pyflakes is a simple program which checks Python source files for errors. It is similar to PyChecker in scope, but differs in that it does not execute the modules to check them. This is both safer and faster, although it does not perform as many checks."
+version = "0.2.1"
+

@@ -4,7 +4,8 @@
 
 :作者: limodou
 :联系: limodou@gmail.com
-:主页: http://wiki.woodpecker.org.cn/moin/UliPad
+:版本: $Id: userguide.txt 42 2005-09-28 05:19:21Z limodou $
+:主页: http://wiki.woodpecker.org.cn/moin/NewEdit
 :BLOG: http://www.donews.net/limodou
 :版权: GPL
 
@@ -22,27 +23,27 @@
 本软件采用GPL版权发布。
 
 成员及联及方式
----------------
+-------------
 
-目前软件开发就是本人，如果你在使用过程中有什么意见和建议，欢迎给我写信 limodou@gmail.com 。也可以去我的 Blog_ 留言。
+目前软件开发就是本人，如果你在使用过程中有什么意见和建议，欢迎给我写信 chatme@263.net 。也可以去我的 Blog_ 留言。
 
 .. _Blog: http://www.donews.net/limodou
 
 屏幕说明
----------
+-------
 
-这是UliPad的主窗口：
+这是NewEdit的主窗口：
 
 .. image:: screenshot_01.jpg
 
-UliPad分为菜单条、工具条、文档窗口和状态条。
+NewEdit分为菜单条、工具条、文档窗口和状态条。
 
 文档窗口由Tab页组成，可以一次编辑多个文档。当前文档的标题会显示在主窗口的标题条上。
 状态条可以看到行、列值。文档回车类型：WIN为DOS/Windows格式，UNIX为UNIX格式，
 MAC为MAC格式。文档使用的编码。
 
 运行环境及安装说明
--------------------
+-----------------
 
 源码
 ~~~~
@@ -57,221 +58,14 @@ Windows安装包
 
 只能运行在Windows环境。执行安装程序即可，不需要事先安装Python和wxPython。
 
-最新更新
---------
-
-3.6版本
+其它要求
 ~~~~~~~~
 
-新增功能：
+ * 使用reStructuredText转Html需安装docutils模块
+ * 使用textile转Html需安装textile模块
 
-#. 增强定义跳转，可以无ctag支持下在文件内跳转
-#. 对自动完成进行完善：自动判断类型，识别类结构等
-#. 增加对正则搜索的范围设定
-#. 增加对epydoc注释中参数类型的支持
-#. 增加协同开发支持
-#. 增加fortran,Lua语法高亮支持
-#. 增强类浏览显示结构和内容，可以显示类属性和docstring
-#. 增加css的自动提示信息
-
-修改：
-
-#. 改进类浏览窗口中，单击class类图标可以展开和折叠
-#. 修正对弹出运行参数窗口点取消时，仍然运行的bug
-#. 修正reStructuredText的语法高亮处理
-#. 修正Python语法分析的bug
-#. 修正当关闭目录浏览窗口时，再打开不能恢复目录的bug
-#. 修正当文件或目录与UliPad不是一个盘符时，打开命令行窗口菜单执行失败的错误
-#. 修正Music插件的bug
-#. 删除打开最新目录功能
-#. 修正当修改编码时，editctrl的tag页标题没有显示修改状态的bug
-
-3.5版本
-~~~~~~~
-
-新增功能：
-
-#. 增加不自动清除Message window信息的处理选项，增加Shift+F5快捷键
-#. 使用FlatNotebook作为Notebook组件
-#. 增加拼写检查插件，你需要安装pyenchant模块
-#. 增加保存侧边栏大小的功能
-#. 增加双击Notebook的Tab最大化的功能，对于侧边栏只能最大化到50%
-#. 增强acp格式，可以通过{##}表示选中的文本了
-#. 增加对ePyDoc生成函数说明的支持
-#. 增加个人信息的管理，目前只有一个姓名
-#. 增加session管理的功能，同时改进文档tab方向变化时不需要重启
-#. 增加动态搜索正则表达式功能
-#. 增加由nmweizi提供的CloseOther插件，可以保存当前文档关闭其它的文档
-#. 增加智能导航的功能，可以记忆你的文件访问路径
-#. 增加一个停止自动刷新的checkbox在rst html view窗口上
-#. 增加语法检查正确时自动关闭检查结果窗口
-#. 增加向目录浏览窗口拖拽目录和文件的功能
-#. Notebook右键菜单可以动态生成
-#. 在Notebook右键菜单上增加打开当前文档Dos窗口的功能(Window下可用)
-
-修改：
-
-#. 去掉在OnKeyDown中对Input Assistant的处理，简化程序处理
-#. 修正保存时不检查语法的bug
-#. 修正打开文档时无法search的bug
-#. 修正工具条按钮Enabled状态不正确的bug
-#. 修正语法高亮字体处理的bug
-#. 重构，修正New...菜单与工具条菜单不一致的bug
-#. 修正在SaveFile后输入集点丢失的bug
-#. 修正Ctrl+F4会退出UliPad的bug
-#. 增强工程设置处理：重构，增加删除配置处理
-#. 将最近文件和最近目录的菜单处理改为弹出菜单，可以加快打开文件的速度
-#. 修正执行python程序不重定向的bug,同时增加一个选项是否每次都显示参数设置窗口
-#. 改进对自定义工具条控件的支持
-#. 更新rerange.py Script对中文的支持
-#. 解决Input Assistant的性能问题
-#. 将Ctrl+Enter改为Shift+Enter
-
-3.4版本
-~~~~~~~
-
-新增功能：
-
-#. Notebook 改为 FlatNotebook 控件
-#. 增加Ctrl+Enter功能，直接在下一行增加换行
-#. 增加Back键自动显示缺省标识符功能
-#. 增加jQuery的输入支持：项目设置，函数注释信息自动生成
-#. 让caretlinkback可配置，在config.ini中设置[default]message_caretlinkback = #颜色
-#. 增加文档标签方向的设置。在参数中文档页面中可以设置
-#. 增加生成django app dot图的功能
-#. 增加拷贝起始，结束的设置，用于字符的选择
-#. 增加一个按第一行的空白间隔对后续行自动调整的Script(rerange.py)
-#. 增加多视图功能
-#. 增加命令搜索功能,有Impact和正常两种模式
-#. 增加ReST和django template语法高亮支持
-#. 增加ReST项目支持
-#. 增加ReST的Html View功能，可根据内容变化自动刷新
-#. 增加对ctags的支持(Ctrl+I)
-#. 将语法检查插件移到核心中去了
-#. 增加在_project中设置自动语法高亮绑定和自动acp文件绑定
-
-修改：
-
-#. 修正在Tab Notebook上打开dos prompt窗口时的错误
-#. 修正Globals.app = self的位置
-#. 将标识符自动提示扩展到自动完成功能中，因此不只是对Python有效，而且可以通过acp文件进行控制了
-#. 修正类浏览器，当保存时改变位置到最后一个类的bug
-#. 将样式字节全部设为7不再判断文件类型了
-#. 修正录入辅助排序时不区分大小写的bug
-#. 修正在处理on_char时对选中文本的处理，editor不再做处理，而是由各plugin进行处理
-#. 修正执行GUI程序时的处理问题，不再弹出多的dos窗口了
-#. 修正打开ToDo窗口不显示的Bug
-#. 修正是否显示启动画面的选项处理有误的bug
-#. 增加一个edittype的属性用来表示是否是编辑器环境，原documenttype只是用来标识不同的文档类型
-#. 修正当DEBUG=False时仍然可以创建debug.txt和error.txt的问题
-#. 修正当输入焦点消失时，弹出的列表窗口和Calltip不消失的Bug
-#. 修正缩近粘贴的bug。修正列拷贝在文件尾时少一行的错误
-#. 将mAutoComplete转到Input Assistant模块中
-#. 将检查文件缺省值设为True
-#. 修正打开上次窗口位置大小不正确的bug
-#. 调整对on_char的InputAssistant的处理，当录入很快时可以自动取消
-#. 修正当上下显示CallTip空间不足时，显示在下面
-#. 修正标签的匹配，对/>不需匹配补齐
-#. 修正当编辑其它文件再切换回html窗口时，窗口自动恢复的bug
-#. 将Idle的处理置为线程方式，OnIdle不再做处理
-#. 修正当关闭一个未存文件时，在保留后存在document丢失的问题
-#. 修正向后查找时的当大小写变化找不到的bug
-#. 关闭时自动隐藏其它的侧边栏，加快关闭速度
-
-3.3版本
-~~~~~~~
-
-新增功能：
-
-#. 当运行 Python 出错时，在消息窗口中出错提示行双击可以跳转到源文件的出错行
-#. 在目录浏览窗口中增加：在Win平台上打开资源管理器，文件和目录的拷贝、剪切、粘贴，目录搜索等功能，同时支持Ctrl+C, Ctrl+V, Ctrl+X的快捷键
-#. 在Django目录下，可以启动测试服务器和打开Shell窗口
-#. 光标在某些样式中，如注释，字符串中时，禁止自动完成
-#. 重新打开一个文档时，光标停留在原来的位置
-#. DDE功能的Socket服务端口可重用
-#. 增强Python文件中.自动完成功能。在from和import中支持.的自动属性选择功能
-#. 增加列块拷贝的支持。在选择前先要按alt，就可以选对列块了
-#. 增加列模式，按Alt+C进行切换。在列模式下可以输入一个字符，自动在其它行出现
-#. 增加对Python文件的缩近拷贝的支持，可以在参数设置中关掉些功能
-#. 增加在自动检查需要装入文件时是否需要确认的选项
-#. 增强自动完成，可以支持控制字符组合了，不过菜单的组合键会先执行
-#. 增加对当前文档单独设置ACP文件的功能
-
-新增插件：
-
-#. ruler 一个标尺
-
-新增快捷键：
-
-#. Alt+C 切换列模式
-#. Ctrl+Del 可以删除当前位置之后的所以空白
-
-修改：
-
-#. 在帮助对话框中显示链接，并可以点击
-#. 调整一些菜单的位置
-#. 括起菜单的快捷键为Ctrl+'，退出改为Ctrl+Q
-#. 消息窗口支持Wrap功能
-#. 对DjangoProj插件进行改进，可以动态修改settings.py
-#. 打开文件时进行Unicode转换时使用replace参数
-#. 修正判断Python文件编码不正确的Bug
-#. 修正语法配置文件读取时中文字体名未做转码的bug
-#. 修正正则表达式替换不精确的bug
-#. 修正自动检测缩近符不正确的bug
-#. 修正在编辑html的js代码时总有波浪线的bug
-#. 修正新打开文件时，光标停留与原来不太一致
-#. 修正当按回车时，如果移到可视区下面，则看不到的bug
-#. 转换项目中的Tab缩近全部改为4个空格缩近
-#. 去掉关于对话框中的版本revision号
-
-3.2版本
-~~~~~~~
-
-新增功能：
-
-1. 增加当MessageWindow中出错异常时，可以根据当前行的异常信息自动跳转到出错文件的指定行的功能
-2. Windows平台中增加目录浏览窗口中，对某个目录打开Dos窗口的功能
-3. 自动保存上次打开目录，再次启动时自动打开上次目录
-4. 可以在config.ini中设置缺省编辑器的字体，在中文环境下为“宋体”
-5. 自动判断python文件的编码并进行转换后保存
-6. 增加新建文件时缺省编码的设置，如果用户定义编码不为空，则用户定义编码将作为缺省编码。如果为
-   空则使用缺省编码。
-7. 在编辑窗口的右键菜单上增加修改文件编码菜单
-8. 增加 TODO 窗口
-9. 增加简单贴功能，并可以自动保存位置和大小
-10. 根据文本类型自动选择注释符，并且可以在config.ini中设置使用comment_chars作为节，同时语言为key，
-    可以有一个default作为缺省值
-11. 增加ruby classbrowser功能
-12. 增加对动态菜单快捷键的处理
-13. 增加对debug生成的控制，缺省情况下debug不输出，需要在config.ini中设置才输出
-14. 在参数中增加一个设置document语法高亮的按钮
-15. 增加自动扩展功能，并支持项目处理及嵌套处理
-16. 增加简单模板功能，可以在code snippet中加入 <#{name=inputname,description=info,defult=value}#>，
-    这样在双击snippets会弹出对话框让你录入信息。
-17. 可以设置某个目录工程类型，用在某些扩展中
-18. 增加代理服务器参数设置
-19. 增加网络分享窗口，目前只用于Rss Reader
-
-新增插件：
-
-1. rssreader RSS阅读器
-2. docbook docbook的支持
-3. djangoproj django项目的支持
-
-
-新增快捷键：
-
-1. Ctrl+Alt+R 清除Shell窗口的内容
-2. F5    Python程序运行
-
-修改：
-
-1. 解决pyw的多线程运行阻塞的问题
-2. 修正模块信息显示出错的问题
-3. 在执行Tab与空格切换的菜单后自动调整缩近符
-4. 更新image有效性的判断处理
-5. 修正ftp目录分析的一个bug
-6. 调整文档切换时菜单的动态生成，及语法切换的问题，减少不必要的更新
+最新更新
+--------
 
 3.1版本
 ~~~~~~~
@@ -305,6 +99,7 @@ Windows安装包
 4. Alt+D 打开debug.txt
 5. F2 打开目录浏览窗口
 
+
 修改：
 
 1. 修改当文档改变时，Tab页标题名前加*号
@@ -320,7 +115,7 @@ Windows安装包
 11. 修正切换自动缩近符菜单bug
 12. 将修改设为一次性操作，使用BeginUndoAction()和EndUndoAction()
 13. 修正无法选择自动缩近和使用制表符缩近菜单
-14. 调整配置文件可以从UliPad安装目录和conf目录下读取
+14. 调整配置文件可以从NewEdit安装目录和conf目录下读取
 
 
 3.0版本
@@ -367,9 +162,9 @@ Windows安装包
 1. 修改FTP中上传文件文本文件未转换错
 2. 修正生成插件目录__init__.py文件的错误
 3. 修正未给frame.workpath赋值的错误
-4. 调整 UliPad 的应用结构。
+4. 调整 NewEdit 的应用结构。
 5. Find窗口按ESC可以关闭
-6. 在UliPad中执行程序时，不进行输入输出重定向时采用异步执行
+6. 在NewEdit中执行程序时，不进行输入输出重定向时采用异步执行
 7. DDE支持使用CallAfter处理
 8. 修正当选中文本时，按回车不清除文本的bug
 9. 修正执行外部菜单时使用os.startfile()
@@ -419,7 +214,7 @@ Windows安装包
 
 新增：
 
-1. 在Windows下支持将UliPad注册到资源管理器的上下文菜单的功能，同时提供反注册。
+1. 在Windows下支持将NewEdit注册到资源管理器的上下文菜单的功能，同时提供反注册。
 2. 增加文本转换为Html的功能，现支持reSt->html, textile->html, py->html，
    同时提供多种输出方式：替换当前、输出到消息窗口、输出到独立的Html窗口
 3. 增加查看Html文档的功能，可以使用内置的HtmlWindow来浏览Html文档。在Windows下
@@ -437,7 +232,7 @@ Windows安装包
 6. 取消对版本的检查
 
 增加的文本转Html和Html浏览功能主要是中以辅助Html编辑及对Blog写作预览的支持。对于Windows安装
-程序，在安装时会自动对注册表进行注册，即将UliPad增加到资源管理器的上下文菜单中。卸载时自动删除
+程序，在安装时会自动对注册表进行注册，即将NewEdit增加到资源管理器的上下文菜单中。卸载时自动删除
 注册表。
 
 对于plugins功能进行调整，因此如果你已经使用了plugin，需要重新进行设置。
@@ -478,8 +273,8 @@ Blog插件是自选安装的，因此，在正式的安装包中不带。需要�
 
 升级说明：
 
-因为此次修改了程序结构，应用2.5版升级相似，在运行 UliPad 前应先执行tools/convert_opt2.6.py来转换UliPad.opt。
-也可以简单地删除UliPad.opt文件。
+因为此次修改了程序结构，应用2.5版升级相似，在运行 NewEdit 前应先执行tools/convert_opt2.6.py来转换newedit.opt。
+也可以简单地删除newedit.opt文件。
 
 2.5版本
 ~~~~~~~
@@ -510,7 +305,7 @@ Blog插件是自选安装的，因此，在正式的安装包中不带。需要�
 
 因为此次修改了程序结构，因此造成原配置文件处理在新版本下会发生错误。因此，在安装完2.5版软件后，可以执行tools
 目录下的convert_opt2.5.py来进行配置文件的转换。此程序只对2.5版以前的配置文件生效。还有最简单的方法就是删除
-配置文件即可。同时，本软件所提供的插件(从http://UliPad.tigris.org上下载的)可能也存在问题，如果使用请重新下载。
+配置文件即可。同时，本软件所提供的插件(从http://newedit.tigris.org上下载的)可能也存在问题，如果使用请重新下载。
 
 2.4版本
 ~~~~~~~
@@ -557,7 +352,7 @@ Blog插件是自选安装的，因此，在正式的安装包中不带。需要�
 新增：
 
 1. 代码片段管理--你可以将可重用的代码保存起来，需要时插入到文档中
-2. Shell命令菜单管理--可以运行一些外部命令，并生成菜单在UliPad中调用
+2. Shell命令菜单管理--可以运行一些外部命令，并生成菜单在NewEdit中调用
 3. 打开和另存时可以选择是否显示编码选择对话框，从而实现文件编码的转换
 4. 在状态条可以显示当前文档的编码
 
@@ -610,12 +405,12 @@ Blog插件是自选安装的，因此，在正式的安装包中不带。需要�
 3. 修正首字母大写功能的错误。
 4. 修正当文件换行符为MIX时，切换文档显示不正确的错误。
 
-启动UliPad
+启动NewEdit
 -----------
 
-启动UliPad可以在命令行下执行::
+启动NewEdit可以在命令行下执行::
 
-  python UliPad.py -u|-v|-n|[-e defaultencoding] files ...
+  python newedit.py -u|-v|-n|[-e defaultencoding] files ...
 
   -u 显示用法信息
 
@@ -631,7 +426,7 @@ Blog插件是自选安装的，因此，在正式的安装包中不带。需要�
 
   files ... 文件名列表，可以有多个，以空格隔开
 
-可以双击UliPad.pyw图标启动。
+可以双击NewEdit.pyw图标启动。
 
 File(文件)
 ----------
@@ -653,7 +448,7 @@ Open Recent Path(打开最近路径)
   当用户打开或保存一个文件之后，这个文件的路径将保存在最近路径中，下次用户可以直接从最近路径菜
   单中打开最新访问的路径。此功能还可以通过工具条的按钮来执行。
 
-Directory Browser(目录浏览)(3.1版新增)
+Directory Browser(目录浏览)(3.0新增)
   可以浏览目录及相应的子目录。右键菜单会有更多的功能。
 
 Close(关闭)
@@ -908,7 +703,7 @@ Go to Last Modify(跳到最后修改)
   跳转到最后一次进行过修改的地方。
 
 Toggle Marker(标签切换)
-  UliPad可以设置任意多的标签，可以在这些标签之间进行跳转。设定或取消标签。有标签设定的行在行号左边有一个蓝色的箭头。
+  NewEdit可以设置任意多的标签，可以在这些标签之间进行跳转。设定或取消标签。有标签设定的行在行号左边有一个蓝色的箭头。
 
 Clear All Marker(清除所有标签)
   清除所有设定的标签。
@@ -938,7 +733,7 @@ Syntax Preference...(语法参数设置)(2.3新增)
   语法参数设置，可以设置语法标记的颜色、字体名称、字体大小、字体属性。
 
 Convert Line Ending(转换行结束符)
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 可以将某种格式的换行符转换为其它格式。
 
@@ -957,7 +752,7 @@ Tool(工具)(2.2新增)
 Shell Command(Shell命令)(2.2新增)
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-Shell命令可以允许你加入外部的命令，生成菜单，在UliPad中进行调用。
+Shell命令可以允许你加入外部的命令，生成菜单，在NewEdit中进行调用。
 
 Shell Command Manage...(Shell命令管理...)
   用于Shell命令的增加、删除、命名，移动
@@ -965,12 +760,12 @@ Shell Command Manage...(Shell命令管理...)
 Script(脚本)(2.0新增)
 ~~~~~~~~~~~~~~~~~~~~~
 
-脚本功能是我一直想实现的，你可以编写特别目的的Python程序，把它置于UliPad之下，可以对当前文档进行特殊的文本
-处理。利用这一功能，用户可以扩展UliPad的文本处理功能。要想将脚本置于UliPad的菜单之下，首先要存在这个脚本，如果
+脚本功能是我一直想实现的，你可以编写特别目的的Python程序，把它置于NewEdit之下，可以对当前文档进行特殊的文本
+处理。利用这一功能，用户可以扩展NewEdit的文本处理功能。要想将脚本置于NewEdit的菜单之下，首先要存在这个脚本，如果
 没有请先编辑一个。然后，执行脚本管理功能，可以将脚本文件增加到脚本菜单中。在脚本管理窗口中，你可以修改脚本的描述(
 用鼠标在某项描述上单击，即可进行修改)。这项描述将作为菜单项显示在脚本菜单中。
 
-用户编写的脚本将作为UliPad的一部分进行执行，因此没有什么限制，所有UliPad的资源均可以使用。只不过要注意，使用
+用户编写的脚本将作为NewEdit的一部分进行执行，因此没有什么限制，所有NewEdit的资源均可以使用。只不过要注意，使用
 时要通过win这个对象来访问所有的资源。win对象为整个框架窗口，访问当前正在使用的文档窗口，可以使用win.document。
 访问消息窗口可以访问win.messagewindow。文档窗口可能会随着文件的不同而不同，缺省的文档窗口类为wxStyledTextCtrl。
 消息窗口为wxStyledTextCtrl类。因此你可以使用wxStyledTextCtrl的方法。最基本的方法可以为::
@@ -1028,25 +823,25 @@ Option(选项)
 ------------
 
 Preference...(参数设置)
-  用于设置UliPad的一些可变参数。
+  用于设置NewEdit的一些可变参数。
 
 Language(语言)(2.0新增)
   用于选择程序界面所用的语言。现在支持中文和英文两种。并且在中文平台第一次运行时，如果判断平台环境为中文的话，会
   自动使用中文环境。如果用户想要增加自已的语言支持，可以在tools目录下找到相应的文档和工具，进行相应的语言翻译即可。
   步骤如下：
 
-	1. 复制UliPad.pot为想要翻译语言的目标文件，文件名应为：UliPad_地区代码.po。如中国为cn，台湾为tw。
-	2. 将UliPad_地区代码.po中msgid不为空的内容进行翻译，译文写在msgstr处。格式要与msgid一致。如果有%d之类的
+	1. 复制newedit.pot为想要翻译语言的目标文件，文件名应为：newedit_地区代码.po。如中国为cn，台湾为tw。
+	2. 将newedit_地区代码.po中msgid不为空的内容进行翻译，译文写在msgstr处。格式要与msgid一致。如果有%d之类的
 	   格式替换符请不要改变它们的顺序。
 	3. 参与build.bat文件，执行相应的命令将po文件编译为mo文件，并拷贝到lang目录下。
 	4. 修改lang目录下的language.ini文件。增加新的语言说明，格式为：地区代码 说明。如：fr French
-	5. 启动UliPad，然后在Option->Language下，选中新加的语言。再重启UliPad即可。
+	5. 启动NewEdit，然后在Option->Language下，选中新加的语言。再重启NewEdit即可。
 
 Register to Explore(注册到资源管理器)(2.7新增)
-  将UliPad注册到资源管理器的上下文菜单中
+  将NewEdit注册到资源管理器的上下文菜单中
 
 Unregister from Explore(从资源管理器反注册)(2.7新增)
-  将UliPad从资源管理器的上下文菜单中反注册
+  将NewEdit从资源管理器的上下文菜单中反注册
 
 Document(文档相关)
 ~~~~~~~~~~~~~~~~~~
@@ -1054,13 +849,13 @@ Double click will close the selected document
   选中则当你在一个Tab标签上双击时可以关闭选中的文档。
 
 Whitespace is visible on startup
-  选中则启动UliPad时，空格和制表符是可见的。
+  选中则启动NewEdit时，空格和制表符是可见的。
 
 Indentation guides is visible on startup
-  选中则缩近指示在启动UliPad时是可见的。
+  选中则缩近指示在启动NewEdit时是可见的。
 
 Long line indicator is visible on startup
-  长行指示(右边界)在启动UliPad时是可见的。
+  长行指示(右边界)在启动NewEdit时是可见的。
 
 Long line indicator column
   用于设定长行指示的开始列，缺省为100列
@@ -1085,7 +880,7 @@ Use code fold
   可以对代码实现折叠。
 
 Default line ending used in document
-  文档中缺省使用的行结束符。此选项用于新建文件。如果打开已存在的文件，UliPad会自动识别于文件所用的行结束符，并且在状态条的最右边将文档
+  文档中缺省使用的行结束符。此选项用于新建文件。如果打开已存在的文件，NewEdit会自动识别于文件所用的行结束符，并且在状态条的最右边将文档
   的行结束符类型表示出来。
 
 Auto make backup file as open a file
@@ -1110,7 +905,7 @@ Max number of recent files
   最近更新文件列表的最大个数。
 
 Max number of save find text
-  保存的查找字符串的最大个数。UliPad可以将以前查找到的内容保存起来，根据使用的频率进行自动刷新。这个值用于设定最多保存多少个以前查找
+  保存的查找字符串的最大个数。NewEdit可以将以前查找到的内容保存起来，根据使用的频率进行自动刷新。这个值用于设定最多保存多少个以前查找
   过的内容。
 
 Auto load the files of last session
@@ -1186,7 +981,7 @@ Set Arguments(设置命令行参数)
 Help(帮助)
 ----------
 
-UliPad Help Document(帮助文档)
+NewEdit Help Document(帮助文档)
   打开帮助文档页面。
 
 Extended Module Info(扩展模块信息)(3.0新增)
@@ -1214,96 +1009,92 @@ About...
 ===========================    =====================================================
   快捷键名称                        对应功能
 ===========================    =====================================================
-F1								(M)UliPad Help Document(帮助文档)
-F2                              (M)Directory Browser(目录浏览)(3.1版新增)
-F3								(M)Find Next(查找下一个)
-Shift+F3						(M)Find Previous(查找上一个)
-F4								(M)Direct Find(直接查找)
-Ctrl+F4							(M)Close(关闭)(2.9版新增)
-F5                              (M)运行Python程序(3.2版新增)
-F6          					(M)将当前串作为模块名打开模块所对应的源文件(2.9版新增)
-F8								(M)Next Marker(下一处标签)(3.2修改)
-Shift+F8						(M)Previous Marker(上一处标签)(3.2修改)
+F1								(M)NewEdit Help Document(帮助文档)
+F2                              (M)Directory Browser(目录浏览)
 F9								(M)Toggle Marker(标签切换)
-Ctrl+Shift+F9					(M)Bookmark Clear All(清除所有标签)
+Ctrl+Shift+F9					(M)IDM_SEARCH_BOOKMARK_CLEARALL
+F5								(M)Next Marker(下一处标签)
+Shift+F5						(M)Previous Marker(上一处标签)
 F10								(M)Duplicate Extend Mode(复制扩展模式)
-Ctrl+A							(M)Select All(全选)
-Ctrl+B							(M)Go to Last Modify(跳到最后修改)
-Ctrl+C							(M)Copy(拷贝)
-Ctrl+D							删除当前行
-Ctrl+Shift+D					删除当前行，并拷贝到粘贴板中
-Ctrl+E							(M)Match Select (Left First)(匹配选择－－左向优先)
-Ctrl+Shift+E					(M)Match Select (Right First)(匹配选择－－右向优先)
-Ctrl+Alt+E						(M)Enlarge Selection(扩大选择)
-Ctrl+F							(M)Find...(查找)
-Ctrl+G							(M)Go to Line...(行号跳转)
-Ctrl+H							(M)Replace...(替换)
-Ctrl+I或Tab						(M)Increase Indent(增加缩近)
-Ctrl+Shift+I或Shift+Tab			(M)Decrease Indent(减少缩近)
 Ctrl+J							(M)Duplicate Current Line(复制当前行)
-Ctrl+L							(M)Duplicate Previous Line(复制前一个句子)
-Ctrl+Shift+L					(M)Duplicate Previous Line(复制后一个句子)
 Ctrl+M							(M)Duplicate Previous Char(复制上一个字符)
 Ctrl+Shift+M					(M)Duplicate Next Char(复制下一个字符)
-Ctrl+N							(M)New(新建)
-Ctrl+O							(M)Open(打开文档)
 Ctrl+P							(M)Duplicate Previous Word(复制上一个单词)
 Ctrl+Shift+P					(M)Duplicate Next Word(复制下一个单词)
-Ctrl+"							(M)Text Quote(文本括起)
-Ctrl+Shift+"					(M)Text Unquote(去掉文本括起串)
-Ctrl+R							(M)Select Line(选中当前行)
+Ctrl+L							(M)Duplicate Previous Line(复制前一个句子)
+Ctrl+Shift+L					(M)Duplicate Previous Line(复制后一个句子)
+Ctrl+N							(M)New(新建)
+Ctrl+O							(M)Open(打开文档)
 Ctrl+S							(M)Save(保存)
-Ctrl+T                          (M)Todo窗口(3.1版新增)(3.3版修改)
-Ctrl+U							(M)Upper Case(变为大写)
-Ctrl+Shift+U					(M)Lower Case(变为小写)
+Ctrl+F4							(M)Close(关闭)(2.9版新增)
+Alt+X							(M)Exit(退出)
+Ctrl+Z							(M)Undo(撤销)
+Ctrl+Y							(M)Redo(重做)
+Ctrl+X							(M)Cut(剪切)
+Ctrl+C							(M)Copy(拷贝)
 Ctrl+V							(M)Paste(粘贴)
 Ctrl+W							(M)Select Word(选词)
 Ctrl+Shift+W					(M)Select Word Extend(扩展选词)
-Ctrl+X							(M)Cut(剪切)
-Ctrl+Y							(M)Redo(重做)
-Ctrl+Z							(M)Undo(撤销)
-Ctrl+/          				(M)将选中文本前增加注释(2.9版新增)
-Ctrl+\          				(M)将选中文本前的注释去除(2.9版新增)
-Ctrl+Alt+L                      (M)打开/关闭左边栏窗口(3.1版新增)
-Ctrl+Alt+B                      (M)打开/关闭底边栏窗口(3.1版新增)
-Ctrl+Alt+R                      (M)清除Shell窗口的内容
+Ctrl+E							(M)Match Select (Left First)(匹配选择－－左向优先)
+Ctrl+Shift+E					(M)Match Select (Right First)(匹配选择－－右向优先)
+Ctrl+Alt+E						(M)Enlarge Selection(扩大选择)
+Ctrl+R							(M)Select Line(选中当前行)
+Ctrl+A							(M)Select All(全选)
+Ctrl+I或Tab						(M)Increase Indent(增加缩近)
+Ctrl+Shift+I或Shift+Tab			(M)Decrease Indent(减少缩近)
+Ctrl+Q							(M)Text Quote(文本括起)
+Ctrl+Shift+Q					(M)Text Unquote(去掉文本括起串)
+Ctrl+U							(M)Upper Case(变为大写)
+Ctrl+Shift+U					(M)Lower Case(变为小写)
+Ctrl+F							(M)Find...(查找)
+F4								(M)Direct Find(直接查找)
+F3								(M)Find Next(查找下一个)
+Shift+F3						(M)Find Previous(查找上一个)
+Ctrl+H							(M)Replace...(替换)
+Ctrl+G							(M)Go to Line...(行号跳转)
+Ctrl+B							(M)Go to Last Modify(跳到最后修改)
+Ctrl+D							删除当前行
+Ctrl+Shift+D					删除当前行，并拷贝到粘贴板中
+F6          					将当前串作为模块名打开模块所对应的源文件(2.9版新增)
+Ctrl+/          				将选中文本前增加注释(2.9版新增)
+Ctrl+\\          				将选中文本前的注释去除(2.9版新增)
 ===========================    =====================================================
 
 弹出菜单
 --------
 
-现在UliPad在文档窗口支持弹出菜单。
+现在NewEdit在文档窗口支持弹出菜单。
 
 在文档内部的弹出菜单功能与主菜单的Edit(编程)功能相同。
 
 在文档Tab页的弹出菜单与主菜单File(文件)功能基本相同。
 
-UliPad的Unicode支持
+NewEdit的Unicode支持
 --------------------
 
-UliPad是完全支持Unicode的，当然前提是你要安装wxPython的Unicode版本。
+NewEdit是完全支持Unicode的，当然前提是你要安装wxPython的Unicode版本。
 
-支持Unicode，那么就面临本地编码与Unicode的转换问题。在UliPad中，这种转换发生在打开文件和保存文件的时候。
-UliPad在进行码制转换时所用到的编码有三个来源：指定的编码、文档编码和缺省编码。UliPad在处理这三种编码是按
+支持Unicode，那么就面临本地编码与Unicode的转换问题。在NewEdit中，这种转换发生在打开文件和保存文件的时候。
+NewEdit在进行码制转换时所用到的编码有三个来源：指定的编码、文档编码和缺省编码。NewEdit在处理这三种编码是按
 顺序进行的，即如果指定编码为空则使用用文档编码，如果文档编码为空则使用缺省编码。那么这三种编码都是怎么来的？
 又会怎么处理的 ？
 
 1. 指定编码
 
   如果用户想在打开文件或保存文件时单独指定某种编码，那么他需要在选项菜单中，设置“当打开或保存文件时显示编码
-  选择对话框”选项为选中。这样，当打开或另存文件时，就会弹出编码选择对话框，用户选则好了编码后，UliPad会使
+  选择对话框”选项为选中。这样，当打开或另存文件时，就会弹出编码选择对话框，用户选则好了编码后，NewEdit会使
   用这种编码对文件进行编码和解码。如果处理失败，则打开文件或保存文件失败。如果成功，则设置文档编码为此编码。
 
 2. 文档编码
 
   当用户使用了指定编码时，并且成功的打开或保存了文件，则此文档的编码为指定的编码。如果用户没有使用指定编码，
-  则如果用户设置了选项菜单中的“自动进行utf-8编码检测”选项为选中时，则在打开某个文件时，UliPad会自动判断
+  则如果用户设置了选项菜单中的“自动进行utf-8编码检测”选项为选中时，则在打开某个文件时，NewEdit会自动判断
   文件内容是否为utf-8编码，如果是则文档的编码为utf-8，如果不是则文档编码为缺省编码。
 
 3. 缺省编码
 
-  缺省编码支持是指当启动UliPad时，UliPad会根据操作系统的环境得到系统所使用的编码作为缺省编码。但个别情况
-  下，UliPad所得到的系统编码可能有问题，这时，你可以在启动时加入命令行选项 -e encoding 为正确的编码即可。
+  缺省编码支持是指当启动NewEdit时，NewEdit会根据操作系统的环境得到系统所使用的编码作为缺省编码。但个别情况
+  下，NewEdit所得到的系统编码可能有问题，这时，你可以在启动时加入命令行选项 -e encoding 为正确的编码即可。
 
 要注意的是如果设定了要使用指定编码，但也只可以在弹出打开文件对话框，和打开保存文件对话框的时候可以使用，其它
 情况下或者自动测试utf-8编码，或者使用缺省编码。
@@ -1312,10 +1103,10 @@ UliPad在进行码制转换时所用到的编码有三个来源：指定的编�
 --------
 
 Script(脚本)编写示例
-~~~~~~~~~~~~~~~~~~~~
+~~~~~~~~~~~~~~~~~~~
 
-脚本功能允许用户编写自已的处理代码，可以对 UliPad 中的对象进行处理。它的目的就是快速的编写，并且可以作为菜
-单放在 UliPad 中。它是一个独立的 Python 源程序。编写一个脚本有以下几步：
+脚本功能允许用户编写自已的处理代码，可以对 NewEdit 中的对象进行处理。它的目的就是快速的编写，并且可以作为菜
+单放在 NewEdit 中。它是一个独立的 Python 源程序。编写一个脚本有以下几步：
 
 1. 编写脚本、保存
 2. 在Script(脚本)菜单中添加入口项
@@ -1328,7 +1119,7 @@ Script(脚本)编写示例
 ::
 
 	1       #---------------------------------------------------
-	2       #                   UliPad script
+	2       #                   NewEdit script
 	3       # Author  :limodou(chatme@263.net)
 	4       # Date    :2004/07/11
 	5       # Version :1.0
@@ -1338,7 +1129,7 @@ Script(脚本)编写示例
 	9       #---------------------------------------------------
 	10      
 	11      def run(win):
-	12      	win.document.SetText("Hello, UliPad")
+	12      	win.document.SetText("Hello, NewEdit")
 	13      
 	14      run(win)
 
@@ -1346,30 +1137,30 @@ Script(脚本)编写示例
   为注释，可以不写。但如果要给别人用，让人知道你的情况还是不错的。
 
 11-12
-  定义了一个run函数，win参数是可用的一个对象，它就是UliPad最外层的窗口，它有菜单，工具条，状态条，还有你看
-  到的文档。当前正在编辑的文档为win.document。通过win对象，你可以访问到UliPad的任何一个对象。如：
-  win.messagewindow就是消息窗口，你可以用它来输出一些信息。关于整个UliPad的架框在技术文档中将会有详细的描
+  定义了一个run函数，win参数是可用的一个对象，它就是NewEdit最外层的窗口，它有菜单，工具条，状态条，还有你看
+  到的文档。当前正在编辑的文档为win.document。通过win对象，你可以访问到NewEdit的任何一个对象。如：
+  win.messagewindow就是消息窗口，你可以用它来输出一些信息。关于整个NewEdit的架框在技术文档中将会有详细的描
   述，这里不再细说。
 
-  12行调用了当前文档窗口的SetText方法，用来设置文档的内容为"Hello, UliPad"。要记住，它会清除以前的所有东
-  西。因此它只是一个示例。你可以将这代码改为：win.messagewindow.SetText("Hello, UliPad")，看一看消息窗口
-  中是不是有东西了。还可以改为：win.document.AddText("Hello, UliPad")，看一看是不是在文档光标处理增加了
+  12行调用了当前文档窗口的SetText方法，用来设置文档的内容为"Hello, NewEdit"。要记住，它会清除以前的所有东
+  西。因此它只是一个示例。你可以将这代码改为：win.messagewindow.SetText("Hello, NewEdit")，看一看消息窗口
+  中是不是有东西了。还可以改为：win.document.AddText("Hello, NewEdit")，看一看是不是在文档光标处理增加了
   文本，而原来的内容并未清除。
 
 14行
   对此函数进行调用。函数写法看上去清晰一些，但你完全可以不使用它，如可以改为::
 
-    win.document.SetText("Hello, UliPad")
+    win.document.SetText("Hello, NewEdit")
 	
   再运行一下试试效果。
 
 给文本增加行号
-^^^^^^^^^^^^^^^
+^^^^^^^^^^^^^
 
 ::
 
 	1       #---------------------------------------------------
-	2       #                   UliPad script
+	2       #                   NewEdit script
 	3       # Author  :limodou
 	4       # Date    :2004/07/11
 	5       # Version :1.0
@@ -1403,7 +1194,7 @@ Script(脚本)编写示例
 ::
 
 	1       #---------------------------------------------------
-	2       #                   UliPad script
+	2       #                   NewEdit script
 	3       # Author  :limodou
 	4       # Date    :2004/07/08
 	5       # Version :1.0
@@ -1432,13 +1223,13 @@ Script(脚本)编写示例
 
 此脚本调用docutil模块用来将当前的reStructureText转换为HTML。第25行可以将转换后的文本显示出来。不过此处注释掉了。
 
-详细处理不再描述，只讲述与UliPad有关的内容
+详细处理不再描述，只讲述与NewEdit有关的内容
 
 15行
   取得当前文档的文件名。
 
 16行
-  将文档的内容转换为文档所用的编码。因为UliPad使用的是Unicode，因此在使用docutil处理前先要转成本地编码，再
+  将文档的内容转换为文档所用的编码。因为NewEdit使用的是Unicode，因此在使用docutil处理前先要转成本地编码，再
   进行处理。locale是当前文档的编码。
 
 17-18行
@@ -1483,7 +1274,7 @@ Ftp使用说明
    点击刷新按钮或执行右键菜单中的刷新，即可以改变当前目录。再右边是站点设置和关闭。
 
 用户自定义快捷键(2.8版新增)
-~~~~~~~~~~~~~~~~~~~~~~~~~~~
+~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 现在只提供一个Hack的方法。用户可以对主窗体和编辑窗口的菜单自定义快捷键。即在config.ini中增加main_hotkey节或
 editor_hotkey节，然后增加：菜单消息=快捷键，如::
@@ -1493,14 +1284,14 @@ editor_hotkey节，然后增加：菜单消息=快捷键，如::
 
 上面就会为[另存为]菜单增加一个F12的快捷键。如果main_hotkey节不存在，只要自已创建即可。
 
-有关菜单消息号的查询可以在运行UliPad后，在debug.txt文件中，关于"[ INFO] -- [makemenu] makeaccelerator..."的后
+有关菜单消息号的查询可以在运行NewEdit后，在debug.txt文件中，关于"[ INFO] -- [makemenu] makeaccelerator..."的后
 面找到。
 
 关于main_hotkey与editor_hotkey的区别就是，在主窗体中定义的热键是全局生效的，而在编辑器中定义的热键，只有当输入焦
 点在编辑器中才会生效。
 
 目录浏览功能(3.0新增)
-~~~~~~~~~~~~~~~~~~~~~~
+~~~~~~~~~~~~~~~~~~~~
 
 1. 增加一个目录
 2. 关闭一个目录

@@ -1,7 +1,7 @@
 #   Programmer: limodou
-#   E-mail:     limodou@gmail.com
+#   E-mail:     chatme@263.net
 #
-#   Copyleft 2006 limodou
+#   Copyleft 2004 limodou
 #
 #   Distributed under the terms of the GPL (GNU Public License)
 #

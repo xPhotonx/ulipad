@@ -8,7 +8,7 @@ def openfiledlg(title, message, defaultdir='', filefilter='*.*'):
         ('static', 'message', message, '', None),
         ('openfile', 'file', '', '', None),
     ]
-    from EasyGuider import EasyCommander
+    from EasyGui import EasyCommander
     easy = EasyCommander.EasyCommander(easyfile=obj)
     try:
         if easy.run():
@@ -26,7 +26,7 @@ def savefiledlg(title, message, defaultdir='', filefilter='*.*'):
         ('static', 'message', message, '', None),
         ('savefile', 'file', '', '', None),
     ]
-    from EasyGuider import EasyCommander
+    from EasyGui import EasyCommander
     easy = EasyCommander.EasyCommander(easyfile=obj)
     try:
         if easy.run():

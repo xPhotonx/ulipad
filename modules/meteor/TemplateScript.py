@@ -1,7 +1,7 @@
 #   Programmer: limodou
 #   E-mail:     limodou@gmail.com
 #
-#   Copyleft 2006 limodou
+#   Copyleft 2005 limodou
 #
 #   Distributed under the terms of the GPL (GNU Public License)
 #
@@ -43,7 +43,7 @@ class TemplateScript:
         else:
             f = script
 
-        self.oldworkpath = os.getcwd().replace('\\', '/')
+        self.oldworkpath = os.getcwd()
 
         vars['_workpath'] = self.oldworkpath
 

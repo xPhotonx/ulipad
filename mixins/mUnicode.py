@@ -1,11 +1,11 @@
-#   Programmer:     limodou
-#   E-mail:         limodou@gmail.com
-# 
-#   Copyleft 2006 limodou
-# 
-#   Distributed under the terms of the GPL (GNU Public License)
-# 
-#   UliPad is free software; you can redistribute it and/or modify
+#	Programmer:	limodou
+#	E-mail:		chatme@263.net
+#
+#	Copyleft 2004 limodou
+#
+#	Distributed under the terms of the GPL (GNU Public License)
+#
+#   NewEdit is free software; you can redistribute it and/or modify
 #   it under the terms of the GNU General Public License as published by
 #   the Free Software Foundation; either version 2 of the License, or
 #   (at your option) any later version.
@@ -19,105 +19,74 @@
 #   along with this program; if not, write to the Free Software
 #   Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 #
-#   $Id: mUnicode.py 2081 2007-06-12 08:31:48Z limodou $
+#	$Id: mUnicode.py 176 2005-11-22 02:46:37Z limodou $
 
 __doc__ = 'encoding selection and unicode support'
 
-import re
-import StringIO
 from modules import Mixin
+import wx
+import wx.stc
+#from modules import DetectUTF_8
 from MyUnicodeException import MyUnicodeException
 from modules.Debug import error
-from modules import common
 
-def pref_init(pref):
-    pref.auto_detect_utf8 = True
-Mixin.setPlugin('preference', 'init', pref_init)
+def init(pref):
+	pref.auto_detect_utf8 = True
+Mixin.setPlugin('preference', 'init', init)
 
-def add_pref(preflist):
-    preflist.extend([
-        (tr('Document'), 170, 'check', 'auto_detect_utf8', tr('Auto detect UTF-8 encoding'), None),
-    ])
-Mixin.setPlugin('preference', 'add_pref', add_pref)
+preflist = [
+	(tr('Document'), 170, 'check', 'auto_detect_utf8', tr('Auto detect UTF-8 encoding'), None),
+]
+Mixin.setMixin('preference', 'preflist', preflist)
 
-def editor_init(win):
-    win.locale = win.defaultlocale
-Mixin.setPlugin('editor', 'init', editor_init)
+def init(win):
+	win.locale = win.defaultlocale
+Mixin.setPlugin('editor', 'init', init)
 
-def openfileencoding(win, filename, stext, encoding):
-    text = stext[0]
+def openfileencoding(win, stext, encoding):
+	text = stext[0]
 
-    if not encoding:
-        if filename:
-            if win.mainframe.pref.auto_detect_utf8:
-                encoding = 'utf-8'
-            else:
-                encoding = win.defaultlocale
-        else:
-            if not encoding and hasattr(win.pref, 'custom_encoding'):
-                encoding = win.pref.custom_encoding
-            if not encoding and hasattr(win.pref, 'default_encoding'):
-                encoding = win.pref.default_encoding
-            if not encoding:
-                encoding = common.defaultencoding
-
-    try:
-        s = unicode(text, encoding)
-        win.locale = encoding
-    except:
-        if win.mainframe.pref.auto_detect_utf8 and encoding == 'utf-8':
-            encoding = win.defaultlocale
-            try:
-                s = unicode(text, encoding, 'replace')
-                win.locale = encoding
-            except:
-                error.traceback()
-                raise MyUnicodeException(win, tr("Cann't convert file encoding [%s] to unicode!\nThe file cann't be openned!") % encoding, tr("Unicode Error"))
-        else:
-            error.traceback()
-            raise MyUnicodeException(win, tr("Cann't convert file encoding [%s] to unicode!\nThe file cann't be openned!") % encoding, tr("Unicode Error"))
-    stext[0] = s
+	if not encoding:
+		if win.mainframe.pref.auto_detect_utf8:
+			encoding = 'utf-8'
+		else:
+			encoding = win.defaultlocale
+	try:
+		s = unicode(text, encoding)
+		win.locale = encoding
+	except:
+		if win.mainframe.pref.auto_detect_utf8 and encoding == 'utf-8':
+			encoding = win.defaultlocale
+			try:
+				s = unicode(text, encoding)
+				win.locale = encoding
+			except:
+				error.traceback()
+				raise MyUnicodeException(win, tr("Cann't convert file encoding [%s] to unicode!\nThe file cann't be openned!") % encoding,
+					tr("Unicode Error"))
+		else:
+			error.traceback()
+			raise MyUnicodeException(win, tr("Cann't convert file encoding [%s] to unicode!\nThe file cann't be openned!") % encoding,
+				tr("Unicode Error"))
+	stext[0] = s
 Mixin.setPlugin('editor', 'openfileencoding', openfileencoding)
 
 def savefileencoding(win, stext, encoding):
-    text = stext[0]
+	text = stext[0]
 
-    if not encoding:
-        encoding = win.locale
+	if not encoding:
+		encoding = win.locale
 
-    if win.languagename == 'python':
-        r = re.compile(r'coding[=:]\s*([-\w.]+)')
-
-        buf = StringIO.StringIO(text)
-        while 1:
-            line = buf.readline()
-            if not line: break
-            line = line.rstrip()
-            if line.startswith('#!'):
-                continue
-            if line.startswith('#'):
-                b = r.search(line[1:])
-                if b:
-                    encoding = b.groups()[0]
-                    break
-            if not line:
-                continue
-            else:
-                break
-
-    oldencoding = win.locale
-    if encoding:
-        try:
-            s = text.encode(encoding)
-            win.locale = encoding
-        except:
-            error.traceback()
-            try:
-                s = text.encode(encoding, 'ignore')
-            except:
-                raise MyUnicodeException(win, tr("Cann't convert file to [%s] encoding!\nThe file cann't be saved!") % encoding,
-                    tr("Unicode Error"))
-    else:
-        s = text
-    stext[0] = s
+	oldencoding = win.locale
+	if encoding:
+		try:
+			s = text.encode(encoding)
+			win.locale = encoding
+		except:
+			error.traceback()
+			raise MyUnicodeException(win, tr("Cann't convert file to [%s] encoding!\nThe file cann't be saved!") % encoding,
+				tr("Unicode Error"))
+	else:
+		s = text
+	stext[0] = s
 Mixin.setPlugin('editor', 'savefileencoding', savefileencoding)
