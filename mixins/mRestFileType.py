@@ -25,7 +25,6 @@ import wx
 from modules import Mixin
 import FiletypeBase
 from modules import Globals
-from modules.Debug import error
 
 class RestFiletype(FiletypeBase.FiletypeBase):
 
@@ -72,9 +71,8 @@ Mixin.setPlugin('mainframe', 'closefile', closefile)
 def setfilename(document, filename):
     for pagename, panelname, notebook, page in Globals.mainframe.panel.getPages():
         if is_resthtmlview(page, document):
-            print 'setfilename'
             title = document.getShortFilename()
-#            Globals.mainframe.panel.setName(page, title)
+            Globals.mainframe.panel.setName(page, title)
 Mixin.setPlugin('editor', 'setfilename', setfilename)
 
 def createRestHtmlViewWindow(win, side, document):
@@ -88,14 +86,14 @@ def createRestHtmlViewWindow(win, side, document):
     if not obj:
         if win.document.documenttype == 'texteditor':
             text = html_fragment(document.GetText().encode('utf-8'))
-            if text:
-                page = RestHtmlView(win.panel.createNotebook(side), text)
-                page.document = win.document    #save document object
-                page.resthtmlview = True
-                win.panel.addPage(side, page, dispname)
-                win.panel.setImageIndex(page, 'html')
-                return page
-    return obj
+            page = RestHtmlVew(win.panel.createNotebook(side), text)
+            page.document = win.document    #save document object
+            page.resthtmlview = True
+            win.panel.addPage(side, page, dispname)
+            win.panel.setImageIndex(page, 'html')
+            return page
+    else:
+        return obj
 Mixin.setMixin('mainframe', 'createRestHtmlViewWindow', createRestHtmlViewWindow)
 
 def other_popup_menu(editctrl, document, menus):
@@ -118,17 +116,13 @@ Mixin.setMixin('editctrl', 'OnRestHtmlViewBottom', OnRestHtmlViewBottom)
 
 def html_fragment(content):
     from docutils.core import publish_string
-    
-    try:
-        return publish_string(content, writer_name = 'html' )
-    except:
-        error.traceback()
-        return None
+
+    return publish_string(content, writer_name = 'html' )
 
 from mixins import HtmlPage
 import tempfile
 import os
-class RestHtmlView(wx.Panel):
+class RestHtmlVew(wx.Panel):
     def __init__(self, parent, content):
         wx.Panel.__init__(self, parent, -1)
     

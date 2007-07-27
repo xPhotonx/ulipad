@@ -79,7 +79,7 @@ def add_mainframe_menu(menulist):
 Mixin.setPlugin('mainframe', 'add_menu', add_mainframe_menu)
 
 def OnWindowMultiView(win, event):
-    dispname = win.createMultiViewWindow('bottom', Globals.mainframe.document)
+    dispname = win.mainframe.createMultiViewWindow('bottom', Globals.mainframe.document)
     if dispname:
         win.panel.showPage(dispname)
 Mixin.setMixin('mainframe', 'OnWindowMultiView', OnWindowMultiView)

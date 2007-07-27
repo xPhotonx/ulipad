@@ -19,7 +19,7 @@
 #   along with this program; if not, write to the Free Software
 #   Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 #
-#   $Id: mRecentFile.py 1813 2007-01-09 01:43:13Z limodou $
+#   $Id: mRecentFile.py 1609 2006-10-15 09:27:37Z limodou $
 
 import wx
 import os
@@ -31,16 +31,16 @@ def add_mainframe_menu(menulist):
     menulist.extend([('IDM_FILE',
         [
             (130, 'IDM_FILE_RECENTFILES', tr('Open Recent Files'), wx.ITEM_NORMAL, 'OnOpenRecentFiles', 'Opens recent files.'),
-#            (135, 'IDM_FILE_RECENTPATHS', tr('Open Recent Paths'), wx.ITEM_NORMAL, 'OnOpenRecentPaths', 'Opens recent paths.'),
+            (135, 'IDM_FILE_RECENTPATHS', tr('Open Recent Paths'), wx.ITEM_NORMAL, 'OnOpenRecentPaths', 'Opens recent paths.'),
         ]),
     ])
 Mixin.setPlugin('mainframe', 'add_menu', add_mainframe_menu)
 
 def pref_init(pref):
     pref.recent_files = []
-    pref.recent_files_num = 20
-#    pref.recent_paths = []
-#    pref.recent_paths_num = 10
+    pref.recent_files_num = 10
+    pref.recent_paths = []
+    pref.recent_paths_num = 10
 Mixin.setPlugin('preference', 'init', pref_init)
 
 def afteropenfile(win, filename):
@@ -54,12 +54,12 @@ def afteropenfile(win, filename):
         win.pref.recent_files = win.pref.recent_files[:win.pref.recent_files_num]
         win.pref.last_dir = os.path.dirname(filename)
 
-#        #deal recent path
-#        path = os.path.dirname(filename)
-#        if path in win.pref.recent_paths:
-#            win.pref.recent_paths.remove(path)
-#        win.pref.recent_paths.insert(0, path)
-#        win.pref.recent_paths = win.pref.recent_paths[:win.pref.recent_paths_num]
+        #deal recent path
+        path = os.path.dirname(filename)
+        if path in win.pref.recent_paths:
+            win.pref.recent_paths.remove(path)
+        win.pref.recent_paths.insert(0, path)
+        win.pref.recent_paths = win.pref.recent_paths[:win.pref.recent_paths_num]
 
         #save pref
         win.pref.save()
@@ -80,19 +80,19 @@ def OnOpenRecentFiles(win, event=None):
     win.PopupMenu(menu)
 Mixin.setMixin('mainframe', 'OnOpenRecentFiles', OnOpenRecentFiles)
     
-#def OnOpenRecentPaths(win, event=None):
-#    menu = wx.Menu()
-#    pref = win.pref
-#    for index, filename in enumerate(pref.recent_paths):
-#        def OnFunc(event, index=index):
-#            open_recent_paths(win, index)
-#        
-#        _id = wx.NewId()
-#        item = wx.MenuItem(menu, _id, filename, filename)
-#        wx.EVT_MENU(win, _id, OnFunc)
-#        menu.AppendItem(item)
-#    win.PopupMenu(menu)
-#Mixin.setMixin('mainframe', 'OnOpenRecentPaths', OnOpenRecentPaths)
+def OnOpenRecentPaths(win, event=None):
+    menu = wx.Menu()
+    pref = win.pref
+    for index, filename in enumerate(pref.recent_paths):
+        def OnFunc(event, index=index):
+            open_recent_paths(win, index)
+        
+        _id = wx.NewId()
+        item = wx.MenuItem(menu, _id, filename, filename)
+        wx.EVT_MENU(win, _id, OnFunc)
+        menu.AppendItem(item)
+    win.PopupMenu(menu)
+Mixin.setMixin('mainframe', 'OnOpenRecentPaths', OnOpenRecentPaths)
     
 def open_recent_files(win, index):
     filename = win.pref.recent_files[index]
@@ -106,47 +106,47 @@ def open_recent_files(win, index):
         return
     win.editctrl.new(filename)
 
-#def open_recent_paths(win, index):
-#    path = win.pref.recent_paths[index]
-#    if os.path.exists(path) and os.path.isdir(path):
-#        dlg = wx.FileDialog(win, tr("Open"), path, "", '|'.join(win.filewildchar), wx.OPEN|wx.HIDE_READONLY|wx.MULTIPLE)
-#        dlg.SetFilterIndex(win.getFilterIndex())
-#        if dlg.ShowModal() == wx.ID_OK:
-#            encoding = win.execplugin('getencoding', win, win)
-#            for filename in dlg.GetPaths():
-#                win.editctrl.new(filename, encoding)
-#            dlg.Destroy()
-#    else:
-#        common.showerror(win, tr("Can't open the path [%s]!") % path)
-#        del win.pref.recent_paths[index]
-#        win.pref.save()
-#        return
-#
-#def add_tool_list(toollist, toolbaritems):
-#    toollist.extend([
-#        (115, 'openpath'),
-#    ])
-#
-#    #order, IDname, imagefile, short text, long text, func
-#    toolbaritems.update({
-#        'openpath':(wx.ITEM_NORMAL, 'IDM_FILE_OPEN_PATH', 'images/paths.gif', tr('open path'), tr('Open path'), 'OnFileOpenPath'),
-#    })
-#Mixin.setPlugin('mainframe', 'add_tool_list', add_tool_list)
-#
-#def OnFileOpenPath(win, event):
-#    eid = event.GetId()
-#    size = win.toolbar.GetToolSize()
-#    pos = win.toolbar.GetToolPos(eid)
-#    menu = wx.Menu()
-#
-#    if len(win.pref.recent_paths) == 0:
-#        id = win.IDM_FILE_RECENTPATHS_ITEMS
-#        menu.Append(id, tr('(empty)'))
-#        menu.Enable(id, False)
-#    else:
-#        for i, path in enumerate(win.pref.recent_paths):
-#            id = win.recentpathmenu_ids[i]
-#            menu.Append(id, "%d %s" % (i+1, path))
-#    win.PopupMenu(menu, (size[0]*pos, size[1]))
-#    menu.Destroy()
-#Mixin.setMixin('mainframe', 'OnFileOpenPath', OnFileOpenPath)
+def open_recent_paths(win, index):
+    path = win.pref.recent_paths[index]
+    if os.path.exists(path) and os.path.isdir(path):
+        dlg = wx.FileDialog(win, tr("Open"), path, "", '|'.join(win.filewildchar), wx.OPEN|wx.HIDE_READONLY|wx.MULTIPLE)
+        dlg.SetFilterIndex(win.getFilterIndex())
+        if dlg.ShowModal() == wx.ID_OK:
+            encoding = win.execplugin('getencoding', win, win)
+            for filename in dlg.GetPaths():
+                win.editctrl.new(filename, encoding)
+            dlg.Destroy()
+    else:
+        common.showerror(win, tr("Can't open the path [%s]!") % path)
+        del win.pref.recent_paths[index]
+        win.pref.save()
+        return
+
+def add_tool_list(toollist, toolbaritems):
+    toollist.extend([
+        (115, 'openpath'),
+    ])
+
+    #order, IDname, imagefile, short text, long text, func
+    toolbaritems.update({
+        'openpath':(wx.ITEM_NORMAL, 'IDM_FILE_OPEN_PATH', 'images/paths.gif', tr('open path'), tr('Open path'), 'OnFileOpenPath'),
+    })
+Mixin.setPlugin('mainframe', 'add_tool_list', add_tool_list)
+
+def OnFileOpenPath(win, event):
+    eid = event.GetId()
+    size = win.toolbar.GetToolSize()
+    pos = win.toolbar.GetToolPos(eid)
+    menu = wx.Menu()
+
+    if len(win.pref.recent_paths) == 0:
+        id = win.IDM_FILE_RECENTPATHS_ITEMS
+        menu.Append(id, tr('(empty)'))
+        menu.Enable(id, False)
+    else:
+        for i, path in enumerate(win.pref.recent_paths):
+            id = win.recentpathmenu_ids[i]
+            menu.Append(id, "%d %s" % (i+1, path))
+    win.PopupMenu(menu, (size[0]*pos, size[1]))
+    menu.Destroy()
+Mixin.setMixin('mainframe', 'OnFileOpenPath', OnFileOpenPath)

@@ -53,27 +53,17 @@ class RegexWindow(wx.Panel):
         
         find_title = wx.StaticBox(self, -1, tr("Methods"))
         box2 = wx.StaticBoxSizer(find_title, wx.VERTICAL)
-        self.rdoFindFirst = wx.RadioButton( self, -1, tr("Find First"), style = wx.RB_GROUP)
-        self.rdoFindAll = wx.RadioButton( self, -1, tr("Find All"))
+        self.rdoFindFirst = wx.RadioButton( self, -1, tr("Find First") + ':', style = wx.RB_GROUP)
+        self.rdoFindAll = wx.RadioButton( self, -1, tr("Find All") + ':')
         box2.Add(self.rdoFindFirst, 0, wx.ALL|wx.ALIGN_CENTER_VERTICAL, 2)
         box2.Add(self.rdoFindAll, 0, wx.ALL|wx.ALIGN_CENTER_VERTICAL, 2)
         sizer1.Add(box2, 0, wx.EXPAND|wx.RIGHT, 4)
         
-        from_title = wx.StaticBox(self, -1, tr("From"))
-        box3 = wx.StaticBoxSizer(from_title, wx.VERTICAL)
-        self.rdoFromBeginning = wx.RadioButton( self, -1, tr("From beginning"), style = wx.RB_GROUP)
-        self.rdoFromCaret = wx.RadioButton( self, -1, tr("From caret"))
-        self.rdoInSelection = wx.RadioButton( self, -1, tr("In Selection"))
-        box3.Add(self.rdoFromBeginning, 0, wx.ALL|wx.ALIGN_CENTER_VERTICAL, 2)
-        box3.Add(self.rdoFromCaret, 0, wx.ALL|wx.ALIGN_CENTER_VERTICAL, 2)
-        box3.Add(self.rdoInSelection, 0, wx.ALL|wx.ALIGN_CENTER_VERTICAL, 2)
-        sizer1.Add(box3, 0, wx.EXPAND|wx.RIGHT, 4)
-
         flag_title = wx.StaticBox(self, -1, tr("Flags"))
-        box4 = wx.StaticBoxSizer(flag_title, wx.VERTICAL)
+        box3 = wx.StaticBoxSizer(flag_title, wx.VERTICAL)
         grid1 = wx.FlexGridSizer(0, 2, 0, 0)
-        box4.Add(grid1, 1, wx.EXPAND|wx.ALL, 2)
-        sizer1.Add(box4, 0, wx.EXPAND|wx.RIGHT, 4)
+        box3.Add(grid1, 1, wx.EXPAND|wx.ALL, 2)
+        sizer1.Add(box3, 0, wx.EXPAND|wx.RIGHT, 4)
         
         groups = [
             ('ignore', tr("Ignore Case(I)"), re.I, 're.I'),
@@ -150,29 +140,17 @@ class RegexWindow(wx.Panel):
             method = 'findall'
         else:
             method = 'search'
-        mobj = getattr(r, method)(self.get_document_text())
+        mobj = getattr(r, method)(Globals.mainframe.document.GetText())
         if mobj:
             if method == 'search':
                 self.load(mobj)
                 self.set_result(mobj.group())
             else:
                 self.load()
-                if mobj:
-                    if isinstance(mobj[0], tuple):
-                        mobj = ['\t'.join(x) for x in mobj]
                 self.set_result('\n'.join(mobj))
         else:
             self.set_error('Error: Nothing Found!')
-    
-    def get_document_text(self):
-        document = Globals.mainframe.document
-        if self.rdoFromBeginning.GetValue():
-            return document.GetText()
-        elif self.rdoFromCaret.GetValue():
-            return document.GetTextRange(document.GetCurrentPos(), document.GetTextLength())
-        else:
-            return document.GetSelectedText()
-
+         
     def set_result(self, text=''):
         self.matches.Clear()
         self.matches.WriteText(text)

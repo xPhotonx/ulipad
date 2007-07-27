@@ -19,7 +19,7 @@
 #   along with this program; if not, write to the Free Software
 #   Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 #
-#   $Id: mCase.py 1874 2007-01-29 00:47:08Z limodou $
+#   $Id: mCase.py 1566 2006-10-09 04:44:08Z limodou $
 
 __doc__ = 'uppercase and lowercase processing'
 
@@ -57,30 +57,20 @@ def add_editor_menu(popmenulist):
 Mixin.setPlugin('editor', 'add_menu', add_editor_menu)
 
 def OnEditCaseUpperCase(win, event):
-    text = win.document.GetSelectedText()
-    if len(text) > 0:
-        text = text.upper()
-        win.document.BeginUndoAction()
-        win.document.ReplaceSelection(text)
-        win.document.EndUndoAction()
+    win.document.CmdKeyExecute(wx.stc.STC_CMD_UPPERCASE)
 Mixin.setMixin('mainframe', 'OnEditCaseUpperCase', OnEditCaseUpperCase)
 
 def OnEditCaseLowerCase(win, event):
-    text = win.document.GetSelectedText()
-    if len(text) > 0:
-        text = text.lower()
-        win.document.BeginUndoAction()
-        win.document.ReplaceSelection(text)
-        win.document.EndUndoAction()
+    win.document.CmdKeyExecute(wx.stc.STC_CMD_LOWERCASE)
 Mixin.setMixin('mainframe', 'OnEditCaseLowerCase', OnEditCaseLowerCase)
 
 def OnEditCaseInvertCase(win, event):
     text = win.document.GetSelectedText()
-    if len(text) > 0:
-        text = text.swapcase()
-        win.document.BeginUndoAction()
-        win.document.ReplaceSelection(text)
-        win.document.EndUndoAction()
+    if len(text) == 0:
+        text = win.document.GetCharAt(win.document.GetCurrentPos())
+    text = text.swapcase()
+    win.document.CmdKeyExecute(wx.stc.STC_CMD_CLEAR)
+    win.document.AddText(text)
 Mixin.setMixin('mainframe', 'OnEditCaseInvertCase', OnEditCaseInvertCase)
 
 def OnEditCaseCapitalize(win, event):
@@ -98,9 +88,7 @@ def OnEditCaseCapitalize(win, event):
                     word = False
             s.append(ch)
         text = ''.join(s)
-        win.document.BeginUndoAction()
         win.document.ReplaceSelection(text)
-        win.document.EndUndoAction()
 Mixin.setMixin('mainframe', 'OnEditCaseCapitalize', OnEditCaseCapitalize)
 
 def OnCaseUpperCase(win, event):

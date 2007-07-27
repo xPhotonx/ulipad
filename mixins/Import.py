@@ -19,6 +19,7 @@
 #   along with this program; if not, write to the Free Software
 #   Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 #
+#   $Id: Import.py 1638 2006-10-23 13:32:45Z limodou $
 
 
 #-----------------------  mMainFrame.py ------------------
@@ -60,12 +61,10 @@ Mixin.setPlugin('mainframe', 'add_menu', add_mainframe_menu)
 
 def beforegui(win):
     import Preference
-    from modules import Globals
 
     win.pref = Preference.Preference()
     win.pref.load()
     win.pref.printValues()
-    Globals.pref = win.pref
 Mixin.setPlugin('app', 'beforegui', beforegui, Mixin.HIGH)
 
 def OnOptionPreference(win, event):
@@ -302,8 +301,7 @@ def SaveFile(win, ctrl, issaveas=False):
 
     if issaveas or len(ctrl.filename)<=0:
         encoding = win.execplugin('getencoding', win, win)
-        filename = get_suffix_filename(ctrl, ctrl.getFilename())
-        dlg = wx.FileDialog(win, tr("Save File %s As") % filename, win.pref.last_dir, filename, '|'.join(win.filewildchar), wx.SAVE|wx.OVERWRITE_PROMPT)
+        dlg = wx.FileDialog(win, tr("Save File %s As") % ctrl.getFilename(), win.pref.last_dir, '', '|'.join(win.filewildchar), wx.SAVE|wx.OVERWRITE_PROMPT)
         dlg.SetFilterIndex(getFilterIndex(win))
         if (dlg.ShowModal() == wx.ID_OK):
             filename = dlg.GetPath()
@@ -322,21 +320,6 @@ def SaveFile(win, ctrl, issaveas=False):
 
     return win.editctrl.savefile(ctrl, filename, encoding)
 Mixin.setMixin('mainframe', 'SaveFile', SaveFile)
-
-def get_suffix_filename(editor, filename):
-    fname, ext = os.path.splitext(filename)
-    if not ext:
-        if hasattr(editor, 'lexer'):
-            wildchar = editor.lexer.getFilewildchar()
-            pos = wildchar.find('|')
-            if pos > -1:
-                suffix = wildchar[pos+1:].split(';', 1)[0]
-                suffix = suffix.replace('*', '')
-                if suffix:
-                    if not suffix.startswith('.'):
-                        suffix = '.' + suffix
-                    return fname + suffix
-    return filename
 
 def pref_init(pref):
     pref.last_dir = ''
@@ -375,7 +358,7 @@ def OnOpenCmdWindow(win, event=None):
         filename = os.path.dirname(filename)
     if wx.Platform == '__WXMSW__':
         cmdline = os.environ['ComSpec']
-        os.spawnl(os.P_NOWAIT, cmdline,r" /k %s && cd %s" % (os.path.split(filename)[0][:2], filename))
+        os.spawnl(os.P_NOWAIT, cmdline, r"cmd.exe /k cd %s" % filename)
     else:
         common.showerror(win, tr('This features is only implemented in Windows Platform.\nIf you know how to implement in Linux please tell me.'))
 Mixin.setMixin('editctrl', 'OnOpenCmdWindow', OnOpenCmdWindow)
@@ -625,7 +608,7 @@ def OnEditSelectionMatchLeft(win, event):
     pos = win.document.GetCurrentPos()
     text = win.document.getRawText()
 
-    token = [('\'', '\''), ('"', '"'), ('(', ')'), ('[', ']'), ('{', '}'), ('<', '>'), ('`', '`')]
+    token = [('\'', '\''), ('"', '"'), ('(', ')'), ('[', ']'), ('{', '}'), ('<', '>')]
     start, match = findLeft(text, pos, token)
     if start > -1:
         end, match = findRight(text, pos, token, match)
@@ -774,7 +757,6 @@ def add_tool_list(toollist, toolbaritems):
         (100, 'new'),
         (110, 'open'),
         (120, 'save'),
-        (121, 'saveall'),
         (130, '|'),
         (140, 'cut'),
         (150, 'copy'),
@@ -792,7 +774,6 @@ def add_tool_list(toollist, toolbaritems):
         'new':(wx.ITEM_NORMAL, 'IDM_FILE_NEW', 'images/new.gif', tr('new'), tr('Creates a new document'), 'OnFileNew'),
         'open':(wx.ITEM_NORMAL, 'IDM_FILE_OPEN', 'images/open.gif', tr('open'), tr('Opens an existing document'), 'OnFileOpen'),
         'save':(wx.ITEM_NORMAL, 'IDM_FILE_SAVE', 'images/save.gif', tr('save'), tr('Saves an opened document using the same filename'), 'OnFileSave'),
-        'saveall':(wx.ITEM_NORMAL, 'IDM_FILE_SAVE_ALL', 'images/saveall.gif', tr('save all'), tr('Saves all documents'), 'OnFileSaveAll'),
         'cut':(wx.ITEM_NORMAL, 'IDM_EDIT_CUT', 'images/cut.gif', tr('cut'), tr('Deletes text from the document and moves it to the clipboard'), 'DoSTCBuildIn'),
         'copy':(wx.ITEM_NORMAL, 'IDM_EDIT_COPY', 'images/copy.gif', tr('copy'), tr('Copies text from the document to the clipboard'), 'DoSTCBuildIn'),
         'paste':(wx.ITEM_NORMAL, 'IDM_EDIT_PASTE', 'images/paste.gif', tr('paste'), tr('Pastes text from the clipboard into the document'), 'DoSTCBuildIn'),
@@ -835,13 +816,16 @@ def add_mainframe_menu(menulist):
     menulist.extend([('IDM_FILE',
         [
             (130, 'IDM_FILE_RECENTFILES', tr('Open Recent Files'), wx.ITEM_NORMAL, 'OnOpenRecentFiles', 'Opens recent files.'),
+            (135, 'IDM_FILE_RECENTPATHS', tr('Open Recent Paths'), wx.ITEM_NORMAL, 'OnOpenRecentPaths', 'Opens recent paths.'),
         ]),
     ])
 Mixin.setPlugin('mainframe', 'add_menu', add_mainframe_menu)
 
 def pref_init(pref):
     pref.recent_files = []
-    pref.recent_files_num = 20
+    pref.recent_files_num = 10
+    pref.recent_paths = []
+    pref.recent_paths_num = 10
 Mixin.setPlugin('preference', 'init', pref_init)
 
 def afteropenfile(win, filename):
@@ -855,6 +839,12 @@ def afteropenfile(win, filename):
         win.pref.recent_files = win.pref.recent_files[:win.pref.recent_files_num]
         win.pref.last_dir = os.path.dirname(filename)
 
+        #deal recent path
+        path = os.path.dirname(filename)
+        if path in win.pref.recent_paths:
+            win.pref.recent_paths.remove(path)
+        win.pref.recent_paths.insert(0, path)
+        win.pref.recent_paths = win.pref.recent_paths[:win.pref.recent_paths_num]
 
         #save pref
         win.pref.save()
@@ -875,6 +865,19 @@ def OnOpenRecentFiles(win, event=None):
     win.PopupMenu(menu)
 Mixin.setMixin('mainframe', 'OnOpenRecentFiles', OnOpenRecentFiles)
 
+def OnOpenRecentPaths(win, event=None):
+    menu = wx.Menu()
+    pref = win.pref
+    for index, filename in enumerate(pref.recent_paths):
+        def OnFunc(event, index=index):
+            open_recent_paths(win, index)
+
+        _id = wx.NewId()
+        item = wx.MenuItem(menu, _id, filename, filename)
+        wx.EVT_MENU(win, _id, OnFunc)
+        menu.AppendItem(item)
+    win.PopupMenu(menu)
+Mixin.setMixin('mainframe', 'OnOpenRecentPaths', OnOpenRecentPaths)
 
 def open_recent_files(win, index):
     filename = win.pref.recent_files[index]
@@ -888,6 +891,50 @@ def open_recent_files(win, index):
         return
     win.editctrl.new(filename)
 
+def open_recent_paths(win, index):
+    path = win.pref.recent_paths[index]
+    if os.path.exists(path) and os.path.isdir(path):
+        dlg = wx.FileDialog(win, tr("Open"), path, "", '|'.join(win.filewildchar), wx.OPEN|wx.HIDE_READONLY|wx.MULTIPLE)
+        dlg.SetFilterIndex(win.getFilterIndex())
+        if dlg.ShowModal() == wx.ID_OK:
+            encoding = win.execplugin('getencoding', win, win)
+            for filename in dlg.GetPaths():
+                win.editctrl.new(filename, encoding)
+            dlg.Destroy()
+    else:
+        common.showerror(win, tr("Can't open the path [%s]!") % path)
+        del win.pref.recent_paths[index]
+        win.pref.save()
+        return
+
+def add_tool_list(toollist, toolbaritems):
+    toollist.extend([
+        (115, 'openpath'),
+    ])
+
+    #order, IDname, imagefile, short text, long text, func
+    toolbaritems.update({
+        'openpath':(wx.ITEM_NORMAL, 'IDM_FILE_OPEN_PATH', 'images/paths.gif', tr('open path'), tr('Open path'), 'OnFileOpenPath'),
+    })
+Mixin.setPlugin('mainframe', 'add_tool_list', add_tool_list)
+
+def OnFileOpenPath(win, event):
+    eid = event.GetId()
+    size = win.toolbar.GetToolSize()
+    pos = win.toolbar.GetToolPos(eid)
+    menu = wx.Menu()
+
+    if len(win.pref.recent_paths) == 0:
+        id = win.IDM_FILE_RECENTPATHS_ITEMS
+        menu.Append(id, tr('(empty)'))
+        menu.Enable(id, False)
+    else:
+        for i, path in enumerate(win.pref.recent_paths):
+            id = win.recentpathmenu_ids[i]
+            menu.Append(id, "%d %s" % (i+1, path))
+    win.PopupMenu(menu, (size[0]*pos, size[1]))
+    menu.Destroy()
+Mixin.setMixin('mainframe', 'OnFileOpenPath', OnFileOpenPath)
 
 
 
@@ -944,7 +991,6 @@ def afterinit(win):
     import FindReplaceDialog
 
     win.finder = FindReplaceDialog.Finder()
-    win.finddialog = None
 Mixin.setPlugin('mainframe', 'afterinit', afterinit)
 
 def on_set_focus(win, event):
@@ -956,15 +1002,14 @@ def on_document_enter(win, document):
 Mixin.setPlugin('editctrl', 'on_document_enter', on_document_enter)
 
 def OnSearchFind(win, event):
-    if not win.finddialog:
-        from modules import Resource
-        from modules import i18n
-        import FindReplaceDialog
+    from modules import Resource
+    from modules import i18n
+    import FindReplaceDialog
 
-        findresfile = common.uni_work_file('resources/finddialog.xrc')
-        filename = i18n.makefilename(findresfile, win.app.i18n.lang)
-        win.finddialog = dlg = Resource.loadfromresfile(filename, win, FindReplaceDialog.FindDialog, 'FindDialog', win.finder)
-        dlg.Show()
+    findresfile = common.uni_work_file('resources/finddialog.xrc')
+    filename = i18n.makefilename(findresfile, win.app.i18n.lang)
+    dlg = Resource.loadfromresfile(filename, win, FindReplaceDialog.FindDialog, 'FindDialog', win.finder)
+    dlg.Show()
 Mixin.setMixin('mainframe', 'OnSearchFind', OnSearchFind)
 
 def OnSearchDirectFind(win, event):
@@ -1073,7 +1118,6 @@ Mixin.setPlugin('editctrl', 'on_document_enter', on_document_enter)
 
 import wx
 from modules import Mixin
-import re
 
 eolmess = [tr(r"Unix Mode ('\n')"), tr(r"DOS/Windows Mode ('\r\n')"), tr(r"Mac Mode ('\r')")]
 
@@ -1082,7 +1126,6 @@ def beforeinit(win):
     win.eolmode = win.pref.default_eol_mode
     win.eols = {0:wx.stc.STC_EOL_LF, 1:wx.stc.STC_EOL_CRLF, 2:wx.stc.STC_EOL_CR}
     win.eolstr = {0:'Unix', 1:'Win', 2:'Mac'}
-    win.eolstring = {0:'\n', 1:'\r\n', 2:'\r'}
     win.eolmess = eolmess
     win.SetEOLMode(win.eols[win.eolmode])
 Mixin.setPlugin('editor', 'init', beforeinit)
@@ -1117,13 +1160,7 @@ Mixin.setPlugin('mainframe', 'add_menu', add_mainframe_menu)
 def setEOLMode(win, mode):
     win.lineendingsaremixed = False
     win.eolmode = mode
-    state = win.save_state()
-    win.BeginUndoAction()
-    text = win.GetText()
-    text = re.sub(r'\r\n|\r|\n', win.eolstring[mode], text)
-    win.SetText(text)
-    win.EndUndoAction()
-    win.restore_state(state)
+    win.ConvertEOLs(win.eols[mode])
     win.SetEOLMode(win.eols[mode])
     win.mainframe.SetStatusText(win.eolstr[mode], 3)
 
@@ -1168,12 +1205,17 @@ def afteropenfile(win, filename):
             tr("Mixed Line Ending"), wx.YES_NO | wx.ICON_QUESTION)
         if d.ShowModal() == wx.ID_YES:
             setEOLMode(win, win.pref.default_eol_mode)
+            win.savefile(win.filename, win.locale)
     if win.lineendingsaremixed == False:
         eolmodestr = win.eolstr[win.eolmode]
     win.mainframe.SetStatusText(eolmodestr, 3)
     win.SetEOLMode(win.eolmode)
 Mixin.setPlugin('editor', 'afteropenfile', afteropenfile)
 
+def savefile(win, filename):
+    if not win.lineendingsaremixed:
+        setEOLMode(win, win.eolmode)
+Mixin.setPlugin('editor', 'savefile', savefile)
 
 def on_document_enter(win, document):
     if document.edittype == 'edit':
@@ -1195,6 +1237,7 @@ def getEndOfLineCharacter(character):
 
 import wx
 from modules import Mixin
+from modules import common
 
 def add_mainframe_menu(menulist):
     menulist.extend([ (None,
@@ -1206,7 +1249,6 @@ def add_mainframe_menu(menulist):
             (100, 'IDM_VIEW_TAB', tr('Tabs And Spaces'), wx.ITEM_CHECK, 'OnViewTab', tr('Shows or hides space and tab marks')),
             (110, 'IDM_VIEW_INDENTATION_GUIDES', tr('Indentation Guides'), wx.ITEM_CHECK, 'OnViewIndentationGuides', tr('Shows or hides indentation guides')),
             (120, 'IDM_VIEW_RIGHT_EDGE', tr('Right edge indicator'), wx.ITEM_CHECK, 'OnViewRightEdge', tr('Shows or hides right edge indicator')),
-            (130, 'IDM_VIEW_LINE_NUMBER', tr('Line number'), wx.ITEM_CHECK, 'OnViewLineNumber', tr('Shows or hides line number')),
         ]),
     ])
 Mixin.setPlugin('mainframe', 'add_menu', add_mainframe_menu)
@@ -1215,7 +1257,6 @@ def afterinit(win):
     wx.EVT_UPDATE_UI(win, win.IDM_VIEW_TAB, win.OnUpdateUI)
     wx.EVT_UPDATE_UI(win, win.IDM_VIEW_INDENTATION_GUIDES, win.OnUpdateUI)
     wx.EVT_UPDATE_UI(win, win.IDM_VIEW_RIGHT_EDGE, win.OnUpdateUI)
-    wx.EVT_UPDATE_UI(win, win.IDM_VIEW_LINE_NUMBER, win.OnUpdateUI)
 Mixin.setPlugin('mainframe', 'afterinit', afterinit)
 
 def editor_init(win):
@@ -1236,10 +1277,6 @@ def editor_init(win):
 
     #show indentation guides
     win.SetIndentationGuides(win.mainframe.pref.startup_show_indent_guide)
-
-    win.mwidth = 0     #max line number
-    win.show_linenumber = win.mainframe.pref.startup_show_linenumber
-    setLineNumberMargin(win, win.show_linenumber)
 Mixin.setPlugin('editor', 'init', editor_init)
 
 def OnViewTab(win, event):
@@ -1259,15 +1296,13 @@ def pref_init(pref):
     pref.startup_show_tabs = False
     pref.startup_show_indent_guide = False
     pref.startup_show_longline = False
-    pref.startup_show_linenumber = True
 Mixin.setPlugin('preference', 'init', pref_init)
 
 def add_pref(preflist):
     preflist.extend([
         (tr('Document'), 110, 'check', 'startup_show_tabs', tr('Whitespace is visible on startup'), None),
-        (tr('Document'), 115, 'check', 'startup_show_indent_guide', tr('Indentation guides are visible on startup'), None),
+        (tr('Document'), 115, 'check', 'startup_show_indent_guide', tr('Indentation guides is visible on startup'), None),
         (tr('Document'), 120, 'check', 'startup_show_longline', tr('Long line indicator is visible on startup'), None),
-        (tr('Document'), 125, 'check', 'startup_show_linenumber', tr('Show line number on startup'), None),
         (tr('Document'), 130, 'num', 'edge_column_width', tr('Long line indicator column'), None),
     ])
 Mixin.setPlugin('preference', 'add_pref', add_pref)
@@ -1286,11 +1321,6 @@ def OnViewRightEdge(win, event):
         k = wx.stc.STC_EDGE_NONE
     win.document.SetEdgeMode(k)
 Mixin.setMixin('mainframe', 'OnViewRightEdge', OnViewRightEdge)
-
-def OnViewLineNumber(win, event):
-    win.document.show_linenumber = not win.document.show_linenumber
-    setLineNumberMargin(win.document, win.document.show_linenumber)
-Mixin.setMixin('mainframe', 'OnViewLineNumber', OnViewLineNumber)
 
 
 def on_mainframe_updateui(win, event):
@@ -1312,9 +1342,6 @@ def on_mainframe_updateui(win, event):
                 event.Check(False)
             else:
                 event.Check(True)
-        elif eid == win.IDM_VIEW_LINE_NUMBER:
-            event.Check(win.document.show_linenumber)
-
     else:
         if eid in [win.IDM_VIEW_TAB, win.IDM_VIEW_INDENTATION_GUIDES, win.IDM_VIEW_RIGHT_EDGE]:
             event.Enable(False)
@@ -1331,29 +1358,6 @@ def add_tool_list(toollist, toolbaritems):
         'viewtab':(wx.ITEM_CHECK, 'IDM_VIEW_TAB', 'images/format.gif', tr('toggle white space'), tr('Shows or hides space and tab marks'), 'OnViewTab'),
     })
 Mixin.setPlugin('mainframe', 'add_tool_list', add_tool_list)
-
-def on_modified(win, event):
-    _updatge_linenumber(win, win.show_linenumber)
-Mixin.setPlugin('editor', 'on_modified', on_modified)
-
-def _updatge_linenumber(win, flag, beginlines=None):
-    if flag:
-        lines = win.GetLineCount() #get # of lines, ensure text is loaded first!
-        mwidth = len(str(lines))
-        if beginlines is not None:
-            win.mwidth = beginlines
-        if win.mwidth < mwidth:
-            win.mwidth = mwidth
-            width = win.TextWidth(wx.stc.STC_STYLE_LINENUMBER, 'O'*(win.mwidth+1))
-            win.SetMarginType(1, wx.stc.STC_MARGIN_NUMBER )
-            win.SetMarginWidth(1, width)
-
-def setLineNumberMargin(win, flag=True):
-    if flag:
-        _updatge_linenumber(win, flag, -1)
-    else:
-        win.SetMarginWidth(1, 0)
-
 
 
 
@@ -1395,9 +1399,9 @@ def add_editor_menu(popmenulist):
         ('IDPM_FORMAT',
         [
             (100, 'IDPM_FORMAT_CHOP', tr('Trim Trailing Spaces'), wx.ITEM_NORMAL, 'OnFormatChop', tr('Trims trailing white spaces')),
-            (110, 'IDPM_FORMAT_SPACETOTAB', tr('Convert Leading Spaces To Tabs'), wx.ITEM_NORMAL, 'OnFormatSpaceToTab', tr('Converts leading spaces to tabs')),
-            (120, 'IDPM_FORMAT_TABTOSPACE', tr('Convert Leading Tabs To Spaces'), wx.ITEM_NORMAL, 'OnFormatTabToSpace', tr('Converts leading tabs to spaces')),
-            (125, 'IDPM_FORMAT_ALLTABTOSPACE', tr('Convert ALL Tabs To Spaces'), wx.ITEM_NORMAL, 'OnFormatAllTabToSpace', tr('Converts all tabs to spaces')),
+            (110, 'IDPM_FORMAT_SPACETOTAB', tr('Leading Spaces to Tabs'), wx.ITEM_NORMAL, 'OnFormatSpaceToTab', tr('Converts leading spaces to tabs')),
+            (120, 'IDPM_FORMAT_TABTOSPACE', tr('Leading Tabs To Spaces'), wx.ITEM_NORMAL, 'OnFormatTabToSpace', tr('Converts leading tabs to spaces')),
+            (125, 'IDPM_FORMAT_ALLTABTOSPACE', tr('ALL Tabs To Spaces'), wx.ITEM_NORMAL, 'OnFormatAllTabToSpace', tr('Converts all tabs to spaces')),
             (130, '', '-', wx.ITEM_SEPARATOR, None, ''),
             (140, 'IDPM_FORMAT_INDENT', tr('Increase Indent'), wx.ITEM_NORMAL, 'OnFormatIndent', tr('Increases the indentation of current line or selected block')),
             (150, 'IDPM_FORMAT_UNINDENT', tr('Decrease Indent'), wx.ITEM_NORMAL, 'OnFormatUnindent', tr('Decreases the indentation of current line or selected block')),
@@ -1405,8 +1409,8 @@ def add_editor_menu(popmenulist):
             (170, 'IDPM_FORMAT_COMMENT', tr('Line Comment...') + '\tCtrl+/', wx.ITEM_NORMAL, 'OnFormatComment', tr('Inserts comment sign at the beginning of line')),
             (180, 'IDPM_FORMAT_UNCOMMENT', tr('Line Uncomment...') + '\tCtrl+\\', wx.ITEM_NORMAL, 'OnFormatUncomment', tr('Removes comment sign at the beginning of line')),
             (190, '', '-', wx.ITEM_SEPARATOR, None, ''),
-            (200, 'IDPM_FORMAT_QUOTE', tr('Text Quote...') + '\tCtrl+\'', wx.ITEM_NORMAL, 'OnFormatQuote', tr('Quote selected text')),
-            (210, 'IDPM_FORMAT_UNQUOTE', tr('Text Unquote...') + '\tCtrl+Shift+\'', wx.ITEM_NORMAL, 'OnFormatUnquote', tr('Unquote selected text')),
+            (200, 'IDPM_FORMAT_QUOTE', tr('Text Quote...') + '\tCtrl+Q', wx.ITEM_NORMAL, 'OnFormatQuote', tr('Quote selected text')),
+            (210, 'IDPM_FORMAT_UNQUOTE', tr('Text Unquote...') + '\tCtrl+Shift+Q', wx.ITEM_NORMAL, 'OnFormatUnquote', tr('Unquote selected text')),
         ]),
     ])
 Mixin.setPlugin('editor', 'add_menu', add_editor_menu)
@@ -1426,27 +1430,19 @@ def add_editor_menu_image_list(imagelist):
 Mixin.setPlugin('editor', 'add_menu_image_list', add_editor_menu_image_list)
 
 def OnEditFormatIndent(win, event):
-    win.document.BeginUndoAction()
     win.document.CmdKeyExecute(wx.stc.STC_CMD_TAB)
-    win.document.EndUndoAction()
 Mixin.setMixin('mainframe', 'OnEditFormatIndent', OnEditFormatIndent)
 
 def OnEditFormatUnindent(win, event):
-    win.document.BeginUndoAction()
     win.document.CmdKeyExecute(wx.stc.STC_CMD_BACKTAB)
-    win.document.EndUndoAction()
 Mixin.setMixin('mainframe', 'OnEditFormatUnindent', OnEditFormatUnindent)
 
 def OnFormatIndent(win, event):
-    win.BeginUndoAction()
     win.CmdKeyExecute(wx.stc.STC_CMD_TAB)
-    win.EndUndoAction()
 Mixin.setMixin('editor', 'OnFormatIndent', OnFormatIndent)
 
 def OnFormatUnindent(win, event):
-    win.BeginUndoAction()
     win.CmdKeyExecute(wx.stc.STC_CMD_BACKTAB)
-    win.EndUndoAction()
 Mixin.setMixin('editor', 'OnFormatUnindent', OnFormatUnindent)
 
 def OnFormatQuote(win, event):
@@ -1460,13 +1456,11 @@ Mixin.setMixin('editor', 'OnFormatUnquote', OnFormatUnquote)
 def pref_init(pref):
     pref.tabwidth = 4
     pref.last_comment_chars = '#'
-    pref.show_comment_chars_dialog = False
 Mixin.setPlugin('preference', 'init', pref_init)
 
 def add_pref(preflist):
     preflist.extend([
         (tr('Document'), 140, 'num', 'tabwidth', tr('Tab width:'), None),
-        (tr('Document'), 145, 'check', 'show_comment_chars_dialog', tr('Show comment character dialog when adding comment'), None),
     ])
 Mixin.setPlugin('preference', 'add_pref', add_pref)
 
@@ -1522,26 +1516,21 @@ def get_document_comment_chars(mainframe):
     return cchar
 
 def OnEditFormatComment(win, event):
-    if win.pref.show_comment_chars_dialog:
-        from modules import Entry
+    from modules import Entry
 
-        dlg = Entry.MyTextEntry(win, tr("Comment..."), tr("Comment Char:"), get_document_comment_chars(win))
-        answer = dlg.ShowModal()
-        if answer == wx.ID_OK:
-            commentchar = dlg.GetValue()
-            if len(commentchar) == 0:
-                return
-        else:
+    dlg = Entry.MyTextEntry(win, tr("Comment..."), tr("Comment Char:"), get_document_comment_chars(win))
+    answer = dlg.ShowModal()
+    if answer == wx.ID_OK:
+        commentchar = dlg.GetValue()
+        if len(commentchar) == 0:
             return
-    else:
-        commentchar = get_document_comment_chars(win)
-    win.pref.last_comment_chars = commentchar
-    win.pref.save()
-    win.document.BeginUndoAction()
-    for i in win.document.getSelectionLines():
-        text = win.document.getLineText(i)
-        win.document.replaceLineText(i, commentchar + text)
-    win.document.EndUndoAction()
+        win.pref.last_comment_chars = commentchar
+        win.pref.save()
+        win.document.BeginUndoAction()
+        for i in win.document.getSelectionLines():
+            text = win.document.getLineText(i)
+            win.document.replaceLineText(i, commentchar + text)
+        win.document.EndUndoAction()
 Mixin.setMixin('mainframe', 'OnEditFormatComment', OnEditFormatComment)
 
 def OnFormatComment(win, event):
@@ -1549,27 +1538,22 @@ def OnFormatComment(win, event):
 Mixin.setMixin('editor', 'OnFormatComment', OnFormatComment)
 
 def OnEditFormatUncomment(win, event):
-    if win.pref.show_comment_chars_dialog:
-        from modules import Entry
+    from modules import Entry
 
-        dlg = Entry.MyTextEntry(win, tr("Comment..."), tr("Comment Char:"), get_document_comment_chars(win))
-        answer = dlg.ShowModal()
-        if answer == wx.ID_OK:
-            commentchar = dlg.GetValue()
-            if len(commentchar) == 0:
-                return
-        else:
+    dlg = Entry.MyTextEntry(win, tr("Comment..."), tr("Comment Char:"), get_document_comment_chars(win))
+    answer = dlg.ShowModal()
+    if answer == wx.ID_OK:
+        commentchar = dlg.GetValue()
+        if len(commentchar) == 0:
             return
-    else:
-        commentchar = get_document_comment_chars(win)
-    win.pref.last_comment_chars = commentchar
-    win.pref.save()
-    win.document.BeginUndoAction()
-    for i in win.document.getSelectionLines():
-        text = win.document.getLineText(i)
-        if text.startswith(commentchar):
-            win.document.replaceLineText(i, text[len(commentchar):])
-    win.document.EndUndoAction()
+        win.pref.last_comment_chars = commentchar
+        win.pref.save()
+        win.document.BeginUndoAction()
+        for i in win.document.getSelectionLines():
+            text = win.document.getLineText(i)
+            if text.startswith(commentchar):
+                win.document.replaceLineText(i, text[len(commentchar):])
+        win.document.EndUndoAction()
 Mixin.setMixin('mainframe', 'OnEditFormatUncomment', OnEditFormatUncomment)
 
 def OnFormatUncomment(win, event):
@@ -1747,30 +1731,20 @@ def add_editor_menu(popmenulist):
 Mixin.setPlugin('editor', 'add_menu', add_editor_menu)
 
 def OnEditCaseUpperCase(win, event):
-    text = win.document.GetSelectedText()
-    if len(text) > 0:
-        text = text.upper()
-        win.document.BeginUndoAction()
-        win.document.ReplaceSelection(text)
-        win.document.EndUndoAction()
+    win.document.CmdKeyExecute(wx.stc.STC_CMD_UPPERCASE)
 Mixin.setMixin('mainframe', 'OnEditCaseUpperCase', OnEditCaseUpperCase)
 
 def OnEditCaseLowerCase(win, event):
-    text = win.document.GetSelectedText()
-    if len(text) > 0:
-        text = text.lower()
-        win.document.BeginUndoAction()
-        win.document.ReplaceSelection(text)
-        win.document.EndUndoAction()
+    win.document.CmdKeyExecute(wx.stc.STC_CMD_LOWERCASE)
 Mixin.setMixin('mainframe', 'OnEditCaseLowerCase', OnEditCaseLowerCase)
 
 def OnEditCaseInvertCase(win, event):
     text = win.document.GetSelectedText()
-    if len(text) > 0:
-        text = text.swapcase()
-        win.document.BeginUndoAction()
-        win.document.ReplaceSelection(text)
-        win.document.EndUndoAction()
+    if len(text) == 0:
+        text = win.document.GetCharAt(win.document.GetCurrentPos())
+    text = text.swapcase()
+    win.document.CmdKeyExecute(wx.stc.STC_CMD_CLEAR)
+    win.document.AddText(text)
 Mixin.setMixin('mainframe', 'OnEditCaseInvertCase', OnEditCaseInvertCase)
 
 def OnEditCaseCapitalize(win, event):
@@ -1788,9 +1762,7 @@ def OnEditCaseCapitalize(win, event):
                     word = False
             s.append(ch)
         text = ''.join(s)
-        win.document.BeginUndoAction()
         win.document.ReplaceSelection(text)
-        win.document.EndUndoAction()
 Mixin.setMixin('mainframe', 'OnEditCaseCapitalize', OnEditCaseCapitalize)
 
 def OnCaseUpperCase(win, event):
@@ -1850,7 +1822,7 @@ def add_mainframe_menu(menulist):
         [
             (100, 'IDM_DOCUMENT_WORDWRAP', tr('Word-wrap'), wx.ITEM_NORMAL, 'OnDocumentWordWrap', tr('Toggles the word wrap feature of the active document')),
             (110, 'IDM_DOCUMENT_AUTOINDENT', tr('Auto Indent'), wx.ITEM_CHECK, 'OnDocumentAutoIndent', tr('Toggles the auto-indent feature of the active document')),
-            (115, 'IDM_DOCUMENT_TABINDENT', tr('Switch to Space Indent'), wx.ITEM_NORMAL, 'OnDocumentTabIndent', tr('Uses tab as indent char or uses space as indent char.')),
+            (115, 'IDM_DOCUMENT_TABINDENT', tr('Use Tab Indent'), wx.ITEM_NORMAL, 'OnDocumentTabIndent', tr('Uses tab as indent char or uses space as indent char.')),
         ]),
     ])
 Mixin.setPlugin('mainframe', 'add_menu', add_mainframe_menu)
@@ -1897,10 +1869,6 @@ Mixin.setPlugin('mainframe', 'add_tool_list', add_tool_list)
 def editor_init(win):
     win.SetUseTabs(win.mainframe.pref.usetabs)
     win.usetab = win.mainframe.pref.usetabs
-    if win.pref.wordwrap:
-        win.SetWrapMode(wx.stc.STC_WRAP_WORD)
-    else:
-        win.SetWrapMode(wx.stc.STC_WRAP_NONE)
 Mixin.setPlugin('editor', 'init', editor_init)
 
 def OnKeyDown(win, event):
@@ -1970,9 +1938,9 @@ def on_mainframe_updateui(win, event):
                 from modules import makemenu
                 menu = makemenu.findmenu(win.menuitems, 'IDM_DOCUMENT_TABINDENT')
                 if win.document.usetab:
-                    menu.SetText(tr('Switch to Space Indent'))
+                    menu.SetText(tr('Use Tab Indent'))
                 else:
-                    menu.SetText(tr('Switch to Tab Indent'))
+                    menu.SetText(tr('Use Space Indent'))
             else:
                 event.Enable(False)
 Mixin.setPlugin('mainframe', 'on_update_ui', on_mainframe_updateui)
@@ -2099,11 +2067,8 @@ def savefileencoding(win, stext, encoding):
             win.locale = encoding
         except:
             error.traceback()
-            try:
-                s = text.encode(encoding, 'ignore')
-            except:
-                raise MyUnicodeException(win, tr("Cann't convert file to [%s] encoding!\nThe file cann't be saved!") % encoding,
-                    tr("Unicode Error"))
+            raise MyUnicodeException(win, tr("Cann't convert file to [%s] encoding!\nThe file cann't be saved!") % encoding,
+                tr("Unicode Error"))
     else:
         s = text
     stext[0] = s
@@ -2122,6 +2087,7 @@ def editor_init(win):
 
     win.SetMarginMask(0, ~wx.stc.STC_MASK_FOLDERS)
     win.MarkerDefine(0, wx.stc.STC_MARK_SHORTARROW, "blue", "blue")
+    win.bookmarks = []
 Mixin.setPlugin('editor', 'init', editor_init)
 
 def add_mainframe_menu(menulist):
@@ -2191,7 +2157,7 @@ Mixin.setPlugin('preference', 'init', pref_init)
 
 def add_pref(preflist):
     preflist.extend([
-        (tr('Document'), 180, 'check', 'use_folder', tr('Show code folding margin'), None),
+        (tr('Document'), 180, 'check', 'use_folder', tr('Use code fold'), None),
     ])
 Mixin.setPlugin('preference', 'add_pref', add_pref)
 
@@ -2271,7 +2237,7 @@ def FoldAll(win):
 
             if expanding:
                 win.SetFoldExpanded(lineNum, True)
-                lineNum = Expand(win, lineNum, True)
+                lineNum = win.Expand(lineNum, True)
                 lineNum = lineNum - 1
             else:
                 lastChild = win.GetLastChild(lineNum, -1)
@@ -2417,24 +2383,12 @@ def add_pref(preflist):
     ])
 Mixin.setPlugin('preference', 'add_pref', add_pref)
 
-def save_session(win):
-    if Globals.starting: return
+def afterclosewindow(win):
     win.pref.sessions, win.pref.last_tab_index = [], -1
     if win.pref.load_session:
         win.pref.sessions, win.pref.last_tab_index = gather_status()
     win.pref.save()
-
-def afterclosewindow(win):
-    save_session(win)
 Mixin.setPlugin('mainframe', 'afterclosewindow', afterclosewindow)
-
-def afterclosefile(win, *args):
-    save_session(win)
-Mixin.setPlugin('editctrl', 'afterclosefile', afterclosefile)
-
-def afternewfile(win, *args):
-    save_session(win.mainframe)
-Mixin.setPlugin('editctrl', 'afternewfile', afternewfile)
 
 def gather_status():
     sessions = []
@@ -2503,8 +2457,7 @@ def OnFileSessionOpen(win, event=None, filename=None):
     if filename:
         try:
             get_recent_session_file(win, filename)
-            d = obj2ini.load(filename)
-            sessions, last_file = d['sessions'], d['last_file']
+            sessions, last_file = obj2ini.load(filename)
             win.pref.sessions.extend(sessions)
             for v in sessions:
                 win.editctrl.new(v[0], delay=True)
@@ -2513,7 +2466,7 @@ def OnFileSessionOpen(win, event=None, filename=None):
                     wx.CallAfter(win.editctrl.switch, document, delay=False)
         except:
             error.traceback()
-            common.warn(tr('There are something wrong as loading session file.'))
+            common.warn(tr('There are something wrong as load session file.'))
 Mixin.setMixin('mainframe', 'OnFileSessionOpen', OnFileSessionOpen)
 
 def OnFileSessionSave(win, event=None):
@@ -2527,10 +2480,10 @@ def OnFileSessionSave(win, event=None):
             get_recent_session_file(win, filename)
             sessions, last_index = gather_status()
             last_file = win.editctrl.getDoc(last_index).filename
-            obj2ini.dump({'sessions':sessions, 'last_file':last_file}, filename)
+            obj2ini.dump((sessions, last_file), filename)
         except:
             error.traceback()
-            common.warn(tr('There are something wrong as saving session file.'))
+            common.warn(tr('There are something wrong as load session file.'))
 Mixin.setMixin('mainframe', 'OnFileSessionSave', OnFileSessionSave)
 
 def afterinit(win):
@@ -2672,7 +2625,7 @@ from modules import Calltip
 CALLTIP_DUPLICATE = 1
 
 def pref_init(pref):
-    pref.duplicate_extend_mode = False
+    pref.duplicate_extend_mode = True
 Mixin.setPlugin('preference', 'init', pref_init)
 
 def add_pref(preflist):
@@ -2690,6 +2643,8 @@ def add_editor_menu(popmenulist):
         [
             (90, 'IDPM_DUPLICATE_MODE', tr('Duplicate Extend Mode') + '\tF10', wx.ITEM_CHECK, 'OnDuplicateMode', tr('Toggle duplication extend mode')),
             (100, 'IDPM_DUPLICATE_CURRENT_LINE', tr('Duplicate Current Line') + '\tCtrl+J', wx.ITEM_NORMAL, 'OnDuplicateCurrentLine', tr('Duplicates current line')),
+            (200, 'IDPM_DUPLICATE_CHAR', tr('Duplicate Previous Char') + '\tCtrl+M', wx.ITEM_NORMAL, 'OnDuplicateChar', tr('Copies a character from previous matched word')),
+            (300, 'IDPM_DUPLICATE_NEXT_CHAR', tr('Duplicate Next Char') + '\tCtrl+Shift+M', wx.ITEM_NORMAL, 'OnDuplicateNextChar', tr('Copies a character from next matched word')),
             (400, 'IDPM_DUPLICATE_WORD', tr('Duplicate Previous Word') + '\tCtrl+P', wx.ITEM_NORMAL, 'OnDuplicateWord', tr('Copies a word from previous matched line')),
             (500, 'IDPM_DUPLICATE_NEXT_WORD', tr('Duplicate Next Word') + '\tCtrl+Shift+P', wx.ITEM_NORMAL, 'OnDuplicateNextWord', tr('Copies a word from next matched line')),
             (600, 'IDPM_DUPLICATE_LINE', tr('Duplicate Previous Line') + '\tCtrl+L', wx.ITEM_NORMAL, 'OnDuplicateLine', tr('Copies a line from next matched line')),
@@ -2717,6 +2672,13 @@ def OnDuplicateCurrentLine(win, event):
     win.mainframe.OnEditDuplicateCurrentLine(event)
 Mixin.setMixin('editor', 'OnDuplicateCurrentLine', OnDuplicateCurrentLine)
 
+def OnDuplicateChar(win, event):
+    win.mainframe.OnEditDuplicateChar(event)
+Mixin.setMixin('editor', 'OnDuplicateChar', OnDuplicateChar)
+
+def OnDuplicateNextChar(win, event):
+    win.mainframe.OnEditDuplicateNextChar(event)
+Mixin.setMixin('editor', 'OnDuplicateNextChar', OnDuplicateNextChar)
 
 def OnDuplicateWord(win, event):
     win.mainframe.OnEditDuplicateWord(event)
@@ -2743,6 +2705,8 @@ def add_mainframe_menu(menulist):
         [
             (90, 'IDM_EDIT_DUPLICATE_MODE', tr('Duplicate Extend Mode') + '\tF10', wx.ITEM_CHECK, 'OnEditDuplicateMode', tr('Toggle duplication extend mode')),
             (100, 'IDM_EDIT_DUPLICATE_CURRENT_LINE', tr('Duplicate Current Line') + '\tE=Ctrl+J', wx.ITEM_NORMAL, 'OnEditDuplicateCurrentLine', tr('Duplicates current line')),
+            (200, 'IDM_EDIT_DUPLICATE_CHAR', tr('Duplicate Previous Char') + '\tE=Ctrl+M', wx.ITEM_NORMAL, 'OnEditDuplicateChar', tr('Copies a character from previous matched word')),
+            (300, 'IDM_EDIT_DUPLICATE_NEXT_CHAR', tr('Duplicate Next Char') + '\tE=Ctrl+Shift+M', wx.ITEM_NORMAL, 'OnEditDuplicateNextChar', tr('Copies a character from next matched word')),
             (400, 'IDM_EDIT_DUPLICATE_WORD', tr('Duplicate Previous Word') + '\tE=Ctrl+P', wx.ITEM_NORMAL, 'OnEditDuplicateWord', tr('Copies a word from previous matched line')),
             (500, 'IDM_EDIT_DUPLICATE_NEXT_WORD', tr('Duplicate Next Word') + '\tE=Ctrl+Shift+P', wx.ITEM_NORMAL, 'OnEditDuplicateNextWord', tr('Copies a word from next matched line')),
             (600, 'IDM_EDIT_DUPLICATE_LINE', tr('Duplicate Previous Line') + '\tE=Ctrl+L', wx.ITEM_NORMAL, 'OnEditDuplicateLine', tr('Copies a line from next matched line')),
@@ -2785,6 +2749,21 @@ def OnEditDuplicateCurrentLine(win, event):
     win.document.GotoPos(win.document.PositionFromLine(line + 1) + pos)
 Mixin.setMixin('mainframe', 'OnEditDuplicateCurrentLine', OnEditDuplicateCurrentLine)
 
+def OnEditDuplicateChar(win, event):
+    pos = win.document.GetCurrentPos()
+    text = win.document.getRawText()
+    word = findLeftWord(text, pos, win.getWordChars())
+    length = len(word)
+    if length > 0:
+        findstart = pos - length - 1    #-1 means skip the char before the word
+        if findstart > 0:
+            start = findPreviousWordPos(text, findstart, word, win.getWordChars())
+            if start > -1:
+                start += length
+                if text[start] in win.getWordChars():
+                    win.document.InsertText(pos, text[start])
+                    win.document.GotoPos(pos + 1)
+Mixin.setMixin('mainframe', 'OnEditDuplicateChar', OnEditDuplicateChar)
 
 def findPreviousWordPos(text, pos, word, word_chars):
     while pos >= 0:
@@ -2817,6 +2796,21 @@ def findLeftWord(text, pos, word_chars):
     chars.reverse()
     return ''.join(chars)
 
+def OnEditDuplicateNextChar(win, event):
+    pos = win.document.GetCurrentPos()
+    text = win.document.getRawText()
+    word = findLeftWord(text, pos, win.getWordChars())
+    length = len(word)
+    if length > 0:
+        findstart = pos         #-1 means skip the char before the word
+        if findstart > 0:
+            start = findNextWordPos(text, findstart, word, win.getWordChars())
+            if start > -1:
+                start += length
+                if text[start] in win.getWordChars():
+                    win.document.InsertText(pos, text[start])
+                    win.document.GotoPos(pos + 1)
+Mixin.setMixin('mainframe', 'OnEditDuplicateNextChar', OnEditDuplicateNextChar)
 
 def findNextWordPos(text, pos, word, word_chars):
     length = len(text)
@@ -2985,7 +2979,7 @@ class AboutDialog(wx.Dialog):
         self.email = HyperLinkCtrl(self, self.ID_EMAIL, "Contact me", URL='mailto:'+email)
         box.Add(self.email, 0, wx.ALIGN_CENTER|wx.BOTTOM, 10)
 
-        btnOK = wx.Button(self, wx.ID_OK, tr("OK"))
+        btnOK = wx.Button(self, wx.ID_OK, tr("OK"), size=(60, -1))
         btnOK.SetDefault()
         box.Add(btnOK, 0, wx.ALIGN_CENTER|wx.ALL, 10)
 
@@ -3075,8 +3069,8 @@ Mixin.setPlugin('preference', 'init', pref_init)
 
 def add_pref(preflist):
     preflist.extend([
-        ('Python', 100, 'check', 'python_classbrowser_show', tr('Show class browser window when opening python source file'), None),
-        ('Python', 105, 'check', 'python_classbrowser_refresh_as_save', tr('Refresh class browser window when saving python source file'), None),
+        ('Python', 100, 'check', 'python_classbrowser_show', tr('Show class browser window as open python source file'), None),
+        ('Python', 105, 'check', 'python_classbrowser_refresh_as_save', tr('Refresh class browser window as saved python source file'), None),
     ])
 Mixin.setPlugin('preference', 'add_pref', add_pref)
 
@@ -3147,97 +3141,42 @@ def add_images(images):
         ('CLASS_CLOSE', 'plus.gif'),
         ('METHOD', 'method.gif'),
         ('MODULE', 'module.gif'),
-        ('VARIABLE', 'vars.gif'),
         ]
     for name, f in s:
         images[name] = os.path.join(Globals.workpath, 'images/%s' % f)
 Mixin.setPlugin('outlookbrowser', 'add_images', add_images)
 
-c = lambda x,y:cmp(x[0].upper(), y[0].upper())
-
 def parsetext(win, editor):
     if editor.edittype == 'edit' and editor.languagename == 'python':
-        if not hasattr(editor, 'syntax_info') or not editor.syntax_info:
-            from modules import PyParse
-            nodes = PyParse.parseString(editor.GetText())
-        else:
-            nodes = editor.syntax_info
+        from modules import PyParse
+        nodes = PyParse.parseString(editor.GetText())
 
-        #add doc_nodes to editor
-        editor.doc_nodes = {}
-
-        imports = nodes.get_imports(1)
-        if imports:
-            for importline, lineno in imports:
-                win.addnode(None, importline, win.get_image_id('MODULE'), None, lineno)
-        functions = nodes.find('function')
-        #process locals
-        addlocals(win, nodes, nodes, None)
-        if functions:
-            funcs = [(x.name, x.info, x.lineno, x.docstring) for x in functions.values]
-            funcs.sort(c)
-            for name, info, lineno, docstring in funcs:
-                _id, obj = win.addnode(None, info, win.get_image_id('METHOD'), None,  lineno)
-                editor.doc_nodes[_id] = docstring
-        classes = nodes.find('class')
-        if classes:
-            clses = [(x.name, x.info, x.lineno, x) for x in classes.values]
-            clses.sort(c)
-            for name, info, lineno, obj in clses:
-                #process classes and functions
-                _id, node = win.addnode(None, name, win.get_image_id('CLASS_CLOSE'), win.get_image_id('CLASS_OPEN'), lineno)
-                editor.doc_nodes[_id] = obj.docstring
-                #process locals
-                addlocals(win, nodes, obj, node)
-                objs = [(x.name, x.type, x.info, x.lineno, x) for x in obj.values]
-                objs.sort(c)
-                for oname, otype, oinfo, olineno, oo in objs:
-                    imagetype = None
-                    if otype == 'class' or otype == 'function':
-                        _id, obj = win.addnode(node, oinfo, win.get_image_id('METHOD'), None,  olineno)
-                        editor.doc_nodes[_id] = oo.docstring
+        imports = nodes['import']
+        for obj in imports.values():
+            win.addnode(None, obj.info, win.get_image_id('MODULE'), None, obj.lineno)
+        functions = nodes['function'].keys()
+        def c(x, y):
+            return cmp(x.upper(), y.upper())
+        functions.sort(c)
+        for key in functions:
+            obj = nodes['function'][key]
+            win.addnode(None, obj.info, win.get_image_id('METHOD'), None,  obj.lineno)
+        classes = nodes['class'].keys()
+        classes.sort(c)
+        for key in classes:
+            obj = nodes['class'][key]
+            _id, node = win.addnode(None, obj.info, win.get_image_id('CLASS_CLOSE'), win.get_image_id('CLASS_OPEN'), obj.lineno)
+            functions = obj.keys()
+            functions.sort(c)
+            for i in functions:
+                p = obj[i]
+                win.addnode(node, p.info, win.get_image_id('METHOD'), None,  p.lineno)
+            win.tree.Expand(node)
 Mixin.setPlugin('outlookbrowser', 'parsetext', parsetext)
-
-def addlocals(win, root, node, treenode):
-    s = []
-    names = []
-    for i in range(len(node.locals)):
-        name = node.locals[i]
-        t, v, lineno = node.local_types[i]
-        if t not in ('class', 'function', 'import'):
-            info = name + ' : ' + 'unknow'
-            if t == 'reference':
-                if v:
-                    if node.type == 'class':
-                        result = root.guess_type(lineno, 'self.' + name)
-                    else:
-                        result = root.guess_type(lineno, name)
-                    if result:
-
-                        if result[0] not in ('reference', 'class', 'function', 'import'):
-                            info = name + ' : ' + result[0]
-                        else:
-                            if result[1]:
-                                if result[0] in ('class', 'function'):
-                                    info = name + ' : ' + result[1].info
-                                else:
-                                    info = name + ' : ' + result[1]
-                            else:
-                                info = name + ' : ' + result[0]
-                    else:
-                        info = name + ' : ' + v
-            else:
-                info = name + ' : ' + t
-            s.append((info, lineno))
-
-    s.sort(c)
-    for info, lineno in s:
-        win.addnode(treenode, info , win.get_image_id('VARIABLE'), None,  lineno)
 
 def new_window(win, document, panel):
     from OutlookBrowser import OutlookBrowser
-    document.outlookbrowser = OutlookBrowser(panel.left, document, autoexpand=False)
-    document.outlookbrowser.set_tooltip_func(on_get_tool_tip)
+    document.outlookbrowser = OutlookBrowser(panel.left, document)
 Mixin.setPlugin('textpanel', 'new_window', new_window)
 
 def add_tool_list(toollist, toolbaritems):
@@ -3257,35 +3196,6 @@ Mixin.setPlugin('pythonfiletype', 'add_tool_list', add_tool_list)
 def afterclosewindow(win):
     win.document.panel.showWindow('LEFT', False)
 Mixin.setPlugin('mainframe', 'afterclosewindow', afterclosewindow)
-
-def on_jump_definition(editor, word):
-    if editor.edittype == 'edit' and editor.languagename == 'python':
-        if not hasattr(editor, 'syntax_info') or not editor.syntax_info:
-            from modules import PyParse
-            nodes = PyParse.parseString(editor.GetText())
-        else:
-            nodes = editor.syntax_info
-        lineno = editor.GetCurrentLine() + 1 #syntax line is based on 1, but editor line is base on 0
-        result = nodes.search_name(lineno, word)
-        if result:
-            t, v, line = result
-            editor.GotoLine(line-1)
-            editor.EnsureCaretVisible()
-Mixin.setPlugin('editor', 'on_jump_definition', on_jump_definition)
-
-def on_get_tool_tip(win, event):
-    if hasattr(win.editor, 'doc_nodes'):
-        nodes = win.editor.doc_nodes
-        item = event.GetItem()
-        if item.IsOk():
-            _id = win.tree.GetPyData(item)
-            tip = nodes.get(_id, '')
-            if tip:
-                try:
-                    tip = eval(tip).replace('\r\n', '\n')
-                    event.SetToolTip(tip)
-                except:
-                    pass
 
 
 
@@ -3317,7 +3227,7 @@ def message_init(win):
     win.writeposition = 0
 Mixin.setPlugin('messagewindow', 'init', message_init)
 
-def RunCommand(win, command, redirect=True, hide=False):
+def RunCommand(win, command, redirect=True):
     """replace $file = current document filename"""
     if redirect:
         win.createMessageWindow()
@@ -3333,10 +3243,7 @@ def RunCommand(win, command, redirect=True, hide=False):
             win.messagewindow.process = wx.Process(win)
             win.messagewindow.process.Redirect()
             if wx.Platform == '__WXMSW__':
-                if hide == False:
-                    win.messagewindow.pid = wx.Execute(command, wx.EXEC_ASYNC|wx.EXEC_NOHIDE, win.messagewindow.process)
-                else:
-                    win.messagewindow.pid = wx.Execute(command, wx.EXEC_ASYNC, win.messagewindow.process)
+                win.messagewindow.pid = wx.Execute(command, wx.EXEC_ASYNC|wx.EXEC_NOHIDE, win.messagewindow.process)
             else:
                 win.messagewindow.pid = wx.Execute(command, wx.EXEC_ASYNC|wx.EXEC_MAKE_GROUP_LEADER, win.messagewindow.process)
             if hasattr(win.messagewindow, 'inputstream') and win.messagewindow.inputstream:
@@ -3650,7 +3557,7 @@ def add_lexer(lexer):
         (LexerClass.HtmlLexer.metaname, tr('Html|*.htm;*.html;*.shtml'),
             wx.stc.STC_LEX_HTML, 'html.stx', LexerClass.HtmlLexer),
         (LexerClass.XMLLexer.metaname, tr('Xml|*.xml;*.xslt'),
-            wx.stc.STC_LEX_CONTAINER, 'xml.stx', LexerClass.XMLLexer),
+            wx.stc.STC_LEX_HTML, 'xml.stx', LexerClass.XMLLexer),
         (LexerClass.PythonLexer.metaname, tr('Python|*.py;*.pyw'),
             wx.stc.STC_LEX_PYTHON, 'python.stx', LexerClass.PythonLexer),
         (LexerClass1.JavaLexer.metaname, tr('Java|*.java'),
@@ -3669,8 +3576,6 @@ def add_lexer(lexer):
             wx.stc.STC_LEX_HTML, 'asp.stx', LexerClass1.ASPLexer),
         (LexerRst.RstLexer.metaname, tr('ReStructured Text|*.rst'),
             wx.stc.STC_LEX_CONTAINER, 'rst.stx', LexerRst.RstLexer),
-        (LexerClass1.LuaLexer.metaname, tr('Lua|*.lua'),
-            wx.stc.STC_LEX_LUA, 'lur.stx', LexerClass1.LuaLexer),
     ])
 Mixin.setPlugin('lexerfactory', 'add_lexer', add_lexer)
 
@@ -3689,7 +3594,6 @@ def add_new_files(new_files):
         ('PHP', LexerClass1.PHPLexer.metaname),
         ('Active Server Pages', LexerClass1.ASPLexer.metaname),
         ('ReStructured Text', LexerRst.RstLexer.metaname),
-        ('Lua', LexerClass1.LuaLexer.metaname),
     ])
 Mixin.setPlugin('mainframe', 'add_new_files', add_new_files)
 
@@ -3723,9 +3627,8 @@ def pref_init(pref):
     pref.searchinfile_dirlist = []
     pref.searchinfile_extlist = []
     pref.searchinfile_case = False
-    pref.searchinfile_subdir = True
+    pref.searchinfile_subdir = False
     pref.searchinfile_regular = False
-    pref.searchinfile_onlyfilename = False
     pref.searchinfile_defaultpath = os.path.dirname(sys.argv[0])
 Mixin.setPlugin('preference', 'init', pref_init)
 
@@ -3740,7 +3643,7 @@ from modules import common
 
 def add_pref(preflist):
     preflist.extend([
-        (tr('Document'), 200, 'check', 'auto_make_bak', tr('Auto make backup of file at opening of file'), None)
+        (tr('Document'), 200, 'check', 'auto_make_bak', tr('Auto make backup file as open a file'), None)
     ])
 Mixin.setPlugin('preference', 'add_pref', add_pref)
 
@@ -3771,8 +3674,8 @@ from modules import Mixin
 
 def add_pref(preflist):
     preflist.extend([
-        (tr('Document'), 210, 'check', 'auto_check', tr('Auto check if some opened files were modified by others'), None),
-        (tr('Document'), 220, 'check', 'auto_check_confirm', tr('Require confirmation before a file is auto-reloaded'), None)
+        (tr('Document'), 210, 'check', 'auto_check', tr('Auto check if there are some opened files were modified by others'), None),
+        (tr('Document'), 220, 'check', 'auto_check_confirm', tr('Need confirm as auto-reloading the file'), None)
     ])
 Mixin.setPlugin('preference', 'add_pref', add_pref)
 
@@ -3791,7 +3694,7 @@ def on_idle(win):
                         def fn():
                             answer = wx.ID_NO
                             if win.pref.auto_check_confirm:
-                                dlg = wx.MessageDialog(win, tr("Another application has modified [%s].\nReload it?") % document.filename, tr("Check"), wx.YES_NO | wx.ICON_QUESTION)
+                                dlg = wx.MessageDialog(win, tr("This file [%s] has been modified by others,\ndo you like reload it?") % document.filename, tr("Check"), wx.YES_NO | wx.ICON_QUESTION)
                                 answer = dlg.ShowModal()
                             if answer == wx.ID_YES or not win.pref.auto_check_confirm:
                                 state = document.save_state()
@@ -3891,7 +3794,7 @@ Mixin.setMixin('prefdialog', 'OnSetInterpreter', OnSetInterpreter)
 def add_pref(preflist):
     preflist.extend([
         ('Python', 150, 'button', 'python_interpreter', tr('Setup python interpreter'), 'OnSetInterpreter'),
-        ('Python', 155, 'check', 'python_show_args', tr('Show arguments dialog when running python program'), None),
+        ('Python', 155, 'check', 'python_show_args', tr('Show arguments dialog as running python program'), None),
     ])
 Mixin.setPlugin('preference', 'add_pref', add_pref)
 
@@ -3928,8 +3831,7 @@ def OnPythonRun(win, event):
             return
 
     if win.pref.python_show_args:
-        if not get_python_args(win):
-            return
+        win.OnPythonSetArgs()
 
     args = win.document.args.replace('$path', os.path.dirname(win.document.filename))
     args = args.replace('$file', win.document.filename)
@@ -3942,7 +3844,7 @@ def OnPythonRun(win, event):
     win.RunCommand(command, redirect=win.document.redirect)
 Mixin.setMixin('mainframe', 'OnPythonRun', OnPythonRun)
 
-def get_python_args(win):
+def OnPythonSetArgs(win, event=None):
     from InterpreterDialog import PythonArgsDialog
 
     dlg = PythonArgsDialog(win, win.pref, tr('Set Python Arguments'),
@@ -3953,12 +3855,6 @@ def get_python_args(win):
     if answer == wx.ID_OK:
         win.document.args = dlg.GetValue()
         win.document.redirect = dlg.GetRedirect()
-        return True
-    else:
-        return False
-
-def OnPythonSetArgs(win, event=None):
-    get_python_args(win)
 Mixin.setMixin('mainframe', 'OnPythonSetArgs', OnPythonSetArgs)
 
 def OnPythonEnd(win, event):
@@ -4101,7 +3997,7 @@ def add_mainframe_menu(menulist):
         ]),
         ('IDM_DOCUMENT_SNIPPETS',
         [
-            (100, 'IDM_DOCUMENT_SNIPPETS_CATALOG_MANAGE', tr('Snippets Categories Manager...'), wx.ITEM_NORMAL, 'OnDocumentSnippetsCatalogManage', tr('Manages snippets categories.')),
+            (100, 'IDM_DOCUMENT_SNIPPETS_CATALOG_MANAGE', tr('Snippets Catalog Manager...'), wx.ITEM_NORMAL, 'OnDocumentSnippetsCatalogManage', tr('Manages snippets catalog.')),
             (110, 'IDM_DOCUMENT_SNIPPETS_CODE_MANAGE', tr('Snippets Code Manager...'), wx.ITEM_NORMAL, 'OnDocumentSnippetsCodeManage', tr('Manages snippets code.')),
         ]),
         ('IDM_WINDOW',
@@ -4121,9 +4017,6 @@ Mixin.setPlugin('notebook', 'add_menu', add_editor_menu)
 
 def pref_init(pref):
     pref.snippet_lastitem = 0
-    pref.snippet_splitter_pos = 150
-    pref.snippet_snippet_firstcolumn = 100
-    pref.snippet_snippet_secondcolumn = 180
 Mixin.setPlugin('preference', 'init', pref_init)
 
 def afterinit(win):
@@ -4133,23 +4026,22 @@ def afterinit(win):
         os.mkdir('snippets')
 Mixin.setPlugin('mainframe', 'afterinit', afterinit)
 
-snippet_pagename = tr('Snippets')
 def createSnippetWindow(win):
-    if not win.panel.getPage(snippet_pagename):
+    if not win.panel.getPage(tr('Snippets')):
         from SnippetWindow import MySnippet
 
         page = MySnippet(win.panel.createNotebook('left'), win)
-        win.panel.addPage('left', page, snippet_pagename)
+        win.panel.addPage('left', page, tr('Snippets'))
 Mixin.setMixin('mainframe', 'createSnippetWindow', createSnippetWindow)
 
 def OnWindowSnippet(win, event):
     win.createSnippetWindow()
-    win.panel.showPage(snippet_pagename)
+    win.panel.showPage(tr('Snippets'))
 Mixin.setMixin('mainframe', 'OnWindowSnippet', OnWindowSnippet)
 
 def OnSnippetWindow(win, event):
     win.mainframe.createSnippetWindow()
-    win.panel.showPage(snippet_pagename)
+    win.panel.showPage(tr('Snippets'))
 Mixin.setMixin('notebook', 'OnSnippetWindow', OnSnippetWindow)
 
 def OnDocumentSnippetsCatalogManage(win, event):
@@ -4174,12 +4066,6 @@ def OnDocumentSnippetsCodeManage(win, event):
     dlg.Show()
 Mixin.setMixin('mainframe', 'OnDocumentSnippetsCodeManage', OnDocumentSnippetsCodeManage)
 
-def closewindow(win):
-    page = win.panel.getPage(snippet_pagename)
-    if page:
-        page.save_state()
-Mixin.setPlugin('mainframe', 'closewindow', closewindow)
-
 
 
 #-----------------------  mEncoding.py ------------------
@@ -4203,7 +4089,7 @@ if 'utf-8' not in encodings:
 
 def add_pref(preflist):
     preflist.extend([
-        (tr('General'), 160, 'check', 'select_encoding', tr('Show encoding selection dialog when opening or saving file'), None),
+        (tr('General'), 160, 'check', 'select_encoding', tr('Show encoding selection dialog as openning or saving file.'), None),
         (tr('General'), 161, 'choice', 'default_encoding', tr('Default document encoding:'), encodings),
         (tr('General'), 162, 'text', 'custom_encoding', tr("Custom default encoding(if set, it'll be the default):"), None),
     ])
@@ -4252,8 +4138,7 @@ def OnDocumentChangeEncoding(win, event):
         win.document.locale = ret
         win.SetStatusText(win.document.locale, 4)
         win.document.modified = True
-        wx.CallAfter(win.editctrl.showTitle, win.document)
-        wx.CallAfter(win.editctrl.showPageTitle, win.document)
+        win.editctrl.showTitle(win.document)
 Mixin.setMixin('mainframe', 'OnDocumentChangeEncoding', OnDocumentChangeEncoding)
 
 def OnEditorDocumentChangeEncoding(win, event):
@@ -4315,13 +4200,10 @@ Mixin.setPlugin('mainframe', 'afterclosewindow', afterclosewindow)
 
 def openfiles(win, files):
     if files:
-        doc = None
         for filename in files:
-            doc = win.editctrl.new(filename)
+            win.editctrl.new(filename)
         win.Show()
         win.Raise()
-        if doc:
-            doc.SetFocus()
 Mixin.setMixin('mainframe', 'openfiles', openfiles)
 
 
@@ -4337,29 +4219,28 @@ from modules import common
 from modules import dict4ini
 from LexerFactory import LexerFactory
 
-def call_lexer(win, oldfilename, filename, language):
+def call_lexer(win, filename, language):
     for lexer in win.mainframe.lexers.lexobjs:
         prjfile = common.getProjectFile(filename)
         ini = dict4ini.DictIni(prjfile)
         ext = os.path.splitext(filename)[1]
         lexname = ini.highlight[ext]
-
-        if lexname and lexname == lexer.name:   #find acp option
-            if not hasattr(win, 'lexer') or lexname != win.lexer.name:
-                lexer.colourize(win)
-                return
-
-        if not lexname and (language and language == lexer.name or lexer.matchfile(filename)):
-            if not hasattr(win, 'lexer') or lexer.name != win.lexer.name:
-                lexer.colourize(win)
-                return
-
+        if lexname == lexer.name or language and language == lexer.name or lexer.matchfile(filename):
+            lexer.colourize(win)
+            return
     else:
-        if not hasattr(win, 'lexer'):
+        if filename:
+            win.mainframe.lexers.getNamedLexer('text').colourize(win)
+        else:
             win.mainframe.lexers.getDefaultLexer().colourize(win)
 Mixin.setPlugin('editor', 'call_lexer', call_lexer)
-Mixin.setPlugin('dirbrowser', 'call_lexer', call_lexer)
 
+def aftersavefile(win, filename):
+    for lexer in win.mainframe.lexers.lexobjs:
+        if lexer.matchfile(filename):
+            lexer.colourize(win)
+            return
+Mixin.setPlugin('editor', 'aftersavefile', aftersavefile)
 
 def beforeinit(win):
     win.lexers = LexerFactory(win)
@@ -4509,39 +4390,30 @@ def add_tool_list(toollist, toolbaritems):
 Mixin.setPlugin('mainframe', 'add_tool_list', add_tool_list)
 
 def mainframe_init(win):
-    win.printer = None
+    from Print import MyPrinter
+
+    win.printer = MyPrinter(win)
 Mixin.setPlugin('mainframe', 'init', mainframe_init)
 
-def get_printer(win):
-    if not win.printer:
-        from Print import MyPrinter
-        win.printer = MyPrinter(win)
-    return win.printer
-
 def OnFilePageSetup(win, event):
-    if get_printer(win):
-        win.printer.PageSetup()
+    win.printer.PageSetup()
 Mixin.setMixin('mainframe', 'OnFilePageSetup', OnFilePageSetup)
 
 def OnFilePrint(win, event):
-    if get_printer(win):
-        win.printer.PrintText(win.printer.convertText(win.document.GetText()), os.path.dirname(win.document.filename))
+    win.printer.PrintText(win.printer.convertText(win.document.GetText()), os.path.dirname(win.document.filename))
 Mixin.setMixin('mainframe', 'OnFilePrint', OnFilePrint)
 
 def OnFilePrintPreview(win, event):
-    if get_printer(win):
-        win.printer.PreviewText(win.printer.convertText(win.document.GetText()), os.path.dirname(win.document.filename))
+    win.printer.PreviewText(win.printer.convertText(win.document.GetText()), os.path.dirname(win.document.filename))
 Mixin.setMixin('mainframe', 'OnFilePrintPreview', OnFilePrintPreview)
 
 
 def OnFileHtmlPreview(win, event):
-    if get_printer(win):
-        win.printer.PreviewText(win.document.GetText(), os.path.dirname(win.document.filename))
+    win.printer.PreviewText(win.document.GetText(), os.path.dirname(win.document.filename))
 Mixin.setMixin('mainframe', 'OnFileHtmlPreview', OnFileHtmlPreview)
 
 def OnFileHtmlPrint(win, event):
-    if get_printer(win):
-        win.printer.PrintText(win.document.GetText(), os.path.dirname(win.document.filename))
+    win.printer.PrintText(win.document.GetText(), os.path.dirname(win.document.filename))
 Mixin.setMixin('mainframe', 'OnFileHtmlPrint', OnFileHtmlPrint)
 
 
@@ -4585,7 +4457,6 @@ Mixin.setPlugin('mainframe', 'afterinit', afterinit)
 __doc__ = 'Context indent'
 
 from modules import Mixin
-from modules import Globals
 import wx
 import re
 
@@ -4645,7 +4516,7 @@ Mixin.setPlugin('preference', 'init', pref_init)
 
 def add_pref(preflist):
     preflist.extend([
-        (tr('General'), 250, 'check', 'paste_auto_indent', tr('Auto indent when pasting text block'), None)
+        (tr('General'), 250, 'check', 'paste_auto_indent', tr('Auto indent pasting text block.'), None)
     ])
 Mixin.setPlugin('preference', 'add_pref', add_pref)
 
@@ -4653,9 +4524,9 @@ re_spaces = re.compile(r'^(\s*)')
 re_eol = re.compile(r'\r\n|\r|\n')
 re_eol_end = re.compile(r'\r\n$|\r$|\n$', re.MULTILINE)
 
-def Indent_paste(mainframe, win, content):
+def on_paste(win, content):
     if win.pref.paste_auto_indent and not win.selection_column_mode:
-        b = re_eol.search(content)
+        b = re_eol_end.search(content)
         if not b:
             return False
         win.BeginUndoAction()
@@ -4664,7 +4535,6 @@ def Indent_paste(mainframe, win, content):
                 win.ReplaceSelection('')
             col = win.GetColumn(win.GetCurrentPos())
             line = win.getLineText(win.GetCurrentLine())
-            indent = 0
             if line[:col].strip() == '':
                 b = re_spaces.search(line)
                 if b:
@@ -4694,7 +4564,6 @@ def Indent_paste(mainframe, win, content):
                 b = re_spaces.search(line)
                 if b:
                     minspaces.append(b.span()[1])
-
             minspace = min(minspaces)
             if col == 0:
                 lines = [indentchars + x[minspace:] for x in contentlines[:1]]
@@ -4728,10 +4597,6 @@ def Indent_paste(mainframe, win, content):
         return True
     else:
         return False
-Mixin.setMixin('mainframe', 'Indent_paste', Indent_paste)
-
-def on_paste(win, content):
-    return Globals.mainframe.Indent_paste(win, content)
 Mixin.setPlugin('editor', 'on_paste', on_paste)
 
 
@@ -4771,13 +4636,13 @@ def add_editor_menu(popmenulist):
     ])
 Mixin.setPlugin('notebook', 'add_menu', add_editor_menu)
 
-def createFtpWindow(win, side='bottom'):
+def createFtpWindow(win):
     page = win.panel.getPage('Ftp')
     if not page:
         from FtpClass import Ftp
 
-        page = Ftp(win.panel.createNotebook(side), win)
-        win.panel.addPage(side, page, 'Ftp')
+        page = Ftp(win.panel.createNotebook('bottom'), win)
+        win.panel.addPage('bottom', page, 'Ftp')
     win.ftp = page
 Mixin.setMixin('mainframe', 'createFtpWindow', createFtpWindow)
 
@@ -4787,7 +4652,7 @@ def OnWindowFtp(win, event):
 Mixin.setMixin('mainframe', 'OnWindowFtp', OnWindowFtp)
 
 def OnFtpWindow(win, event):
-    win.mainframe.createFtpWindow(win.side)
+    win.mainframe.createFtpWindow()
     win.panel.showPage('Ftp')
 Mixin.setMixin('notebook', 'OnFtpWindow', OnFtpWindow)
 
@@ -4922,8 +4787,8 @@ def add_mainframe_menu(menulist):
         ]),
         ('IDM_WINDOW',
         [
-            (100, 'IDM_WINDOW_LEFT', tr('Left Window')+'\tAlt+Z', wx.ITEM_CHECK, 'OnWindowLeft', tr('Shows or hides the left Window')),
-            (110, 'IDM_WINDOW_BOTTOM', tr('Bottom Window')+'\tAlt+X', wx.ITEM_CHECK, 'OnWindowBottom', tr('Shows or hides the bottom Window')),
+            (100, 'IDM_WINDOW_LEFT', tr('Left Window')+'\tCtrl+Alt+L', wx.ITEM_CHECK, 'OnWindowLeft', tr('Shows or hides the left Window')),
+            (110, 'IDM_WINDOW_BOTTOM', tr('Bottom Window')+'\tCtrl+Alt+B', wx.ITEM_CHECK, 'OnWindowBottom', tr('Shows or hides the bottom Window')),
             (120, '-', '', wx.ITEM_SEPARATOR, '', ''),
             (130, 'IDM_WINDOW_SHELL', tr('Open Shell Window'), wx.ITEM_NORMAL, 'OnWindowShell', tr('Opens shell window.')),
             (140, 'IDM_WINDOW_MESSAGE', tr('Open Message Window'), wx.ITEM_NORMAL, 'OnWindowMessage', tr('Opens message window.')),
@@ -4950,6 +4815,7 @@ def OnWindowBottom(win, event):
     flag = not win.panel.BottomIsVisible
     if flag:
         win.createShellWindow()
+        win.createMessageWindow()
 
     win.panel.showWindow('bottom', flag)
 Mixin.setMixin('mainframe', 'OnWindowBottom', OnWindowBottom)
@@ -5303,7 +5169,7 @@ Mixin.setPlugin('preference', 'init', pref_init)
 
 def add_pref(preflist):
     preflist.extend([
-        (tr('Document'), 240, 'choice', 'converted_output', tr('Choose where converted text is to be output:'), [tr('In html window'), tr('In message window'), tr('Replace selected text')]),
+        (tr('Document'), 240, 'choice', 'converted_output', tr('Choose where converted text is be outputed:'), [tr('In html window'), tr('In message window'), tr('Replace selected text')]),
     ])
 Mixin.setPlugin('preference', 'add_pref', add_pref)
 
@@ -5634,17 +5500,6 @@ import wx
 from modules import Mixin
 from modules import Globals
 
-def add_tool_list(toollist, toolbaritems):
-    toollist.extend([
-        (115, 'dir'),
-    ])
-
-    #order, IDname, imagefile, short text, long text, func
-    toolbaritems.update({
-        'dir':(wx.ITEM_NORMAL, 'IDM_WINDOW_DIRBROWSER', 'images/dir.gif', tr('directory browser'), tr('Opens directory browser window.'), 'OnWindowDirBrowser'),
-    })
-Mixin.setPlugin('mainframe', 'add_tool_list', add_tool_list)
-
 def add_mainframe_menu(menulist):
     menulist.extend([('IDM_FILE',
         [
@@ -5677,8 +5532,6 @@ def createDirBrowserWindow(win, dirs=None):
     if not win.panel.getPage(tr('Dir Browser')):
         from DirBrowser import DirBrowser
 
-        if not dirs:
-            dirs = win.pref.last_dir_paths
         page = DirBrowser(win.panel.createNotebook('left'), win, dirs)
         win.panel.addPage('left', page, tr('Dir Browser'))
 Mixin.setMixin('mainframe', 'createDirBrowserWindow', createDirBrowserWindow)
@@ -5703,7 +5556,7 @@ Mixin.setPlugin('preference', 'init', pref_init)
 def add_pref(preflist):
     preflist.extend([
         (tr('General'), 115, 'num', 'recent_dir_paths_num', tr('Max number of recent browse directories:'), None),
-        (tr('General'), 240, 'check', 'open_last_dir_as_startup', tr('Open last directory browser upon startup'), None),
+        (tr('General'), 240, 'check', 'open_last_dir_as_startup', tr('Open last directory browser as startup'), None),
     ])
 Mixin.setPlugin('preference', 'add_pref', add_pref)
 
@@ -5748,53 +5601,46 @@ def editor_init(win):
     win.AutoCompSetAutoHide(True)
     win.AutoCompSetCancelAtStart(False)
 
+    win.inputassistant_obj = None
     win.replace_strings = None
     win.word_len = 0
     win.custom_assistant = []
-    win.function_parameter = []
-    win.calltip_stack = {} # collecting nested calltip's text and pos.
+
+    win.calltip_times = 0
+    win.calltip_column = 0
+    win.calltip_line = 0
     win.syntax_info = None
     win.auto_routin = None
-    win.snippet = None
-
 Mixin.setPlugin('editor', 'init', editor_init)
-
-def _replace_text(win, start, end, text):
-    if end == -1:
-        end = win.GetCurrentPos()
-    win.BeginUndoAction()
-    win.SetTargetStart(start)
-    win.SetTargetEnd(end)
-    win.ReplaceTarget('')
-    win.GotoPos(start)
-    t = text
-    for obj in win.mainframe.input_assistant.get_all_acps():
-        if obj.ini.autovalues.has_key(text):
-            t = obj.ini.autovalues[text]
-            break
-    txt = win.mainframe.input_assistant.gettext(t)
-    if win.replace_strings:
-        r = win.replace_strings
-        m = []
-        for p in txt:
-            for i in range(len(r)):
-                p = p.replace('\\' + str(i), r[i])
-            m.append(p)
-        txt = m
-    win.mainframe.input_assistant.settext(txt)
-    win.EndUndoAction()
 
 def on_user_list_selction(win, list_type, text):
     t = list_type
     if t == 1:  #1 is used by input assistant
         start, end = win.word_len
-        _replace_text(win, start, end, text)
+        if end == -1:
+            end = win.GetCurrentPos()
+        win.BeginUndoAction()
+        win.SetTargetStart(start)
+        win.SetTargetEnd(end)
+        win.ReplaceTarget('')
+        win.GotoPos(start)
+        obj = win.inputassistant_obj
+        if obj.ini.autovalues.has_key(text):
+            t = obj.ini.autovalues[text]
+        else:
+            t = text
+        txt = win.mainframe.input_assistant.gettext(t)
+        if win.replace_strings:
+            r = win.replace_strings
+            m = []
+            for p in txt:
+                for i in range(len(r)):
+                    p = p.replace('\\' + str(i), r[i])
+                m.append(p)
+            txt = m
+        win.mainframe.input_assistant.settext(txt)
+        win.EndUndoAction()
 Mixin.setPlugin('editor', 'on_user_list_selction', on_user_list_selction)
-
-def on_auto_completion(win, pos, text):
-    start, end = win.word_len
-    wx.CallAfter(_replace_text, win, start, end, text)
-Mixin.setPlugin('editor', 'on_auto_completion', on_auto_completion)
 
 def get_inputassistant_obj(win):
     if not win.mainframe.input_assistant:
@@ -5805,30 +5651,33 @@ def get_inputassistant_obj(win):
         i = win.mainframe.input_assistant
     return i
 
-def after_char(win, event):
-    win.mainframe.auto_routin_ac_action.put(('normal', win, (event, True)))
+def after_char(win, event, syncvar):
+    i = get_inputassistant_obj(win)
+    try:
+        return i.run(win, event, True, syncvar)
+    except:
+        error.traceback()
+        return False
 Mixin.setPlugin('editor', 'after_char', after_char)
 
-def on_key_down(win, event):
+def after_keydown(win, event, syncvar):
     key = event.GetKeyCode()
-    if key == wx.WXK_TAB and not event.ControlDown() and not event.AltDown() and not event.ShiftDown():
-        if win.snippet and win.snippet.snip_mode:
-            win.snippet.nextField(win.GetCurrentPos())
-            return True
-    if key in (ord('C'), ord('V'), ord('X')) and event.ControlDown() and not event.AltDown() and not event.ShiftDown():
-        event.Skip()
-        return True
-
     if key == wx.WXK_BACK and not event.AltDown() and not event.ControlDown() and not event.ShiftDown():
-        if win.pref.input_assistant and win.pref.inputass_identifier:
-            win.mainframe.auto_routin_ac_action.put(('default', win))
-    return False
-Mixin.setPlugin('editor', 'on_key_down', on_key_down)
+        i = get_inputassistant_obj(win)
+        try:
+            return i.run_default(win, syncvar)
+        except:
+            error.traceback()
+            return False
+Mixin.setPlugin('editor', 'after_keydown', after_keydown)
 
 def on_key_down(win, event):
-    if win.pref.input_assistant:
-        win.mainframe.auto_routin_ac_action.put(('normal', win, (event, False)))
-    return False
+    i = get_inputassistant_obj(win)
+    try:
+        return i.run(win, event, False, True)
+    except:
+        error.traceback()
+        return False
 Mixin.setPlugin('editor', 'on_key_down', on_key_down, nice=10)
 
 def pref_init(pref):
@@ -5836,8 +5685,6 @@ def pref_init(pref):
     pref.inputass_calltip = True
     pref.inputass_autocomplete = True
     pref.inputass_identifier = True
-    pref.inputass_full_identifier = True
-    pref.inputass_func_parameter_autocomplete = True
 Mixin.setPlugin('preference', 'init', pref_init)
 
 def add_pref(preflist):
@@ -5846,8 +5693,6 @@ def add_pref(preflist):
         (tr('Input Assistant'), 110, 'check', 'inputass_calltip', tr("Enable calltip"), None),
         (tr('Input Assistant'), 120, 'check', 'inputass_autocomplete', tr("Enable auto completion"), None),
         (tr('Input Assistant'), 130, 'check', 'inputass_identifier', tr("Enable auto prompt identifiers"), None),
-        (tr('Input Assistant'), 140, 'check', 'inputass_full_identifier', tr("Enable full identifiers search"), None),
-        (tr('Input Assistant'), 150, 'check', 'inputass_func_parameter_autocomplete', tr("Enable function parameter autocomplete"), None),
     ])
 Mixin.setPlugin('preference', 'add_pref', add_pref)
 
@@ -5883,7 +5728,7 @@ def get_acp_files(win):
 
     easy.Destroy()
 
-def call_lexer(win, oldfilename, filename, language):
+def call_lexer(win, filename, language):
     i = get_inputassistant_obj(win)
     i.install_acp(win, win.languagename)
 
@@ -5940,17 +5785,12 @@ def OnApplyAcp(win, event):
     win.mainframe.OnDocumentApplyAcp(event)
 Mixin.setMixin('editor', 'OnApplyAcp', OnApplyAcp)
 
+
 def on_kill_focus(win, event):
     if win.AutoCompActive():
         win.AutoCompCancel()
     if win.calltip and win.calltip.active:
-        if hasattr(event,'FNB'):
-            win.calltip.cancel()
-            return
-        if not win.have_focus:
-            win.have_focus = True
-        else:
-            win.calltip.cancel()
+        win.calltip.cancel()
 Mixin.setPlugin('editor', 'on_kill_focus', on_kill_focus)
 
 def on_key_down(win, event):
@@ -5960,86 +5800,44 @@ def on_key_down(win, event):
     alt=event.AltDown()
     if key == wx.WXK_RETURN and not control and not alt:
         if not win.AutoCompActive():
-            if win.calltip.active:
-                pos = win.GetCurrentPos()
-                # move calltip windown to next line
-                # must be pos+2 not pos+1,the reason I don't konw.
-                win.calltip.move(pos + 2)
+            if win.calltip.active or win.calltip_times > 0:
+                win.calltip_times = 0
+                win.calltip.cancel()
         else:
             event.Skip()
             return True
     elif key == wx.WXK_ESCAPE:
-        # clear nested calltip state if something is wrong.
-        win.calltip_stack.clear()
-        del win.function_parameter[:]
         win.calltip.cancel()
-
+        win.calltip_times = 0
 Mixin.setPlugin('editor', 'on_key_down', on_key_down, Mixin.HIGH, 1)
+
+def on_key_up(win, event):
+    curpos = win.GetCurrentPos()
+    line = win.GetCurrentLine()
+    column = win.GetColumn(curpos)
+    if win.calltip.active and win.calltip_type == CALLTIP_AUTOCOMPLETE:
+        if column < win.calltip_column or line != win.calltip_line:
+            win.calltip_times = 0
+            win.calltip.cancel()
+Mixin.setPlugin('editor', 'on_key_up', on_key_up)
+Mixin.setPlugin('editor', 'on_mouse_up', on_key_up)
 
 def leaveopenfile(win, filename):
     if win.pref.input_assistant:
         i = get_inputassistant_obj(win)
         i.install_acp(win, win.languagename)
-        win.mainframe.auto_routin_analysis.put(win)
+        if win.pref.inputass_identifier and win.auto_routin and not win.auto_routin.isactive():
+            win.auto_routin.start_thread()
 Mixin.setPlugin('editor', 'leaveopenfile', leaveopenfile)
 
 def on_modified(win, event):
     type = event.GetModificationType()
     for flag in (wx.stc.STC_MOD_INSERTTEXT, wx.stc.STC_MOD_DELETETEXT):
         if flag & type:
-            win.mainframe.auto_routin_analysis.put(win)
+            if not win.auto_routin.isactive():
+                win.auto_routin.start_thread()
             return
 Mixin.setPlugin('editor', 'on_modified', on_modified)
-
-from modules import AsyncAction
-
-class InputAssistantAction(AsyncAction.AsyncAction):
-    def do_action(self, obj):
-        if not self.empty:
-            return
-        if len(obj) == 2:
-            action, win = obj
-            args = None
-        else:
-            action, win, args = obj
-        try:
-            if Globals.mainframe.closeflag:
-                return
-            if win != Globals.mainframe.document:
-                return
-            i = get_inputassistant_obj(win)
-            win.lock.acquire()
-            if action == 'default':
-                i.run_default(win, self)
-            else:
-                event, on_char_flag = args
-                i.run(win, event, on_char_flag, self)
-            win.lock.release()
-        except:
-            Globals.mainframe.input_assistant = None
-            error.traceback()
-
-class Analysis(AsyncAction.AsyncAction):
-    def do_action(self, obj):
-        if not self.empty:
-            return
-        try:
-            if Globals.mainframe.closeflag:
-                return
-            if obj != Globals.mainframe.document:
-                return
-            i = get_inputassistant_obj(obj)
-            i.call_analysis(self)
-        except:
-            Globals.mainframe.input_assistant = None
-            error.traceback()
-
-def main_init(win):
-    win.auto_routin_analysis = Analysis(.1)
-    win.auto_routin_analysis.start()
-    win.auto_routin_ac_action = InputAssistantAction(.5)
-    win.auto_routin_ac_action.start()
-Mixin.setPlugin('mainframe', 'init', main_init)
 
 
 
@@ -6059,16 +5857,27 @@ def add_tool_list(toollist, toolbaritems):
 Mixin.setPlugin('mainframe', 'add_tool_list', add_tool_list, Mixin.LOW)
 
 def OnFileNews(win, event):
-    eid = event.GetId()
-    size = win.toolbar.GetToolSize()
-    pos = win.toolbar.GetToolPos(eid)
-    menu = wx.Menu()
-    create_menu(win, menu)
-    win.PopupMenu(menu, (size[0]*pos, size[1]))
-    menu.Destroy()
+    if win.pref.syntax_select:
+        eid = event.GetId()
+        size = win.toolbar.GetToolSize()
+        pos = win.toolbar.GetToolPos(eid)
+        menu = wx.Menu()
+        create_menu(win, menu)
+        win.PopupMenu(menu, (size[0]*pos, size[1]))
+        menu.Destroy()
+    else:
+        win.editctrl.new()
 Mixin.setMixin('mainframe', 'OnFileNews', OnFileNews)
 
+def pref_init(pref):
+    pref.syntax_select = True
+Mixin.setPlugin('preference', 'init', pref_init)
 
+def add_pref(preflist):
+    preflist.extend([
+        (tr('General'), 175, 'check', 'syntax_select', tr('Enable syntax selection as new file'), None),
+    ])
+Mixin.setPlugin('preference', 'add_pref', add_pref)
 
 def add_mainframe_menu(menulist):
     menulist.extend([ ('IDM_FILE_NEWMORE',
@@ -6079,9 +5888,10 @@ def add_mainframe_menu(menulist):
 Mixin.setPlugin('mainframe', 'add_menu', add_mainframe_menu)
 
 def init(win):
-    menu = makemenu.findmenu(win.menuitems, 'IDM_FILE_NEWMORE')
-    menu.Delete(win.IDM_FILE_NEWMORE_NULL)
-    create_menu(win, menu)
+    if win.pref.syntax_select:
+        menu = makemenu.findmenu(win.menuitems, 'IDM_FILE_NEWMORE')
+        menu.Delete(win.IDM_FILE_NEWMORE_NULL)
+        create_menu(win, menu)
 Mixin.setPlugin('mainframe', 'init', init)
 
 def create_menu(win, menu):
@@ -6090,7 +5900,6 @@ def create_menu(win, menu):
         lexname = ids.get(event.GetId(), '')
         if lexname:
             lexer = win.lexers.getNamedLexer(lexname)
-            text = ''
             if lexer:
                 templatefile = common.getConfigPathFile('template.%s' % lexer.name)
                 if os.path.exists(templatefile):
@@ -6099,8 +5908,6 @@ def create_menu(win, menu):
                 else:
                     text = ''
             document = win.editctrl.new(defaulttext=text, language=lexer.name)
-            if document:
-                document.SetFocus()
 
     for name, lexname in win.filenewtypes:
         _id = wx.NewId()
@@ -6301,96 +6108,44 @@ Mixin.setPlugin('notebook', 'add_menu', add_notebook_menu)
 
 def pref_init(pref):
     pref.auto_todo = True
-    pref.todo_column1 = 80
-    pref.todo_column2 = 50
-    pref.todo_column3 = 90
-    pref.todo_column4 = 300
-    pref.todo_column5 = 200
 Mixin.setPlugin('preference', 'init', pref_init)
 
 def add_pref(preflist):
     preflist.extend([
-        (tr('Document'), 270, 'check', 'auto_todo', tr('Auto show TODO window when opening file containing a TODO'), None),
+        (tr('Document'), 270, 'check', 'auto_todo', tr('Auto show TODO window if TODO window already opened.'), None),
     ])
 Mixin.setPlugin('preference', 'add_pref', add_pref)
 
-todo_pagename = tr('TODO')
-
 def createtodowindow(win):
-    if not win.panel.getPage(todo_pagename):
+    if not win.panel.getPage(tr('TODO')):
         from TodoWindow import TodoWindow
 
         page = TodoWindow(win.panel.createNotebook('bottom'), win)
-        win.panel.addPage('bottom', page, todo_pagename)
-    win.todowindow = win.panel.getPage(todo_pagename)
+        win.panel.addPage('bottom', page, tr('TODO'))
+    win.todowindow = win.panel.getPage(tr('TODO'))
 Mixin.setMixin('mainframe', 'createtodowindow', createtodowindow)
 
 def OnWindowTODO(win, event):
     win.createtodowindow()
-    win.panel.showPage(todo_pagename)
+    win.panel.showPage(tr('TODO'))
     win.todowindow.show(win.document)
 Mixin.setMixin('mainframe', 'OnWindowTODO', OnWindowTODO)
 
 def OnNTodoWindow(win, event):
     win.mainframe.createtodowindow()
-    win.panel.showPage(todo_pagename)
+    win.panel.showPage(tr('TODO'))
     win.mainframe.todowindow.show(win.mainframe.document)
 Mixin.setMixin('notebook', 'OnNTodoWindow', OnNTodoWindow)
 
 def aftersavefile(win, filename):
-    todo = win.mainframe.panel.getPage(todo_pagename)
-    if todo:
-        data = read_todos(win)
-        if data:
-            win.mainframe.todowindow.show(win, data)
-            return
-    else:
-        if win.pref.auto_todo and win.todo_show_status:
-            data = read_todos(win)
-            if data:
-                win.mainframe.createtodowindow()
-                win.mainframe.panel.showPage(todo_pagename)
-                win.mainframe.todowindow.show(win, data)
-                return
-    win.mainframe.panel.closePage(todo_pagename, savestatus=False)
+    if win.mainframe.panel.getPage(tr('TODO')):
+        win.mainframe.todowindow.show(win)
 Mixin.setPlugin('editor', 'aftersavefile', aftersavefile)
 
 def on_document_enter(win, editor):
-    if win.pref.auto_todo:
-        if editor.todo_show_status:
-            data = read_todos(win.document)
-            if data:
-                win.mainframe.createtodowindow()
-                win.mainframe.panel.showPage(todo_pagename)
-                win.mainframe.todowindow.show(win.document, data)
-                return
-    else:
-        todo = win.mainframe.panel.getPage(todo_pagename)
-        if todo:
-            data = read_todos(win.document)
-            if data:
-                win.mainframe.todowindow.show(win.document, data)
-                return
-    win.mainframe.panel.closePage(todo_pagename, savestatus=False)
+    if win.pref.auto_todo and win.mainframe.panel.getPage(tr('TODO')):
+        win.mainframe.todowindow.show(win.document)
 Mixin.setPlugin('editctrl', 'on_document_enter', on_document_enter)
-
-def editor_init(editor):
-    editor.todo_show_status = True
-Mixin.setPlugin('editor', 'init', editor_init)
-
-def on_show(todowin):
-    todowin.editor.todo_show_status = True
-Mixin.setPlugin('todowindow', 'show', on_show)
-
-def on_close(todowin, savestatus=True):
-    if savestatus:
-        todowin.editor.todo_show_status = False
-Mixin.setPlugin('todowindow', 'close', on_close)
-
-def read_todos(editor):
-    from mixins.TodoWindow import read_todos as read
-
-    return read(editor)
 
 
 
@@ -6427,12 +6182,11 @@ Mixin.setPlugin('messagewindow', 'init', messagewindow_init)
 
 def pref_init(pref):
     pref.clear_message = True
-    pref.message_wrap = False
 Mixin.setPlugin('preference', 'init', pref_init)
 
 def add_pref(preflist):
     preflist.extend([
-        (tr('General'), 260, 'check', 'clear_message', tr('Auto clear message window content when running program'), None)
+        (tr('General'), 260, 'check', 'clear_message', tr('Auto clear message window content on running program'), None)
     ])
 Mixin.setPlugin('preference', 'add_pref', add_pref)
 
@@ -6717,18 +6471,6 @@ def add_mainframe_menu(menulist):
     ])
 Mixin.setPlugin('mainframe', 'add_menu', add_mainframe_menu)
 
-def editor_init(win):
-    win.on_focus = False
-Mixin.setPlugin('editor', 'init', editor_init)
-
-def on_set_focus(win, event):
-    win.on_focus = True
-Mixin.setPlugin('editor', 'on_set_focus', on_set_focus)
-
-def on_kill_focus(win, event):
-    win.on_focus = False
-Mixin.setPlugin('editor', 'on_kill_focus', on_kill_focus)
-
 def afterinit(win):
     wx.EVT_UPDATE_UI(win, win.IDM_TOOL_SEARCHCMDS_IMPACT_MODE, win.OnUpdateUI)
 Mixin.setPlugin('mainframe', 'afterinit', afterinit)
@@ -6779,7 +6521,6 @@ def on_first_char(win, event):
         if key < 127:
             buf.append(chr(key))
             showinfo(' '.join(buf))
-            Mixin.reload_obj(Commands)
             commandar = Commands.getinstance()
             s = commandar.impact_search(''.join(buf))
             if len(s) == 1:     #find a cmd
@@ -6866,7 +6607,7 @@ def add_mainframe_menu(menulist):
 Mixin.setPlugin('mainframe', 'add_menu', add_mainframe_menu)
 
 def OnWindowMultiView(win, event):
-    dispname = win.createMultiViewWindow('bottom', Globals.mainframe.document)
+    dispname = win.mainframe.createMultiViewWindow('bottom', Globals.mainframe.document)
     if dispname:
         win.panel.showPage(dispname)
 Mixin.setMixin('mainframe', 'OnWindowMultiView', OnWindowMultiView)
@@ -6933,7 +6674,6 @@ import wx
 from modules import Mixin
 import FiletypeBase
 from modules import Globals
-from modules.Debug import error
 
 class RestFiletype(FiletypeBase.FiletypeBase):
 
@@ -6980,8 +6720,8 @@ Mixin.setPlugin('mainframe', 'closefile', closefile)
 def setfilename(document, filename):
     for pagename, panelname, notebook, page in Globals.mainframe.panel.getPages():
         if is_resthtmlview(page, document):
-            print 'setfilename'
             title = document.getShortFilename()
+            Globals.mainframe.panel.setName(page, title)
 Mixin.setPlugin('editor', 'setfilename', setfilename)
 
 def createRestHtmlViewWindow(win, side, document):
@@ -6995,14 +6735,14 @@ def createRestHtmlViewWindow(win, side, document):
     if not obj:
         if win.document.documenttype == 'texteditor':
             text = html_fragment(document.GetText().encode('utf-8'))
-            if text:
-                page = RestHtmlView(win.panel.createNotebook(side), text)
-                page.document = win.document    #save document object
-                page.resthtmlview = True
-                win.panel.addPage(side, page, dispname)
-                win.panel.setImageIndex(page, 'html')
-                return page
-    return obj
+            page = RestHtmlVew(win.panel.createNotebook(side), text)
+            page.document = win.document    #save document object
+            page.resthtmlview = True
+            win.panel.addPage(side, page, dispname)
+            win.panel.setImageIndex(page, 'html')
+            return page
+    else:
+        return obj
 Mixin.setMixin('mainframe', 'createRestHtmlViewWindow', createRestHtmlViewWindow)
 
 def other_popup_menu(editctrl, document, menus):
@@ -7026,16 +6766,12 @@ Mixin.setMixin('editctrl', 'OnRestHtmlViewBottom', OnRestHtmlViewBottom)
 def html_fragment(content):
     from docutils.core import publish_string
 
-    try:
-        return publish_string(content, writer_name = 'html' )
-    except:
-        error.traceback()
-        return None
+    return publish_string(content, writer_name = 'html' )
 
 from mixins import HtmlPage
 import tempfile
 import os
-class RestHtmlView(wx.Panel):
+class RestHtmlVew(wx.Panel):
     def __init__(self, parent, content):
         wx.Panel.__init__(self, parent, -1)
 
@@ -7095,6 +6831,7 @@ import os
 import wx.stc
 from modules import Mixin
 from modules import common
+from modules import Globals
 from modules import dict4ini
 from modules.Debug import error
 
@@ -7121,8 +6858,7 @@ def OnSearchJumpDef(win, event):
     word = getword(win)
     from modules import ctags
 
-    flag = False
-    prjfile = common.getProjectFile(win.document.getFilename())
+    prjfile = common.getProjectFile(Globals.workpath)
     if prjfile:
         path = os.path.dirname(prjfile)
         ini = dict4ini.DictIni(prjfile)
@@ -7137,7 +6873,7 @@ def OnSearchJumpDef(win, event):
         if len(s) == 1:
             d, f, m = s[0]
             win.editctrl.new(f)
-            flag = jump_to_file(win, d, f, m)
+            jump_to_file(win, d, f, m)
         elif len(s) > 1:
             text = []
             _mlist = {}
@@ -7146,10 +6882,8 @@ def OnSearchJumpDef(win, event):
                 key = str(i+1)+'|'+d+'|'+os.path.basename(f)
                 text.append(key)
                 _mlist[key] = (d, f, m)
+            print text
             win.document.UserListShow(2, " ".join(text))
-            flag = True
-    if not flag:
-        win.document.callplugin('on_jump_definition', win.document, word)
 Mixin.setMixin('mainframe', 'OnSearchJumpDef', OnSearchJumpDef)
 
 def on_user_list_selction(win, list_type, text):
@@ -7201,16 +6935,13 @@ def jump_to_file(win, d, f, m):
             for i in range(count):
                 line = doc.GetLine(i)
                 if line.startswith(m):
-                    wx.CallAfter(doc.SetFocus)
-                    wx.CallAfter(doc.GotoLine, i)
-                    wx.CallAfter(doc.EnsureCaretVisible)
-                    return True
+                    doc.GotoLine(i)
+                    doc.EnsureCaretVisible()
+                    return
         elif m.isdigit():
-            wx.CallAfter(doc.SetFocus)
-            wx.CallAfter(doc.GotoLine, int(m))
-            wx.CallAfter(doc.EnsureCaretVisible)
-            return True
-    return False
+            doc.GotoLine(int(m))
+            doc.EnsureCaretVisible()
+            return
 
 
 
@@ -7223,8 +6954,7 @@ from modules import Mixin
 
 menulist = [('IDM_PYTHON', #parent menu id
         [
-            (170, 'IDM_PYTHON_CHECK', tr('Syntax Check'), wx.ITEM_NORMAL,
-                'OnPythonCheck', tr('Check python source code syntax.')),
+            (170, 'IDM_PYTHON_CHECK', tr('Syntax Check'), wx.ITEM_NORMAL, 'OnPythonCheck', tr('Check python source code syntax.')),
         ]),
 ]
 Mixin.setMixin('pythonfiletype', 'menulist', menulist)
@@ -7246,15 +6976,10 @@ Mixin.setMixin('mainframe', 'OnPythonCheck', OnPythonCheck)
 
 def init(pref):
     pref.auto_py_check = True
-    pref.auto_py_pep8_check = True
-    pref.py_check_skip_long_line = True
-    pref.py_check_skip_blank_lines = True
-    pref.py_check_skip_tailing_whitespace = True
 Mixin.setPlugin('preference', 'init', init)
 
 preflist = [
-        (tr('Python'), 160, 'check', 'auto_py_check', tr('Auto check syntax when saving'), None),
-        (tr('Python'), 170, 'check', 'auto_py_pep8_check', tr('Auto PEP8 style check with syntax check'), None),
+        (tr('Python'), 160, 'check', 'auto_py_check', tr('Auto check syntax as saving'), None),
 ]
 Mixin.setMixin('preference', 'preflist', preflist)
 
@@ -7320,6 +7045,15 @@ comment_template = """
 @rtype:
 """
 def OnPythonEPyDoc(win, event=None):
+    """
+
+    @author:
+
+    @param win:
+    @param event:
+    @return:
+    @
+    """
     def output(win, indent, parameters, pos):
         t = (indent / win.GetTabWidth() + 1) * win.getIndentChar()
         startpos = win.PositionFromLine(win.LineFromPosition(pos)+1)
@@ -7354,7 +7088,6 @@ def OnPythonEPyDoc(win, event=None):
                 x = x.split('=')[0]
             x = x.strip()
             s.append('@param %s:' % x)
-            s.append('@type %s:' % x)
         s = win.getEOLChar().join(s)
         output(win, len(indent), s, pos)
         return
@@ -7383,14 +7116,14 @@ Mixin.setPlugin('preference', 'add_pref', add_pref)
 import wx
 from modules import Mixin
 
-regex_pagename = tr("Regex")
+pagename = tr("Regex")
 def createRegexWindow(win):
-    if not win.panel.getPage(regex_pagename):
+    if not win.panel.getPage(pagename):
         from mixins import RegexWindow
 
         page = RegexWindow.RegexWindow(win.panel.createNotebook('bottom'))
-        win.panel.addPage('bottom', page, regex_pagename)
-    return regex_pagename
+        win.panel.addPage('bottom', page, pagename)
+    return pagename
 Mixin.setMixin('mainframe', 'createRegexWindow', createRegexWindow)
 
 def add_mainframe_menu(menulist):
@@ -7472,9 +7205,7 @@ def GotoSmartNavIndex(index):
     if pref.smart_nav_cur < 0 or not pref.smart_nav_files:
         return
     state = pref.smart_nav_files[pref.smart_nav_cur]
-    doc = Globals.mainframe.editctrl.new_with_state(state)
-    if not doc:
-        del pref.smart_nav_files[pref.smart_nav_cur]
+    Globals.mainframe.editctrl.new_with_state(state)
 
 def OnSmartNavPrev(win, event=None):
     pref = Globals.mainframe.pref
@@ -7568,132 +7299,6 @@ def on_document_enter(win, document):
     if document.documenttype == 'texteditor' and not Globals.starting:
         get_state(document)
 Mixin.setPlugin('editctrl', 'on_document_enter', on_document_enter)
-
-
-
-#-----------------------  mReloadMixins.py ------------------
-import wx
-from modules import Mixin
-from modules import Globals
-import ReloadMixins
-
-
-def add_mainframe_menu(menulist):
-    menulist.extend([('IDM_TOOL', #parent menu id
-        [
-            (138, 'IDM_TOOL_AUTO_LOAD_MIXINS', tr('Auto reload Mixins'), wx.ITEM_NORMAL, '', ''),
-        ]),
-        ('IDM_TOOL_AUTO_LOAD_MIXINS',
-        [
-            (110, 'IDM_TOOL_MIXINS_NAME', tr('Select Mixins name to reload') +'\tCtrl+M', wx.ITEM_NORMAL, 'OnToolReloadName', tr('Select Mixin names to reload.')),
-            (120, 'IDM_TOOL_ENABLE_RELOAD_MIXINS', tr('Enable reload Mixins') +'\tCtrl+Shift+M', wx.ITEM_CHECK, 'OnToolreload_mixins', tr('Switches to Mixins reload mode.')),
-        ]),
-    ])
-Mixin.setPlugin('mainframe', 'add_menu', add_mainframe_menu)
-
-
-def afterinit(win):
-    wx.EVT_UPDATE_UI(win, win.IDM_TOOL_ENABLE_RELOAD_MIXINS, win.OnUpdateUI)
-    wx.EVT_UPDATE_UI(win, win.IDM_TOOL_MIXINS_NAME, win.OnUpdateUI)
-Mixin.setPlugin('mainframe', 'afterinit', afterinit)
-
-
-def on_mainframe_updateui(win, event):
-    eid = event.GetId()
-    if eid == win.IDM_TOOL_ENABLE_RELOAD_MIXINS:
-        event.Check(win.pref.mixin_reload_mixins_mode)
-    if  eid == win.IDM_TOOL_MIXINS_NAME:
-        if  win.pref.mixin_reload_mixins_mode:
-            event.Enable(True)
-        else:
-            event.Enable(False)
-Mixin.setPlugin('mainframe', 'on_update_ui', on_mainframe_updateui)
-
-
-def OnToolReloadName(win, event):
-    reload(ReloadMixins)
-    from ReloadMixins import MixinDialog
-
-    dlg = MixinDialog(win)
-    answer = dlg.ShowModal()
-    dlg.Destroy()
-
-
-Mixin.setMixin('mainframe', 'OnToolReloadName', OnToolReloadName)
-
-
-def OnToolreload_mixins(win, event):
-    if  win.pref.mixin_reload_mixins_mode:
-        mode = "normal mode"
-    else:
-        mode = "auto reload Mixin plugins mode"
-    dlg = wx.MessageDialog(win, 'Are you want to switch to %s?\n this operation will'
-            ' take effect after restarting this program!\n'
-            'so doing this will close this program!\n'
-            'the patch was made by ygao,you can contact me at ygao2004@gmail.com' % mode,
-            "reload Mixins", wx.OK | wx.CANCEL | wx.ICON_QUESTION)
-    try: res = dlg.ShowModal()
-    finally: dlg.Destroy()
-    if res == wx.ID_YES:
-        pass
-    elif res == wx.ID_CANCEL:
-        return
-    win.pref.mixin_reload_mixins_mode = not win.pref.mixin_reload_mixins_mode
-    win.pref.save()
-    reload(ReloadMixins)
-    if  win.pref.mixin_reload_mixins_mode:
-        from ReloadMixins import MixinDialog
-        dlg = MixinDialog(win)
-        answer = dlg.ShowModal()
-        dlg.Destroy()
-        #ReloadMixins.create_import_py(win,flag=True)
-    else:
-        ReloadMixins.create_import_py(win)
-    Globals.mainframe.Close()
-Mixin.setMixin('mainframe', 'OnToolreload_mixins', OnToolreload_mixins)
-
-
-def pref_init(pref):
-    pref.mixin_reload_mixins_mode = False
-    pref.mixin_reload_name = []
-Mixin.setPlugin('preference', 'init', pref_init)
-
-
-
-
-
-
-#-----------------------  mDebug.py ------------------
-
-from modules import Mixin
-import wx
-import os
-import sys
-
-menulist = [('IDM_PYTHON', #parent menu id
-                [
-                        (160, 'IDM_PYTHON_DEBUG', tr('Debug in WinPdb'), wx.ITEM_NORMAL, 'OnPythonDebug', tr('Debug the current program in WinPdb.')),
-                ]),
-]
-Mixin.setMixin('pythonfiletype', 'menulist', menulist)
-
-toollist = [
-        (2130, 'debug'),
-]
-Mixin.setMixin('pythonfiletype', 'toollist', toollist)
-
-toolbaritems = {
-        'debug':(wx.ITEM_NORMAL, 'IDM_PYTHON_DEBUG', 'images/debug.png', tr('debug'), tr('Debug the current program in WinPdb.'), 'OnPythonDebug'),
-}
-Mixin.setMixin('pythonfiletype', 'toolbaritems', toolbaritems)
-
-def OnPythonDebug(win, event):
-    i_main, i_ext = os.path.splitext(sys.executable)
-    if i_main.endswith('w'):
-        i_main = i_main[:-1]
-    cmd = os.path.normcase('%s %s/modules/winpdb/_winpdb.py -t -c "%s"' % (i_main, win.app.workpath, win.document.filename))
-    wx.Execute(cmd)
-Mixin.setMixin('mainframe', 'OnPythonDebug', OnPythonDebug)
 
 
 

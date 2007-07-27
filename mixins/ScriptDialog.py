@@ -19,7 +19,7 @@
 #   along with this program; if not, write to the Free Software
 #   Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 #
-#       $Id: ScriptDialog.py 1731 2006-11-22 03:35:50Z limodou $
+#       $Id: ScriptDialog.py 1457 2006-08-23 02:12:12Z limodou $
 
 import wx
 from modules import makemenu
@@ -51,18 +51,18 @@ class ScriptDialog(wx.Dialog):
         self.ID_DOWN = wx.NewId()
         self.ID_ADD = wx.NewId()
         self.ID_REMOVE = wx.NewId()
-        self.btnUp = wx.Button(self, self.ID_UP, tr("Up"))
+        self.btnUp = wx.Button(self, self.ID_UP, tr("Up"), size=(60, -1))
         box2.Add(self.btnUp, 0, 0, 5)
-        self.btnDown = wx.Button(self, self.ID_DOWN, tr("Down"))
+        self.btnDown = wx.Button(self, self.ID_DOWN, tr("Down"), size=(60, -1))
         box2.Add(self.btnDown, 0, 0, 5)
-        self.btnAdd = wx.Button(self, self.ID_ADD, tr("Add"))
+        self.btnAdd = wx.Button(self, self.ID_ADD, tr("Add"), size=(60, -1))
         box2.Add(self.btnAdd, 0, 0, 5)
-        self.btnRemove = wx.Button(self, self.ID_REMOVE, tr("Remove"))
+        self.btnRemove = wx.Button(self, self.ID_REMOVE, tr("Remove"), size=(60, -1))
         box2.Add(self.btnRemove, 0, 0, 5)
-        self.btnOK = wx.Button(self, wx.ID_OK, tr("OK"))
+        self.btnOK = wx.Button(self, wx.ID_OK, tr("OK"), size=(60, -1))
         self.btnOK.SetDefault()
         box2.Add(self.btnOK, 0, 0, 5)
-        self.btnCancel = wx.Button(self, wx.ID_CANCEL, tr("Cancel"))
+        self.btnCancel = wx.Button(self, wx.ID_CANCEL, tr("Cancel"), size=(60, -1))
         box2.Add(self.btnCancel, 0, 0, 5)
         box.Add(box2, 0, wx.ALIGN_CENTER|wx.ALL, 5)
 

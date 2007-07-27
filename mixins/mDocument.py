@@ -19,7 +19,7 @@
 #   along with this program; if not, write to the Free Software
 #   Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 #
-#   $Id: mDocument.py 1935 2007-02-11 00:39:59Z limodou $
+#   $Id: mDocument.py 1549 2006-10-03 09:55:52Z limodou $
 
 import wx
 import StringIO
@@ -34,7 +34,7 @@ def add_mainframe_menu(menulist):
         [
             (100, 'IDM_DOCUMENT_WORDWRAP', tr('Word-wrap'), wx.ITEM_NORMAL, 'OnDocumentWordWrap', tr('Toggles the word wrap feature of the active document')),
             (110, 'IDM_DOCUMENT_AUTOINDENT', tr('Auto Indent'), wx.ITEM_CHECK, 'OnDocumentAutoIndent', tr('Toggles the auto-indent feature of the active document')),
-            (115, 'IDM_DOCUMENT_TABINDENT', tr('Switch to Space Indent'), wx.ITEM_NORMAL, 'OnDocumentTabIndent', tr('Uses tab as indent char or uses space as indent char.')),
+            (115, 'IDM_DOCUMENT_TABINDENT', tr('Use Tab Indent'), wx.ITEM_NORMAL, 'OnDocumentTabIndent', tr('Uses tab as indent char or uses space as indent char.')),
         ]),
     ])
 Mixin.setPlugin('mainframe', 'add_menu', add_mainframe_menu)
@@ -81,10 +81,6 @@ Mixin.setPlugin('mainframe', 'add_tool_list', add_tool_list)
 def editor_init(win):
     win.SetUseTabs(win.mainframe.pref.usetabs)
     win.usetab = win.mainframe.pref.usetabs
-    if win.pref.wordwrap:
-        win.SetWrapMode(wx.stc.STC_WRAP_WORD)
-    else:
-        win.SetWrapMode(wx.stc.STC_WRAP_NONE)
 Mixin.setPlugin('editor', 'init', editor_init)
 
 def OnKeyDown(win, event):
@@ -154,9 +150,9 @@ def on_mainframe_updateui(win, event):
                 from modules import makemenu
                 menu = makemenu.findmenu(win.menuitems, 'IDM_DOCUMENT_TABINDENT')
                 if win.document.usetab:
-                    menu.SetText(tr('Switch to Space Indent'))
+                    menu.SetText(tr('Use Tab Indent'))
                 else:
-                    menu.SetText(tr('Switch to Tab Indent'))
+                    menu.SetText(tr('Use Space Indent'))
             else:
                 event.Enable(False)
 Mixin.setPlugin('mainframe', 'on_update_ui', on_mainframe_updateui)

@@ -27,7 +27,6 @@ class CustomLexer(LexerBase.LexerBase):
     metaname = 'custom'
     syl_default = 1
     syl_keyword = 2
-    case = True
     
     def loadDefaultKeywords(self):
         raise Exception, "Undefined"
@@ -40,9 +39,6 @@ class CustomLexer(LexerBase.LexerBase):
     
     def initSyntaxItems(self):
         pass
-    
-    def is_keyword(self, word):
-        return word in self.keywords
 
     def styleneeded(self, win, pos):
         oldend = win.PositionFromLine(win.LineFromPosition(win.GetEndStyled()))
@@ -57,6 +53,7 @@ class CustomLexer(LexerBase.LexerBase):
                     m = r.search(txt, laststart)
                     if not m:
                         break
+                    
                     start = m.start()
                     if style == self.syl_keyword:  #keywords
                         self.process_keyword(win, m.group(), m, begin, positions)
@@ -83,34 +80,27 @@ class CustomLexer(LexerBase.LexerBase):
         else:
             start = m.start()
             end = m.end()
-            _a.append((begin + start, begin + end))
         self.set_style(win, begin + start, begin + end, style)
         positions.append((begin + start, begin + end))
         self.set_default(win, begin + m.start(), begin + m.end(), _a)
         
     def process_keyword(self, win, txt, m, begin, positions):
         _a = []
-        flag = False
         if len(m.groups()) > 0:
-            s = filter(None, m.groups())
-            if len(s) > 0:
-                ms = filter(None, m.groups())[0]
-                key = ms
-                index = m.group().index(ms)
-                start = m.start() + index
-                end = start + len(ms)
-                flag = True
-        if not flag:
+            ms = filter(None, m.groups())[0]
+            key = ms
+            index = m.group().index(ms)
+            start = m.start() + index
+            end = start + len(ms)
+        else:
             start = m.start()
             end = m.end()
             key = txt
-        if not self.case:
-            key = key.lower()
-        if self.is_keyword(key):
+        if key in self.keywords:
             _a.append((begin + start, begin + end))
             self.set_style(win, begin + start, begin + end, self.syl_keyword)
             positions.append((begin + start, begin + end))
-        self.set_default(win, begin + m.start(), begin + m.end(), _a)
+        self.set_default(win, begin, begin + len(txt), _a)
     
     def set_style(self, win, start, end, style):
         win.StartStyling(start, 0xff)
@@ -119,7 +109,7 @@ class CustomLexer(LexerBase.LexerBase):
     def set_default(self, win, begin, end, positions):
         positions.sort(lambda (aStart, aEnd), (bStart, bEnd): cmp(aStart, bStart))
         start = begin
-        styledEnd = begin
+        styledEnd = end
         for (styledStart, styledEnd) in positions:
             if styledStart > start:
                 self.set_style(win, start, styledStart, self.syl_default)         

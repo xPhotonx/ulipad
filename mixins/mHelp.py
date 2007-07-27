@@ -19,7 +19,7 @@
 #   along with this program; if not, write to the Free Software
 #   Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 #
-#   $Id: mHelp.py 1731 2006-11-22 03:35:50Z limodou $
+#   $Id: mHelp.py 1634 2006-10-21 09:55:44Z limodou $
 
 import wx
 from modules import Mixin
@@ -71,7 +71,7 @@ class AboutDialog(wx.Dialog):
         self.email = HyperLinkCtrl(self, self.ID_EMAIL, "Contact me", URL='mailto:'+email)
         box.Add(self.email, 0, wx.ALIGN_CENTER|wx.BOTTOM, 10)
 
-        btnOK = wx.Button(self, wx.ID_OK, tr("OK"))
+        btnOK = wx.Button(self, wx.ID_OK, tr("OK"), size=(60, -1))
         btnOK.SetDefault()
         box.Add(btnOK, 0, wx.ALIGN_CENTER|wx.ALL, 10)
 

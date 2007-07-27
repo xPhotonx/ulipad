@@ -19,7 +19,7 @@
 #   along with this program; if not, write to the Free Software
 #   Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 #
-#   $Id: mPyRun.py 1888 2007-02-01 14:47:13Z limodou $
+#   $Id: mPyRun.py 1602 2006-10-13 04:46:12Z limodou $
 
 import wx
 import os
@@ -45,7 +45,7 @@ Mixin.setMixin('prefdialog', 'OnSetInterpreter', OnSetInterpreter)
 def add_pref(preflist):
     preflist.extend([
         ('Python', 150, 'button', 'python_interpreter', tr('Setup python interpreter'), 'OnSetInterpreter'),
-        ('Python', 155, 'check', 'python_show_args', tr('Show arguments dialog when running python program'), None),
+        ('Python', 155, 'check', 'python_show_args', tr('Show arguments dialog as running python program'), None),
     ])
 Mixin.setPlugin('preference', 'add_pref', add_pref)
 
@@ -82,8 +82,7 @@ def OnPythonRun(win, event):
             return
         
     if win.pref.python_show_args:
-        if not get_python_args(win):
-            return
+        win.OnPythonSetArgs()
         
     args = win.document.args.replace('$path', os.path.dirname(win.document.filename))
     args = args.replace('$file', win.document.filename)
@@ -96,9 +95,9 @@ def OnPythonRun(win, event):
     win.RunCommand(command, redirect=win.document.redirect)
 Mixin.setMixin('mainframe', 'OnPythonRun', OnPythonRun)
 
-def get_python_args(win):
+def OnPythonSetArgs(win, event=None):
     from InterpreterDialog import PythonArgsDialog
-    
+
     dlg = PythonArgsDialog(win, win.pref, tr('Set Python Arguments'),
         tr("Enter the command line arguments:\n$file will be replaced by current document filename\n$path will be replaced by current document filename's directory"),
         win.document.args, win.document.redirect)
@@ -107,12 +106,6 @@ def get_python_args(win):
     if answer == wx.ID_OK:
         win.document.args = dlg.GetValue()
         win.document.redirect = dlg.GetRedirect()
-        return True
-    else:
-        return False
-    
-def OnPythonSetArgs(win, event=None):
-    get_python_args(win)
 Mixin.setMixin('mainframe', 'OnPythonSetArgs', OnPythonSetArgs)
 
 def OnPythonEnd(win, event):

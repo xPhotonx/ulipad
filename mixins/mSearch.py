@@ -19,7 +19,7 @@
 #   along with this program; if not, write to the Free Software
 #   Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 #
-#   $Id: mSearch.py 2036 2007-03-19 02:19:30Z limodou $
+#   $Id: mSearch.py 1611 2006-10-15 11:12:25Z limodou $
 
 """Search process"""
 
@@ -72,7 +72,6 @@ def afterinit(win):
     import FindReplaceDialog
 
     win.finder = FindReplaceDialog.Finder()
-    win.finddialog = None
 Mixin.setPlugin('mainframe', 'afterinit', afterinit)
 
 def on_set_focus(win, event):
@@ -84,15 +83,14 @@ def on_document_enter(win, document):
 Mixin.setPlugin('editctrl', 'on_document_enter', on_document_enter)
 
 def OnSearchFind(win, event):
-    if not win.finddialog:
-        from modules import Resource
-        from modules import i18n
-        import FindReplaceDialog
+    from modules import Resource
+    from modules import i18n
+    import FindReplaceDialog
 
-        findresfile = common.uni_work_file('resources/finddialog.xrc')
-        filename = i18n.makefilename(findresfile, win.app.i18n.lang)
-        win.finddialog = dlg = Resource.loadfromresfile(filename, win, FindReplaceDialog.FindDialog, 'FindDialog', win.finder)
-        dlg.Show()
+    findresfile = common.uni_work_file('resources/finddialog.xrc')
+    filename = i18n.makefilename(findresfile, win.app.i18n.lang)
+    dlg = Resource.loadfromresfile(filename, win, FindReplaceDialog.FindDialog, 'FindDialog', win.finder)
+    dlg.Show()
 Mixin.setMixin('mainframe', 'OnSearchFind', OnSearchFind)
 
 def OnSearchDirectFind(win, event):

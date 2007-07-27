@@ -19,7 +19,7 @@
 #   along with this program; if not, write to the Free Software
 #   Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 #
-#   $Id: FtpClass.py 2018 2007-03-16 03:14:55Z limodou $
+#   $Id: FtpClass.py 1457 2006-08-23 02:12:12Z limodou $
 
 __doc__ = 'ftp class'
 
@@ -337,10 +337,10 @@ class Ftp(wx.Panel, Mixin):
             path = self.txtPath.GetValue()
         try:
             common.setmessage(self.mainframe, tr('changing current directory'))
-            self.ftp.cwd(common.encode_string(path))
+            self.ftp.cwd(common.decode_string(path))
             self.data = []
             self.ftp.retrlines('LIST', self.receivedData)
-            self.curpath = common.decode_string(self.ftp.pwd())
+            self.curpath = common.encode_string(self.ftp.pwd())
             self.txtPath.SetValue(self.curpath)
             self.loadFile(self.data)
         except Exception, msg:

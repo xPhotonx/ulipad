@@ -1,10 +1,10 @@
-#   Programmer:     limodou
-#   E-mail:         limodou@gmail.com
-#  
-#   Copyleft 2006 limodou
-#  
-#   Distributed under the terms of the GPL (GNU Public License)
-#  
+#       Programmer:     limodou
+#       E-mail:         limodou@gmail.com
+#
+#       Copyleft 2006 limodou
+#
+#       Distributed under the terms of the GPL (GNU Public License)
+#
 #   UliPad is free software; you can redistribute it and/or modify
 #   it under the terms of the GNU General Public License as published by
 #   the Free Software Foundation; either version 2 of the License, or
@@ -19,7 +19,7 @@
 #   along with this program; if not, write to the Free Software
 #   Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 #
-#   $Id: mAutoBak.py 1897 2007-02-03 10:33:43Z limodou $
+#       $Id: mAutoBak.py 1457 2006-08-23 02:12:12Z limodou $
 
 __doc__ = 'auto make bak file as open a file'
 
@@ -28,7 +28,7 @@ from modules import common
 
 def add_pref(preflist):
     preflist.extend([
-        (tr('Document'), 200, 'check', 'auto_make_bak', tr('Auto make backup of file at opening of file'), None)
+        (tr('Document'), 200, 'check', 'auto_make_bak', tr('Auto make backup file as open a file'), None)
     ])
 Mixin.setPlugin('preference', 'add_pref', add_pref)
 

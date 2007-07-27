@@ -19,7 +19,7 @@
 #   along with this program; if not, write to the Free Software
 #   Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 #
-#   $Id: mSession.py 1892 2007-02-02 05:19:37Z limodou $
+#   $Id: mSession.py 1610 2006-10-15 09:47:35Z limodou $
 
 import os
 import wx
@@ -42,24 +42,12 @@ def add_pref(preflist):
     ])
 Mixin.setPlugin('preference', 'add_pref', add_pref)
 
-def save_session(win):
-    if Globals.starting: return
+def afterclosewindow(win):
     win.pref.sessions, win.pref.last_tab_index = [], -1
     if win.pref.load_session:
         win.pref.sessions, win.pref.last_tab_index = gather_status()
     win.pref.save()
-
-def afterclosewindow(win):
-    save_session(win)
 Mixin.setPlugin('mainframe', 'afterclosewindow', afterclosewindow)
-
-def afterclosefile(win, *args):
-    save_session(win)
-Mixin.setPlugin('editctrl', 'afterclosefile', afterclosefile)
-
-def afternewfile(win, *args):
-    save_session(win.mainframe)
-Mixin.setPlugin('editctrl', 'afternewfile', afternewfile)
 
 def gather_status():
     sessions = []
@@ -129,8 +117,7 @@ def OnFileSessionOpen(win, event=None, filename=None):
     if filename:
         try:
             get_recent_session_file(win, filename)
-            d = obj2ini.load(filename)
-            sessions, last_file = d['sessions'], d['last_file']
+            sessions, last_file = obj2ini.load(filename)
             win.pref.sessions.extend(sessions)
             for v in sessions:
                 win.editctrl.new(v[0], delay=True)
@@ -139,7 +126,7 @@ def OnFileSessionOpen(win, event=None, filename=None):
                     wx.CallAfter(win.editctrl.switch, document, delay=False)
         except:
             error.traceback()
-            common.warn(tr('There are something wrong as loading session file.'))
+            common.warn(tr('There are something wrong as load session file.'))
 Mixin.setMixin('mainframe', 'OnFileSessionOpen', OnFileSessionOpen)
 
 def OnFileSessionSave(win, event=None):
@@ -153,10 +140,10 @@ def OnFileSessionSave(win, event=None):
             get_recent_session_file(win, filename)
             sessions, last_index = gather_status()
             last_file = win.editctrl.getDoc(last_index).filename
-            obj2ini.dump({'sessions':sessions, 'last_file':last_file}, filename)
+            obj2ini.dump((sessions, last_file), filename)
         except:
             error.traceback()
-            common.warn(tr('There are something wrong as saving session file.'))
+            common.warn(tr('There are something wrong as load session file.'))
 Mixin.setMixin('mainframe', 'OnFileSessionSave', OnFileSessionSave)
 
 def afterinit(win):

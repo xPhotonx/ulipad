@@ -89,7 +89,7 @@ class FlatBitmapMenuButton(FlatBitmapButton):
         
     def SetBestSize(self, size=None):
         size = (38, 22)
-        wx.PyControl.SetBestSize(self, size)
+        wx.PyControl.SetBestFittingSize(self, size)
         
     def OnPaint(self, event):
         (width, height) = self.GetClientSizeTuple()

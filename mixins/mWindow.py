@@ -19,7 +19,7 @@
 #   along with this program; if not, write to the Free Software
 #   Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 #
-#   $Id: mWindow.py 1839 2007-01-19 12:15:56Z limodou $
+#   $Id: mWindow.py 1457 2006-08-23 02:12:12Z limodou $
 
 import wx
 from modules import Mixin
@@ -31,8 +31,8 @@ def add_mainframe_menu(menulist):
         ]),
         ('IDM_WINDOW',
         [
-            (100, 'IDM_WINDOW_LEFT', tr('Left Window')+'\tAlt+Z', wx.ITEM_CHECK, 'OnWindowLeft', tr('Shows or hides the left Window')),
-            (110, 'IDM_WINDOW_BOTTOM', tr('Bottom Window')+'\tAlt+X', wx.ITEM_CHECK, 'OnWindowBottom', tr('Shows or hides the bottom Window')),
+            (100, 'IDM_WINDOW_LEFT', tr('Left Window')+'\tCtrl+Alt+L', wx.ITEM_CHECK, 'OnWindowLeft', tr('Shows or hides the left Window')),
+            (110, 'IDM_WINDOW_BOTTOM', tr('Bottom Window')+'\tCtrl+Alt+B', wx.ITEM_CHECK, 'OnWindowBottom', tr('Shows or hides the bottom Window')),
             (120, '-', '', wx.ITEM_SEPARATOR, '', ''),
             (130, 'IDM_WINDOW_SHELL', tr('Open Shell Window'), wx.ITEM_NORMAL, 'OnWindowShell', tr('Opens shell window.')),
             (140, 'IDM_WINDOW_MESSAGE', tr('Open Message Window'), wx.ITEM_NORMAL, 'OnWindowMessage', tr('Opens message window.')),
@@ -59,7 +59,7 @@ def OnWindowBottom(win, event):
     flag = not win.panel.BottomIsVisible
     if flag:
         win.createShellWindow()
-#        win.createMessageWindow()
+        win.createMessageWindow()
 
     win.panel.showWindow('bottom', flag)
 Mixin.setMixin('mainframe', 'OnWindowBottom', OnWindowBottom)

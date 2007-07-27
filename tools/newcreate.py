@@ -74,13 +74,11 @@ def processMixin(mixins):
 #        print 'mixins'
         for k in keys:
             t, f = mixins[k]
-            import sys
-            print sys.__stdout__,t,'\n',f
             if callable(f):
                 mixins[k] = t, 'mixins.%s.%s' % (f.__module__, f.__name__)
             else:
                 print k, mixins[k]
-                #raise Exception, 'Mixin should be callable'
+                raise Exception, 'Mixin should be callable'
 #            print '\t', k, mixins[k]
         keys = plugins.keys()
         keys.sort()

@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resource>
   <object class="wxDialog" name="SnippetsCatalogDialog">
-    <title>Manage Snippets Categories</title>
+    <title>Manage Snippets Catalog</title>
     <object class="wxListBox" name="ID_CATALOG">
       <content/>
       <pos>5, 20</pos>
@@ -9,11 +9,11 @@
       <style>wxLB_SINGLE|wxSUNKEN_BORDER</style>
     </object>
     <object class="wxStaticText">
-      <label>Snippet Categories:</label>
+      <label>Snippet Catalog:</label>
       <pos>5,2</pos>
     </object>
     <object class="wxStaticText">
-      <label>Category Text:</label>
+      <label>Catalog Text:</label>
       <pos>220,2</pos>
     </object>
     <object class="wxTextCtrl" name="ID_CATALOG_TEXT">
@@ -65,7 +65,7 @@
       <size>390, -1</size>
     </object>
     <object class="wxButton" name="ID_OK">
-      <label>OK</label>
+      <label>Ok</label>
       <pos>80, 145</pos>
       <size>80, -1</size>
     </object>
@@ -79,7 +79,7 @@
       <pos>240, 145</pos>
       <size>80, -1</size>
     </object>
-    <size>400, 210</size>
+    <size>400, 200</size>
     <style>wxDEFAULT_DIALOG_STYLE</style>
   </object>
   <object class="wxDialog" name="SnippetsCodeDialog">
@@ -95,7 +95,7 @@
       <style>wxLB_SINGLE|wxSUNKEN_BORDER</style>
     </object>
     <object class="wxStaticText">
-      <label>Snippet Categories:</label>
+      <label>Snippet Catalog:</label>
       <pos>5,2</pos>
     </object>
     <object class="wxListBox" name="ID_CODES">
@@ -184,7 +184,7 @@
       <size>450, -1</size>
     </object>
     <object class="wxButton" name="ID_OK">
-      <label>OK</label>
+      <label>Ok</label>
       <pos>80, 305</pos>
       <size>80, -1</size>
     </object>

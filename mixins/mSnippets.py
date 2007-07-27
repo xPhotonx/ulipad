@@ -19,7 +19,7 @@
 #   along with this program; if not, write to the Free Software
 #   Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 #
-#   $Id: mSnippets.py 1846 2007-01-20 10:51:45Z limodou $
+#   $Id: mSnippets.py 1457 2006-08-23 02:12:12Z limodou $
 
 import wx
 import os
@@ -34,7 +34,7 @@ def add_mainframe_menu(menulist):
         ]),
         ('IDM_DOCUMENT_SNIPPETS',
         [
-            (100, 'IDM_DOCUMENT_SNIPPETS_CATALOG_MANAGE', tr('Snippets Categories Manager...'), wx.ITEM_NORMAL, 'OnDocumentSnippetsCatalogManage', tr('Manages snippets categories.')),
+            (100, 'IDM_DOCUMENT_SNIPPETS_CATALOG_MANAGE', tr('Snippets Catalog Manager...'), wx.ITEM_NORMAL, 'OnDocumentSnippetsCatalogManage', tr('Manages snippets catalog.')),
             (110, 'IDM_DOCUMENT_SNIPPETS_CODE_MANAGE', tr('Snippets Code Manager...'), wx.ITEM_NORMAL, 'OnDocumentSnippetsCodeManage', tr('Manages snippets code.')),
         ]),
         ('IDM_WINDOW',
@@ -54,9 +54,6 @@ Mixin.setPlugin('notebook', 'add_menu', add_editor_menu)
 
 def pref_init(pref):
     pref.snippet_lastitem = 0
-    pref.snippet_splitter_pos = 150
-    pref.snippet_snippet_firstcolumn = 100
-    pref.snippet_snippet_secondcolumn = 180
 Mixin.setPlugin('preference', 'init', pref_init)
 
 def afterinit(win):
@@ -66,23 +63,22 @@ def afterinit(win):
         os.mkdir('snippets')
 Mixin.setPlugin('mainframe', 'afterinit', afterinit)
 
-snippet_pagename = tr('Snippets')
 def createSnippetWindow(win):
-    if not win.panel.getPage(snippet_pagename):
+    if not win.panel.getPage(tr('Snippets')):
         from SnippetWindow import MySnippet
 
         page = MySnippet(win.panel.createNotebook('left'), win)
-        win.panel.addPage('left', page, snippet_pagename)
+        win.panel.addPage('left', page, tr('Snippets'))
 Mixin.setMixin('mainframe', 'createSnippetWindow', createSnippetWindow)
 
 def OnWindowSnippet(win, event):
     win.createSnippetWindow()
-    win.panel.showPage(snippet_pagename)
+    win.panel.showPage(tr('Snippets'))
 Mixin.setMixin('mainframe', 'OnWindowSnippet', OnWindowSnippet)
 
 def OnSnippetWindow(win, event):
     win.mainframe.createSnippetWindow()
-    win.panel.showPage(snippet_pagename)
+    win.panel.showPage(tr('Snippets'))
 Mixin.setMixin('notebook', 'OnSnippetWindow', OnSnippetWindow)
 
 def OnDocumentSnippetsCatalogManage(win, event):
@@ -106,9 +102,3 @@ def OnDocumentSnippetsCodeManage(win, event):
     dlg = Resource.loadfromresfile(filename, win, SnippetsCodeDialog, 'SnippetsCodeDialog', win)
     dlg.Show()
 Mixin.setMixin('mainframe', 'OnDocumentSnippetsCodeManage', OnDocumentSnippetsCodeManage)
-
-def closewindow(win):
-    page = win.panel.getPage(snippet_pagename)
-    if page:
-        page.save_state()
-Mixin.setPlugin('mainframe', 'closewindow', closewindow)

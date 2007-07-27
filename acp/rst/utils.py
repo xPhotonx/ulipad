@@ -1,16 +1,12 @@
 from modules import Globals
 import wx
 
-def analysis(win, syncvar):
+def analysis(win):
     for pagename, panelname, notebook, page in Globals.mainframe.panel.getPages():
-        if is_resthtmlview(page, win) and not page.isStop():
+        if is_resthtmlview(page, win):
             text = html_fragment(win.GetText().encode('utf-8'))
-            if syncvar and not syncvar.empty:
-                break
-            def f():
-                page.load(text)
-                win.SetFocus()
-            wx.CallAfter(f)
+            page.load(text)
+            wx.CallAfter(win.SetFocus)
             break
     
 def html_fragment(content):

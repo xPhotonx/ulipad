@@ -20,7 +20,7 @@
 #   along with this program; if not, write to the Free Software
 #   Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 #
-#   $Id: UliPad.py 2009 2007-03-06 00:38:09Z limodou $
+#   $Id: UliPad.py 1536 2006-09-28 09:44:39Z limodou $
 
 __appname__ = 'UliPad'
 __author__ = 'limodou'
@@ -54,11 +54,6 @@ common.print_time('begin...', DEBUG)
 
 Debug.debug = Debug.Debug(os.path.join(workpath, 'debug.txt'), debugflag)
 Debug.error = Debug.Debug(os.path.join(workpath, 'error.txt'), True)
-
-#hook global exception
-def myexcepthook(type, value, tb):
-    Debug.error.traceback((type, value, tb))
-sys.excepthook = myexcepthook
 
 #install i18n package
 i18n = i18n.I18n('./lang', keyfunc='tr')

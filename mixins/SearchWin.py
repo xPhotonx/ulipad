@@ -62,7 +62,7 @@ class SearchWin(wx.Dialog):
         sizer.Add(sizer1, 0, wx.EXPAND)
         sizer.Add(self.list, 1, wx.EXPAND, 2)
         
-        btnCancel = wx.Button(self, wx.ID_CANCEL, tr("Cancel"))
+        btnCancel = wx.Button(self, wx.ID_CANCEL, tr("Cancel"), size=(60, -1))
         sizer.Add(btnCancel, 0, wx.ALIGN_CENTER, 2)
         
         wx.EVT_CLOSE(self, self.OnClose)

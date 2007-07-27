@@ -19,7 +19,7 @@
 #   along with this program; if not, write to the Free Software
 #   Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 #
-#   $Id: mDuplicate.py 2054 2007-04-21 12:54:49Z limodou $
+#   $Id: mDuplicate.py 1566 2006-10-09 04:44:08Z limodou $
 
 __doc__ = 'Duplicate char, word, line'
 
@@ -30,7 +30,7 @@ from modules import Calltip
 CALLTIP_DUPLICATE = 1
 
 def pref_init(pref):
-    pref.duplicate_extend_mode = False
+    pref.duplicate_extend_mode = True
 Mixin.setPlugin('preference', 'init', pref_init)
 
 def add_pref(preflist):
@@ -48,8 +48,8 @@ def add_editor_menu(popmenulist):
         [
             (90, 'IDPM_DUPLICATE_MODE', tr('Duplicate Extend Mode') + '\tF10', wx.ITEM_CHECK, 'OnDuplicateMode', tr('Toggle duplication extend mode')),
             (100, 'IDPM_DUPLICATE_CURRENT_LINE', tr('Duplicate Current Line') + '\tCtrl+J', wx.ITEM_NORMAL, 'OnDuplicateCurrentLine', tr('Duplicates current line')),
-#            (200, 'IDPM_DUPLICATE_CHAR', tr('Duplicate Previous Char') + '\tCtrl+M', wx.ITEM_NORMAL, 'OnDuplicateChar', tr('Copies a character from previous matched word')),
-#            (300, 'IDPM_DUPLICATE_NEXT_CHAR', tr('Duplicate Next Char') + '\tCtrl+Shift+M', wx.ITEM_NORMAL, 'OnDuplicateNextChar', tr('Copies a character from next matched word')),
+            (200, 'IDPM_DUPLICATE_CHAR', tr('Duplicate Previous Char') + '\tCtrl+M', wx.ITEM_NORMAL, 'OnDuplicateChar', tr('Copies a character from previous matched word')),
+            (300, 'IDPM_DUPLICATE_NEXT_CHAR', tr('Duplicate Next Char') + '\tCtrl+Shift+M', wx.ITEM_NORMAL, 'OnDuplicateNextChar', tr('Copies a character from next matched word')),
             (400, 'IDPM_DUPLICATE_WORD', tr('Duplicate Previous Word') + '\tCtrl+P', wx.ITEM_NORMAL, 'OnDuplicateWord', tr('Copies a word from previous matched line')),
             (500, 'IDPM_DUPLICATE_NEXT_WORD', tr('Duplicate Next Word') + '\tCtrl+Shift+P', wx.ITEM_NORMAL, 'OnDuplicateNextWord', tr('Copies a word from next matched line')),
             (600, 'IDPM_DUPLICATE_LINE', tr('Duplicate Previous Line') + '\tCtrl+L', wx.ITEM_NORMAL, 'OnDuplicateLine', tr('Copies a line from next matched line')),
@@ -77,13 +77,13 @@ def OnDuplicateCurrentLine(win, event):
     win.mainframe.OnEditDuplicateCurrentLine(event)
 Mixin.setMixin('editor', 'OnDuplicateCurrentLine', OnDuplicateCurrentLine)
 
-#def OnDuplicateChar(win, event):
-#    win.mainframe.OnEditDuplicateChar(event)
-#Mixin.setMixin('editor', 'OnDuplicateChar', OnDuplicateChar)
-#
-#def OnDuplicateNextChar(win, event):
-#    win.mainframe.OnEditDuplicateNextChar(event)
-#Mixin.setMixin('editor', 'OnDuplicateNextChar', OnDuplicateNextChar)
+def OnDuplicateChar(win, event):
+    win.mainframe.OnEditDuplicateChar(event)
+Mixin.setMixin('editor', 'OnDuplicateChar', OnDuplicateChar)
+
+def OnDuplicateNextChar(win, event):
+    win.mainframe.OnEditDuplicateNextChar(event)
+Mixin.setMixin('editor', 'OnDuplicateNextChar', OnDuplicateNextChar)
 
 def OnDuplicateWord(win, event):
     win.mainframe.OnEditDuplicateWord(event)
@@ -110,8 +110,8 @@ def add_mainframe_menu(menulist):
         [
             (90, 'IDM_EDIT_DUPLICATE_MODE', tr('Duplicate Extend Mode') + '\tF10', wx.ITEM_CHECK, 'OnEditDuplicateMode', tr('Toggle duplication extend mode')),
             (100, 'IDM_EDIT_DUPLICATE_CURRENT_LINE', tr('Duplicate Current Line') + '\tE=Ctrl+J', wx.ITEM_NORMAL, 'OnEditDuplicateCurrentLine', tr('Duplicates current line')),
-#            (200, 'IDM_EDIT_DUPLICATE_CHAR', tr('Duplicate Previous Char') + '\tE=Ctrl+M', wx.ITEM_NORMAL, 'OnEditDuplicateChar', tr('Copies a character from previous matched word')),
-#            (300, 'IDM_EDIT_DUPLICATE_NEXT_CHAR', tr('Duplicate Next Char') + '\tE=Ctrl+Shift+M', wx.ITEM_NORMAL, 'OnEditDuplicateNextChar', tr('Copies a character from next matched word')),
+            (200, 'IDM_EDIT_DUPLICATE_CHAR', tr('Duplicate Previous Char') + '\tE=Ctrl+M', wx.ITEM_NORMAL, 'OnEditDuplicateChar', tr('Copies a character from previous matched word')),
+            (300, 'IDM_EDIT_DUPLICATE_NEXT_CHAR', tr('Duplicate Next Char') + '\tE=Ctrl+Shift+M', wx.ITEM_NORMAL, 'OnEditDuplicateNextChar', tr('Copies a character from next matched word')),
             (400, 'IDM_EDIT_DUPLICATE_WORD', tr('Duplicate Previous Word') + '\tE=Ctrl+P', wx.ITEM_NORMAL, 'OnEditDuplicateWord', tr('Copies a word from previous matched line')),
             (500, 'IDM_EDIT_DUPLICATE_NEXT_WORD', tr('Duplicate Next Word') + '\tE=Ctrl+Shift+P', wx.ITEM_NORMAL, 'OnEditDuplicateNextWord', tr('Copies a word from next matched line')),
             (600, 'IDM_EDIT_DUPLICATE_LINE', tr('Duplicate Previous Line') + '\tE=Ctrl+L', wx.ITEM_NORMAL, 'OnEditDuplicateLine', tr('Copies a line from next matched line')),
@@ -154,21 +154,21 @@ def OnEditDuplicateCurrentLine(win, event):
     win.document.GotoPos(win.document.PositionFromLine(line + 1) + pos)
 Mixin.setMixin('mainframe', 'OnEditDuplicateCurrentLine', OnEditDuplicateCurrentLine)
 
-#def OnEditDuplicateChar(win, event):
-#    pos = win.document.GetCurrentPos()
-#    text = win.document.getRawText()
-#    word = findLeftWord(text, pos, win.getWordChars())
-#    length = len(word)
-#    if length > 0:
-#        findstart = pos - length - 1    #-1 means skip the char before the word
-#        if findstart > 0:
-#            start = findPreviousWordPos(text, findstart, word, win.getWordChars())
-#            if start > -1:
-#                start += length
-#                if text[start] in win.getWordChars():
-#                    win.document.InsertText(pos, text[start])
-#                    win.document.GotoPos(pos + 1)
-#Mixin.setMixin('mainframe', 'OnEditDuplicateChar', OnEditDuplicateChar)
+def OnEditDuplicateChar(win, event):
+    pos = win.document.GetCurrentPos()
+    text = win.document.getRawText()
+    word = findLeftWord(text, pos, win.getWordChars())
+    length = len(word)
+    if length > 0:
+        findstart = pos - length - 1    #-1 means skip the char before the word
+        if findstart > 0:
+            start = findPreviousWordPos(text, findstart, word, win.getWordChars())
+            if start > -1:
+                start += length
+                if text[start] in win.getWordChars():
+                    win.document.InsertText(pos, text[start])
+                    win.document.GotoPos(pos + 1)
+Mixin.setMixin('mainframe', 'OnEditDuplicateChar', OnEditDuplicateChar)
 
 def findPreviousWordPos(text, pos, word, word_chars):
     while pos >= 0:
@@ -201,21 +201,21 @@ def findLeftWord(text, pos, word_chars):
     chars.reverse()
     return ''.join(chars)
 
-#def OnEditDuplicateNextChar(win, event):
-#    pos = win.document.GetCurrentPos()
-#    text = win.document.getRawText()
-#    word = findLeftWord(text, pos, win.getWordChars())
-#    length = len(word)
-#    if length > 0:
-#        findstart = pos         #-1 means skip the char before the word
-#        if findstart > 0:
-#            start = findNextWordPos(text, findstart, word, win.getWordChars())
-#            if start > -1:
-#                start += length
-#                if text[start] in win.getWordChars():
-#                    win.document.InsertText(pos, text[start])
-#                    win.document.GotoPos(pos + 1)
-#Mixin.setMixin('mainframe', 'OnEditDuplicateNextChar', OnEditDuplicateNextChar)
+def OnEditDuplicateNextChar(win, event):
+    pos = win.document.GetCurrentPos()
+    text = win.document.getRawText()
+    word = findLeftWord(text, pos, win.getWordChars())
+    length = len(word)
+    if length > 0:
+        findstart = pos         #-1 means skip the char before the word
+        if findstart > 0:
+            start = findNextWordPos(text, findstart, word, win.getWordChars())
+            if start > -1:
+                start += length
+                if text[start] in win.getWordChars():
+                    win.document.InsertText(pos, text[start])
+                    win.document.GotoPos(pos + 1)
+Mixin.setMixin('mainframe', 'OnEditDuplicateNextChar', OnEditDuplicateNextChar)
 
 def findNextWordPos(text, pos, word, word_chars):
     length = len(text)

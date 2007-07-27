@@ -1,6 +1,6 @@
+from modules.Debug import error
 import sys
 import re
-from modules import PyParse
 
 re_as = re.compile('\s+as(\s+|$)')
 re_match = re.compile('import\s*$|,\s*$')
@@ -21,32 +21,30 @@ def fromimport(win, matchobj):
             keys = dir(sys.modules[module])
         return 'append', keys
     except:
-#        error.error('Execute code error: import ' + matchobj.groups()[0])
-#        error.traceback()
+        error.error('Execute code error: import ' + matchobj.groups()[0])
+        error.traceback()
         return 'blank', ''
 
+import __builtin__
+import keyword
+import types
+
+def default_identifier(win):
+    return keyword.kwlist + [x for x in dir(__builtin__) if isinstance(getattr(__builtin__, x), types.BuiltinFunctionType)] + ['None', 'as', 'True', 'False', 'self']
+
 import import_utils
-def calltip(win, word, syncvar):
-    return import_utils.get_calltip(win, word, syncvar)
+def calltip(win, word):
+    obj = import_utils.getWordObject(win, word)
+    if obj:
+        signature = import_utils.getargspec(obj)
+        doc = obj.__doc__
+        return filter(None, [signature, doc])
 
-def autodot(win, word, syncvar):
-    return import_utils.autoComplete(win, word, syncvar)
+def autodot(win, word):
+    return import_utils.autoComplete(win, word)
 
-def analysis(win, syncvar):
-    try:
-        win
-    except:
-        return
-    line = win.GetCurrentLine()
-    root = PyParse.parseString(win.getRawText(), syncvar)
-    if not syncvar.empty or not root:
-        return
-    win.lock.acquire()
+def analysis(win):
+    from modules import PyParse
+    root = PyParse.parseString(win.getRawText())
     win.syntax_info = root
-    win.lock.release()
     
-def locals(win, line, word, syncvar):
-    if hasattr(win, 'syntax_info') and win.syntax_info:
-        return import_utils.get_locals(win, line, word, syncvar)
-    else:
-        return None, []

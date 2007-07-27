@@ -19,7 +19,7 @@
 #   along with this program; if not, write to the Free Software
 #   Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 #
-#   $Id: Entry.py 1783 2006-12-20 13:33:46Z limodou $
+#   $Id: Entry.py 1588 2006-10-11 01:58:40Z limodou $
 
 import wx
 
@@ -34,10 +34,10 @@ class MyTextEntry(wx.Dialog):
         self.text.SetSelection(-1, -1)
         box.Add(self.text, 1, wx.EXPAND|wx.ALL, 5)
         box2 = wx.BoxSizer(wx.HORIZONTAL)
-        btnOK = wx.Button(self, wx.ID_OK, tr("OK"))
+        btnOK = wx.Button(self, wx.ID_OK, tr("OK"), size=(60, -1))
         btnOK.SetDefault()
         box2.Add(btnOK, 0, wx.ALIGN_RIGHT|wx.RIGHT, 5)
-        btnCancel = wx.Button(self, wx.ID_CANCEL, tr("Cancel"))
+        btnCancel = wx.Button(self, wx.ID_CANCEL, tr("Cancel"), size=(60, -1))
         box2.Add(btnCancel, 0, wx.ALIGN_LEFT|wx.LEFT, 5)
         box.Add(box2, 0, wx.ALIGN_CENTER|wx.BOTTOM, 5)
 
@@ -67,10 +67,10 @@ class MyFileEntry(wx.Dialog):
         box1.Add(self.btnBrowser, 0, wx.ALL, 5)
         box.Add(box1, 1, wx.EXPAND, 5)
         box2 = wx.BoxSizer(wx.HORIZONTAL)
-        btnOK = wx.Button(self, wx.ID_OK, tr("OK"))
+        btnOK = wx.Button(self, wx.ID_OK, tr("OK"), size=(60, -1))
         btnOK.SetDefault()
         box2.Add(btnOK, 0, wx.ALIGN_RIGHT|wx.RIGHT, 5)
-        btnCancel = wx.Button(self, wx.ID_CANCEL, tr("Cancel"))
+        btnCancel = wx.Button(self, wx.ID_CANCEL, tr("Cancel"), size=(60, -1))
         box2.Add(btnCancel, 0, wx.ALIGN_LEFT|wx.LEFT, 5)
         box.Add(box2, 0, wx.ALIGN_CENTER|wx.BOTTOM, 5)
 
@@ -89,4 +89,4 @@ class MyFileEntry(wx.Dialog):
         dlg = wx.FileDialog(self, tr("Select A File"), "", "", tr("All file (*.*)|*.*"), wx.OPEN|wx.HIDE_READONLY)
         if dlg.ShowModal() == wx.ID_OK:
             filename = dlg.GetPath()
-            self.text.SetValue('%s' % filename)
+            self.text.SetValue('"%s"' % filename)

@@ -21,5 +21,5 @@
 #
 #   $Id$
 
-#import mCommandRecord
+import mCommandRecord
 import mConcurrent

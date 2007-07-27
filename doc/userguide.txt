@@ -4,6 +4,7 @@
 
 :作者: limodou
 :联系: limodou@gmail.com
+:版本: $Id: userguide.txt 42 2005-09-28 05:19:21Z limodou $
 :主页: http://wiki.woodpecker.org.cn/moin/UliPad
 :BLOG: http://www.donews.net/limodou
 :版权: GPL
@@ -59,32 +60,6 @@ Windows安装包
 
 最新更新
 --------
-
-3.6版本
-~~~~~~~~
-
-新增功能：
-
-#. 增强定义跳转，可以无ctag支持下在文件内跳转
-#. 对自动完成进行完善：自动判断类型，识别类结构等
-#. 增加对正则搜索的范围设定
-#. 增加对epydoc注释中参数类型的支持
-#. 增加协同开发支持
-#. 增加fortran,Lua语法高亮支持
-#. 增强类浏览显示结构和内容，可以显示类属性和docstring
-#. 增加css的自动提示信息
-
-修改：
-
-#. 改进类浏览窗口中，单击class类图标可以展开和折叠
-#. 修正对弹出运行参数窗口点取消时，仍然运行的bug
-#. 修正reStructuredText的语法高亮处理
-#. 修正Python语法分析的bug
-#. 修正当关闭目录浏览窗口时，再打开不能恢复目录的bug
-#. 修正当文件或目录与UliPad不是一个盘符时，打开命令行窗口菜单执行失败的错误
-#. 修正Music插件的bug
-#. 删除打开最新目录功能
-#. 修正当修改编码时，editctrl的tag页标题没有显示修改状态的bug
 
 3.5版本
 ~~~~~~~

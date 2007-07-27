@@ -19,7 +19,7 @@
 #   along with this program; if not, write to the Free Software
 #   Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 #
-#   $Id: HtmlPage.py 1731 2006-11-22 03:35:50Z limodou $
+#   $Id: HtmlPage.py 1616 2006-10-17 02:31:15Z limodou $
 
 from modules import Mixin
 import DocumentBase
@@ -92,7 +92,7 @@ class HtmlDialog(wx.Dialog):
         else:
             box.Add(self.html, 1, wx.EXPAND|wx.ALL, 1)
         box2 = wx.BoxSizer(wx.HORIZONTAL)
-        btnOK = wx.Button(self, wx.ID_OK, tr("OK"))
+        btnOK = wx.Button(self, wx.ID_OK, tr("OK"), size=(60, -1))
         btnOK.SetDefault()
         box2.Add(btnOK, 0, 0)
         box.Add(box2, 0, wx.ALIGN_CENTER|wx.ALL, 2)
@@ -131,7 +131,7 @@ class HtmlPage(wx.Panel, DocumentBase.DocumentBase, Mixin.Mixin):
         subbox = wx.BoxSizer(wx.HORIZONTAL)
 
         self.ID_EDIT = wx.NewId()
-        self.btnEdit = wx.Button(self, self.ID_EDIT, tr("Edit"))
+        self.btnEdit = wx.Button(self, self.ID_EDIT, tr("Edit"), size=(60, -1))
         subbox.Add(self.btnEdit, 0, wx.RIGHT, 2)
 
         self.ID_BACK = wx.NewId()
@@ -143,7 +143,7 @@ class HtmlPage(wx.Panel, DocumentBase.DocumentBase, Mixin.Mixin):
         subbox.Add(self.btnForward, 0, wx.RIGHT, 2)
 
         self.ID_REFRESH = wx.NewId()
-        self.btnRefresh = wx.Button(self, self.ID_REFRESH, tr("Refresh"))
+        self.btnRefresh = wx.Button(self, self.ID_REFRESH, tr("Refresh"), size=(60, -1))
         subbox.Add(self.btnRefresh, 0, wx.RIGHT, 2)
 
         self.box.Add(subbox, 0, wx.GROW)

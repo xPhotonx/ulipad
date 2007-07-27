@@ -19,7 +19,7 @@
 #   along with this program; if not, write to the Free Software
 #   Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 #
-#   $Id: mSearchInFiles.py 1837 2007-01-19 10:24:10Z limodou $
+#   $Id: mSearchInFiles.py 1566 2006-10-09 04:44:08Z limodou $
 
 import wx
 import os.path
@@ -47,8 +47,7 @@ def pref_init(pref):
     pref.searchinfile_dirlist = []
     pref.searchinfile_extlist = []
     pref.searchinfile_case = False
-    pref.searchinfile_subdir = True
+    pref.searchinfile_subdir = False
     pref.searchinfile_regular = False
-    pref.searchinfile_onlyfilename = False
     pref.searchinfile_defaultpath = os.path.dirname(sys.argv[0])
 Mixin.setPlugin('preference', 'init', pref_init)

@@ -42,18 +42,6 @@ def add_mainframe_menu(menulist):
     ])
 Mixin.setPlugin('mainframe', 'add_menu', add_mainframe_menu)
 
-def editor_init(win):
-    win.on_focus = False
-Mixin.setPlugin('editor', 'init', editor_init)
-
-def on_set_focus(win, event):
-    win.on_focus = True
-Mixin.setPlugin('editor', 'on_set_focus', on_set_focus)
-
-def on_kill_focus(win, event):
-    win.on_focus = False
-Mixin.setPlugin('editor', 'on_kill_focus', on_kill_focus)
-
 def afterinit(win):
     wx.EVT_UPDATE_UI(win, win.IDM_TOOL_SEARCHCMDS_IMPACT_MODE, win.OnUpdateUI)
 Mixin.setPlugin('mainframe', 'afterinit', afterinit)
@@ -104,7 +92,6 @@ def on_first_char(win, event):
         if key < 127:
             buf.append(chr(key))
             showinfo(' '.join(buf))
-            Mixin.reload_obj(Commands)
             commandar = Commands.getinstance()    
             s = commandar.impact_search(''.join(buf))
             if len(s) == 1:     #find a cmd
@@ -127,23 +114,4 @@ def on_first_keydown(win, event):
             return True
         else:
             return False
-# recovery the old version
-#    key = event.GetKeyCode()
-#    if key in (wx.WXK_ESCAPE, ):
-#        if  win.on_focus:
-#            if win.AutoCompActive():
-#                win.AutoCompCancel()
-#                return
-#            if win.calltip.active:
-#                win.calltip.cancel()
-#                return 
-#            if  not _impact_mode:
-#                _impact_mode = True
-#                showinfo("vim mode begin")
-#                return True
-#        _impact_mode = False
-#        Globals.mainframe.statusbar.hide_panel()
-#        return True
-#    else:
-#        return False
 Mixin.setPlugin('editor', 'on_first_keydown', on_first_keydown)

@@ -114,9 +114,7 @@ def GotoSmartNavIndex(index):
     if pref.smart_nav_cur < 0 or not pref.smart_nav_files:
         return
     state = pref.smart_nav_files[pref.smart_nav_cur]
-    doc = Globals.mainframe.editctrl.new_with_state(state)
-    if not doc:
-        del pref.smart_nav_files[pref.smart_nav_cur]
+    Globals.mainframe.editctrl.new_with_state(state)
     
 def OnSmartNavPrev(win, event=None):
     pref = Globals.mainframe.pref

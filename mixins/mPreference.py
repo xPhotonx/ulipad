@@ -19,7 +19,7 @@
 #   along with this program; if not, write to the Free Software
 #   Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 #
-#   $Id: mPreference.py 1757 2006-12-14 01:20:35Z limodou $
+#   $Id: mPreference.py 1566 2006-10-09 04:44:08Z limodou $
 
 import wx
 from modules import Mixin
@@ -36,12 +36,10 @@ Mixin.setPlugin('mainframe', 'add_menu', add_mainframe_menu)
 
 def beforegui(win):
     import Preference
-    from modules import Globals
 
     win.pref = Preference.Preference()
     win.pref.load()
     win.pref.printValues()
-    Globals.pref = win.pref
 Mixin.setPlugin('app', 'beforegui', beforegui, Mixin.HIGH)
 
 def OnOptionPreference(win, event):

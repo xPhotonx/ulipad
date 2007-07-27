@@ -25,6 +25,7 @@ import os
 import wx.stc
 from modules import Mixin
 from modules import common
+from modules import Globals
 from modules import dict4ini
 from modules.Debug import error
 
@@ -51,8 +52,7 @@ def OnSearchJumpDef(win, event):
     word = getword(win)
     from modules import ctags
     
-    flag = False
-    prjfile = common.getProjectFile(win.document.getFilename())
+    prjfile = common.getProjectFile(Globals.workpath)
     if prjfile:
         path = os.path.dirname(prjfile)
         ini = dict4ini.DictIni(prjfile)
@@ -67,7 +67,7 @@ def OnSearchJumpDef(win, event):
         if len(s) == 1:
             d, f, m = s[0]
             win.editctrl.new(f)
-            flag = jump_to_file(win, d, f, m)
+            jump_to_file(win, d, f, m)
         elif len(s) > 1:
             text = []
             _mlist = {}
@@ -76,10 +76,8 @@ def OnSearchJumpDef(win, event):
                 key = str(i+1)+'|'+d+'|'+os.path.basename(f)
                 text.append(key)
                 _mlist[key] = (d, f, m)
+            print text
             win.document.UserListShow(2, " ".join(text))
-            flag = True
-    if not flag:
-        win.document.callplugin('on_jump_definition', win.document, word)
 Mixin.setMixin('mainframe', 'OnSearchJumpDef', OnSearchJumpDef)
 
 def on_user_list_selction(win, list_type, text):
@@ -131,15 +129,12 @@ def jump_to_file(win, d, f, m):
             for i in range(count):
                 line = doc.GetLine(i)
                 if line.startswith(m):
-                    wx.CallAfter(doc.SetFocus)
-                    wx.CallAfter(doc.GotoLine, i)
-                    wx.CallAfter(doc.EnsureCaretVisible)
-                    return True
+                    doc.GotoLine(i)
+                    doc.EnsureCaretVisible()
+                    return
         elif m.isdigit():
-            wx.CallAfter(doc.SetFocus)
-            wx.CallAfter(doc.GotoLine, int(m))
-            wx.CallAfter(doc.EnsureCaretVisible)
-            return True
-    return False
+            doc.GotoLine(int(m))
+            doc.EnsureCaretVisible()
+            return
         
         

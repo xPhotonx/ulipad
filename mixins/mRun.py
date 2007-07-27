@@ -19,7 +19,7 @@
 #   along with this program; if not, write to the Free Software
 #   Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 #
-#   $Id: mRun.py 1858 2007-01-25 14:15:57Z limodou $
+#   $Id: mRun.py 1637 2006-10-23 03:46:22Z limodou $
 
 import wx
 import locale
@@ -47,7 +47,7 @@ def message_init(win):
     win.writeposition = 0
 Mixin.setPlugin('messagewindow', 'init', message_init)
 
-def RunCommand(win, command, redirect=True, hide=False):
+def RunCommand(win, command, redirect=True):
     """replace $file = current document filename"""
     if redirect:
         win.createMessageWindow()
@@ -63,10 +63,7 @@ def RunCommand(win, command, redirect=True, hide=False):
             win.messagewindow.process = wx.Process(win)
             win.messagewindow.process.Redirect()
             if wx.Platform == '__WXMSW__':
-                if hide == False:
-                    win.messagewindow.pid = wx.Execute(command, wx.EXEC_ASYNC|wx.EXEC_NOHIDE, win.messagewindow.process)
-                else:
-                    win.messagewindow.pid = wx.Execute(command, wx.EXEC_ASYNC, win.messagewindow.process)
+                win.messagewindow.pid = wx.Execute(command, wx.EXEC_ASYNC|wx.EXEC_NOHIDE, win.messagewindow.process)
             else:
                 win.messagewindow.pid = wx.Execute(command, wx.EXEC_ASYNC|wx.EXEC_MAKE_GROUP_LEADER, win.messagewindow.process)
             if hasattr(win.messagewindow, 'inputstream') and win.messagewindow.inputstream:

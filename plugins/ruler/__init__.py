@@ -1,10 +1,10 @@
-#   Programmer:     limodou
-#   E-mail:         limodou@gmail.com
-#  
-#   Copyleft 2006 limodou
-#  
-#   Distributed under the terms of the GPL (GNU Public License)
-#  
+#       Programmer:     limodou
+#       E-mail:         limodou@gmail.com
+#
+#       Copyleft 2006 limodou
+#
+#       Distributed under the terms of the GPL (GNU Public License)
+#
 #   NewEdit is free software; you can redistribute it and/or modify
 #   it under the terms of the GNU General Public License as published by
 #   the Free Software Foundation; either version 2 of the License, or
@@ -19,11 +19,11 @@
 #   along with this program; if not, write to the Free Software
 #   Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 #
-#   $Id$
+#       $Id$
 #   Update by Claudio Grondi 2006/08/14 :
-#   added menu shortcut Alt+R - switches the ruler on/off
-#   added on_key_down()       - BUT ... column indicator is still not in sync with cursor ...
-   
+#     added menu shortcut Alt+R - switches the ruler on/off
+#     added on_key_down()       - BUT ... column indicator is still not in sync with cursor ...
+
 import wx
 from modules import Mixin
 import unicodedata

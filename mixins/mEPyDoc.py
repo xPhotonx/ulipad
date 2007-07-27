@@ -44,6 +44,15 @@ comment_template = """
 @rtype: 
 """
 def OnPythonEPyDoc(win, event=None):
+    """
+    
+    @author: 
+    
+    @param win:
+    @param event:
+    @return:
+    @
+    """
     def output(win, indent, parameters, pos):
         t = (indent / win.GetTabWidth() + 1) * win.getIndentChar()
         startpos = win.PositionFromLine(win.LineFromPosition(pos)+1)
@@ -78,7 +87,7 @@ def OnPythonEPyDoc(win, event=None):
                 x = x.split('=')[0]
             x = x.strip()
             s.append('@param %s:' % x)
-            s.append('@type %s:' % x)
+#            s.append('@type %s:' % x)
         s = win.getEOLChar().join(s)
         output(win, len(indent), s, pos)
         return

@@ -19,7 +19,7 @@
 #   along with this program; if not, write to the Free Software
 #   Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 #
-#   $Id: mConvert.py 1897 2007-02-03 10:33:43Z limodou $
+#   $Id: mConvert.py 1457 2006-08-23 02:12:12Z limodou $
 
 import wx
 from modules import Mixin
@@ -235,7 +235,7 @@ Mixin.setPlugin('preference', 'init', pref_init)
 
 def add_pref(preflist):
     preflist.extend([
-        (tr('Document'), 240, 'choice', 'converted_output', tr('Choose where converted text is to be output:'), [tr('In html window'), tr('In message window'), tr('Replace selected text')]),
+        (tr('Document'), 240, 'choice', 'converted_output', tr('Choose where converted text is be outputed:'), [tr('In html window'), tr('In message window'), tr('Replace selected text')]),
     ])
 Mixin.setPlugin('preference', 'add_pref', add_pref)
 

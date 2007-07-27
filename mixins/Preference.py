@@ -19,12 +19,12 @@
 #   along with this program; if not, write to the Free Software
 #   Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 #
-#   $Id: Preference.py 1887 2007-02-01 14:03:10Z limodou $
+#   $Id: Preference.py 1457 2006-08-23 02:12:12Z limodou $
 
 import copy
 import os.path
 from modules import Mixin
-from modules.Debug import debug, error
+from modules.Debug import debug
 from modules.EasyGuider import obj2ini
 from modules import Globals
 
@@ -34,28 +34,20 @@ class Preference(Mixin.Mixin):
 
     def __init__(self):
         self.initmixin()
+        self.defaultfile = os.path.join(Globals.workpath, 'ulipad.ini')
         #@add_pref preflist
         self.callplugin_once('add_pref', Preference.preflist)
         self.callplugin('init', self)
         self.preflist.sort()
-        
-    def get_defulat_inifile(self):
-        return os.path.join(Globals.workpath, 'ulipad.ini')
-    
+
     def clone(self):
         return copy.copy(self)
 
     def save(self, filename=''):
         if not filename:
-            filename = self.get_defulat_inifile()
+            filename = self.defaultfile
 #       pickle.dump(self, open(filename, 'w'))
-        try:
-            obj2ini.dump(self, filename, encoding='utf-8')
-        except:
-            try:
-                obj2ini.dump(self, filename)
-            except:
-                error.traceback()
+        obj2ini.dump(self, filename)
 
     def load(self, filename=''):
 #       if not filename:
@@ -66,15 +58,9 @@ class Preference(Mixin.Mixin):
 #               if hasattr(self, k):
 #                   setattr(self, k, v)
         if not filename:
-            filename = self.get_defulat_inifile()
+            filename = self.defaultfile
         if os.path.exists(filename):
-            try:
-                obj2ini.load(filename, obj=self, encoding='utf-8')
-            except:
-                try:
-                    obj2ini.load(filename, obj=self)
-                except:
-                    error.traceback()
+            obj2ini.load(filename, obj=self)
 
     def printValues(self):
         debug.info("[preference] member variable...")

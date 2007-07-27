@@ -19,9 +19,10 @@
 #   along with this program; if not, write to the Free Software
 #   Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 #
-#   $Id: FindReplaceDialog.py 1652 2006-10-28 12:56:52Z limodou $
+#   $Id: FindReplaceDialog.py 1543 2006-09-29 06:46:00Z limodou $
 
 import wx
+import wx.stc
 import re
 from modules import common
 
@@ -79,7 +80,8 @@ class Finder:
             if self.rewind:
                 pos = self.win.FindText(0, start, self.findtext, self.getFlags())
             if pos == -1:
-                common.note(tr("Cann't find the text !"))
+                message = tr("Cann't find the text !")
+                self.showMessage(message)
                 return None
 
         return (pos, pos + length)
@@ -103,10 +105,14 @@ class Finder:
             if self.rewind:
                 pos = self.win.FindText(self.win.GetLength(), start, self.findtext, self.getFlags())
             if pos == -1:
-                common.note(tr("Cann't find the text !"))
+                message = tr("Cann't find the text !")
+                self.showMessage(message)
                 return None
 
         return (pos, pos + length)
+
+    def showMessage(self, message):
+        wx.MessageDialog(self.win, message, tr("Find result"), wx.OK).ShowModal()
 
     def findReNext(self):
         length = len(getRawText(self.findtext))
@@ -121,7 +127,8 @@ class Finder:
             if self.rewind:
                 result = self.regularSearch(0, start)
             if result == None:
-                common.note(tr("Cann't find the text !"))
+                message = tr("Cann't find the text !")
+                self.showMessage(message)
                 return None
 
         return result
@@ -212,9 +219,11 @@ class Finder:
         self.win.EndUndoAction()
 
         if count == 0:
-            common.note(tr("Cann't find the text !"))
+            message = tr("Cann't find the text !")
+            self.showMessage(message)
         else:
-            common.note(tr("Total replaced %d places!") % count)
+            message = tr("Total replaced %d places!") % count
+            common.note(message)
 
     def regularReplace(self, text):
         return re.sub(self.findtext, self.replacetext, text)

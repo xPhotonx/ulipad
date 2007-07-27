@@ -19,7 +19,7 @@
 #   along with this program; if not, write to the Free Software
 #   Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 #
-#   $Id: MyStatusBar.py 1736 2006-11-27 13:01:19Z limodou $
+#   $Id: MyStatusBar.py 1637 2006-10-23 03:46:22Z limodou $
 
 import wx
 
@@ -69,14 +69,16 @@ class MyStatusBar(wx.StatusBar):
         if not self.showing:
             self.showing = True
             wx.CallAfter(self.show_panel, text, color='GREEN')
-            wx.FutureCall(2000, self.Notify)
-            
+            self.timer = wx.PyTimer(self.Notify)
+            self.timer.Start(2000)
+
     def warn(self, text):
         if not self.showing:
             self.showing = True
             wx.CallAfter(self.show_panel, text)
-            wx.FutureCall(2000, self.Notify)
-            
+            self.timer = wx.PyTimer(self.Notify)
+            self.timer.Start(2000)
+        
     def hide_panel(self):
         wx.CallAfter(self.slashtext.Hide)
 

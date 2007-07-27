@@ -19,7 +19,7 @@
 #   along with this program; if not, write to the Free Software
 #   Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 #
-#   $Id: MyPanel.py 1852 2007-01-25 01:50:35Z limodou $
+#   $Id: MyPanel.py 1633 2006-10-21 08:31:55Z limodou $
 #
 #   This file's code is mostly copy from DrPython. Thanks to Daniel Pozmanter
 
@@ -319,11 +319,11 @@ class SashPanel(wx.Panel):
             self.delNotebook(side)
             self.showWindow(side, False)
 
-    def closePage(self, name, **kwargs):
+    def closePage(self, name):
         i, v = self.getPageItem(name)
         if v:
             pagename, panelname, notebook, page = v
-            return notebook.closePage(page, **kwargs)
+            return notebook.closePage(page)
 
     def getPage(self, name):
         i, v = self.getPageItem(name)
@@ -466,7 +466,7 @@ class Notebook(FNB.FlatNotebook, Mixin.Mixin):
     def OnPopUp(self, event):
         self.PopupMenu(self.popmenu, event.GetPosition())
 
-    def closePage(self, name, **kwargs):
+    def closePage(self, name):
         index = self.getPageIndex(name)
         if index > -1:
             page = self.GetPage(index)
@@ -474,14 +474,14 @@ class Notebook(FNB.FlatNotebook, Mixin.Mixin):
                 if page.canClose():
                     self.callplugin('close_page', page, name)
                     if hasattr(page, 'OnClose'):
-                        page.OnClose(self, **kwargs)
+                        page.OnClose(self)
                     self.delete_must = True
                     self.DeletePage(index)
                     self.panel.delPage(self.side, name)
             else:
                 self.callplugin('close_page', page, name)
                 if hasattr(page, 'OnClose'):
-                    page.OnClose(self, **kwargs)
+                    page.OnClose(self)
                 self.delete_must = True
                 self.DeletePage(index)
                 self.panel.delPage(self.side, name)

@@ -19,7 +19,7 @@
 #   along with this program; if not, write to the Free Software
 #   Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 #
-#   $Id: Debug.py 1730 2006-11-21 13:46:26Z limodou $
+#   $Id: Debug.py 1504 2006-09-02 04:08:43Z limodou $
 
 DEBUG = True
 import types
@@ -27,8 +27,6 @@ import sys
 import traceback
 import time
 import os.path
-import common
-import Globals
 
 class Debug:
     def __init__(self, filename=os.path.abspath('debug.txt'), debug=None):
@@ -51,14 +49,9 @@ class Debug:
     def debug(self, *args):
         self.output('[DEBUG] -- ', *args)
 
-    def traceback(self, tb=None):
-        if tb:
-            message = traceback.format_exception(*tb)
-        else:
-            message = traceback.format_exception(*sys.exc_info())
+    def traceback(self):
+        message = traceback.format_exception(*sys.exc_info())
         self.output('[Traceback]', ''.join(message))
-        if debug and debug.is_debug() and Globals.mainframe and Globals.mainframe.IsShown():
-            common.warn("There is some thing wrong as running the program")
 
     def time(self, *args):
         self.output('[%s] -- ' % time.ctime(time.time()), *args)

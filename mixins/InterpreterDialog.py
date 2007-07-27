@@ -19,7 +19,7 @@
 #   along with this program; if not, write to the Free Software
 #   Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 #
-#   $Id: InterpreterDialog.py 1731 2006-11-22 03:35:50Z limodou $
+#   $Id: InterpreterDialog.py 1577 2006-10-10 05:45:43Z limodou $
 
 import wx
 from modules import Entry
@@ -47,16 +47,16 @@ class InterpreterDialog(wx.Dialog):
         self.ID_ADD = wx.NewId()
         self.ID_REMOVE = wx.NewId()
         self.ID_MODIFY = wx.NewId()
-        self.btnAdd = wx.Button(self, self.ID_ADD, tr("Add"))
+        self.btnAdd = wx.Button(self, self.ID_ADD, tr("Add"), size=(60, -1))
         box2.Add(self.btnAdd, 0, 0, 5)
-        self.btnModify = wx.Button(self, self.ID_MODIFY, tr("Modify"))
+        self.btnModify = wx.Button(self, self.ID_MODIFY, tr("Modify"), size=(60, -1))
         box2.Add(self.btnModify, 0, 0, 5)
-        self.btnRemove = wx.Button(self, self.ID_REMOVE, tr("Remove"))
+        self.btnRemove = wx.Button(self, self.ID_REMOVE, tr("Remove"), size=(60, -1))
         box2.Add(self.btnRemove, 0, 0, 5)
-        self.btnOK = wx.Button(self, wx.ID_OK, tr("OK"))
+        self.btnOK = wx.Button(self, wx.ID_OK, tr("OK"), size=(60, -1))
         self.btnOK.SetDefault()
         box2.Add(self.btnOK, 0, 0, 5)
-        self.btnCancel = wx.Button(self, wx.ID_CANCEL, tr("Cancel"))
+        self.btnCancel = wx.Button(self, wx.ID_CANCEL, tr("Cancel"), size=(60, -1))
         box2.Add(self.btnCancel, 0, 0, 5)
         box.Add(box2, 0, wx.ALIGN_CENTER|wx.ALL, 5)
 
@@ -173,10 +173,10 @@ class PythonArgsDialog(wx.Dialog):
         box.Add(self.chkDirect, 0, wx.ALIGN_LEFT|wx.LEFT|wx.BOTTOM, 2)
 
         box1 = wx.BoxSizer(wx.HORIZONTAL)
-        btnOK = wx.Button(self, wx.ID_OK, tr("OK"))
+        btnOK = wx.Button(self, wx.ID_OK, tr("OK"), size=(60, -1))
         btnOK.SetDefault()
         box1.Add(btnOK, 0, wx.ALL, 2)
-        btnCancel = wx.Button(self, wx.ID_CANCEL, tr("Cancel"))
+        btnCancel = wx.Button(self, wx.ID_CANCEL, tr("Cancel"), size=(60, -1))
         box1.Add(btnCancel, 0, wx.ALL, 2)
         box.Add(box1, 0, wx.ALIGN_CENTER)
 

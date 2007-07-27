@@ -19,7 +19,7 @@
 #   along with this program; if not, write to the Free Software
 #   Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 #
-#   $Id: mFtp.py 2120 2007-07-11 02:56:11Z limodou $
+#   $Id: mFtp.py 1566 2006-10-09 04:44:08Z limodou $
 
 __doc__ = 'ftp manage'
 
@@ -54,13 +54,13 @@ def add_editor_menu(popmenulist):
     ])
 Mixin.setPlugin('notebook', 'add_menu', add_editor_menu)
 
-def createFtpWindow(win, side='bottom'):
+def createFtpWindow(win):
     page = win.panel.getPage('Ftp')
     if not page:
         from FtpClass import Ftp
 
-        page = Ftp(win.panel.createNotebook(side), win)
-        win.panel.addPage(side, page, 'Ftp')
+        page = Ftp(win.panel.createNotebook('bottom'), win)
+        win.panel.addPage('bottom', page, 'Ftp')
     win.ftp = page
 Mixin.setMixin('mainframe', 'createFtpWindow', createFtpWindow)
 
@@ -70,7 +70,7 @@ def OnWindowFtp(win, event):
 Mixin.setMixin('mainframe', 'OnWindowFtp', OnWindowFtp)
 
 def OnFtpWindow(win, event):
-    win.mainframe.createFtpWindow(win.side)
+    win.mainframe.createFtpWindow()
     win.panel.showPage('Ftp')
 Mixin.setMixin('notebook', 'OnFtpWindow', OnFtpWindow)
 
