@@ -1,10 +1,10 @@
-#   Programmer:     limodou
-#   E-mail:         limodou@gmail.com
-#  
-#   Copyleft 2006 limodou
-#  
-#   Distributed under the terms of the GPL (GNU Public License)
-#  
+#       Programmer:     limodou
+#       E-mail:         limodou@gmail.com
+#
+#       Copyleft 2006 limodou
+#
+#       Distributed under the terms of the GPL (GNU Public License)
+#
 #   UliPad is free software; you can redistribute it and/or modify
 #   it under the terms of the GNU General Public License as published by
 #   the Free Software Foundation; either version 2 of the License, or
@@ -19,7 +19,7 @@
 #   along with this program; if not, write to the Free Software
 #   Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 #
-#   $Id: PluginDialog.py 2093 2007-06-25 10:14:44Z limodou $
+#       $Id: PluginDialog.py 1457 2006-08-23 02:12:12Z limodou $
 
 import wx
 import glob
@@ -28,11 +28,10 @@ import re
 from modules import dict4ini
 from modules import CheckList
 from modules import common
-from modules.Debug import error
 
 class PluginDialog(wx.Dialog):
     def __init__(self, parent):
-        wx.Dialog.__init__(self, parent, -1, tr('Plugin Manage'), size=(600, 300))
+        wx.Dialog.__init__(self, parent, -1, tr('Plugin Manage'), size=(500, 300))
         self.parent = parent
         self.mainframe = parent
         self.state = {}
@@ -41,15 +40,15 @@ class PluginDialog(wx.Dialog):
         for key in self.plugins.keys():
             self.state[key] = False
         text = file(self.mainframe.plugin_initfile).read()
-        re_i = re.compile("^\s+import\s+(\w+)$", re.M)
+        re_i = re.compile("^\timport\s+(\w+)$", re.M)
         result = re_i.findall(text)
         for key in result:
             self.state[key] = True
 
         box = wx.BoxSizer(wx.VERTICAL)
         self.list = CheckList.CheckList(self, columns=[
-                (tr("Name"), 120, 'left'),
-                (tr("Description"), 250, 'left'),
+                (tr("Name"), 80, 'left'),
+                (tr("Description"), 150, 'left'),
                 (tr("Author"), 80, 'right'),
                 (tr("Version"), 40, 'right'),
                 (tr("Date"), 80, 'right'),
@@ -101,7 +100,7 @@ try:
     import %s
 except:
     error.traceback()
-    flag = True
+flag = True
 """ % s for s in self.plugins if self.state[s]]) + """
 if flag:
     raise Exception
@@ -118,30 +117,10 @@ if flag:
         return plugins
 
     def copy_mo(self):
-        langpath = os.path.join(self.mainframe.workpath, 'lang')
-        dirs = [d for d in os.listdir(langpath) if os.path.isdir(os.path.join(langpath, d))]
         files = glob.glob(os.path.join(self.mainframe.workpath, 'plugins/*/*.mo'))
         import shutil
         for f in files:
             fname = os.path.splitext(os.path.basename(f))[0]
-            flag = False
-            for lang in dirs:
-                if fname.endswith(lang):
-                    flag = True
-                    break
-            if not flag:
-                lang = fname[-5:]
-                try:
-                    os.makedirs(os.path.join(self.mainframe.workpath, 'lang', fname[-5:]))
-                except Exception, e:
-                    error.traceback()
-                    common.showerror(self, str(e))
-                    continue
+            lang = fname.split('_', 1)[1]
             dst = os.path.join(self.mainframe.workpath, 'lang', lang, os.path.basename(f))
-            try:
-                shutil.copyfile(f, dst)
-            except Exception, e:
-                error.traceback()
-                common.showerror(self, str(e))
-                continue
-            
+            shutil.copyfile(f, dst)
