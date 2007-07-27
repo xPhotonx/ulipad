@@ -19,11 +19,10 @@
 #   along with this program; if not, write to the Free Software
 #   Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 #
-#   $Id: mLineending.py 1805 2007-01-04 02:07:31Z limodou $
+#   $Id: mLineending.py 1566 2006-10-09 04:44:08Z limodou $
 
 import wx
 from modules import Mixin
-import re
 
 eolmess = [tr(r"Unix Mode ('\n')"), tr(r"DOS/Windows Mode ('\r\n')"), tr(r"Mac Mode ('\r')")]
 
@@ -32,7 +31,6 @@ def beforeinit(win):
     win.eolmode = win.pref.default_eol_mode
     win.eols = {0:wx.stc.STC_EOL_LF, 1:wx.stc.STC_EOL_CRLF, 2:wx.stc.STC_EOL_CR}
     win.eolstr = {0:'Unix', 1:'Win', 2:'Mac'}
-    win.eolstring = {0:'\n', 1:'\r\n', 2:'\r'}
     win.eolmess = eolmess
     win.SetEOLMode(win.eols[win.eolmode])
 Mixin.setPlugin('editor', 'init', beforeinit)
@@ -67,14 +65,7 @@ Mixin.setPlugin('mainframe', 'add_menu', add_mainframe_menu)
 def setEOLMode(win, mode):
     win.lineendingsaremixed = False
     win.eolmode = mode
-    state = win.save_state()
-    win.BeginUndoAction()
-    text = win.GetText()
-    text = re.sub(r'\r\n|\r|\n', win.eolstring[mode], text)
-    win.SetText(text)
-#    win.ConvertEOLs(win.eols[mode])
-    win.EndUndoAction()
-    win.restore_state(state)
+    win.ConvertEOLs(win.eols[mode])
     win.SetEOLMode(win.eols[mode])
     win.mainframe.SetStatusText(win.eolstr[mode], 3)
 
@@ -119,17 +110,17 @@ def afteropenfile(win, filename):
             tr("Mixed Line Ending"), wx.YES_NO | wx.ICON_QUESTION)
         if d.ShowModal() == wx.ID_YES:
             setEOLMode(win, win.pref.default_eol_mode)
-#            win.savefile(win.filename, win.locale)
+            win.savefile(win.filename, win.locale)
     if win.lineendingsaremixed == False:
         eolmodestr = win.eolstr[win.eolmode]
     win.mainframe.SetStatusText(eolmodestr, 3)
     win.SetEOLMode(win.eolmode)
 Mixin.setPlugin('editor', 'afteropenfile', afteropenfile)
 
-#def savefile(win, filename):
-#    if not win.lineendingsaremixed:
-#        setEOLMode(win, win.eolmode)
-#Mixin.setPlugin('editor', 'savefile', savefile)
+def savefile(win, filename):
+    if not win.lineendingsaremixed:
+        setEOLMode(win, win.eolmode)
+Mixin.setPlugin('editor', 'savefile', savefile)
 
 def on_document_enter(win, document):
     if document.edittype == 'edit':

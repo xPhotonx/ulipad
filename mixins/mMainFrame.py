@@ -19,14 +19,14 @@
 #   along with this program; if not, write to the Free Software
 #   Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 #
-#   $Id: mMainFrame.py 1609 2006-10-15 09:27:37Z limodou $
+#   $Id: mMainFrame.py 1536 2006-09-28 09:44:39Z limodou $
 
+import wx
 from modules import Mixin
 from modules import Globals
 
 def getmainframe(app, filenames):
     from MainFrame import MainFrame
-    Globals.starting = True
 
     app.mainframe = frame = MainFrame(app, filenames)
     Globals.mainframe = frame
@@ -35,6 +35,5 @@ def getmainframe(app, filenames):
     frame.userpath = app.userpath
     frame.afterinit()
     frame.editctrl.openPage()
-    Globals.starting = False
     return frame
 Mixin.setPlugin('app', 'getmainframe', getmainframe)

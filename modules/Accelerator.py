@@ -19,7 +19,7 @@
 #   along with this program; if not, write to the Free Software
 #   Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 #
-#   $Id: Accelerator.py 1634 2006-10-21 09:55:44Z limodou $
+#   $Id: Accelerator.py 1457 2006-08-23 02:12:12Z limodou $
 
 import wx
 import Id
@@ -118,12 +118,11 @@ def initaccelerator(win, acceleratorlist):
     aTable = wx.AcceleratorTable(accelist)
     win.SetAcceleratorTable(aTable)
 
-def getkeycodes(acceleratorlist, klist):
+def getkeycodes(acceleratorlist, keylist):
     for idname, value in acceleratorlist.items():
         keys, func = value
         if not keys:
             continue
-        
         f = wx.ACCEL_NORMAL
         ikey=0
         for k in keys.split('+'):
@@ -140,4 +139,4 @@ def getkeycodes(acceleratorlist, klist):
                 ikey = ord(uk)
             else:
                 debug.error("[accelerator] Error: Undefined char [%s]" % uk)
-        klist[(f, ikey)] = (idname, func)
+        keylist[(f, ikey)] = (idname, func)

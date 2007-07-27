@@ -19,7 +19,7 @@
 #   along with this program; if not, write to the Free Software
 #   Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 #
-#   $Id: mRegister.py 1633 2006-10-21 08:31:55Z limodou $
+#   $Id: mRegister.py 1457 2006-08-23 02:12:12Z limodou $
 
 import wx
 import os
@@ -35,14 +35,13 @@ if wx.Platform == '__WXMSW__':
     def add_mainframe_menu(menulist):
         menulist.extend([ ('IDM_TOOL',
             [
-                (890, '-', '', wx.ITEM_SEPARATOR, '', ''),
-                (900, 'IDM_TOOL_REGISTER', tr('Register to Explore'), wx.ITEM_NORMAL, 'OnToolRegister', tr('Registers to explore context menu.')),
-                (910, 'IDM_TOOL_UNREGISTER', tr('Unregister from Explore'), wx.ITEM_NORMAL, 'OnToolUnRegister', tr('Unregisters from explore context menu.')),
+                (160, 'IDM_OPTION_REGISTER', tr('Register to Explore'), wx.ITEM_NORMAL, 'OnOptionRegister', tr('Registers to explore context menu.')),
+                (170, 'IDM_OPTION_UNREGISTER', tr('Unregister from Explore'), wx.ITEM_NORMAL, 'OnOptionUnRegister', tr('Unregisters from explore context menu.')),
             ]),
         ])
     Mixin.setPlugin('mainframe', 'add_menu', add_mainframe_menu)
 
-    def OnToolRegister(win, event):
+    def OnOptionRegister(win, event):
         try:
             key = _winreg.OpenKey(_winreg.HKEY_CLASSES_ROOT, '*', _winreg.KEY_ALL_ACCESS)
             filename = os.path.basename(sys.argv[0])
@@ -58,9 +57,9 @@ if wx.Platform == '__WXMSW__':
         except:
             error.traceback()
             wx.MessageDialog(win, tr('Register to explore context menu failed!'), tr("Error"), wx.OK | wx.ICON_INFORMATION).ShowModal()
-    Mixin.setMixin('mainframe', 'OnToolRegister', OnToolRegister)
+    Mixin.setMixin('mainframe', 'OnOptionRegister', OnOptionRegister)
 
-    def OnToolUnRegister(win, event):
+    def OnOptionUnRegister(win, event):
         try:
             key = _winreg.OpenKey(_winreg.HKEY_CLASSES_ROOT, '*\\shell', _winreg.KEY_ALL_ACCESS)
             _winreg.DeleteKey(key, 'UliPad\\command')
@@ -69,4 +68,4 @@ if wx.Platform == '__WXMSW__':
         except:
             error.traceback()
             wx.MessageDialog(win, tr('Unregister from explore context menu failed!'), tr("Error"), wx.OK | wx.ICON_INFORMATION).ShowModal()
-    Mixin.setMixin('mainframe', 'OnToolUnRegister', OnToolUnRegister)
+    Mixin.setMixin('mainframe', 'OnOptionUnRegister', OnOptionUnRegister)

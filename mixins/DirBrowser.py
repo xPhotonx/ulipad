@@ -19,7 +19,7 @@
 #   along with this program; if not, write to the Free Software
 #   Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 #
-#   $Id: DirBrowser.py 2129 2007-07-19 09:37:15Z limodou $
+#   $Id: DirBrowser.py 1561 2006-10-08 09:25:54Z limodou $
 
 import wx
 import os
@@ -29,7 +29,7 @@ from modules import common
 from modules import makemenu
 from modules import Mixin
 from modules.Debug import error
-from modules import Globals
+
 
 class DirBrowser(wx.Panel, Mixin.Mixin):
 
@@ -48,8 +48,8 @@ class DirBrowser(wx.Panel, Mixin.Mixin):
             (117, 'IDPM_COMMANDLINE', tr('Open Command Window Here'), wx.ITEM_NORMAL, 'OnCommandWindow', ''),
             (120, '', '-', wx.ITEM_SEPARATOR, None, ''),
             (125, 'IDPM_OPENDEFAULT', tr('Open with Default Editor'), wx.ITEM_NORMAL, 'OnOpenDefault', ''),
-            (130, 'IDPM_ADDPATH', tr('Create Sub Directory'), wx.ITEM_NORMAL, 'OnAddSubDir', ''),
-            (140, 'IDPM_ADDFILE', tr('Create File'), wx.ITEM_NORMAL, 'OnAddFile', ''),
+            (130, 'IDPM_ADDPATH', tr('Add Sub Directory'), wx.ITEM_NORMAL, 'OnAddSubDir', ''),
+            (140, 'IDPM_ADDFILE', tr('Add File'), wx.ITEM_NORMAL, 'OnAddFile', ''),
             (150, 'IDPM_RENAME', tr('Rename'), wx.ITEM_NORMAL, 'OnRename', ''),
             (160, 'IDPM_DELETE', tr('Delete')+'\tDel', wx.ITEM_NORMAL, 'OnDelete', ''),
             (170, 'IDPM_REFRESH', tr('Refresh'), wx.ITEM_NORMAL, 'OnRefresh', ''),
@@ -106,18 +106,13 @@ class DirBrowser(wx.Panel, Mixin.Mixin):
 
         self.sizer.Add(self.tree, 1, wx.EXPAND)
         self.root = self.tree.AddRoot('DirBrowser')
-        
-        #add drop target
-        self.SetDropTarget(MyFileDropTarget(self))
-        
 
 #        wx.EVT_TREE_SEL_CHANGED(self.tree, self.tree.GetId(), self.OnChanged)
         wx.EVT_TREE_BEGIN_LABEL_EDIT(self.tree, self.tree.GetId(), self.OnBeginChangeLabel)
         wx.EVT_TREE_END_LABEL_EDIT(self.tree, self.tree.GetId(), self.OnChangeLabel)
         wx.EVT_TREE_ITEM_ACTIVATED(self.tree, self.tree.GetId(), self.OnSelected)
-#        wx.EVT_TREE_ITEM_RIGHT_CLICK(self.tree, self.tree.GetId(), self.OnRClick)
+        wx.EVT_TREE_ITEM_RIGHT_CLICK(self.tree, self.tree.GetId(), self.OnRClick)
         wx.EVT_RIGHT_UP(self.tree, self.OnRClick)
-        wx.EVT_RIGHT_DOWN(self.tree, self.OnRightDown)
         wx.EVT_TREE_DELETE_ITEM(self.tree, self.tree.GetId(), self.OnDeleteItem)
         wx.EVT_LEFT_DCLICK(self.tree, self.OnDoubleClick)
         wx.EVT_TREE_ITEM_EXPANDING(self.tree, self.tree.GetId(), self.OnExpanding)
@@ -260,7 +255,7 @@ class DirBrowser(wx.Panel, Mixin.Mixin):
             self.pref.recent_dir_paths.insert(0, path)
             self.pref.recent_dir_paths = self.pref.recent_dir_paths[:self.pref.recent_dir_paths_num]
             self.pref.save()
-            node = self.add_first_level_node(self.root, '', path, self.close_image, self.open_image, self.getid())
+            node = self.addnode(self.root, '', path, self.close_image, self.open_image, self.getid())
             self.tree.SetItemHasChildren(node, True)
             if expand:
                 self.addpathnodes(path, node)
@@ -304,27 +299,6 @@ class DirBrowser(wx.Panel, Mixin.Mixin):
         else:
             return self.item_image
 
-    def add_first_level_node(self, parent, path, name, imagenormal, imageexpand=None, data=None):
-        objs = self.getTopObjects()
-        p = name.lower()
-        path = ''
-        pos = -1
-        for i,o in enumerate(objs):
-            path = self.tree.GetItemText(o).lower()
-            if p<path:
-                pos = i
-                break
-        if pos>-1:
-            obj = self.tree.InsertItemBefore(parent, pos, name) 
-        else:
-            obj = self.tree.AppendItem(parent, name)
-        self.nodes[data] = (path, name, obj)
-        self.tree.SetPyData(obj, data)
-        self.tree.SetItemImage(obj, imagenormal, wx.TreeItemIcon_Normal)
-        if imageexpand:
-            self.tree.SetItemImage(obj, imageexpand, wx.TreeItemIcon_Expanded)
-        return obj
-            
     def addnode(self, parent, path, name, imagenormal, imageexpand=None, data=None):
         obj = self.tree.AppendItem(parent, name)
         self.nodes[data] = (path, name, obj)
@@ -379,20 +353,16 @@ class DirBrowser(wx.Panel, Mixin.Mixin):
                     error.traceback()
                     common.showerror(self, tr('Cannot change the filename %s to %s!') % (name, text))
                     return
-            doc = None
             for d in self.mainframe.editctrl.getDocuments():
                 if (os.path.exists(os.path.join(path, text)) and d.getFilename() == os.path.join(path, name)) or d.getFilename() == name:
                     d.setFilename(os.path.join(path, text))
                     self.mainframe.editctrl.showPageTitle(d)
-                    doc = d
-                    if d is self.mainframe.editctrl.getCurDoc():
+                    if d is self.mainframe.document:
                         self.mainframe.editctrl.showTitle(d)
             self.nodes[data] = path, text, obj
             if self.isFile(item):
                 item_index = self.get_file_image(text)
                 self.tree.SetItemImage(item, item_index, wx.TreeItemIcon_Normal)
-                if doc:
-                    self.callplugin('call_lexer', doc, name, text, doc.languagename)
         wx.CallAfter(self.tree.SelectItem, item)
 
     def OnSelected(self, event):
@@ -400,9 +370,7 @@ class DirBrowser(wx.Panel, Mixin.Mixin):
         if not self.is_ok(item): return
         filename = self.get_node_filename(item)
         if self.isFile(item):
-            document = self.mainframe.editctrl.new(filename)
-            if document:
-                wx.CallAfter(document.SetFocus)
+            wx.CallAfter(self.mainframe.editctrl.new, filename)
 
 #    def OnChanged(self, event):
 #        item = event.GetItem()
@@ -421,12 +389,6 @@ class DirBrowser(wx.Panel, Mixin.Mixin):
             self.addpathnodes(self.get_node_filename(item), item)
         else:
             event.Skip()
-
-    def OnRightDown(self, event):
-        pt = event.GetPosition();
-        item, flags = self.tree.HitTest(pt)
-        if item:
-            self.tree.SelectItem(item)
 
     def OnRClick(self, event):
         other_menus = []
@@ -706,7 +668,6 @@ class DirBrowser(wx.Panel, Mixin.Mixin):
             proj_file = os.path.join(filename, '_project')
             ini = dict4ini.DictIni(proj_file)
             ini.default.projectname = values['project_name']
-            self.callplugin('remove_project', ini, list(set(name) - set(values['project_name'])))
             self.callplugin('set_project', ini, values['project_name'])
             ini.save()
 
@@ -727,7 +688,7 @@ class DirBrowser(wx.Panel, Mixin.Mixin):
             filename = self.get_node_filename(item)
         if wx.Platform == '__WXMSW__':
             cmdline = os.environ['ComSpec']
-            os.spawnl(os.P_NOWAIT, cmdline,r" /k %s && cd %s" % (os.path.split(filename)[0][:2], filename))
+            os.spawnl(os.P_NOWAIT, cmdline, r"cmd.exe /k cd %s" % filename)
         else:
             common.showerror(self, tr('This features is only implemented in Windows Platform.\nIf you know how to implement in Linux please tell me.'))
 
@@ -763,8 +724,6 @@ class DirBrowser(wx.Panel, Mixin.Mixin):
         self.cache = 'copy', item
 
     def OnDirPaste(self, event):
-        if not self.cache:
-            return
         action, item = self.cache
         dstobj = self.tree.GetSelection()
         if not self.is_ok(dstobj): return
@@ -838,8 +797,6 @@ class DirBrowser(wx.Panel, Mixin.Mixin):
         shift = event.ShiftDown()
         if key == wx.WXK_DELETE:
             wx.CallAfter(self.OnDelete, None)
-        else:
-            event.Skip()
             
     def __del__(self):
         self.tree.Freeze()
@@ -868,18 +825,6 @@ def my_copytree(src, dst):
         except:
             error.traceback()
             raise
-
-class MyFileDropTarget(wx.FileDropTarget):
-    def __init__(self, dirwin):
-        wx.FileDropTarget.__init__(self)
-        self.dirwin = dirwin
-
-    def OnDropFiles(self, x, y, filenames):
-        for filename in filenames:
-            if os.path.isdir(filename):
-                self.dirwin.addpath(filename)
-            else:
-                Globals.mainframe.editctrl.new(filename)
 
 def my_move(src, dst):
     """Recursively move a file or directory to another location.

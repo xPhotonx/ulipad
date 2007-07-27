@@ -1,0 +1,17 @@
+[info]
+author=limodou
+date=2005/09/15
+version="1.0"
+description=WinPdb Debug
+homepage = http://wiki.woodpecker.org.cn/moin/NewEdit
+
+[modules]
+1=winpdb
+
+[winpdb]
+name = winpdb
+homepage=http://www.digitalpeers.com/pythondebugger/
+download=http://www.digitalpeers.com/pythondebugger/download.htm
+description="Winpdb is an advanced python debugger, with support for smart breakpoints, multiple threads, namespace modification, embedded debugging, encrypted communication and speed of up to 20 times that of pdb."
+version = "1.0.3"
+

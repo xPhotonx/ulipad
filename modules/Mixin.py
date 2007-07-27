@@ -19,17 +19,9 @@
 #   along with this program; if not, write to the Free Software
 #   Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 #
-#   $Id: Mixin.py 2039 2007-04-09 05:06:27Z limodou $
+#   $Id: Mixin.py 1457 2006-08-23 02:12:12Z limodou $
 
 import types
-from Debug import debug
-from Debug import error
-import time
-import sys
-import os.path
-import inspect
-__obj_time_set__ = {}
-__mixins_funcs_time_set__ = {}
 
 __mixinset__ = {}   #used to collect all mixins and plugins
 HIGH = 1    #plugin high
@@ -37,19 +29,17 @@ MIDDLE = 2
 LOW = 3
 MUST_FUNC = False
 ENABLE = True
-RELOAD_MIXINS = True
-RELOAD_NAME = ['Import']
-
 
 log = None
 
-class Mixin(object):
+class Mixin:
     __mixinname__ = ''  #mixin interface name, all subclass need define its own __mixinname__
 
     def __init__(self):
         self.initmixin()
 
     def initmixin(self):
+        from Debug import debug
         debug.info('[Mixin] Dealing class [%s]' % self.__class__.__name__)
         if self.__class__.__name__ == 'Mixin':  #don't dealing Mixin class itself
             return
@@ -63,9 +53,6 @@ class Mixin(object):
         if not self.__mixinname__:
             debug.warn('[Mixin] The class [%s] has not a mixinname defined' % self.__class__.__name__)
             return
-        if not __mixins_funcs_time_set__.has_key(self.__mixinname__):
-            __mixins_funcs_time_set__[self.__mixinname__] = {}
-        
 
         if __mixinset__.has_key(self.__mixinname__):
             debug.info('[Mixin] Mixinning class [%s]' % self.__class__.__name__)
@@ -73,17 +60,14 @@ class Mixin(object):
             items = {}
             for name, value in mixins.items():
                 if not value[0]:
-                    setProperty(self.__class__, name, value[1], self)
+                    setProperty(self.__class__, name, value[1])
                 else:
                     items[name] = value[1]
-            mixins_funcs_time = __mixins_funcs_time_set__[self.__mixinname__]
             setattr(self.__class__, '__mixins__', items)
             setattr(self.__class__, '__plugins__', plugins)
-            setattr(self.__class__, '__mixins_funcs_time__', mixins_funcs_time)
         else:
             setattr(self.__class__, '__mixins__', {})
             setattr(self.__class__, '__plugins__', {})
-            setattr(self.__class__, '__mixins_funcs_time__', {})
         setattr(self.__class__, '__one_plugins__', {})
 
     def callplugin_once(self, name, *args, **kwargs):
@@ -102,32 +86,6 @@ class Mixin(object):
             #debug.info("[Mixin] Call plugin [%s]" % name)
             nice, f = items[i]
             f = import_func(f)
-            if  name not in ("on_update_ui", "on_idle"):
-                if  RELOAD_MIXINS:
-                    if  get_name(f) not in RELOAD_NAME:
-                        mod = sys.modules[f.__module__]
-                        sfile = get_source(mod)
-                        if  self.__mixins_funcs_time__.get(f, None) is None:
-                            self.set_func_time(f)
-                            if  self.__mixins_funcs_time__.get(sfile, None) is None:
-                                self.set_module_time(mod)
-                        else:
-                            if  self.need_reinstall_func(f, mod):
-                                if os.path.exists(sfile) and os.path.getmtime(sfile) > self.__mixins_funcs_time__[sfile]:
-                                    new_mod = reload(mod)
-                                    self.set_module_time(new_mod)
-                                    new_f = getattr(new_mod, f.__name__)
-                                    self.set_func_time(new_f)
-                                elif os.path.exists(sfile) and os.path.getmtime(sfile) == self.__mixins_funcs_time__[sfile]:
-                                    new_mod = sys.modules[f.__module__]
-                                    new_f = getattr(new_mod, f.__name__)
-                                    self.set_func_time(new_f)
-                                #new_f = getattr(__import__(f.__module__, '', '', ['']), f.__name__)
-                                for mixins_item in items:
-                                    if  mixins_item[1] == f:
-                                        #items[i] = (nice, new_f)
-                                        #items.remove(mixins_item)
-                                        f = new_f
             if callable(f):
                 items[i] = (nice, f)
             try:
@@ -157,42 +115,10 @@ class Mixin(object):
         for i in range(len(items)):
             nice, f = items[i]
             f = import_func(f)
-            if  RELOAD_MIXINS:
-                if  get_name(f) not in RELOAD_NAME:
-                    mod = sys.modules[f.__module__]
-                    sfile = get_source(mod)
-                    if  self.__mixins_funcs_time__.get(f, None) is None:
-                        self.set_func_time(f)
-                        if  self.__mixins_funcs_time__.get(sfile, None) is None:
-                            self.set_module_time(mod)
-                    else:
-                        if  self.need_reinstall_func(f, mod):
-                            if  os.path.getmtime(sfile) > self.__mixins_funcs_time__[sfile] and sfile == self.__mixins_funcs_time__[f][1]:
-                                new_mod = reload(mod)
-                                self.set_module_time(new_mod)
-                                del self.__mixins_funcs_time__[f]
-                                new_f = getattr(new_mod, f.__name__)
-                                self.set_func_time(new_f)
-                            elif os.path.getmtime(sfile) >= self.__mixins_funcs_time__[sfile] and sfile == self.__mixins_funcs_time__[f][1]:
-                                new_mod = sys.modules[f.__module__]
-                                del self.__mixins_funcs_time__[f]
-                                new_f = getattr(new_mod, f.__name__)
-                                self.set_func_time(new_f)
-                            #new_f = getattr(__import__(f.__module__, '', '', ['']), f.__name__)
-                            for mixins_item in items:
-                                if  mixins_item[1] == f:
-                                    #items[i] = (nice, new_f)
-                                    #items.remove(mixins_item)
-                                    f = new_f
             if callable(f):
                 items[i] = (nice, f)
             try:
-#                if debug.is_debug() and name not in ['on_update_ui', 'on_idle']:
-#                    debug.info('>>> %s (name=%s, args=%r, kwargs=%r)' % (self.__class__.__name__, name, args, kwargs))
-#                    t = time.time()
                 v = f(*args, **kwargs)
-#                if debug.is_debug() and name not in ['on_update_ui', 'on_idle']:
-#                    debug.info('--- end (time=%d)' % (time.time() - t))
             except SystemExit:
                 raise
             except:
@@ -216,40 +142,11 @@ class Mixin(object):
         if self.__mixins__.has_key(name):
             f = import_func(self.__mixins__[name])
             self.__mixins__[name] = f
-            return setProperty(self.__class__, name, f, self)
-            #return getattr(self, name)
+            setProperty(self.__class__, name, f)
+            return getattr(self, name)
         else:
             raise AttributeError, name
 
-    def need_reinstall_func(self, f, mod):
-        try:
-            sfile = get_source(mod)
-            if os.path.getmtime(sfile) > self.__mixins_funcs_time__.get(f)[0]:
-                return True
-            else:
-                return False
-        except:
-            error.traceback()
-            return False
-        
-    def set_module_time(self, mod):
-        try:
-            sfile = get_source(mod)
-            if os.path.exists(sfile):
-                self.__mixins_funcs_time__[sfile] = os.path.getmtime(sfile)
-                #self.__mixins_funcs_time__[f] = os.path.getmtime(sfile)
-        except:
-            error.traceback()
-            
-    def set_func_time(self, f):
-        try:
-            mod = sys.modules[f.__module__]
-            sfile = get_source(mod)
-            if os.path.exists(sfile):
-                self.__mixins_funcs_time__[f] = (os.path.getmtime(sfile),sfile)
-        except:
-            error.traceback()
-        
 #def searchpackage(packagename):
 #   module=__import__(packagename)
 #   if hasattr(module, '__all__'):
@@ -287,9 +184,6 @@ def setMixin(mixinname, name, value):
             else:
                 mixins[name] = (0, value)
         else:
-            if  RELOAD_MIXINS:
-                if  get_name(value) not in RELOAD_NAME:
-                    setPlugin(mixinname, name, value, kind=MIDDLE, nice=-1)
             mixins[name] = (0, value)
 
 def setPlugin(mixinname, name, value, kind=MIDDLE, nice=-1):
@@ -300,18 +194,11 @@ def setPlugin(mixinname, name, value, kind=MIDDLE, nice=-1):
         print "name=%s, value=%r" % (name, value)
         raise Exception, 'The value should be a callable object'
 
-    if not __mixins_funcs_time_set__.has_key(mixinname):
-        __mixins_funcs_time_set__[mixinname] = {}
-    
-    
     if __mixinset__.has_key(mixinname):
         plugins = __mixinset__[mixinname][1]
-        mixins_funcs_time = __mixins_funcs_time_set__[mixinname]
     else:
         __mixinset__[mixinname] = ({}, {})
         plugins = __mixinset__[mixinname][1]
-        __mixins_funcs_time_set__[mixinname] = {}
-        mixins_funcs_time = __mixins_funcs_time_set__[mixinname]
 
     if nice == -1:
         if kind == MIDDLE:
@@ -324,74 +211,8 @@ def setPlugin(mixinname, name, value, kind=MIDDLE, nice=-1):
         plugins[name].append((nice, value))
     else:
         plugins[name] = [(nice, value)]
-    if  RELOAD_MIXINS:
-        if  get_name(value) not in RELOAD_NAME:
-            f = value
-            mod = sys.modules[f.__module__]
 
-            if  mixins_funcs_time.get(f, None) is None:
-
-                try:
-                    sfile = get_source(mod)
-                    if os.path.exists(sfile):
-                        mixins_funcs_time[f] = os.path.getmtime(sfile),sfile
-                except:
-                    error.traceback()
-                
-                if  mixins_funcs_time.get(sfile, None) is None:
-                    try:
-                        sfile = get_source(mod)
-                        if os.path.exists(sfile):
-                            mixins_funcs_time[sfile] = os.path.getmtime(sfile)
-                    except:
-                        error.traceback()
-
-
-                    
-def get_source(mod):
-    "get source file from module"
-    mfile = mod.__file__
-    mainfile, ext = os.path.splitext(mfile)
-    sfile = mainfile + '.py'
-    return sfile
-
-
-def get_name(f):
-    "form function get source file main name"
-    mod = sys.modules[f.__module__]
-    sfile = get_source(mod)
-    return os.path.splitext(os.path.basename(sfile))[0]
-    
-def reload_obj(obj):
-    "if python obj source file is changed, reload it"
-    source = None
-    mod = None
-    try:
-        source = inspect.getsourcefile(obj)
-    except:
-        return False
-    if  source:
-        obj_time = __obj_time_set__.get(source, None)
-        if  obj_time is None:
-            __obj_time_set__[source] = os.path.getmtime(source)
-            return False
-        else:
-            if  os.path.getmtime(source) > obj_time:
-                mod = inspect.getmodule(obj)
-                mod_name = mod.__name__
-                name = mod.__name__.split('.')
-                if  mod:
-                    try:
-                        del sys.modules[mod.__name__]
-                    except:
-                        pass
-                # note: handle "from xxx import yyy"  by ygao 2007/04/06
-                mod1 = __import__(mod_name, globals(), locals(),  list(name[-1]))
-                reload(mod1)
-                __obj_time_set__[source] = os.path.getmtime(source)
-                return True
-        
-def setProperty(obj, name, value, self):
+def setProperty(obj, name, value):
     if isinstance(value, (dict, tuple, list)):
         if hasattr(obj, name):
             oldvalue = getattr(obj, name)
@@ -403,22 +224,8 @@ def setProperty(obj, name, value, self):
                 setattr(obj, name, oldvalue + value)
         else:
             setattr(obj, name, value)
-        return getattr(self, name)
     else:
-        f = import_func(value)
-        #bug: if name is "getShortFilename",in case no file opened,program will crash.
-        if  name in ("OnPythonRunUpdateUI", 'OnPythonUpdateUI', "getShortFilename"):
-            setattr(obj, name, f)
-            return getattr(self, name)
-            
-        if  RELOAD_MIXINS:
-            if  get_name(f) not in RELOAD_NAME:
-                def ff(*args, **kwargs):
-                    return self.execplugin(name,*args, **kwargs)
-                f = ff        
-        setattr(obj, name, f)
-        return getattr(self, name)
-
+        setattr(obj, name, import_func(value))
 
 def import_func(info):
     if isinstance(info, str):
@@ -427,6 +234,7 @@ def import_func(info):
     return info
 
 def printMixin():
+    from Debug import debug
     debug.info("[Mixin] Printing mixin set...")
     for name, value in __mixinset__.items():
         mixins, plugins = value

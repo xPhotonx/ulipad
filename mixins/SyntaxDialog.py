@@ -19,7 +19,7 @@
 #   along with this program; if not, write to the Free Software
 #   Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 #
-#   $Id: SyntaxDialog.py 1892 2007-02-02 05:19:37Z limodou $
+#   $Id: SyntaxDialog.py 1566 2006-10-09 04:44:08Z limodou $
 
 __doc__ = 'syntax preference setup dialog class'
 
@@ -44,7 +44,6 @@ class SyntaxDialog(wx.Dialog):
         self.obj_ID_PREVIEW.SetUseTabs(False)
         self.obj_ID_PREVIEW.SetTabWidth(4)
         self.obj_ID_PREVIEW.languagename = ''
-        wx.stc.EVT_STC_STYLENEEDED(self.obj_ID_PREVIEW, self.obj_ID_PREVIEW.GetId(), self.OnStyleNeeded)
 
         self.language = []
         self.oldlanguage =[]
@@ -196,19 +195,14 @@ class SyntaxDialog(wx.Dialog):
             self.obj_ID_ITEMS.Append(items[key].dispname)
 
         #set preview code
-        p_code = 'empty'
-        if self.curlang.preview_code:
-            p_code = self.curlang.preview_code
         self.obj_ID_PREVIEW.SetReadOnly(False)
-        self.obj_ID_PREVIEW.SetText(p_code)
+        self.obj_ID_PREVIEW.SetText(self.curlang.preview_code)
         self.obj_ID_PREVIEW.SetReadOnly(True)
-        self.curlang.colourize(self.obj_ID_PREVIEW)
-        if p_code:
-            maxlen = max(map(len, p_code.splitlines()))
-        else:
-            maxlen = 0
-        width = self.obj_ID_PREVIEW.TextWidth(wx.stc.STC_STYLE_DEFAULT, "W")*(maxlen+4)
-        self.obj_ID_PREVIEW.SetScrollWidth(width)
+        if self.curlang.preview_code:
+            self.curlang.colourize(self.obj_ID_PREVIEW)
+            maxlen = max(map(len, self.curlang.preview_code.splitlines()))
+            width = self.obj_ID_PREVIEW.TextWidth(wx.stc.STC_STYLE_DEFAULT, "W")*(maxlen+4)
+            self.obj_ID_PREVIEW.SetScrollWidth(width)
 
         self.obj_ID_ITEMS.SetSelection(self.curlang.cur)
         self.setStyle()
@@ -273,23 +267,19 @@ class SyntaxDialog(wx.Dialog):
         if style.fore:
             self.obj_ID_CHK_FORE.SetValue(True)
             self.obj_ID_FORE.Enable(True)
-            self.obj_ID_FORE_VALUE.Enable(True)
             self.obj_ID_FORE_VALUE.SetValue(style.fore)
         else:
             self.obj_ID_CHK_FORE.SetValue(False)
             self.obj_ID_FORE.Enable(False)
-            self.obj_ID_FORE_VALUE.Enable(False)
             self.obj_ID_FORE_VALUE.SetValue('')
 
         if style.back:
             self.obj_ID_CHK_BACK.SetValue(True)
             self.obj_ID_BACK.Enable(True)
-            self.obj_ID_BACK_VALUE.Enable(True)
             self.obj_ID_BACK_VALUE.SetValue(style.back)
         else:
             self.obj_ID_CHK_BACK.SetValue(False)
             self.obj_ID_BACK.Enable(False)
-            self.obj_ID_BACK_VALUE.Enable(False)
             self.obj_ID_BACK_VALUE.SetValue('')
 
     def getStyle(self):
@@ -324,7 +314,7 @@ class SyntaxDialog(wx.Dialog):
         else:
             style.underline = ''
 
-        self.curlang.colourize(self.obj_ID_PREVIEW, True)
+        self.curlang.colourize(self.obj_ID_PREVIEW)
 
     def OnChkFace(self, event):
         self.obj_ID_FACE.Enable(self.obj_ID_CHK_FACE.GetValue())
@@ -332,17 +322,14 @@ class SyntaxDialog(wx.Dialog):
 
     def OnChkSize(self, event):
         self.obj_ID_SIZE.Enable(self.obj_ID_CHK_SIZE.GetValue())
-        self.obj_id_
         self.update = True
 
     def OnChkFore(self, event):
         self.obj_ID_FORE.Enable(self.obj_ID_CHK_FORE.GetValue())
-        self.obj_ID_FORE_VALUE.Enable(self.obj_ID_CHK_FORE.GetValue())
         self.update = True
 
     def OnChkBack(self, event):
         self.obj_ID_BACK.Enable(self.obj_ID_CHK_BACK.GetValue())
-        self.obj_ID_BACK_VALUE.Enable(self.obj_ID_CHK_BACK.GetValue())
         self.update = True
 
     def getCurrentStyle(self):
@@ -350,8 +337,3 @@ class SyntaxDialog(wx.Dialog):
         name = self.syntaxitems[index]
         style = self.curlang.getSyntaxItems()[name].style
         return style
-
-    def OnStyleNeeded(self, event):
-        if self.curlang.syntaxtype == wx.stc.STC_LEX_CONTAINER:
-            self.curlang.styleneeded(self.obj_ID_PREVIEW, event.GetPosition())
-    

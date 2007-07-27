@@ -1,10 +1,10 @@
-#   Programmer:     limodou
-#   E-mail:         limodou@gmail.com
-#  
-#   Copyleft 2006 limodou
-#  
-#   Distributed under the terms of the GPL (GNU Public License)
-#  
+#       Programmer:     limodou
+#       E-mail:         limodou@gmail.com
+#
+#       Copyleft 2006 limodou
+#
+#       Distributed under the terms of the GPL (GNU Public License)
+#
 #   UliPad is free software; you can redistribute it and/or modify
 #   it under the terms of the GNU General Public License as published by
 #   the Free Software Foundation; either version 2 of the License, or
@@ -19,15 +19,18 @@
 #   along with this program; if not, write to the Free Software
 #   Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 #
-#   $Id: InterpreterDialog.py 1731 2006-11-22 03:35:50Z limodou $
+#       $Id: InterpreterDialog.py 1457 2006-08-23 02:12:12Z limodou $
 
+from modules import Mixin
 import wx
+import sys
+import os.path
 from modules import Entry
 from modules import common
 
 class InterpreterDialog(wx.Dialog):
     def __init__(self, parent, pref):
-        wx.Dialog.__init__(self, parent, -1, tr('Interpreter Setting'))
+        wx.Dialog.__init__(self, parent, -1, tr('Interpreter Setting'), size=(500, 300))
         self.parent = parent
         self.pref = pref
 
@@ -47,16 +50,16 @@ class InterpreterDialog(wx.Dialog):
         self.ID_ADD = wx.NewId()
         self.ID_REMOVE = wx.NewId()
         self.ID_MODIFY = wx.NewId()
-        self.btnAdd = wx.Button(self, self.ID_ADD, tr("Add"))
+        self.btnAdd = wx.Button(self, self.ID_ADD, tr("Add"), size=(60, -1))
         box2.Add(self.btnAdd, 0, 0, 5)
-        self.btnModify = wx.Button(self, self.ID_MODIFY, tr("Modify"))
+        self.btnModify = wx.Button(self, self.ID_MODIFY, tr("Modify"), size=(60, -1))
         box2.Add(self.btnModify, 0, 0, 5)
-        self.btnRemove = wx.Button(self, self.ID_REMOVE, tr("Remove"))
+        self.btnRemove = wx.Button(self, self.ID_REMOVE, tr("Remove"), size=(60, -1))
         box2.Add(self.btnRemove, 0, 0, 5)
-        self.btnOK = wx.Button(self, wx.ID_OK, tr("OK"))
+        self.btnOK = wx.Button(self, wx.ID_OK, tr("OK"), size=(60, -1))
         self.btnOK.SetDefault()
         box2.Add(self.btnOK, 0, 0, 5)
-        self.btnCancel = wx.Button(self, wx.ID_CANCEL, tr("Cancel"))
+        self.btnCancel = wx.Button(self, wx.ID_CANCEL, tr("Cancel"), size=(60, -1))
         box2.Add(self.btnCancel, 0, 0, 5)
         box.Add(box2, 0, wx.ALIGN_CENTER|wx.ALL, 5)
 
@@ -148,12 +151,12 @@ class PythonArgsDialog(wx.Dialog):
 
         box = wx.BoxSizer(wx.VERTICAL)
         stext = wx.StaticText(self, -1, label=message)
-        box.Add(stext, 0, wx.ALIGN_LEFT|wx.ALL, 2)
+        box.Add(stext, 0, wx.ALIGN_LEFT|wx.ALL, 5)
         box1 = wx.BoxSizer(wx.HORIZONTAL)
         self.text = wx.TextCtrl(self, -1, defaultvalue)
         self.text.SetSelection(-1, -1)
-        box1.Add(self.text, 1, wx.EXPAND|wx.ALL, 2)
-        box.Add(box1, 0, wx.EXPAND)
+        box1.Add(self.text, 1, wx.EXPAND|wx.ALL, 5)
+        box.Add(box1, 1, wx.EXPAND, 5)
 
         interpreters = dict(self.pref.python_interpreter)
         default_interpreter = self.pref.default_interpreter
@@ -162,23 +165,23 @@ class PythonArgsDialog(wx.Dialog):
 
         box1 = wx.BoxSizer(wx.HORIZONTAL)
         stext = wx.StaticText(self, -1, label=tr('Select Python Interpreter:'))
-        box1.Add(stext, 0, wx.ALIGN_LEFT|wx.ALIGN_CENTER_VERTICAL|wx.ALL, 2)
+        box1.Add(stext, 0, wx.ALIGN_LEFT|wx.ALIGN_CENTER_VERTICAL|wx.ALL, 5)
         self.ID_INTER = wx.NewId()
         self.cb = wx.ComboBox(self, self.ID_INTER, default_interpreter, choices = interpreters.keys(), style = wx.CB_DROPDOWN|wx.CB_READONLY )
-        box1.Add(self.cb, 1, wx.EXPAND|wx.ALL, 2)
-        box.Add(box1, 0, wx.EXPAND)
+        box1.Add(self.cb, 1, wx.EXPAND|wx.ALL, 5)
+        box.Add(box1, 0, wx.ALIGN_LEFT|wx.LEFT|wx.BOTTOM, 5)
 
         self.chkDirect = wx.CheckBox(self, -1, tr('ReDirect input and output'))
         self.chkDirect.SetValue(defaultchkvalue)
-        box.Add(self.chkDirect, 0, wx.ALIGN_LEFT|wx.LEFT|wx.BOTTOM, 2)
+        box.Add(self.chkDirect, 0, wx.ALIGN_LEFT|wx.LEFT|wx.BOTTOM, 5)
 
         box1 = wx.BoxSizer(wx.HORIZONTAL)
-        btnOK = wx.Button(self, wx.ID_OK, tr("OK"))
+        btnOK = wx.Button(self, wx.ID_OK, tr("OK"), size=(60, -1))
         btnOK.SetDefault()
-        box1.Add(btnOK, 0, wx.ALL, 2)
-        btnCancel = wx.Button(self, wx.ID_CANCEL, tr("Cancel"))
-        box1.Add(btnCancel, 0, wx.ALL, 2)
-        box.Add(box1, 0, wx.ALIGN_CENTER)
+        box1.Add(btnOK, 0, wx.ALIGN_RIGHT|wx.RIGHT, 5)
+        btnCancel = wx.Button(self, wx.ID_CANCEL, tr("Cancel"), size=(60, -1))
+        box1.Add(btnCancel, 0, wx.ALIGN_LEFT|wx.LEFT, 5)
+        box.Add(box1, 0, wx.ALIGN_CENTER|wx.BOTTOM, 5)
 
         self.SetSizer(box)
         self.SetAutoLayout(True)

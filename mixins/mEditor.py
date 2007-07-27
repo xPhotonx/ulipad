@@ -19,7 +19,7 @@
 #   along with this program; if not, write to the Free Software
 #   Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 #
-#   $Id: mEditor.py 1631 2006-10-21 06:22:54Z limodou $
+#   $Id: mEditor.py 1545 2006-09-30 02:04:24Z limodou $
 
 from modules import Mixin
 import wx
@@ -30,7 +30,7 @@ def add_panel_list(panellist):
 Mixin.setPlugin('editctrl', 'add_panel_list', add_panel_list)
 
 def on_key_down(win, event):
-    key = event.GetKeyCode()
+    key = event.KeyCode()
     alt = event.AltDown()
     shift = event.ShiftDown()
     ctrl = event.ControlDown()

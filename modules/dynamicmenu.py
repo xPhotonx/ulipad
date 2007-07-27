@@ -1,10 +1,10 @@
-#   Programmer:     limodou
-#   E-mail:         limodou@gmail.com
-#  
-#   Copyleft 2006 limodou
-#  
-#   Distributed under the terms of the GPL (GNU Public License)
-#  
+#       Programmer:     limodou
+#       E-mail:         limodou@gmail.com
+#
+#       Copyleft 2006 limodou
+#
+#       Distributed under the terms of the GPL (GNU Public License)
+#
 #   UliPad is free software; you can redistribute it and/or modify
 #   it under the terms of the GNU General Public License as published by
 #   the Free Software Foundation; either version 2 of the License, or
@@ -19,7 +19,7 @@
 #   along with this program; if not, write to the Free Software
 #   Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 #
-#   $Id: dynamicmenu.py 1871 2007-01-28 08:49:56Z limodou $
+#       $Id: dynamicmenu.py 1544 2006-09-29 07:10:36Z limodou $
 
 import makemenu
 from Debug import debug
@@ -33,9 +33,9 @@ def menuRemove(win, menulist):
     mlist = makemenu.mergemenu(win.menulist+menulist)
     removemlist = makemenu.mergemenu(menulist)
     m = sortmenu(removemlist)
-#    win.menubar.Freeze()
+    win.Freeze()
     removemenu(mlist, removemlist, m, win)
-#    win.menubar.Thaw()
+    win.Thaw()
 
 def menuInsert(win, menulist):
     if len(menulist) == 0:
@@ -49,10 +49,10 @@ def menuInsert(win, menulist):
     mlist = makemenu.mergemenu(win.menulist+menulist)
     insertmlist = makemenu.mergemenu(menulist)
     m = sortmenu(insertmlist)
-#    win.menubar.Freeze()
+    win.Freeze()
     insertmenu(mlist, insertmlist, m, win)
-#    win.menubar.Thaw()
-    
+    win.Thaw()
+
     return accel, editoraccel
 
 def sortmenu(menulist):

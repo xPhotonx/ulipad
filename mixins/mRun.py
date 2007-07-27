@@ -19,7 +19,7 @@
 #   along with this program; if not, write to the Free Software
 #   Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 #
-#   $Id: mRun.py 1858 2007-01-25 14:15:57Z limodou $
+#   $Id: mRun.py 1566 2006-10-09 04:44:08Z limodou $
 
 import wx
 import locale
@@ -47,15 +47,14 @@ def message_init(win):
     win.writeposition = 0
 Mixin.setPlugin('messagewindow', 'init', message_init)
 
-def RunCommand(win, command, redirect=True, hide=False):
+def RunCommand(win, command, redirect=True):
     """replace $file = current document filename"""
     if redirect:
         win.createMessageWindow()
+
         win.panel.showPage(tr('Message'))
-        win.callplugin('start_run', win, win.messagewindow)
-        win.messagewindow.SetReadOnly(0)
-        appendtext(win.messagewindow, '> ' + command + '\n')
-        
+
+        win.messagewindow.SetText('')
         win.messagewindow.editpoint = 0
         win.messagewindow.writeposition = 0
         win.SetStatusText(tr("Running "), 0)
@@ -63,24 +62,23 @@ def RunCommand(win, command, redirect=True, hide=False):
             win.messagewindow.process = wx.Process(win)
             win.messagewindow.process.Redirect()
             if wx.Platform == '__WXMSW__':
-                if hide == False:
-                    win.messagewindow.pid = wx.Execute(command, wx.EXEC_ASYNC|wx.EXEC_NOHIDE, win.messagewindow.process)
-                else:
-                    win.messagewindow.pid = wx.Execute(command, wx.EXEC_ASYNC, win.messagewindow.process)
+                win.messagewindow.pid = wx.Execute(command, wx.EXEC_ASYNC|wx.EXEC_NOHIDE, win.messagewindow.process)
             else:
                 win.messagewindow.pid = wx.Execute(command, wx.EXEC_ASYNC|wx.EXEC_MAKE_GROUP_LEADER, win.messagewindow.process)
-            if hasattr(win.messagewindow, 'inputstream') and win.messagewindow.inputstream:
-                win.messagewindow.inputstream.close()
+#            if guiflag:
+#                win.messagewindow.pid = wx.Execute(command, wx.EXEC_ASYNC|wx.EXEC_NOHIDE, win.messagewindow.process)
+#            else:
+#                win.messagewindow.pid = wx.Execute(command, wx.EXEC_ASYNC, win.messagewindow.process)
             win.messagewindow.inputstream = win.messagewindow.process.GetInputStream()
-            win.messagewindow.outputstream = win.messagewindow.process.GetOutputStream()
             win.messagewindow.errorstream = win.messagewindow.process.GetErrorStream()
+            win.messagewindow.outputstream = win.messagewindow.process.GetOutputStream()
         except:
             win.messagewindow.process = None
             dlg = wx.MessageDialog(win, tr("There are some problems when running the program!\nPlease run it in shell.") ,
                 "Stop running", wx.OK | wx.ICON_INFORMATION)
             dlg.ShowModal()
     else:
-        wx.Execute(command, wx.EXEC_ASYNC)
+        wx.Execute(command)
 Mixin.setMixin('mainframe', 'RunCommand', RunCommand)
 
 def OnIdle(win, event):
@@ -173,13 +171,8 @@ def OnProcessEnded(win, event):
     if win.messagewindow.process:
         win.messagewindow.process.Destroy()
         win.messagewindow.process = None
-        win.messagewindow.inputstream.close()
-        win.messagewindow.inputstream = None
-        win.messagewindow.outputstream = None
-        win.messagewindow.errorstream = None
         win.messagewindow.pid = -1
-        win.SetStatusText(tr("Finished! "), 0)
-#        common.note(tr("Finished!"))
+        common.note(tr("Finished!"))
 Mixin.setMixin('mainframe', 'OnProcessEnded', OnProcessEnded)
 
 def appendtext(win, text):

@@ -1,10 +1,10 @@
-#   Programmer:     limodou
-#   E-mail:         limodou@gmail.com
-#   
-#   Copyleft 2006 limodou
-#   
-#   Distributed under the terms of the GPL (GNU Public License)
-#   
+#       Programmer:     limodou
+#       E-mail:         limodou@gmail.com
+#
+#       Copyleft 2006 limodou
+#
+#       Distributed under the terms of the GPL (GNU Public License)
+#
 #   Casing is free software; you can redistribute it and/or modify
 #   it under the terms of the GNU General Public License as published by
 #   the Free Software Foundation; either version 2 of the License, or
@@ -19,7 +19,7 @@
 #   along with this program; if not, write to the Free Software
 #   Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 #
-#   $Id$
+#       $Id$
 #   Version = 0.2
 #   Update:
 #
@@ -32,14 +32,12 @@ FINISH = 1
 EXCEPTION = 2
 ABORT = 3
 logging = None
-quiet = True
+quiet = False
 
 def setlog(log):
-    global logging
     logging = log
 
 def setquiet(flag):
-    global quiet
     quiet = flag
 
 class AbortException(Exception):pass
@@ -231,7 +229,6 @@ class Casing(object):
         self.syncvar = None
         self.t_func = None
         self.p_func = None
-        self.running = False
 
     def __add__(self, obj):
         assert isinstance(obj, Casing)
@@ -292,36 +289,32 @@ class Casing(object):
         self.on_sync = func, args, kwargs
 
     def start(self, **kws):
-        self.running = True
         try:
-            try:
-                for func, args, kwargs in self.funcs:
-                    self._update(kwargs, kws)
-                    ret = self._run((func, args, kwargs))
-                if self.on_success:
-                    self._run(self.on_success)
-                if self.on_sync:
-                    self._run(self.on_sync)
-            except AbortException:
-                if self.on_abort:
-                    self._run(self.on_abort)
+            for func, args, kwargs in self.funcs:
+                self._update(kwargs, kws)
+                ret = self._run((func, args, kwargs))
+            if self.on_success:
+                self._run(self.on_success)
+            if self.on_sync:
+                self._run(self.on_sync)
+        except AbortException:
+            if self.on_abort:
+                self._run(self.on_abort)
+            else:
+                print 'Abort'
+            return
+        except SystemExit:
+            return
+        except:
+            if self.on_exception:
+                self._run(self.on_exception)
+            else:
+                if logging:
+                    hasattr(logging, 'traceback')
+                    logging.traceback()
                 else:
-                    print 'Abort'
-                return
-            except SystemExit:
-                return
-            except:
-                if self.on_exception:
-                    self._run(self.on_exception)
-                else:
-                    if logging:
-                        hasattr(logging, 'traceback')
-                        logging.traceback()
-                    else:
-                        if not quiet:
-                            raise
-        finally:
-            self.running = False
+                    if not quiet:
+                        raise
 
     def start_thread(self, **kws):
         self.syncvar = syncvar = SyncVar()
@@ -336,43 +329,39 @@ class Casing(object):
             t1.start()
 
     def sync_start(self, syncvar, kws={}):
-        self.running = True
         try:
-            try:
-                for func, args, kwargs in self.funcs:
-                    self._update(kwargs, kws)
-                    kwargs['syncvar'] = syncvar
-                    if not syncvar:
-                        return
-                    self._run((func, args, kwargs))
-                syncvar.clear()
-                self._run(self.on_success)
-                self._run_sync(FINISH)
-            except AbortException:
-                syncvar.clear()
-                self._run_sync(ABORT)
-                if self.on_abort:
-                    self._run(self.on_abort)
+            for func, args, kwargs in self.funcs:
+                self._update(kwargs, kws)
+                kwargs['syncvar'] = syncvar
+                if not syncvar:
+                    return
+                self._run((func, args, kwargs))
+            syncvar.clear()
+            self._run(self.on_success)
+            self._run_sync(FINISH)
+        except AbortException:
+            syncvar.clear()
+            self._run_sync(ABORT)
+            if self.on_abort:
+                self._run(self.on_abort)
+            else:
+                print 'Abort'
+            return
+        except SystemExit:
+            self._run_sync(ABORT)
+            return
+        except:
+            syncvar.clear()
+            self._run_sync(EXCEPTION)
+            if self.on_exception:
+                self._run(self.on_exception)
+            else:
+                if logging:
+                    hasattr(logging, 'traceback')
+                    logging.traceback()
                 else:
-                    print 'Abort'
-                return
-            except SystemExit:
-                self._run_sync(ABORT)
-                return
-            except:
-                syncvar.clear()
-                self._run_sync(EXCEPTION)
-                if self.on_exception:
-                    self._run(self.on_exception)
-                else:
-                    if logging:
-                        hasattr(logging, 'traceback')
-                        logging.traceback()
-                    else:
-                        if not quiet:
-                            raise
-        finally:
-            self.running = False
+                    if not quiet:
+                        raise
 
     def start_sync_thread(self, **kws):
         self.syncvar = syncvar = SyncVar()
@@ -402,11 +391,10 @@ class Casing(object):
             return f(*args, **kwargs)
 
     def isactive(self):
-#        if not self.t_func:
-#            return False
-#        else:
-#            return self.t_func.isAlive()
-        return self.running
+        if not self.t_func:
+            return False
+        else:
+            return self.t_func.isAlive()
 
 def new_obj():
     return threading.local()

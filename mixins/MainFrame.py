@@ -20,7 +20,7 @@
 #   along with this program; if not, write to the Free Software
 #   Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 #
-#   $Id: MainFrame.py 2013 2007-03-10 09:29:10Z limodou $
+#   $Id: MainFrame.py 1541 2006-09-29 06:18:29Z limodou $
 
 import wx
 import copy
@@ -65,11 +65,13 @@ class MainFrame(wx.Frame, Mixin.Mixin):
         self.app = app
         self.pref = app.pref
         self.filenames = filenames
-        self.closeflag = False
 
         self.callplugin_once('start', self)
 
         wx.Frame.__init__(self, None, -1, self.app.appname, size=wx.Size(600, 400), name=self.app.appname)
+
+        self.Freeze()
+
 
         #@add_menu menulist
         self.callplugin_once('add_menu', MainFrame.menulist)
@@ -110,6 +112,10 @@ class MainFrame(wx.Frame, Mixin.Mixin):
         wx.EVT_CLOSE(self, self.OnClose)
         wx.EVT_ACTIVATE(self, self.OnActive)
 
+        self.Thaw()
+        
+        self.closeflag = False
+
         d = Casing.Casing(self.OnIdle)
         d.start_thread()
         
@@ -124,18 +130,14 @@ class MainFrame(wx.Frame, Mixin.Mixin):
         self.callplugin('on_update_ui', self, event)
 
     def OnIdle(self):
-        try:
-            while not self.closeflag:
-                if not self.app.wxApp.IsActive():
-                    self.callplugin('on_idle_non_active', self)
-                    time.sleep(0.1)
-                else:
-                    if wx.Platform == '__WXMSW__':
-                        wx.CallAfter(self.SetStatusText, "%dM" % (wx.GetFreeMemory()/1024/1024), 5)
-                    self.callplugin('on_idle', self)
-                    time.sleep(0.5)
-        except:
-            pass
+        while not self.closeflag:
+            if not self.app.wxApp.IsActive():
+                time.sleep(0.1)
+            else:
+                if wx.Platform == '__WXMSW__':
+                    wx.CallAfter(self.SetStatusText, "%dM" % (wx.GetFreeMemory()/1024/1024), 5)
+                self.callplugin('on_idle', self)
+                time.sleep(1)
 
     def OnClose(self, event):
         if not self.execplugin('on_close', self, event):

@@ -19,7 +19,7 @@
 #   along with this program; if not, write to the Free Software
 #   Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 #
-#   $Id: OutlookBrowser.py 1792 2006-12-23 02:54:21Z limodou $
+#   $Id: OutlookBrowser.py 1472 2006-08-24 02:15:23Z limodou $
 
 import wx
 from modules import common
@@ -32,13 +32,12 @@ class OutlookBrowser(wx.Panel, Mixin.Mixin):
 
     popmenulist = []
 
-    def __init__(self, parent, editor, autoexpand=True):
+    def __init__(self, parent, editor):
         self.initmixin()
 
         wx.Panel.__init__(self, parent, -1)
         self.parent = parent
         self.editor = editor
-        self.autoexpand = autoexpand
         
         self.activeflag = False
 
@@ -83,9 +82,7 @@ class OutlookBrowser(wx.Panel, Mixin.Mixin):
         wx.EVT_TREE_DELETE_ITEM(self.tree, self.tree.GetId(), self.OnDeleteItem)
 #        wx.EVT_LEFT_DCLICK(self.tree, self.OnDoubleClick)
 #        wx.EVT_TREE_ITEM_EXPANDING(self.tree, self.tree.GetId(), self.OnExpanding)
-        wx.EVT_LEFT_DOWN(self.tree, self.OnLeftDown)
-        self.tree.Bind(wx.EVT_TREE_ITEM_GETTOOLTIP, self.OnGetToolTip)
-        self.tooltip_func = None
+        wx.EVT_LEFT_DOWN(self, self.OnLeftDown)
 
         #add init process
         self.callplugin('init', self)
@@ -119,7 +116,7 @@ class OutlookBrowser(wx.Panel, Mixin.Mixin):
             self.tree.SetItemImage(obj, imagenormal, wx.TreeItemIcon_Normal)
         if imageexpand > -1:
             self.tree.SetItemImage(obj, imageexpand, wx.TreeItemIcon_Expanded)
-        if parent!= self.root and not self.tree.IsExpanded(parent) and self.autoexpand:
+        if parent!= self.root and not self.tree.IsExpanded(parent):
             self.tree.Expand(parent)
         return _id, obj
 
@@ -214,18 +211,11 @@ class OutlookBrowser(wx.Panel, Mixin.Mixin):
 
     def OnLeftDown(self, event):
         pt = event.GetPosition();
-        item, flags = self.tree.HitTest(pt)
-        if flags == wx.TREE_HITTEST_ONITEMICON:
-            if self.tree.ItemHasChildren(item):
-                if self.tree.IsExpanded(item):
-                    wx.CallAfter(self.tree.Collapse, item)
-                else:
-                    wx.CallAfter(self.tree.Expand, item)
-                return
+        item, flags = self.HitTest(pt)
         if self.is_ok(item):
-            if item == self.tree.GetSelection():
-                self.tree.SelectItem(self.tree.GetSelection(), False)
-                wx.CallAfter(self.tree.SelectItem, item, True)
+            if item == self.GetSelection():
+                self.SelectItem(self.GetSelection(), False)
+                wx.CallAfter(self.SelectItem, item, True)
                 return
         event.Skip()
 
@@ -247,8 +237,6 @@ class OutlookBrowser(wx.Panel, Mixin.Mixin):
         item = event.GetItem()
         lineno = self.get_node(item)
         if self.editor and not self.activeflag:
-            wx.CallAfter(self.editor.goto, lineno-5)
-            wx.CallAfter(self.editor.goto, lineno+10)
             wx.CallAfter(self.editor.goto, lineno)
 
     def OnChanging(self, event):
@@ -277,10 +265,3 @@ class OutlookBrowser(wx.Panel, Mixin.Mixin):
 
     def is_ok(self, item):
         return item.IsOk() and item != self.root
-    
-    def set_tooltip_func(self, func):
-        self.tooltip_func = func
-    
-    def OnGetToolTip(self, event):
-        if self.tooltip_func:
-            self.tooltip_func(self, event)

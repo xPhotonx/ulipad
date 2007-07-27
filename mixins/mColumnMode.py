@@ -78,7 +78,7 @@ def InColumnModeRegion(win, line):
 Mixin.setMixin('editor', 'InColumnModeRegion', InColumnModeRegion)
 
 def on_key_up(win, event):
-    key = event.GetKeyCode()
+    key = event.KeyCode()
     shift = event.ShiftDown()
     if win.column_mode and not (key in (wx.WXK_DOWN, wx.WXK_UP) and shift):
         auto_column_mode(win)
@@ -93,7 +93,7 @@ Mixin.setPlugin('editor', 'on_mouse_up', on_mouse_up)
 
 def ColumnEditAction(win, event, col, begin, end, in_key_down=False):
     """if dealed then return True"""
-    char = event.GetKeyCode()
+    char = event.KeyCode()
     alt = event.AltDown()
     shift = event.ShiftDown()
     ctrl = event.ControlDown()
@@ -159,7 +159,7 @@ def ColumnEditAction(win, event, col, begin, end, in_key_down=False):
     return True
 
 def on_key_down(win, event):
-    key = event.GetKeyCode()
+    key = event.KeyCode()
     ctrl = event.ControlDown()
     alt = event.AltDown()
     shift = event.ShiftDown()
@@ -180,15 +180,15 @@ def on_key_down(win, event):
             return True
         else:
             return False
-    elif shift and key == wx.WXK_RETURN:
+    elif ctrl and key == wx.WXK_RETURN:
         win.execute_key('END')
-        return False
+        flag = False
     else:
         return False
 Mixin.setPlugin('editor', 'on_key_down', on_key_down, nice=0)
 
 def on_char(win, event):
-    key = event.GetKeyCode()
+    key = event.KeyCode()
     ctrl = event.ControlDown()
     alt = event.AltDown()
     shift = event.ShiftDown()

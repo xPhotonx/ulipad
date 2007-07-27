@@ -19,7 +19,7 @@
 #   along with this program; if not, write to the Free Software
 #   Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 #
-#   $Id: mBookmark.py 1665 2006-11-07 13:20:21Z limodou $
+#   $Id: mBookmark.py 1566 2006-10-09 04:44:08Z limodou $
 
 import wx
 from modules import Mixin
@@ -30,6 +30,7 @@ def editor_init(win):
 
     win.SetMarginMask(0, ~wx.stc.STC_MASK_FOLDERS)
     win.MarkerDefine(0, wx.stc.STC_MARK_SHORTARROW, "blue", "blue")
+    win.bookmarks = []
 Mixin.setPlugin('editor', 'init', editor_init)
 
 def add_mainframe_menu(menulist):

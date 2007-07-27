@@ -19,7 +19,7 @@
 #   along with this program; if not, write to the Free Software
 #   Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 #
-#   $Id: MyStatusBar.py 1736 2006-11-27 13:01:19Z limodou $
+#   $Id: MyStatusBar.py 1533 2006-09-28 03:07:54Z limodou $
 
 import wx
 
@@ -29,7 +29,7 @@ class MyStatusBar(wx.StatusBar):
 
         if wx.Platform == '__WXMSW__':
             self.SetFieldsCount(6)
-            self.SetStatusWidths([-1, 70, 60, 40, 60, 45])
+            self.SetStatusWidths([-1, 70, 60, 30, 60, 45])
         else:
             self.SetFieldsCount(5)
             self.SetStatusWidths([-1, 70, 60, 40, 60])
@@ -42,12 +42,11 @@ class MyStatusBar(wx.StatusBar):
         self.slashtext.Hide()
         self.active = False
 
-#        self.Bind(wx.EVT_IDLE, self.OnIdle)
+        self.Bind(wx.EVT_IDLE, self.OnIdle)
         self.Bind(wx.EVT_SIZE, self.OnSize)
 
         self.g1.Hide()
         self.autohide = True
-        self.showing = False
 
     def OnIdle(self, evt):
         if self.autohide:
@@ -66,25 +65,20 @@ class MyStatusBar(wx.StatusBar):
         self.slashtext.Show()
 
     def note(self, text):
-        if not self.showing:
-            self.showing = True
-            wx.CallAfter(self.show_panel, text, color='GREEN')
-            wx.FutureCall(2000, self.Notify)
-            
+        self.show_panel(text, color='GREEN')
+        self.timer = wx.PyTimer(self.Notify)
+        self.timer.Start(2000)
+
     def warn(self, text):
-        if not self.showing:
-            self.showing = True
-            wx.CallAfter(self.show_panel, text)
-            wx.FutureCall(2000, self.Notify)
-            
+        self.show_panel(text)
+        self.timer = wx.PyTimer(self.Notify)
+        self.timer.Start(2000)
+        
     def hide_panel(self):
         wx.CallAfter(self.slashtext.Hide)
 
     def Notify(self):
-        def f():
-            self.slashtext.Hide()
-            self.showing = False
-        wx.CallAfter(f)
+        wx.CallAfter(self.slashtext.Hide)
 
     def OnSize(self, evt):
         self.Reposition()  # for normal size events

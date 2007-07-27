@@ -1,4 +1,4 @@
 cd tools
-python create.py use_normal
+python create.py
 cd ..
 python UliPad.py -n

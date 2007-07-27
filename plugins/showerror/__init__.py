@@ -24,6 +24,7 @@
 import wx
 import os.path
 from modules import Mixin
+from modules import Globals
 
 menulist = [ ('IDM_HELP', #parent menu id
     [
@@ -33,15 +34,15 @@ menulist = [ ('IDM_HELP', #parent menu id
 ]
 Mixin.setMixin('mainframe', 'menulist', menulist)
 
-#def add_editctrl_menu(popmenulist):
-#    popmenulist.extend([ (None,
-#        [
-#            (610, 'IDPM_SHOWERROR', tr('Show error.log'), wx.ITEM_NORMAL, 'OnEditCtrlHelpShowError', tr('Saves an opened document using the same filename')),
-#            (620, 'IDPM_SHOWDEBUG', tr('Show debug.log'), wx.ITEM_NORMAL, 'OnEditCtrlHelpShowDebug', tr('Show debug.log file content.')),
-#        ]),
-#    ])
-#Mixin.setPlugin('editctrl', 'add_menu', add_editctrl_menu)
-#
+def add_editctrl_menu(popmenulist):
+    popmenulist.extend([ (None,
+        [
+            (610, 'IDPM_SHOWERROR', tr('Show error.log'), wx.ITEM_NORMAL, 'OnEditCtrlHelpShowError', tr('Saves an opened document using the same filename')),
+            (620, 'IDPM_SHOWDEBUG', tr('Show debug.log'), wx.ITEM_NORMAL, 'OnEditCtrlHelpShowDebug', tr('Show debug.log file content.')),
+        ]),
+    ])
+Mixin.setPlugin('editctrl', 'add_menu', add_editctrl_menu)
+
 def OnHelpShowError(win, event):
     win.editctrl.new(os.path.join(win.userpath, 'error.txt'))
 Mixin.setMixin('mainframe', 'OnHelpShowError', OnHelpShowError)
@@ -50,10 +51,10 @@ def OnHelpShowDebug(win, event):
     win.editctrl.new(os.path.join(win.userpath, 'debug.txt'))
 Mixin.setMixin('mainframe', 'OnHelpShowDebug', OnHelpShowDebug)
 
-#def OnEditCtrlHelpShowError(win, event):
-#    win.new(os.path.join(Globals.userpath, 'error.txt'))
-#Mixin.setMixin('editctrl', 'OnEditCtrlHelpShowError', OnEditCtrlHelpShowError)
-#
-#def OnEditCtrlHelpShowDebug(win, event):
-#    win.new(os.path.join(Globals.userpath, 'debug.txt'))
-#Mixin.setMixin('editctrl', 'OnEditCtrlHelpShowDebug', OnEditCtrlHelpShowDebug)
+def OnEditCtrlHelpShowError(win, event):
+    win.new(os.path.join(Globals.userpath, 'error.txt'))
+Mixin.setMixin('editctrl', 'OnEditCtrlHelpShowError', OnEditCtrlHelpShowError)
+
+def OnEditCtrlHelpShowDebug(win, event):
+    win.new(os.path.join(Globals.userpath, 'debug.txt'))
+Mixin.setMixin('editctrl', 'OnEditCtrlHelpShowDebug', OnEditCtrlHelpShowDebug)

@@ -19,7 +19,7 @@
 #   along with this program; if not, write to the Free Software
 #   Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 #
-#   $Id: makemenu.py 1609 2006-10-15 09:27:37Z limodou $
+#   $Id: makemenu.py 1457 2006-08-23 02:12:12Z limodou $
 
 import wx
 import Id
@@ -63,10 +63,6 @@ def makesubmenu(mlist, win, pid, accel=None, imagelist=None):
                             mitem.SetBitmaps(image)
                         else:
                             mitem.SetBitmap(image)
-#                else:
-#                    print 'nobitmap'
-#                    if wx.Platform == '__WXMSW__':
-#                        mitem.SetBitmap(common.getpngimage('images/empty.gif'))
                 menu.AppendItem(mitem)
                 win.menuitems[idname] = mitem
 
@@ -100,7 +96,6 @@ def makemenu(win, menulist, accel=None, editoraccel=None, imagelist=None):
     a = {}
     a.update(accel)
     a.update(editoraccel)
-    menuBar.Freeze()
     for m in mlist[None]:
         order, idname, caption, kind, func, message = m
         id = Id.makeid(win, idname)
@@ -108,7 +103,6 @@ def makemenu(win, menulist, accel=None, editoraccel=None, imagelist=None):
         menuBar.Append(menu, caption)
         win.menuitems[idname] = menu
 
-    menuBar.Thaw()
     return menuBar
 
 def mergemenu(menulist):
@@ -178,6 +172,6 @@ def setmenutext(win, accel):
     for idname, menu in win.menuitems.items():
         if accel and accel.has_key(idname):
             if accel[idname][0]:
-                caption = menu.GetText() + u'\t' + unicode(accel[idname][0])
+                caption = menu.GetText() + '\t' + accel[idname][0]
                 caption = caption.replace('+', ',')
                 menu.SetText(caption)

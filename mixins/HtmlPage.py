@@ -19,7 +19,7 @@
 #   along with this program; if not, write to the Free Software
 #   Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 #
-#   $Id: HtmlPage.py 1731 2006-11-22 03:35:50Z limodou $
+#   $Id: HtmlPage.py 1549 2006-10-03 09:55:52Z limodou $
 
 from modules import Mixin
 import DocumentBase
@@ -27,7 +27,6 @@ import wx
 import wx.html as html
 import tempfile
 import os
-from modules import Globals
 
 if wx.Platform == '__WXMSW__':
     import wx.lib.iewin as iewin
@@ -36,41 +35,27 @@ class HtmlImpactView(wx.Panel):
     def __init__(self, parent, content):
         wx.Panel.__init__(self, parent, -1)
 
-        mainframe = Globals.mainframe
         box = wx.BoxSizer(wx.VERTICAL)
         if wx.Platform == '__WXMSW__':
             self.html = IEHtmlWindow(self)
         else:
             self.html = DefaultHtmlWindow(self)
-        self.tmpfilename = None
         self.load(content)
         if wx.Platform == '__WXMSW__':
             box.Add(self.html.ie, 1, wx.EXPAND|wx.ALL, 1)
         else:
             box.Add(self.html, 1, wx.EXPAND|wx.ALL, 1)
-            self.html.SetRelatedFrame(mainframe, mainframe.app.appname + " - Browser [%s]")
-            self.html.SetRelatedStatusBar(0)
 
         self.SetSizer(box)
 
     def load(self, content):
-        if not self.tmpfilename:
-            fd, self.tmpfilename = tempfile.mkstemp('.html')
-            os.write(fd, content)
-            os.close(fd)
-        else:
-            file(self.tmpfilename, 'w').write(content)
-        self.html.Load(self.tmpfilename)
+        fd, self.filename = tempfile.mkstemp('.html')
+        os.write(fd, content)
+        os.close(fd)
+        self.html.Load(self.filename)
        
     def canClose(self):
         return True
-    
-    def OnClose(self, win):
-        if self.tmpfilename:
-            try:
-                os.unlink(self.tmpfilename)
-            except:
-                pass
     
 class HtmlDialog(wx.Dialog):
     def __init__(self, parent, title, message):
@@ -92,7 +77,7 @@ class HtmlDialog(wx.Dialog):
         else:
             box.Add(self.html, 1, wx.EXPAND|wx.ALL, 1)
         box2 = wx.BoxSizer(wx.HORIZONTAL)
-        btnOK = wx.Button(self, wx.ID_OK, tr("OK"))
+        btnOK = wx.Button(self, wx.ID_OK, tr("OK"), size=(60, -1))
         btnOK.SetDefault()
         box2.Add(btnOK, 0, 0)
         box.Add(box2, 0, wx.ALIGN_CENTER|wx.ALL, 2)
@@ -131,7 +116,7 @@ class HtmlPage(wx.Panel, DocumentBase.DocumentBase, Mixin.Mixin):
         subbox = wx.BoxSizer(wx.HORIZONTAL)
 
         self.ID_EDIT = wx.NewId()
-        self.btnEdit = wx.Button(self, self.ID_EDIT, tr("Edit"))
+        self.btnEdit = wx.Button(self, self.ID_EDIT, tr("Edit"), size=(60, -1))
         subbox.Add(self.btnEdit, 0, wx.RIGHT, 2)
 
         self.ID_BACK = wx.NewId()
@@ -143,7 +128,7 @@ class HtmlPage(wx.Panel, DocumentBase.DocumentBase, Mixin.Mixin):
         subbox.Add(self.btnForward, 0, wx.RIGHT, 2)
 
         self.ID_REFRESH = wx.NewId()
-        self.btnRefresh = wx.Button(self, self.ID_REFRESH, tr("Refresh"))
+        self.btnRefresh = wx.Button(self, self.ID_REFRESH, tr("Refresh"), size=(60, -1))
         subbox.Add(self.btnRefresh, 0, wx.RIGHT, 2)
 
         self.box.Add(subbox, 0, wx.GROW)
@@ -203,12 +188,6 @@ class HtmlPage(wx.Panel, DocumentBase.DocumentBase, Mixin.Mixin):
     def OnStatusTextChange(self, event):
         self.mainframe.SetStatusText(event.Text, 0)
 
-    def LoadContent(self, content):
-        fd, self.filename = tempfile.mkstemp('.html')
-        os.write(fd, content)
-        os.close(fd)
-        self.html.Load(self.filename)
-    
 class HtmlWindowBase:
     def __init__(self, parent, filename=''):
         self.parent = parent

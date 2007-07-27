@@ -19,7 +19,7 @@
 #   along with this program; if not, write to the Free Software
 #   Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 #
-#   $Id: __init__.py 2047 2007-04-18 06:23:49Z limodou $
+#   $Id: __init__.py 1559 2006-10-08 07:17:19Z limodou $
 
 ## 1.0 core
 #import mMainFrame
@@ -132,15 +132,5 @@
 #import mCTags
 #import mSyntaxCheck
 #import mRstProject
-
-## 3.5
-#import mEPyDoc
-#import mPersonalInfo
-#import mRegex
-#import mSmartNav
-#import mReloadMixins
-
-## 3.7
-#import mDebug
 
 import Import

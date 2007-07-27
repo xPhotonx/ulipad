@@ -19,7 +19,7 @@
 #   along with this program; if not, write to the Free Software
 #   Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 #
-#   $Id: mFormat.py 1900 2007-02-04 03:52:10Z limodou $
+#   $Id: mFormat.py 1549 2006-10-03 09:55:52Z limodou $
 
 import wx.stc
 from modules import Mixin
@@ -57,9 +57,9 @@ def add_editor_menu(popmenulist):
         ('IDPM_FORMAT',
         [
             (100, 'IDPM_FORMAT_CHOP', tr('Trim Trailing Spaces'), wx.ITEM_NORMAL, 'OnFormatChop', tr('Trims trailing white spaces')),
-            (110, 'IDPM_FORMAT_SPACETOTAB', tr('Convert Leading Spaces To Tabs'), wx.ITEM_NORMAL, 'OnFormatSpaceToTab', tr('Converts leading spaces to tabs')),
-            (120, 'IDPM_FORMAT_TABTOSPACE', tr('Convert Leading Tabs To Spaces'), wx.ITEM_NORMAL, 'OnFormatTabToSpace', tr('Converts leading tabs to spaces')),
-            (125, 'IDPM_FORMAT_ALLTABTOSPACE', tr('Convert ALL Tabs To Spaces'), wx.ITEM_NORMAL, 'OnFormatAllTabToSpace', tr('Converts all tabs to spaces')),
+            (110, 'IDPM_FORMAT_SPACETOTAB', tr('Leading Spaces to Tabs'), wx.ITEM_NORMAL, 'OnFormatSpaceToTab', tr('Converts leading spaces to tabs')),
+            (120, 'IDPM_FORMAT_TABTOSPACE', tr('Leading Tabs To Spaces'), wx.ITEM_NORMAL, 'OnFormatTabToSpace', tr('Converts leading tabs to spaces')),
+            (125, 'IDPM_FORMAT_ALLTABTOSPACE', tr('ALL Tabs To Spaces'), wx.ITEM_NORMAL, 'OnFormatAllTabToSpace', tr('Converts all tabs to spaces')),
             (130, '', '-', wx.ITEM_SEPARATOR, None, ''),
             (140, 'IDPM_FORMAT_INDENT', tr('Increase Indent'), wx.ITEM_NORMAL, 'OnFormatIndent', tr('Increases the indentation of current line or selected block')),
             (150, 'IDPM_FORMAT_UNINDENT', tr('Decrease Indent'), wx.ITEM_NORMAL, 'OnFormatUnindent', tr('Decreases the indentation of current line or selected block')),
@@ -67,8 +67,8 @@ def add_editor_menu(popmenulist):
             (170, 'IDPM_FORMAT_COMMENT', tr('Line Comment...') + '\tCtrl+/', wx.ITEM_NORMAL, 'OnFormatComment', tr('Inserts comment sign at the beginning of line')),
             (180, 'IDPM_FORMAT_UNCOMMENT', tr('Line Uncomment...') + '\tCtrl+\\', wx.ITEM_NORMAL, 'OnFormatUncomment', tr('Removes comment sign at the beginning of line')),
             (190, '', '-', wx.ITEM_SEPARATOR, None, ''),
-            (200, 'IDPM_FORMAT_QUOTE', tr('Text Quote...') + '\tCtrl+\'', wx.ITEM_NORMAL, 'OnFormatQuote', tr('Quote selected text')),
-            (210, 'IDPM_FORMAT_UNQUOTE', tr('Text Unquote...') + '\tCtrl+Shift+\'', wx.ITEM_NORMAL, 'OnFormatUnquote', tr('Unquote selected text')),
+            (200, 'IDPM_FORMAT_QUOTE', tr('Text Quote...') + '\tCtrl+Q', wx.ITEM_NORMAL, 'OnFormatQuote', tr('Quote selected text')),
+            (210, 'IDPM_FORMAT_UNQUOTE', tr('Text Unquote...') + '\tCtrl+Shift+Q', wx.ITEM_NORMAL, 'OnFormatUnquote', tr('Unquote selected text')),
         ]),
     ])
 Mixin.setPlugin('editor', 'add_menu', add_editor_menu)
@@ -88,27 +88,19 @@ def add_editor_menu_image_list(imagelist):
 Mixin.setPlugin('editor', 'add_menu_image_list', add_editor_menu_image_list)
 
 def OnEditFormatIndent(win, event):
-    win.document.BeginUndoAction()
     win.document.CmdKeyExecute(wx.stc.STC_CMD_TAB)
-    win.document.EndUndoAction()
 Mixin.setMixin('mainframe', 'OnEditFormatIndent', OnEditFormatIndent)
 
 def OnEditFormatUnindent(win, event):
-    win.document.BeginUndoAction()
     win.document.CmdKeyExecute(wx.stc.STC_CMD_BACKTAB)
-    win.document.EndUndoAction()
 Mixin.setMixin('mainframe', 'OnEditFormatUnindent', OnEditFormatUnindent)
 
 def OnFormatIndent(win, event):
-    win.BeginUndoAction()
     win.CmdKeyExecute(wx.stc.STC_CMD_TAB)
-    win.EndUndoAction()
 Mixin.setMixin('editor', 'OnFormatIndent', OnFormatIndent)
 
 def OnFormatUnindent(win, event):
-    win.BeginUndoAction()
     win.CmdKeyExecute(wx.stc.STC_CMD_BACKTAB)
-    win.EndUndoAction()
 Mixin.setMixin('editor', 'OnFormatUnindent', OnFormatUnindent)
 
 def OnFormatQuote(win, event):
@@ -122,13 +114,11 @@ Mixin.setMixin('editor', 'OnFormatUnquote', OnFormatUnquote)
 def pref_init(pref):
     pref.tabwidth = 4
     pref.last_comment_chars = '#'
-    pref.show_comment_chars_dialog = False
 Mixin.setPlugin('preference', 'init', pref_init)
 
 def add_pref(preflist):
     preflist.extend([
         (tr('Document'), 140, 'num', 'tabwidth', tr('Tab width:'), None),
-        (tr('Document'), 145, 'check', 'show_comment_chars_dialog', tr('Show comment character dialog when adding comment'), None),
     ])
 Mixin.setPlugin('preference', 'add_pref', add_pref)
 
@@ -184,26 +174,21 @@ def get_document_comment_chars(mainframe):
     return cchar
 
 def OnEditFormatComment(win, event):
-    if win.pref.show_comment_chars_dialog:
-        from modules import Entry
+    from modules import Entry
 
-        dlg = Entry.MyTextEntry(win, tr("Comment..."), tr("Comment Char:"), get_document_comment_chars(win))
-        answer = dlg.ShowModal()
-        if answer == wx.ID_OK:
-            commentchar = dlg.GetValue()
-            if len(commentchar) == 0:
-                return
-        else:
+    dlg = Entry.MyTextEntry(win, tr("Comment..."), tr("Comment Char:"), get_document_comment_chars(win))
+    answer = dlg.ShowModal()
+    if answer == wx.ID_OK:
+        commentchar = dlg.GetValue()
+        if len(commentchar) == 0:
             return
-    else:
-        commentchar = get_document_comment_chars(win)
-    win.pref.last_comment_chars = commentchar
-    win.pref.save()
-    win.document.BeginUndoAction()
-    for i in win.document.getSelectionLines():
-        text = win.document.getLineText(i)
-        win.document.replaceLineText(i, commentchar + text)
-    win.document.EndUndoAction()
+        win.pref.last_comment_chars = commentchar
+        win.pref.save()
+        win.document.BeginUndoAction()
+        for i in win.document.getSelectionLines():
+            text = win.document.getLineText(i)
+            win.document.replaceLineText(i, commentchar + text)
+        win.document.EndUndoAction()
 Mixin.setMixin('mainframe', 'OnEditFormatComment', OnEditFormatComment)
 
 def OnFormatComment(win, event):
@@ -211,27 +196,22 @@ def OnFormatComment(win, event):
 Mixin.setMixin('editor', 'OnFormatComment', OnFormatComment)
 
 def OnEditFormatUncomment(win, event):
-    if win.pref.show_comment_chars_dialog:
-        from modules import Entry
+    from modules import Entry
 
-        dlg = Entry.MyTextEntry(win, tr("Comment..."), tr("Comment Char:"), get_document_comment_chars(win))
-        answer = dlg.ShowModal()
-        if answer == wx.ID_OK:
-            commentchar = dlg.GetValue()
-            if len(commentchar) == 0:
-                return
-        else:
+    dlg = Entry.MyTextEntry(win, tr("Comment..."), tr("Comment Char:"), get_document_comment_chars(win))
+    answer = dlg.ShowModal()
+    if answer == wx.ID_OK:
+        commentchar = dlg.GetValue()
+        if len(commentchar) == 0:
             return
-    else:
-        commentchar = get_document_comment_chars(win)
-    win.pref.last_comment_chars = commentchar
-    win.pref.save()
-    win.document.BeginUndoAction()
-    for i in win.document.getSelectionLines():
-        text = win.document.getLineText(i)
-        if text.startswith(commentchar):
-            win.document.replaceLineText(i, text[len(commentchar):])
-    win.document.EndUndoAction()
+        win.pref.last_comment_chars = commentchar
+        win.pref.save()
+        win.document.BeginUndoAction()
+        for i in win.document.getSelectionLines():
+            text = win.document.getLineText(i)
+            if text.startswith(commentchar):
+                win.document.replaceLineText(i, text[len(commentchar):])
+        win.document.EndUndoAction()
 Mixin.setMixin('mainframe', 'OnEditFormatUncomment', OnEditFormatUncomment)
 
 def OnFormatUncomment(win, event):

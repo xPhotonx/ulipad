@@ -22,17 +22,18 @@
 #   $Id$
 
 from modules import Mixin
-from modules import common
 
 project_names = ['ReST']
 Mixin.setMixin('dirbrowser', 'project_names', project_names)
 
 def set_project(ini, projectnames):
     if 'ReST' in projectnames:
-        common.set_acp_highlight(ini, '.txt', 'rst.acp', 'rst')
-Mixin.setPlugin('dirbrowser', 'set_project', set_project)
-
-def remove_project(ini, projectnames):
-    if 'ReST' in projectnames:
-        common.remove_acp_highlight(ini, '.txt', 'rst.acp', 'rst')
-Mixin.setPlugin('dirbrowser', 'remove_project', remove_project)
+        s = ini.acp.get('.txt', [])
+        if not isinstance(s, list):
+            s = [s]
+        ini.acp['.txt'] = s.append(['rst.acp'])
+        s = ini.highlight.get('.txt', [])
+        if not isinstance(s, list):
+            s = [s]
+        ini.acp['.txt'] = s.append('rst')
+Mixin.setMixin('dirbrowser', 'set_project', set_project)

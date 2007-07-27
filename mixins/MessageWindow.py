@@ -20,7 +20,7 @@
 #   along with this program; if not, write to the Free Software
 #   Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 #
-#   $Id: MessageWindow.py 1817 2007-01-10 10:02:56Z limodou $
+#   $Id: MessageWindow.py 1520 2006-09-18 00:37:33Z limodou $
 
 __doc__ = 'message window'
 
@@ -35,25 +35,23 @@ class MessageWindow(wx.stc.StyledTextCtrl, Mixin.Mixin):
     __mixinname__ = 'messagewindow'
     popmenulist = [(None, #parent menu id
         [
-            (100, 'IDPM_UNDO', tr('Undo') + '\tCtrl+Z', wx.ITEM_NORMAL, 'OnPopupEdit', tr('Reverse previous editing operation')),
-            (110, 'IDPM_REDO', tr('Redo') + '\tCtrl+Y', wx.ITEM_NORMAL, 'OnPopupEdit', tr('Reverse previous undo operation')),
+            (100, 'wx.ID_UNDO', tr('Undo') + '\tCtrl+Z', wx.ITEM_NORMAL, 'OnPopupEdit', tr('Reverse previous editing operation')),
+            (110, 'wx.ID_REDO', tr('Redo') + '\tCtrl+Y', wx.ITEM_NORMAL, 'OnPopupEdit', tr('Reverse previous undo operation')),
             (120, '', '-', wx.ITEM_SEPARATOR, None, ''),
-            (130, 'IDPM_CUT', tr('Cut') + '\tCtrl+X', wx.ITEM_NORMAL, 'OnPopupEdit', tr('Deletes text from the document and moves it to the clipboard')),
-            (140, 'IDPM_COPY', tr('Copy') + '\tCtrl+C', wx.ITEM_NORMAL, 'OnPopupEdit', tr('Copies text from the document to the clipboard')),
-            (150, 'IDPM_PASTE', tr('Paste') + '\tCtrl+V', wx.ITEM_NORMAL, 'OnPopupEdit', tr('Pastes text from the clipboard into the document')),
+            (130, 'wx.ID_CUT', tr('Cut') + '\tCtrl+X', wx.ITEM_NORMAL, 'OnPopupEdit', tr('Deletes text from the document and moves it to the clipboard')),
+            (140, 'wx.ID_COPY', tr('Copy') + '\tCtrl+C', wx.ITEM_NORMAL, 'OnPopupEdit', tr('Copies text from the document to the clipboard')),
+            (150, 'wx.ID_PASTE', tr('Paste') + '\tCtrl+V', wx.ITEM_NORMAL, 'OnPopupEdit', tr('Pastes text from the clipboard into the document')),
             (160, '', '-', wx.ITEM_SEPARATOR, None, ''),
-            (170, 'IDPM_SELECTALL', tr('Select All') + '\tCtrl+A', wx.ITEM_NORMAL, 'OnPopupEdit', tr('Selects all text.')),
-            (175, 'IDPM_CLEAR', tr('Clear') + '\tShift+F5', wx.ITEM_NORMAL, 'OnClear', tr('Clear all the text.')),
+            (170, 'wx.ID_SELECTALL', tr('Select All') + '\tCtrl+A', wx.ITEM_NORMAL, 'OnPopupEdit', tr('Selects all text.')),
             (180, 'IDPM_WRAP', tr('Wrap Text'), wx.ITEM_CHECK, 'OnWrap', tr('Wrap text.')),
-            (185, 'IDPM_AUTO_CLEAR', tr('Auto Clear on Running Program'), wx.ITEM_CHECK, 'OnAutoClaer', tr('Auto clear text on run program.')),
         ]),
     ]
     imagelist = {
-        'IDPM_UNDO':'images/undo.gif',
-        'IDPM_REDO':'images/redo.gif',
-        'IDPM_CUT':'images/cut.gif',
-        'IDPM_COPY':'images/copy.gif',
-        'IDPM_PASTE':'images/paste.gif',
+        'wx.ID_UNDO':'images/undo.gif',
+        'wx.ID_REDO':'images/redo.gif',
+        'wx.ID_CUT':'images/cut.gif',
+        'wx.ID_COPY':'images/copy.gif',
+        'wx.ID_PASTE':'images/paste.gif',
     }
 
     def __init__(self, parent, mainframe):
@@ -84,8 +82,7 @@ class MessageWindow(wx.stc.StyledTextCtrl, Mixin.Mixin):
         }
 
         self.StyleSetSpec(wx.stc.STC_STYLE_DEFAULT, "face:%(name)s,size:%(size)d" % self.defaultfaces)
-        self.StyleClearAll()
-        
+
         self.SetScrollWidth(1)
         self.maxline = 'WWWW'
 
@@ -101,13 +98,12 @@ class MessageWindow(wx.stc.StyledTextCtrl, Mixin.Mixin):
         wx.stc.EVT_STC_MODIFIED(self, self.GetId(), self.OnModified)
         wx.EVT_RIGHT_DOWN(self, self.OnPopUp)
 
-        wx.EVT_UPDATE_UI(self, self.IDPM_UNDO, self.OnUpdateUI)
-        wx.EVT_UPDATE_UI(self, self.IDPM_REDO, self.OnUpdateUI)
-        wx.EVT_UPDATE_UI(self, self.IDPM_CUT, self.OnUpdateUI)
-        wx.EVT_UPDATE_UI(self, self.IDPM_COPY, self.OnUpdateUI)
-        wx.EVT_UPDATE_UI(self, self.IDPM_PASTE, self.OnUpdateUI)
+        wx.EVT_UPDATE_UI(self, self.ID_UNDO, self.OnUpdateUI)
+        wx.EVT_UPDATE_UI(self, self.ID_REDO, self.OnUpdateUI)
+        wx.EVT_UPDATE_UI(self, self.ID_CUT, self.OnUpdateUI)
+        wx.EVT_UPDATE_UI(self, self.ID_COPY, self.OnUpdateUI)
+        wx.EVT_UPDATE_UI(self, self.ID_PASTE, self.OnUpdateUI)
         wx.EVT_UPDATE_UI(self, self.IDPM_WRAP, self.OnUpdateUI)
-        wx.EVT_UPDATE_UI(self, self.IDPM_AUTO_CLEAR, self.OnUpdateUI)
 
 #        self.SetCaretForeground(')
         if x.default.has_key('message_caretlineback'):
@@ -115,11 +111,6 @@ class MessageWindow(wx.stc.StyledTextCtrl, Mixin.Mixin):
         else:
             self.SetCaretLineBack('#FF8000')
         self.SetCaretLineVisible(True)
-        if self.mainframe.pref.message_wrap:
-            self.SetWrapMode(wx.stc.STC_WRAP_WORD)
-        else:
-            self.SetWrapMode(wx.stc.STC_WRAP_NONE)
-        self.SetScrollWidth(5000)
 
         self.callplugin('init', self)
 
@@ -172,30 +163,30 @@ class MessageWindow(wx.stc.StyledTextCtrl, Mixin.Mixin):
 
     def OnPopupEdit(self, event):
         eid = event.GetId()
-        if eid == self.IDPM_CUT:
+        if eid == self.ID_CUT:
             self.Cut()
-        elif eid == self.IDPM_COPY:
+        elif eid == self.ID_COPY:
             self.Copy()
-        elif eid == self.IDPM_PASTE:
+        elif eid == self.ID_PASTE:
             self.Paste()
-        elif eid == self.IDPM_SELECTALL:
+        elif eid == self.ID_SELECT_ALL:
             self.SelectAll()
-        elif eid == self.IDPM_UNDO:
+        elif eid == self.ID_UNDO:
             self.Undo()
-        elif eid == self.IDPM_REDO:
+        elif eid == self.ID_REDO:
             self.Redo()
 
     def OnUpdateUI(self, event):
         eid = event.GetId()
-        if eid == self.IDPM_CUT:
+        if eid == self.ID_CUT:
             event.Enable(not self.GetReadOnly() and bool(self.GetSelectedText()))
-        elif eid == self.IDPM_COPY:
+        elif eid == self.ID_COPY:
             event.Enable(bool(self.GetSelectedText()))
-        elif eid == self.IDPM_PASTE:
+        elif eid == self.ID_PASTE:
             event.Enable(not self.GetReadOnly() and bool(self.CanPaste()))
-        elif eid == self.IDPM_UNDO:
+        elif eid == self.ID_UNDO:
             event.Enable(bool(self.CanUndo()))
-        elif eid == self.IDPM_REDO:
+        elif eid == self.ID_REDO:
             event.Enable(bool(self.CanRedo()))
         elif eid == self.IDPM_WRAP:
             mode = self.GetWrapMode()
@@ -203,22 +194,10 @@ class MessageWindow(wx.stc.StyledTextCtrl, Mixin.Mixin):
                 event.Check(False)
             else:
                 event.Check(True)
-        elif eid == self.IDPM_AUTO_CLEAR:
-            event.Check(self.mainframe.pref.clear_message)
 
     def OnWrap(self, event):
         mode = self.GetWrapMode()
         if mode == wx.stc.STC_WRAP_NONE:
             self.SetWrapMode(wx.stc.STC_WRAP_WORD)
-            self.mainframe.pref.message_wrap = True
         else:
             self.SetWrapMode(wx.stc.STC_WRAP_NONE)
-            self.mainframe.pref.message_wrap = False
-
-    def OnClear(self, event):
-        self.SetText('')
-        
-    def OnAutoClaer(self, event):
-        self.mainframe.pref.clear_message = not self.mainframe.pref.clear_message
-        self.mainframe.pref.save()
-        

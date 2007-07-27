@@ -19,7 +19,7 @@
 #   along with this program; if not, write to the Free Software
 #   Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 #
-#   $Id: MyPanel.py 1852 2007-01-25 01:50:35Z limodou $
+#   $Id: MyPanel.py 1552 2006-10-05 02:52:48Z limodou $
 #
 #   This file's code is mostly copy from DrPython. Thanks to Daniel Pozmanter
 
@@ -27,10 +27,9 @@ import wx
 from modules import Id
 from modules import makemenu
 from modules import Mixin
-from modules import common
 
 class SashPanel(wx.Panel):
-    def __init__(self, parent):
+    def __init__(self, parent, flag=None):
         wx.Panel.__init__(self, parent, -1, size=(0,0))
 
         self.parent = parent
@@ -38,7 +37,7 @@ class SashPanel(wx.Panel):
 
         width, height = self.GetSizeTuple()
 
-        self.pages = []
+        self.pages = {}
 
         self.ID_TOP = Id.makeid(self, 'ID_TOP')
         self.ID_BOTTOM = Id.makeid(self, 'ID_BOTTOM')
@@ -233,23 +232,6 @@ class SashPanel(wx.Panel):
         self.OnSize(None)
         self.Refresh()
 
-    def setSize(self, side, percent):
-        if side == 'left':
-            self.leftsize = percent
-            if percent == 100:
-                self.rightsize = 0
-                self.bottomsize = 0
-        elif side == 'right':
-            self.rightsize = percent
-            if percent == 100:
-                self.leftsize = 0
-                self.bottomsize = 0
-        elif side == 'bottom':
-            self.bottomsize = percent
-            if percent == 100:
-                self.leftsize = 0
-                self.rightsize = 0
-            
     def showPage(self, name):
         if self.leftbook and self.leftbook.getPageIndex(name) > -1:
             self.showWindow('left', True)
@@ -308,99 +290,43 @@ class SashPanel(wx.Panel):
         pname = panelname.lower()
         notebook = self.getNotebook(panelname)
         notebook.addPage(page, name)
-        self.pages.append((name, pname, notebook, page))
+        self.pages[name] = (pname, notebook, page)
 
     def delPage(self, side, name):
         notebook = self.getNotebook(side)
-        i, v = self.getPageItem(name)
-        if v:
-            del self.pages[i]
+        if self.pages.has_key(name):
+            del self.pages[name]
         if notebook.GetPageCount() == 0:
             self.delNotebook(side)
             self.showWindow(side, False)
 
-    def closePage(self, name, **kwargs):
-        i, v = self.getPageItem(name)
-        if v:
-            pagename, panelname, notebook, page = v
-            return notebook.closePage(page, **kwargs)
+    def closePage(self, name):
+        if self.pages.has_key(name):
+            notebook = self.pages[name][1]
+            return notebook.closePage(name)
 
     def getPage(self, name):
-        i, v = self.getPageItem(name)
-        if v:
-            pagename, panelname, notebook, page = v
-            return page
+        if self.pages.has_key(name):
+            return self.pages[name][2]
         else:
             return None
-            
-    def getPageItem(self, name):
-        """
-        Find the page object according to name parameter.
-        name can be a string or a page object
-        """
-        
-        for i, v in enumerate(self.pages):
-            pagename, panelname, notebook, page = v
-            if isinstance(name, (str, unicode)):
-                if name == pagename:
-                    return i, v
-            else:   #is page object
-                if page is name:
-                    return i, v
-        else:
-            return -1, None
         
     def getPages(self):
-        """
-        Return pages list
-        """
         return self.pages
     
     def setName(self, page, name):
-        """
-        Change page title
-        """
-        i, obj = self.getPageItem(page)
-        if obj:
-            pagename, pname, notebook, p = obj
-            index = notebook.getPageIndex(p)
-            if index > 0:
-                notebook.SetPageText(index, name)
-                self.pages[i] = name, pname, notebook, p
-                return
-            
-    def setImageIndex(self, page, imagename):
-        i, obj = self.getPageItem(page)
-        if obj:
-            pagename, pname, notebook, p = obj
-            notebook.setImageIndex(page, imagename)
-            
-    def get_status(self):
-        s = {}
-        s['left'] = (self.LeftIsVisible, self.leftsize)
-        s['right'] = (self.RightIsVisible, self.rightsize)
-        s['bottom'] = (self.BottomIsVisible, self.bottomsize)
-        return s
-    
-    def restore_status(self, s):
-        if s:
-            self.LeftIsVisible, self.leftsize = s['left']
-            notebook = self.getNotebook('left')
-            if not notebook or notebook.GetPageCount() == 0:
-                self.LeftIsVisible = False
-            self.RightIsVisible, self.rightsize = s['right']
-            notebook = self.getNotebook('right')
-            if not notebook or notebook.GetPageCount() == 0:
-                self.RightIsVisible = False
-            self.BottomIsVisible, self.bottomsize = s['bottom']
-            notebook = self.getNotebook('bottom')
-            if not notebook or notebook.GetPageCount() == 0:
-                self.BottomIsVisible = False
-            wx.CallAfter(self.OnSize, None)
-            wx.CallAfter(self.Refresh)
+        for key, value in self.pages.items():
+            pname, notebook, p = value
+            if p is page:
+                index = notebook.getPageObjectIndex(page)
+                if index > 0:
+                    notebook.SetPageText(index, name)
+                    del self.pages[key]
+                    self.pages[name] = value
+                    return
 
 from modules.wxctrl import FlatNotebook as FNB
-class Notebook(FNB.FlatNotebook, Mixin.Mixin):
+class Notebook(FNB.StyledNotebook, Mixin.Mixin):
     __mixinname__ = 'notebook'
     popmenulist = [ (None,
     [
@@ -409,12 +335,11 @@ class Notebook(FNB.FlatNotebook, Mixin.Mixin):
     ]),
 ]
     imagelist = {}
-    pageimagelist = {'html':'images/file_html.gif', 'document':'images/file_txt.gif'}
-    
+
     def __init__(self, parent, panel, side, style=0):
         self.initmixin()
 
-        FNB.FlatNotebook.__init__(self, parent, -1, style=style|FNB.FNB_SMART_TABS|FNB.FNB_VC8|FNB.FNB_X_ON_TAB|FNB.FNB_NO_X_BUTTON, size=(0, 0))
+        FNB.StyledNotebook.__init__(self, parent, -1, style=style|FNB.FNB_TABS_BORDER_SIMPLE|FNB.FNB_X_ON_TAB|FNB.FNB_NO_X_BUTTON, size=(0, 0))
         self.parent = parent
         self.panel = panel
         self.side = side
@@ -424,34 +349,17 @@ class Notebook(FNB.FlatNotebook, Mixin.Mixin):
         self.callplugin_once('add_menu', Notebook.popmenulist)
         #@add_menu_image_list imagelist
         self.callplugin_once('add_menu_image_list', Notebook.imagelist)
-        #@add_page_image_list imagelist
-        self.callplugin_once('add_page_image_list', Notebook.pageimagelist)
         self.popmenu = makemenu.makepopmenu(self, self.popmenulist, self.imagelist)
         self.SetRightClickMenu(self.popmenu)
         FNB.EVT_FLATNOTEBOOK_PAGE_CHANGED(self, self.GetId(), self.OnPageChanged)
 #        wx.EVT_LEFT_UP(self, self.OnPageChanged)
-        wx.EVT_LEFT_DCLICK(self._pages, self.OnDClick)
+#        wx.EVT_LEFT_DCLICK(self, self.OnDClick)
 #        wx.EVT_RIGHT_DOWN(self, self.OnPopUp)
         FNB.EVT_FLATNOTEBOOK_PAGE_CLOSING(self, self.GetId(), self.OnClose)
-        self.SetActiveTabColour('#7FFFD4')
-
-        self.pageimageindex = {}
-        pageimages = wx.ImageList(16, 16)
-        for i, v in enumerate(self.pageimagelist.items()):
-            name, imagefilename = v
-            image = common.getpngimage(imagefilename)
-            pageimages.Add(image)
-            self.pageimageindex[name] = i
-        self.pageimages = pageimages
-        
-        self.SetImageList(self.pageimages)
-        
         self.delete_must = False
-        self.old_size = None
-        self.full = False
 
     def OnPageChanged(self, event):
-#        wx.CallAfter(self.GetPage(self.GetSelection()).SetFocus)
+        wx.CallAfter(self.GetPage(self.GetSelection()).SetFocus)
         event.Skip()
 
     def OnClose(self, event):
@@ -466,22 +374,18 @@ class Notebook(FNB.FlatNotebook, Mixin.Mixin):
     def OnPopUp(self, event):
         self.PopupMenu(self.popmenu, event.GetPosition())
 
-    def closePage(self, name, **kwargs):
+    def closePage(self, name):
         index = self.getPageIndex(name)
         if index > -1:
             page = self.GetPage(index)
             if hasattr(page, 'canClose'):
                 if page.canClose():
                     self.callplugin('close_page', page, name)
-                    if hasattr(page, 'OnClose'):
-                        page.OnClose(self, **kwargs)
                     self.delete_must = True
                     self.DeletePage(index)
                     self.panel.delPage(self.side, name)
             else:
                 self.callplugin('close_page', page, name)
-                if hasattr(page, 'OnClose'):
-                    page.OnClose(self, **kwargs)
                 self.delete_must = True
                 self.DeletePage(index)
                 self.panel.delPage(self.side, name)
@@ -503,39 +407,17 @@ class Notebook(FNB.FlatNotebook, Mixin.Mixin):
 
     def getPageIndex(self, name):
         for i in range(self.GetPageCount()):
-            if isinstance(name, (str, unicode)):
-                if self.GetPageText(i) == name:
-                    return i
-            else:
-                if self.GetPage(i) is name:
-                    return i
+            if self.GetPageText(i) == name:
+                return i
         else:
             return -1
 
+    def getPageObjectIndex(self, page):
+        for i in range(self.GetPageCount()):
+            if self.GetPage(i) == page:
+                return i
+        else:
+            return -1
+    
     def getSide(self):
         return self.side
-    
-    def OnDClick(self, event):
-        panel = self.parent.GetParent()
-        if not self.full:
-            if self.side == 'left':
-                self.old_size = panel.leftsize
-            elif self.side == 'right':
-                self.old_size = panel.rightsize
-            elif self.side == 'bottom':
-                self.old_size = panel.bottomsize
-            panel.setSize(self.side, 50)
-            panel.OnSize(None)
-            panel.Refresh()
-            self.full = True
-        else:
-            panel.setSize(self.side, self.old_size)
-            panel.OnSize(None)
-            panel.Refresh()
-            self.full = False
-            
-    def setImageIndex(self, page, imagename):
-        imageindex = self.pageimageindex.get(imagename, -1)
-        if imageindex > -1:
-            self.SetPageImage(self.getPageIndex(page), imageindex)
-        

@@ -19,7 +19,7 @@
 #   along with this program; if not, write to the Free Software
 #   Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 #
-#   $Id: mMainSubFrame.py 1595 2006-10-12 03:01:34Z limodou $
+#   $Id: mMainSubFrame.py 1566 2006-10-09 04:44:08Z limodou $
 
 from modules import Mixin
 import MyPanel
@@ -34,7 +34,7 @@ class MainSubFrame(MyPanel.SashPanel, Mixin.Mixin):
         self.mainframe = mainframe
         self.mainframe.panel = self
 
-        MyPanel.SashPanel.__init__(self, parent)
+        MyPanel.SashPanel.__init__(self, parent, ['left', 'right', 'bottom'])
 
         self.callplugin('init', self)
 

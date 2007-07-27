@@ -19,7 +19,7 @@
 #   along with this program; if not, write to the Free Software
 #   Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 #
-#   $Id: mLastStatus.py 1606 2006-10-13 09:02:43Z limodou $
+#   $Id: mLastStatus.py 1503 2006-09-02 02:39:36Z limodou $
 
 __doc__ = "Saveing last window status, including position, size, and Maximized or Iconized."
 
@@ -31,7 +31,6 @@ def pref_init(pref):
     pref.status_position = (0, 0)
     pref.status_size = (600, 400)
     pref.status = 3     #1 Iconized 2 Maximized 3 normal
-    pref.status_panels = {'left':20, 'right':10, 'bottom':20}
 Mixin.setPlugin('preference', 'init', pref_init)
 
 def add_pref(preflist):
@@ -42,20 +41,22 @@ Mixin.setPlugin('preference', 'add_pref', add_pref)
 
 def afterclosewindow(win):
     if win.pref.save_current_status:
+#               if win.IsIconized():
+#                       win.pref.status = 1
         if win.IsMaximized():
             win.pref.status = 2
         else:
             win.pref.status = 3
             saveWindowPosition(win)
-        win.pref.status_panels = {'left':win.panel.leftsize, 'right':win.panel.rightsize, 'bottom':win.panel.bottomsize}
         win.pref.save()
 Mixin.setPlugin('mainframe', 'afterclosewindow', afterclosewindow)
 
 def beforeinit(win):
     if win.pref.save_current_status:
-        x, y = win.pref.status_position
-        w, h = win.pref.status_size
-        win.SetDimensions(x, y, w, h)
+        win.Move(win.pref.status_position)
+        win.SetSize(win.pref.status_size)
+#               if win.pref.status == 1:
+#                       win.Iconize()
         if win.pref.status == 2:
             wx.CallAfter(win.Maximize)
 Mixin.setPlugin('mainframe', 'beforeinit', beforeinit)
@@ -80,10 +81,3 @@ def saveWindowPosition(win):
         win.pref.status_position = win.GetPositionTuple()
         win.pref.status_size = win.GetSizeTuple()
         win.pref.save()
-
-def mainframe_afterinit(win):
-    if win.pref.save_current_status:
-        p = win.pref.status_panels
-        panel = win.panel
-        panel.leftsize, panel.rightsize, panel.bottomsize = p['left'], p['right'], p['bottom']
-Mixin.setPlugin('mainframe', 'afterinit', mainframe_afterinit)

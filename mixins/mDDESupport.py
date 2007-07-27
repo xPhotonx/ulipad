@@ -19,7 +19,7 @@
 #   along with this program; if not, write to the Free Software
 #   Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 #
-#   $Id: mDDESupport.py 1863 2007-01-26 12:08:14Z limodou $
+#   $Id: mDDESupport.py 1472 2006-08-24 02:15:23Z limodou $
 
 __doc__ = 'simulate DDE support'
 
@@ -48,11 +48,8 @@ Mixin.setPlugin('mainframe', 'afterclosewindow', afterclosewindow)
 
 def openfiles(win, files):
     if files:
-        doc = None
         for filename in files:
-            doc = win.editctrl.new(filename)
+            win.editctrl.new(filename)
         win.Show()
         win.Raise()
-        if doc:
-            doc.SetFocus()
 Mixin.setMixin('mainframe', 'openfiles', openfiles)

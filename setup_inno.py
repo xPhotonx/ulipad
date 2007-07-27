@@ -57,37 +57,13 @@ ulipad_wx = dict(
 
 zipfile = r"lib\sharedlib.zip"
 
-import os
-from distutils.file_util import copy_file
-from distutils.dir_util import mkpath
-
-def gather_data_files(module, base_dir):
-    s = []
-    mod = __import__(module, [], [], [''])
-    path = mod.__path__[0]
-    length = len(os.path.dirname(path)) + 1 #include os.sep
-    
-    for root, dirs, files in os.walk(path):
-        for f in files:
-            fname, ext = os.path.splitext(f)
-            if ext not in ('.py', '.pyc', '.pyo'):
-                filename = os.path.join(root, f)
-                desfname = filename[length:]
-                sfilename = os.path.join(base_dir, desfname)
-                mkpath(os.path.dirname(sfilename))
-                copy_file(filename, os.path.join(base_dir, desfname))
-                s.append(desfname)
-    return s
-
 includes = ["modules.EasyGuider.*", "modules.meteor.*"]
-packages = ["docutils"]
 options = {
         "py2exe":
         {
-                "compressed": 0,
+                "compressed": 1,
                 "optimize": 2,
                 "includes": includes,
-                "packages": packages,
         }
 }
 
@@ -235,13 +211,7 @@ class build_installer(py2exe):
         script.create()
         print "*** compiling the inno setup script***"
         script.compile()
-        
         # Note: By default the final setup.exe will be in an Output subdirectory.
-    def make_lib_archive(self, zip_filename, base_dir, files,
-                         verbose=0, dry_run=0):
-        datafiles = gather_data_files("docutils", base_dir)
-        files.extend(datafiles)
-        return py2exe.make_lib_archive(self, zip_filename, base_dir, files, verbose, dry_run)
 
 ################################################################
 
@@ -266,7 +236,7 @@ def my_copytree(src, dst):
             else:
                 shutil.copy2(srcname, dst)
         except:
-#            error.traceback()
+            error.traceback()
             raise
 
 dirs = ['acp', 'plugins', 'wizard', 'scripts']

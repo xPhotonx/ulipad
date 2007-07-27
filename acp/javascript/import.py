@@ -19,7 +19,7 @@ def default_identifier(win):
     ini = get_newest_ini()
     return ini.default.identifiers
 
-def calltip(win, word, syncvar):
+def calltip(win, word):
     ini = get_newest_ini()
     pos = word.rfind('.')
     if pos != -1:
@@ -34,7 +34,7 @@ def calltip(win, word, syncvar):
             word = win.getChar(pos - 1)       
     return ini.functions.get(word, '')
 
-def autodot(win, word, syncvar):
+def autodot(win, word):
     ini = get_newest_ini()
     if word.endswith('.'):
         word = word[:-1]

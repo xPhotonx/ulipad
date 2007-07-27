@@ -26,8 +26,7 @@ from modules import Mixin
 
 menulist = [('IDM_PYTHON', #parent menu id
         [
-            (170, 'IDM_PYTHON_CHECK', tr('Syntax Check'), wx.ITEM_NORMAL,
-                'OnPythonCheck', tr('Check python source code syntax.')),
+            (170, 'IDM_PYTHON_CHECK', tr('Syntax Check'), wx.ITEM_NORMAL, 'OnPythonCheck', tr('Check python source code syntax.')),
         ]),
 ]
 Mixin.setMixin('pythonfiletype', 'menulist', menulist)
@@ -44,26 +43,21 @@ toolbaritems = {
 Mixin.setMixin('pythonfiletype', 'toolbaritems', toolbaritems)
 
 def OnPythonCheck(win, event):
-    import SyntaxCheck
-    SyntaxCheck.Check(win, win.document)
+    import check
+    check.Check(win, win.document)
 Mixin.setMixin('mainframe', 'OnPythonCheck', OnPythonCheck)
 
 def init(pref):
     pref.auto_py_check = True
-    pref.auto_py_pep8_check = True
-    pref.py_check_skip_long_line = True
-    pref.py_check_skip_blank_lines = True
-    pref.py_check_skip_tailing_whitespace = True
 Mixin.setPlugin('preference', 'init', init)
 
 preflist = [
-        (tr('Python'), 160, 'check', 'auto_py_check', tr('Auto check syntax when saving'), None),
-        (tr('Python'), 170, 'check', 'auto_py_pep8_check', tr('Auto PEP8 style check with syntax check'), None),
+        (tr('Python'), 160, 'check', 'auto_py_check', tr('Auto check syntax as saving'), None),
 ]
 Mixin.setMixin('preference', 'preflist', preflist)
 
 def aftersavefile(win, filename):
-    if win.edittype == 'edit' and win.languagename == 'python' and win.pref.auto_py_check:
+    if win.edittype == 'edit' and win.languagename == 'python':
         import SyntaxCheck
         SyntaxCheck.Check(win.mainframe, win)
 Mixin.setPlugin('editor', 'aftersavefile', aftersavefile, Mixin.LOW)

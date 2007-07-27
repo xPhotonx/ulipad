@@ -60,7 +60,7 @@ comment_template = """/**
  *
  * @name     %(fn_name)s
 %(parameters)s
- * @author   %(username)s
+ * @author   
  * @example  
  *
  */
@@ -69,7 +69,7 @@ def OnJQueryProjectCreateComment(win):
     def output(win, fn_name, parameters, pos):
         startpos = win.PositionFromLine(win.LineFromPosition(pos))
         win.GotoPos(startpos)
-        win.AddText(comment_template % {'fn_name':fn_name, 'parameters':parameters, 'username':win.pref.personal_username})
+        win.AddText(comment_template % {'fn_name':fn_name, 'parameters':parameters})
         win.EnsureCaretVisible()
         
     line = win.GetCurrentLine()

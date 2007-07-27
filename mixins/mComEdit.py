@@ -19,7 +19,7 @@
 #   along with this program; if not, write to the Free Software
 #   Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 #
-#   $Id: mComEdit.py 1896 2007-02-03 09:02:39Z limodou $
+#   $Id: mComEdit.py 1566 2006-10-09 04:44:08Z limodou $
 
 __doc__ = 'Common edit menu. Redo, Undo, Cut, Paste, Copy'
 
@@ -125,6 +125,12 @@ Mixin.setPlugin('mainframe', 'add_menu_image_list', add_mainframe_menu_image_lis
 def DoSTCBuildIn(win, event):
     eid = event.GetId()
     doc = win.document
+#    if hasattr(win, 'shellwindow'):
+#        if win.shellwindow and win.shellwindow.GetSTCFocus():
+#            doc = win.shellwindow
+#    if hasattr(win, 'messagewindow'):
+#        if win.messagewindow and win.messagewindow.GetSTCFocus():
+#            doc = win.messagewindow
     if eid == win.IDM_EDIT_UNDO:
         doc.Undo()
     elif eid == win.IDM_EDIT_REDO:
@@ -151,7 +157,7 @@ def on_mainframe_updateui(win, event):
     eid = event.GetId()
     if hasattr(win, 'document') and win.document:
         if eid in [win.IDM_EDIT_CUT, win.IDM_EDIT_COPY]:
-            event.Enable(len(win.document.GetSelectedText()) > 0)
+            event.Enable(win.document.GetSelectedText and len(win.document.GetSelectedText()) > 0)
         elif eid == win.IDM_EDIT_PASTE:
             event.Enable(bool(win.document.CanPaste()))
         elif eid == win.IDM_EDIT_UNDO:
@@ -238,7 +244,7 @@ def OnEditSelectionMatchLeft(win, event):
     pos = win.document.GetCurrentPos()
     text = win.document.getRawText()
 
-    token = [('\'', '\''), ('"', '"'), ('(', ')'), ('[', ']'), ('{', '}'), ('<', '>'), ('`', '`')]
+    token = [('\'', '\''), ('"', '"'), ('(', ')'), ('[', ']'), ('{', '}'), ('<', '>')]
     start, match = findLeft(text, pos, token)
     if start > -1:
         end, match = findRight(text, pos, token, match)

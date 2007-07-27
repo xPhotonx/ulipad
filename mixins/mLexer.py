@@ -19,7 +19,7 @@
 #   along with this program; if not, write to the Free Software
 #   Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 #
-#   $Id: mLexer.py 2081 2007-06-12 08:31:48Z limodou $
+#   $Id: mLexer.py 1545 2006-09-30 02:04:24Z limodou $
 
 __doc__ = 'C syntax highlitght process'
 
@@ -38,7 +38,7 @@ def add_lexer(lexer):
         (LexerClass.HtmlLexer.metaname, tr('Html|*.htm;*.html;*.shtml'),
             wx.stc.STC_LEX_HTML, 'html.stx', LexerClass.HtmlLexer),
         (LexerClass.XMLLexer.metaname, tr('Xml|*.xml;*.xslt'),
-            wx.stc.STC_LEX_CONTAINER, 'xml.stx', LexerClass.XMLLexer),
+            wx.stc.STC_LEX_HTML, 'xml.stx', LexerClass.XMLLexer),
         (LexerClass.PythonLexer.metaname, tr('Python|*.py;*.pyw'),
             wx.stc.STC_LEX_PYTHON, 'python.stx', LexerClass.PythonLexer),
         (LexerClass1.JavaLexer.metaname, tr('Java|*.java'),
@@ -53,12 +53,10 @@ def add_lexer(lexer):
             wx.stc.STC_LEX_CPP, 'js.stx', LexerClass1.JSLexer),
         (LexerClass1.PHPLexer.metaname, tr('Php|*.php3;*.phtml;*.php'),
             wx.stc.STC_LEX_HTML, 'php.stx', LexerClass1.PHPLexer),
-        (LexerClass1.ASPLexer.metaname, tr('Active Server Pages|*.asp'),
+        (LexerClass1.ASPLexer.metaname, tr('Active Server Pages (ASP)|*.asp'),
             wx.stc.STC_LEX_HTML, 'asp.stx', LexerClass1.ASPLexer),
-        (LexerRst.RstLexer.metaname, tr('ReStructured Text|*.rst'),
+        (LexerRst.RstLexer.metaname, tr('ReStructured Text (rst)|*.rst'),
             wx.stc.STC_LEX_CONTAINER, 'rst.stx', LexerRst.RstLexer),
-        (LexerClass1.LuaLexer.metaname, tr('Lua|*.lua'),
-            wx.stc.STC_LEX_LUA, 'lur.stx', LexerClass1.LuaLexer),
     ])
 Mixin.setPlugin('lexerfactory', 'add_lexer', add_lexer)
 
@@ -75,8 +73,7 @@ def add_new_files(new_files):
         ('Cascade Style Sheet', LexerClass1.CSSLexer.metaname),
         ('JavaScript', LexerClass1.JSLexer.metaname),
         ('PHP', LexerClass1.PHPLexer.metaname),
-        ('Active Server Pages', LexerClass1.ASPLexer.metaname),
-        ('ReStructured Text', LexerRst.RstLexer.metaname),
-        ('Lua', LexerClass1.LuaLexer.metaname),
+        ('Active Server Pages (ASP)', LexerClass1.ASPLexer.metaname),
+        ('ReStructured Text (rst)', LexerRst.RstLexer.metaname),
     ])
 Mixin.setPlugin('mainframe', 'add_new_files', add_new_files)

@@ -19,13 +19,12 @@
 #   along with this program; if not, write to the Free Software
 #   Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 #
-#   $Id: LexerClass.py 1883 2007-02-01 04:17:14Z limodou $
+#   $Id: LexerClass.py 1546 2006-09-30 04:30:38Z limodou $
 
 __doc__ = 'C syntax highlitght process'
 
 import wx
 import LexerBase
-import types
 
 class TextLexer(LexerBase.LexerBase):
 
@@ -107,7 +106,6 @@ while (tkz.HasMoreTokens() || 42) {
         self.addSyntaxItem('commentdockeyword', 'Comment doc keyword',  wx.stc.STC_C_COMMENTDOCKEYWORD,         self.STE_STYLE_KEYWORD3)
         self.addSyntaxItem('commentdockeyworderror','Comment doc keyword error',wx.stc.STC_C_COMMENTDOCKEYWORDERROR,    self.STE_STYLE_ERROR)
         self.addSyntaxItem('globalclass',       'Global Class',         wx.stc.STC_C_GLOBALCLASS,               self.STE_STYLE_TEXT)
-        
 class HtmlLexer(LexerBase.LexerBase):
 
     metaname = 'html'
@@ -139,18 +137,17 @@ class HtmlLexer(LexerBase.LexerBase):
                 "text password checkbox radio submit reset file hidden image", )
 
     def loadPreviewCode(self):
-        return """<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
-<HTML>
-<HEAD>
-<TITLE> New Document </TITLE>
-<META NAME="Generator" CONTENT="EditPlus">
-</HEAD>
-
-<BODY>
-
-</BODY>
-</HTML>
-"""
+        return """<?xml version="1.0"?>
+<html><head>
+<title>STC Style Editor</title>
+<script lang='Python'> a=10 </script>
+</head>
+<body bgcolor="#FFFFFF" text=#000000>
+&lt; Text for testing &gt;
+<unknown_tag>
+<!--Comments--><?question?><![CDATA[]]>
+</body>
+</html>"""
 
     def pre_colourize(self, win):
         win.enablefolder = False
@@ -274,100 +271,19 @@ class HtmlLexer(LexerBase.LexerBase):
         self.addSyntaxItem('hphp_commentline',          'PHP - comment line',                   wx.stc.STC_HPHP_COMMENTLINE,            self.STE_STYLE_COMMENTLINE),
         self.addSyntaxItem('hphp_hstring_variable',     'PHP - hstring variable',               wx.stc.STC_HPHP_HSTRING_VARIABLE,       self.STE_STYLE_VALUE),
         self.addSyntaxItem('hphp_operator',             'PHP - operator',                       wx.stc.STC_HPHP_OPERATOR,               self.STE_STYLE_OPERATOR),
-
-import NewCustomLexer
-from modules.ZestyParser import *
-import re
-
-class XMLLexer(NewCustomLexer.CustomLexer):
+class XMLLexer(HtmlLexer):
     metaname = 'xml'
 
-    def loadPreviewCode(self):
-        return """<?xml version="1.0"?>
-<html><head>
-<title>STC Style Editor</title>
-<script lang='Python'> a=10 </script>
-</head>
-<body bgcolor="#FFFFFF" text=#000000>
-&lt; Text for testing &gt;
-<unknown_tag>
-<!--Comments--><?question?><![CDATA[]]>
-</body>
-</html>"""
-    
-    def initSyntaxItems(self):
-        self.syl_tag = self.syl_custom + 1
-        self.syl_attrname = self.syl_custom + 2
-        self.syl_attrvalue = self.syl_custom + 3
-        self.syl_cdatavalue = self.syl_custom + 4
-        self.addSyntaxItem('r_default',         'Default',              self.syl_default,           self.STE_STYLE_TEXT)
-        self.addSyntaxItem('keyword',           'Keyword',              self.syl_keyword,           self.STE_STYLE_KEYWORD1)
-        self.addSyntaxItem('tag',               'Tag',                  self.syl_tag,               'back:#E6E6FA')
-        self.addSyntaxItem('attribute',         'Attribute Name',       self.syl_attrname,          'bold,fore:red')
-        self.addSyntaxItem('attrvalue',         'Attribute Value',      self.syl_attrvalue,         'bold,fore:#008080')
-        self.addSyntaxItem('comment',           'Comment',              self.syl_comment,           self.STE_STYLE_COMMENT)
-        self.addSyntaxItem('cdatavalue',        'CDATA Value',          self.syl_cdatavalue,        self.STE_STYLE_TEXT)
-        
-        def p_match(matchobj, style=self.syl_default, group=0):
-            span = matchobj.span(group)
-            return style, span[0], span[1]
-        
-        T_DQUOTED_STRING = Token(r'"((?:\\.|[^"])*)?"', callback=self.just_return(5))
-        T_SQUOTED_STRING = Token(r"'((?:\\.|[^'])*)?'", callback=self.just_return(5))
-        T_SP = Token(r'\s+', callback=self.just_return(self.syl_default))
-        T_IDEN = Token(r'[_a-zA-Z][_a-zA-Z0-9:\-]*', callback=self.just_return(self.syl_default))
-        
-        def p(m):
-            m1, m2 = list(m[0]), list(m[1])
-            m1[0] = self.syl_attrname
-            m2[0] = self.syl_attrvalue
-            return [m1, m2]
-        
-        T_ATTR = (T_IDEN + Omit(Token('\s*=\s*')) + (T_DQUOTED_STRING|T_SQUOTED_STRING)) >> p
-        T_COMMENT = Token(re.compile(r'<!--.*?-->', re.DOTALL), callback=self.just_return(self.syl_comment))
-        T_TEXT = Token('[^<]+', callback=self.just_return(self.syl_default))
-        
-        @CallbackFor(Token('(<!\[CDATA\[)(.*?)(\]\]>)'))
-        def T_CDATA(parser, m, cursor):
-            yield p_match(m, self.syl_tag, 1)
-            yield p_match(m, self.syl_cdatavalue, 2)
-            yield p_match(m, self.syl_tag, 3)
-        
-        T_SATTR = (T_IDEN) >> self.just_return(self.syl_attrname)
-        @CallbackFor(Token(r'((?:</|<!|<\?|<))\s*([_a-zA-Z0-9\-]+)\s*(.*?)((?:\?>|>))'))
-        def T_TAGLINE(parser, m, cursor):
-            yield p_match(m, self.syl_tag, 1)
-            yield p_match(m, self.syl_keyword, 2)
-            if m.group(3):
-                begin, end = m.span(3)
-                p = ZestyParser(m.group(3))
-                for i in p.iter([T_ATTR, T_SATTR, T_SP]):
-                    if isinstance(i, (list, types.GeneratorType)):
-                        for x in i:
-                            t = list(x)
-                            t[1] += begin
-                            t[2] += begin
-                            yield t
-                    else:
-                        t = list(i)
-                        t[1] += begin
-                        t[2] += begin
-                        yield t
-            yield p_match(m, self.syl_tag, 4)
-        
-        self.formats = [T_COMMENT, T_CDATA, T_TAGLINE, T_TEXT, T_SP]
-        
-    def initbackstyle(self):
-        return [(self.syl_cdatavalue, self.syl_tag, '<![CDATA['),
-                ]
+    def loadDefaultKeywords(self):
+        return ('xml xmlns encoding version public !doctype',)
 
 class PythonLexer(LexerBase.LexerBase):
 
     metaname = 'python'
     no_expand_styles = (wx.stc.STC_P_COMMENTLINE,
                         wx.stc.STC_P_STRING,
-#                        wx.stc.STC_P_TRIPLE,
-#                        wx.stc.STC_P_TRIPLEDOUBLE,
+                        wx.stc.STC_P_TRIPLE,
+                        wx.stc.STC_P_TRIPLEDOUBLE,
                         wx.stc.STC_P_CHARACTER,
                         wx.stc.STC_P_COMMENTBLOCK)
 

@@ -43,57 +43,47 @@ def editor_init(win):
     win.AutoCompSetAutoHide(True)
     win.AutoCompSetCancelAtStart(False)
     
-#    win.inputassistant_obj = None
+    win.inputassistant_obj = None
     win.replace_strings = None
     win.word_len = 0
     win.custom_assistant = []
-    win.function_parameter = []
-    win.calltip_stack = {} # collecting nested calltip's text and pos.
+    
+    win.calltip_times = 0
+    win.calltip_column = 0
+    win.calltip_line = 0
     win.syntax_info = None
     win.auto_routin = None
-    win.snippet = None
-#    win.dont_analysis = False
-    
-#    win.lock = thread.allocate_lock()
 Mixin.setPlugin('editor', 'init', editor_init)
-
-def _replace_text(win, start, end, text):
-    if end == -1:
-        end = win.GetCurrentPos()
-    win.BeginUndoAction()
-    win.SetTargetStart(start)
-    win.SetTargetEnd(end)
-    win.ReplaceTarget('')
-    win.GotoPos(start)
-    t = text
-    for obj in win.mainframe.input_assistant.get_all_acps():
-        if obj.ini.autovalues.has_key(text):
-            t = obj.ini.autovalues[text]
-            break
-    txt = win.mainframe.input_assistant.gettext(t)
-    if win.replace_strings:
-        r = win.replace_strings
-        m = []
-        for p in txt:
-            for i in range(len(r)):
-                p = p.replace('\\' + str(i), r[i])
-            m.append(p)
-        txt = m
-    win.mainframe.input_assistant.settext(txt)
-    win.EndUndoAction()
 
 def on_user_list_selction(win, list_type, text):
     t = list_type
     if t == 1:  #1 is used by input assistant
         start, end = win.word_len
-        _replace_text(win, start, end, text)
+        if end == -1:
+            end = win.GetCurrentPos()
+        win.BeginUndoAction()
+        win.SetTargetStart(start)
+        win.SetTargetEnd(end)
+        win.ReplaceTarget('')
+        win.GotoPos(start)
+        obj = win.inputassistant_obj
+        if obj.ini.autovalues.has_key(text):
+            t = obj.ini.autovalues[text]
+        else:
+            t = text
+        txt = win.mainframe.input_assistant.gettext(t)
+        if win.replace_strings:
+            r = win.replace_strings
+            m = []
+            for p in txt:
+                for i in range(len(r)):
+                    p = p.replace('\\' + str(i), r[i])
+                m.append(p)
+            txt = m
+        win.mainframe.input_assistant.settext(txt)
+        win.EndUndoAction()
 Mixin.setPlugin('editor', 'on_user_list_selction', on_user_list_selction)
 
-def on_auto_completion(win, pos, text):
-    start, end = win.word_len
-    wx.CallAfter(_replace_text, win, start, end, text)
-Mixin.setPlugin('editor', 'on_auto_completion', on_auto_completion)
-    
 def get_inputassistant_obj(win):
     if not win.mainframe.input_assistant:
         from InputAssistant import InputAssistant
@@ -103,31 +93,33 @@ def get_inputassistant_obj(win):
         i = win.mainframe.input_assistant
     return i
 
-def after_char(win, event):
-    win.mainframe.auto_routin_ac_action.put(('normal', win, (event, True)))
+def after_char(win, event, syncvar):
+    i = get_inputassistant_obj(win)
+    try:
+        return i.run(win, event, True, syncvar)
+    except:
+        error.traceback()
+        return False
 Mixin.setPlugin('editor', 'after_char', after_char)
 
-def on_key_down(win, event):
+def after_keydown(win, event, syncvar):
     key = event.GetKeyCode()
-#    if key == ord(']') and event.ControlDown() and not event.AltDown() and not event.ShiftDown():
-    if key == wx.WXK_TAB and not event.ControlDown() and not event.AltDown() and not event.ShiftDown():
-        if win.snippet and win.snippet.snip_mode:
-            win.snippet.nextField(win.GetCurrentPos())
-            return True
-    if key in (ord('C'), ord('V'), ord('X')) and event.ControlDown() and not event.AltDown() and not event.ShiftDown():
-        event.Skip()
-        return True
-    
     if key == wx.WXK_BACK and not event.AltDown() and not event.ControlDown() and not event.ShiftDown():
-        if win.pref.input_assistant and win.pref.inputass_identifier:
-            win.mainframe.auto_routin_ac_action.put(('default', win))
-    return False
-Mixin.setPlugin('editor', 'on_key_down', on_key_down)
+        i = get_inputassistant_obj(win)
+        try:
+            return i.run_default(win, syncvar)
+        except:
+            error.traceback()
+            return False
+Mixin.setPlugin('editor', 'after_keydown', after_keydown)
 
 def on_key_down(win, event):
-    if win.pref.input_assistant:
-        win.mainframe.auto_routin_ac_action.put(('normal', win, (event, False)))
-    return False
+    i = get_inputassistant_obj(win)
+    try:
+        return i.run(win, event, False, True)
+    except:
+        error.traceback()
+        return False
 Mixin.setPlugin('editor', 'on_key_down', on_key_down, nice=10)
 
 def pref_init(pref):
@@ -135,8 +127,6 @@ def pref_init(pref):
     pref.inputass_calltip = True
     pref.inputass_autocomplete = True
     pref.inputass_identifier = True
-    pref.inputass_full_identifier = True
-    pref.inputass_func_parameter_autocomplete = True
 Mixin.setPlugin('preference', 'init', pref_init)
 
 def add_pref(preflist):
@@ -145,8 +135,6 @@ def add_pref(preflist):
         (tr('Input Assistant'), 110, 'check', 'inputass_calltip', tr("Enable calltip"), None),
         (tr('Input Assistant'), 120, 'check', 'inputass_autocomplete', tr("Enable auto completion"), None),
         (tr('Input Assistant'), 130, 'check', 'inputass_identifier', tr("Enable auto prompt identifiers"), None),
-        (tr('Input Assistant'), 140, 'check', 'inputass_full_identifier', tr("Enable full identifiers search"), None),
-        (tr('Input Assistant'), 150, 'check', 'inputass_func_parameter_autocomplete', tr("Enable function parameter autocomplete"), None),
     ])
 Mixin.setPlugin('preference', 'add_pref', add_pref)
 
@@ -182,7 +170,7 @@ def get_acp_files(win):
             
     easy.Destroy()
     
-def call_lexer(win, oldfilename, filename, language):
+def call_lexer(win, filename, language):
     i = get_inputassistant_obj(win)
     i.install_acp(win, win.languagename)
     
@@ -240,17 +228,12 @@ def OnApplyAcp(win, event):
 Mixin.setMixin('editor', 'OnApplyAcp', OnApplyAcp)
 
 ###########################################################################
+
 def on_kill_focus(win, event):
     if win.AutoCompActive():
         win.AutoCompCancel()
     if win.calltip and win.calltip.active:
-        if hasattr(event,'FNB'):
-            win.calltip.cancel()
-            return
-        if not win.have_focus:
-            win.have_focus = True
-        else:
-            win.calltip.cancel()
+        win.calltip.cancel()        
 Mixin.setPlugin('editor', 'on_kill_focus', on_kill_focus)
     
 def on_key_down(win, event):
@@ -260,88 +243,32 @@ def on_key_down(win, event):
     alt=event.AltDown()
     if key == wx.WXK_RETURN and not control and not alt:
         if not win.AutoCompActive():
-            if win.calltip.active:
-                pos = win.GetCurrentPos()
-                # move calltip windown to next line
-                # must be pos+2 not pos+1,the reason I don't konw.
-                win.calltip.move(pos + 2)
-##                win.calltip.cancel()
+            if win.calltip.active or win.calltip_times > 0:
+                win.calltip_times = 0
+                win.calltip.cancel()
         else:
             event.Skip()
             return True
     elif key == wx.WXK_ESCAPE:
-        # clear nested calltip state if something is wrong.
-        win.calltip_stack.clear()
-        del win.function_parameter[:]
         win.calltip.cancel()
-##        statusbar = Globals.mainframe.statusbar
-##        text = "press escape key to set calltip  state to normal, if you find the calltip state is wrong ,doing this can clear wrong state."
-##        statusbar.show_panel('tips: '+text, color='#AAFFAA', font=wx.Font(10, wx.TELETYPE, wx.NORMAL, wx.BOLD, True))
-        
+        win.calltip_times = 0
 Mixin.setPlugin('editor', 'on_key_down', on_key_down, Mixin.HIGH, 1)
+
+def on_key_up(win, event):
+    curpos = win.GetCurrentPos()
+    line = win.GetCurrentLine()
+    column = win.GetColumn(curpos)
+    if win.calltip.active and win.calltip_type == CALLTIP_AUTOCOMPLETE:
+        if column < win.calltip_column or line != win.calltip_line:
+            win.calltip_times = 0
+            win.calltip.cancel()
+Mixin.setPlugin('editor', 'on_key_up', on_key_up)
+Mixin.setPlugin('editor', 'on_mouse_up', on_key_up)
 
 def leaveopenfile(win, filename):
     if win.pref.input_assistant:
         i = get_inputassistant_obj(win)
         i.install_acp(win, win.languagename)
-        win.mainframe.auto_routin_analysis.put(win)
+        if win.pref.inputass_identifier and win.auto_routin and not win.auto_routin.isactive():
+            win.auto_routin.start_thread()
 Mixin.setPlugin('editor', 'leaveopenfile', leaveopenfile)
-
-def on_modified(win, event):
-#    if not win.dont_analysis:
-    type = event.GetModificationType()
-    for flag in (wx.stc.STC_MOD_INSERTTEXT, wx.stc.STC_MOD_DELETETEXT):
-        if flag & type:
-            win.mainframe.auto_routin_analysis.put(win)
-            return
-Mixin.setPlugin('editor', 'on_modified', on_modified)
-
-from modules import AsyncAction
-
-class InputAssistantAction(AsyncAction.AsyncAction):
-    def do_action(self, obj):
-        if not self.empty:
-            return
-        if len(obj) == 2:
-            action, win = obj
-            args = None
-        else:
-            action, win, args = obj
-        try:
-            if Globals.mainframe.closeflag:
-                return
-            if win != Globals.mainframe.document:
-                return
-            i = get_inputassistant_obj(win)
-            win.lock.acquire()
-            if action == 'default':
-                i.run_default(win, self)
-            else:
-                event, on_char_flag = args
-                i.run(win, event, on_char_flag, self)
-            win.lock.release()
-        except:
-            Globals.mainframe.input_assistant = None
-            error.traceback()
-        
-class Analysis(AsyncAction.AsyncAction):
-    def do_action(self, obj):
-        if not self.empty:
-            return
-        try:
-            if Globals.mainframe.closeflag:
-                return
-            if obj != Globals.mainframe.document:
-                return
-            i = get_inputassistant_obj(obj)
-            i.call_analysis(self)
-        except:
-            Globals.mainframe.input_assistant = None
-            error.traceback()
-        
-def main_init(win):
-    win.auto_routin_analysis = Analysis(.1)
-    win.auto_routin_analysis.start()
-    win.auto_routin_ac_action = InputAssistantAction(.5)
-    win.auto_routin_ac_action.start()
-Mixin.setPlugin('mainframe', 'init', main_init)

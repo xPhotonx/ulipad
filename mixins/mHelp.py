@@ -19,7 +19,7 @@
 #   along with this program; if not, write to the Free Software
 #   Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 #
-#   $Id: mHelp.py 1731 2006-11-22 03:35:50Z limodou $
+#   $Id: mHelp.py 1457 2006-08-23 02:12:12Z limodou $
 
 import wx
 from modules import Mixin
@@ -32,7 +32,7 @@ homepage = 'http://wiki.woodpecker.org.cn/moin/UliPad'
 blog = 'http://www.donews.net/limodou'
 email = 'limodou@gmail.com'
 author = 'limodou'
-maillist = 'http://groups.google.com/group/ulipad'
+maillist = 'http://groups.google.com/group/UliPad'
 
 class AboutDialog(wx.Dialog):
     def __init__(self, parent):
@@ -71,7 +71,7 @@ class AboutDialog(wx.Dialog):
         self.email = HyperLinkCtrl(self, self.ID_EMAIL, "Contact me", URL='mailto:'+email)
         box.Add(self.email, 0, wx.ALIGN_CENTER|wx.BOTTOM, 10)
 
-        btnOK = wx.Button(self, wx.ID_OK, tr("OK"))
+        btnOK = wx.Button(self, wx.ID_OK, tr("OK"), size=(60, -1))
         btnOK.SetDefault()
         box.Add(btnOK, 0, wx.ALIGN_CENTER|wx.ALL, 10)
 
@@ -131,7 +131,7 @@ def OnHelpMaillist(win, event):
     import webbrowser
 
     webbrowser.open(maillist, 1)
-Mixin.setMixin('mainframe', 'OnHelpMaillist', OnHelpMaillist)
+Mixin.setMixin('mainframe', 'OnHelpProject', OnHelpProject)
 
 def OnHelpEmail(win, event):
     import webbrowser

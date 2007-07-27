@@ -1,26 +1,3 @@
-#   Programmer: limodou
-#   E-mail:     limodou@gmail.com
-#
-#   Copyleft 2006 limodou
-#
-#   Distributed under the terms of the GPL (GNU Public License)
-#
-#   UliPad is free software; you can redistribute it and/or modify
-#   it under the terms of the GNU General Public License as published by
-#   the Free Software Foundation; either version 2 of the License, or
-#   (at your option) any later version.
-#
-#   This program is distributed in the hope that it will be useful,
-#   but WITHOUT ANY WARRANTY; without even the implied warranty of
-#   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-#   GNU General Public License for more details.
-#
-#   You should have received a copy of the GNU General Public License
-#   along with this program; if not, write to the Free Software
-#   Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
-#
-#   $Id$
-
 def rerange(text):
     import re
     r_blank = re.compile(r'\s+')
@@ -48,7 +25,7 @@ def rerange(text):
             lastp = p
             b = feed(line, p)
             if b:
-                p = p + string_width(b)
+                p = p + len(b)
                 strings.append(b)
             else:
                 break
@@ -59,30 +36,12 @@ def rerange(text):
                 break
             if flag:
                 pos.append(p - lastp)
-           
-        if flag:
-            flag = False
-            pos.append(0)
-        s.append(''.join([hz_string_ljust(x, y) for x, y in zip(strings, pos)]))
-    return s
-
-def hz_string_ljust(s, length):
-    l = string_width(s)
-    return s.ljust(length - (l - len(s)))
-
-def string_width(text):
-    import unicodedata
-    s = 0
-    for ch in text:
-        if isinstance(ch, unicode):
-            if unicodedata.east_asian_width(ch) != 'Na':
-                s += 2
-            else:
-                s += 1
-        else:
-            s += 1
-    return s
             
+        flag = False
+        pos.append(0)
+        s.append(''.join([x.ljust(y) for x, y in zip(strings, pos)]))
+    return s
+        
 def feed(text, pos):
     s = []
     i = pos
@@ -118,7 +77,7 @@ def run(win):
     if s:
         status = win.document.save_state()
         win.document.BeginUndoAction()
-        win.document.ReplaceSelection(win.document.getEOLChar().join(s) + win.document.getEOLChar())
+        win.document.ReplaceSelection(win.document.getEOLChar().join(s))
         win.document.EndUndoAction()
         win.document.restore_state(status)
         

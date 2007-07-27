@@ -19,7 +19,7 @@
 #   along with this program; if not, write to the Free Software
 #   Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 #
-#   $Id: mPrint.py 1723 2006-11-20 06:07:51Z limodou $
+#   $Id: mPrint.py 1566 2006-10-09 04:44:08Z limodou $
 
 __doc__ = 'print'
 
@@ -61,30 +61,21 @@ def add_tool_list(toollist, toolbaritems):
 Mixin.setPlugin('mainframe', 'add_tool_list', add_tool_list)
 
 def mainframe_init(win):
-#    from Print import MyPrinter
-#
-    win.printer = None
+    from Print import MyPrinter
+
+    win.printer = MyPrinter(win)
 Mixin.setPlugin('mainframe', 'init', mainframe_init)
 
-def get_printer(win):
-    if not win.printer:
-        from Print import MyPrinter
-        win.printer = MyPrinter(win)
-    return win.printer
-
 def OnFilePageSetup(win, event):
-    if get_printer(win):
-        win.printer.PageSetup()
+    win.printer.PageSetup()
 Mixin.setMixin('mainframe', 'OnFilePageSetup', OnFilePageSetup)
 
 def OnFilePrint(win, event):
-    if get_printer(win):
-        win.printer.PrintText(win.printer.convertText(win.document.GetText()), os.path.dirname(win.document.filename))
+    win.printer.PrintText(win.printer.convertText(win.document.GetText()), os.path.dirname(win.document.filename))
 Mixin.setMixin('mainframe', 'OnFilePrint', OnFilePrint)
 
 def OnFilePrintPreview(win, event):
-    if get_printer(win):
-        win.printer.PreviewText(win.printer.convertText(win.document.GetText()), os.path.dirname(win.document.filename))
+    win.printer.PreviewText(win.printer.convertText(win.document.GetText()), os.path.dirname(win.document.filename))
 Mixin.setMixin('mainframe', 'OnFilePrintPreview', OnFilePrintPreview)
 
 #def OnFilePrinterSetup(win, event):
@@ -92,11 +83,9 @@ Mixin.setMixin('mainframe', 'OnFilePrintPreview', OnFilePrintPreview)
 #Mixin.setMixin('mainframe', 'OnFilePrinterSetup', OnFilePrinterSetup)
 
 def OnFileHtmlPreview(win, event):
-    if get_printer(win):
-        win.printer.PreviewText(win.document.GetText(), os.path.dirname(win.document.filename))
+    win.printer.PreviewText(win.document.GetText(), os.path.dirname(win.document.filename))
 Mixin.setMixin('mainframe', 'OnFileHtmlPreview', OnFileHtmlPreview)
 
 def OnFileHtmlPrint(win, event):
-    if get_printer(win):
-        win.printer.PrintText(win.document.GetText(), os.path.dirname(win.document.filename))
+    win.printer.PrintText(win.document.GetText(), os.path.dirname(win.document.filename))
 Mixin.setMixin('mainframe', 'OnFileHtmlPrint', OnFileHtmlPrint)

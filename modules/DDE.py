@@ -19,7 +19,7 @@
 #   along with this program; if not, write to the Free Software
 #   Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 #
-#   $Id: DDE.py 2006 2007-02-26 06:26:47Z limodou $
+#   $Id: DDE.py 1563 2006-10-09 00:57:45Z limodou $
 
 from socket import *
 import threading
@@ -71,6 +71,7 @@ def start(server, app=None):
             break
         except:
             error.traceback()
+            traceback.print_exc()
             pass
 
 
@@ -85,7 +86,7 @@ def sendraw(cmd, data):
         sendSock.close()
         return True
     except:
-#        error.traceback()
+        error.traceback()
         return False
 
 def stop():

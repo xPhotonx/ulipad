@@ -29,14 +29,14 @@ import DjangoTMPLexer
 
 def add_lexer(lexer):
     lexer.extend([
-        (DjangoTMPLexer.DjangoTmpLexer.metaname, tr('Django Template|*.dmp'),
+        (DjangoTMPLexer.DjangoTmpLexer.metaname, tr('Django Template (html)|*.html'),
             wx.stc.STC_LEX_CONTAINER, 'djangotmp.stx', DjangoTMPLexer.DjangoTmpLexer),
     ])
 Mixin.setPlugin('lexerfactory', 'add_lexer', add_lexer)
 
 def add_new_files(new_files):
     new_files.extend([
-        ('Django Template', DjangoTMPLexer.DjangoTmpLexer.metaname),
+        ('Django Template (html)', DjangoTMPLexer.DjangoTmpLexer.metaname),
     ])
 Mixin.setPlugin('mainframe', 'add_new_files', add_new_files)
 

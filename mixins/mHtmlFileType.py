@@ -19,14 +19,13 @@
 #   along with this program; if not, write to the Free Software
 #   Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 #
-#   $Id: mHtmlFileType.py 1624 2006-10-19 02:27:11Z limodou $
+#   $Id: mHtmlFileType.py 1549 2006-10-03 09:55:52Z limodou $
 
 __doc__ = 'Html syntax highlitght process'
 
 import wx
 from modules import Mixin
 import FiletypeBase
-from modules import Globals
 
 class HtmlFiletype(FiletypeBase.FiletypeBase):
 
@@ -46,81 +45,45 @@ Mixin.setPlugin('changefiletype', 'add_filetypes', add_filetypes)
 def add_html_menu(menulist):
     menulist.extend([('IDM_HTML', #parent menu id
             [
-                (100, 'IDM_HTML_BROWSER_LEFT', tr('View Html Content in Left Pane'), wx.ITEM_NORMAL, 'OnHtmlBrowserInLeft', tr('Views html content in left pane.')),
-                (110, 'IDM_HTML_BROWSER_BOTTOM', tr('View Html Content in Bottom Pane'), wx.ITEM_NORMAL, 'OnHtmlBrowserInBottom', tr('Views html content in bottom pane.')),
+                (100, 'IDM_HTML_BROWSER', tr('View Content'), wx.ITEM_NORMAL, 'OnHtmlBrowser', tr('Shows python content in Browser.')),
             ]),
     ])
 Mixin.setPlugin('htmlfiletype', 'add_menu', add_html_menu)
 
-def OnHtmlBrowserInLeft(win, event):
-    dispname = win.createHtmlViewWindow('left', Globals.mainframe.editctrl.getCurDoc())
-    if dispname:
-        win.panel.showPage(dispname)
-Mixin.setMixin('mainframe', 'OnHtmlBrowserInLeft', OnHtmlBrowserInLeft)
-
-def OnHtmlBrowserInBottom(win, event):
-    dispname = win.createHtmlViewWindow('bottom', Globals.mainframe.editctrl.getCurDoc())
-    if dispname:
-        win.panel.showPage(dispname)
-Mixin.setMixin('mainframe', 'OnHtmlBrowserInBottom', OnHtmlBrowserInBottom)
-
-def createHtmlViewWindow(win, side, document):
-    dispname = document.getShortFilename()
-    obj = None
-    for pagename, panelname, notebook, page in win.panel.getPages():
-        if is_htmlview(page, document):
-            obj = page
-            break
-    
-    if not obj:
-        if win.document.documenttype == 'texteditor':
-            from mixins import HtmlPage
-            page = HtmlPage.HtmlImpactView(win.panel.createNotebook(side), document.getRawText())
-            page.document = win.document    #save document object
-            page.htmlview = True
-            win.panel.addPage(side, page, dispname)
-            win.panel.setImageIndex(page, 'html')
-            return page
+def OnHtmlBrowser(win, event):
+    if win.document.isModified() or win.document.filename == '':
+        d = wx.MessageDialog(win, tr("The file has not been saved, and it would not be run.\nWould you like to save the file?"), tr("Run"), wx.YES_NO | wx.ICON_QUESTION)
+        answer = d.ShowModal()
+        d.Destroy()
+        if (answer == wx.ID_YES):
+            win.OnFileSave(event)
+        else:
+            return
+    filename = win.document.filename
+    for document in win.editctrl.getDocuments():  #if the file has been opened
+        if document.isMe(filename, documenttype = 'htmlview'):
+            win.editctrl.switch(document)
+            document.html.DoRefresh()
+            return
     else:
-        obj.load(document.getRawText())
-        return obj
-Mixin.setMixin('mainframe', 'createHtmlViewWindow', createHtmlViewWindow)
+        win.editctrl.newPage(filename, documenttype='htmlview')
+Mixin.setMixin('mainframe', 'OnHtmlBrowser', OnHtmlBrowser)
 
-#add menu to editctrl
-def other_popup_menu(editctrl, document, menus):
-    if document.documenttype == 'texteditor' and document.languagename == 'html':
-        menus.extend([ (None,
-            [
-                (920, 'IDPM_HTML_VIEW_LEFT', tr('View Html Content in Left Pane'), wx.ITEM_NORMAL, 'OnHtmlHtmlViewLeft', tr('Views html content in left pane.')),
-                (930, 'IDPM_HTML_VIEW_BOTTOM', tr('View Html Content in Bottom Pane'), wx.ITEM_NORMAL, 'OnHtmlHtmlViewBottom', tr('Views html content in bottom pane.')),
-            ]),
-        ])
-Mixin.setPlugin('editctrl', 'other_popup_menu', other_popup_menu)
+def add_panel_list(panellist):
+    from HtmlPanel import HtmlPanel
 
-def OnHtmlHtmlViewLeft(win, event=None):
-    win.mainframe.OnHtmlBrowserInLeft(None)
-Mixin.setMixin('editctrl', 'OnHtmlHtmlViewLeft', OnHtmlHtmlViewLeft)
+    panellist['htmlview'] = HtmlPanel
+Mixin.setPlugin('editctrl', 'add_panel_list', add_panel_list)
 
-def OnHtmlHtmlViewBottom(win, event=None):
-    win.mainframe.OnHtmlBrowserInBottom(None)
-Mixin.setMixin('editctrl', 'OnHtmlHtmlViewBottom', OnHtmlHtmlViewBottom)
-
-#common functions
-def setfilename(document, filename):
-    for pagename, panelname, notebook, page in Globals.mainframe.panel.getPages():
-        if is_htmlview(page, document):
-            title = document.getShortFilename()
-            Globals.mainframe.panel.setName(page, title)
-Mixin.setPlugin('editor', 'setfilename', setfilename)
+pageimagelist = {
+        'htmlview': 'images/browser.gif',
+}
+Mixin.setMixin('editctrl', 'pageimagelist', pageimagelist)
 
 def closefile(win, document, filename):
-    for pagename, panelname, notebook, page in Globals.mainframe.panel.getPages():
-        if is_htmlview(page, document):
-            Globals.mainframe.panel.closePage(page)
+    if document.languagename == 'html' and document.documenttype == 'texteditor':
+        for d in win.editctrl.getDocuments():
+            if d.documenttype == 'htmlview' and d.filename == filename:
+                index = win.editctrl.getIndex(d)
+                win.editctrl.DeletePage(index)
 Mixin.setPlugin('mainframe', 'closefile', closefile)
-
-def is_htmlview(page, document):
-    if hasattr(page, 'htmlview') and page.htmlview and page.document is document:
-        return True
-    else:
-        return False

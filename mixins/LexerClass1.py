@@ -26,6 +26,7 @@ import LexerBase
 import LexerClass
 
 class JavaLexer(LexerClass.CLexer):
+
     metaname = 'java'
 
     def loadDefaultKeywords(self):
@@ -50,6 +51,7 @@ public class TestClass {
 """
 
 class RubyLexer(LexerBase.LexerBase):
+
     metaname = 'ruby'
 
     def loadDefaultKeywords(self):
@@ -85,8 +87,8 @@ class RubyLexer(LexerBase.LexerBase):
         self.addSyntaxItem('identifier',        'Identifiers',          wx.stc.STC_P_IDENTIFIER,        "fore:#808080")
         self.addSyntaxItem('commentblock',      'Comment blocks',       wx.stc.STC_P_COMMENTBLOCK,      "fore:#7F7F7F")
         self.addSyntaxItem('stringeol',         'EOL unclosed string',  wx.stc.STC_P_STRINGEOL,         "fore:#000000,back:#E0C0E0,eol")
-        
 class PerlLexer(LexerBase.LexerBase):
+
     metaname = 'perl'
 
     def loadDefaultKeywords(self):
@@ -160,8 +162,8 @@ class PerlLexer(LexerBase.LexerBase):
         self.addSyntaxItem('string_qx',         'string_qx',            wx.stc.STC_PL_STRING_QX,                self.STE_STYLE_STRING)
         self.addSyntaxItem('string_qr',         'string_qr',            wx.stc.STC_PL_STRING_QR,                self.STE_STYLE_STRING)
         self.addSyntaxItem('string_qw',         'string_qw',            wx.stc.STC_PL_STRING_QW,                self.STE_STYLE_STRING)
-        
 class CSSLexer(LexerBase.LexerBase):
+
     metaname = 'css'
 
     def loadDefaultKeywords(self):
@@ -200,23 +202,23 @@ class CSSLexer(LexerBase.LexerBase):
         win.enablefolder = False
 
     def initSyntaxItems(self):
-        self.addSyntaxItem('css_default',           'Default',              wx.stc.STC_CSS_DEFAULT,                 self.STE_STYLE_TEXT)
-        self.addSyntaxItem('tag',                   'Tag',                  wx.stc.STC_CSS_TAG,                     self.STE_STYLE_KEYWORD1)
-        self.addSyntaxItem('class',                 'Class',                wx.stc.STC_CSS_CLASS,                   self.STE_STYLE_COMMAND)
-        self.addSyntaxItem('pseudoclass',           'Pseudo Class',         wx.stc.STC_CSS_PSEUDOCLASS,             self.STE_STYLE_KEYWORD2)
-        self.addSyntaxItem('unknownpseudoclass',    'Unknown Pseudo Class', wx.stc.STC_CSS_UNKNOWN_PSEUDOCLASS,     self.STE_STYLE_ERROR)
-        self.addSyntaxItem('operator',              'Operator',             wx.stc.STC_CSS_OPERATOR,                self.STE_STYLE_OPERATOR)
-        self.addSyntaxItem('identifier',            'Identifier',           wx.stc.STC_CSS_IDENTIFIER,              self.STE_STYLE_IDENTIFIER)
-        self.addSyntaxItem('unknownidentifier',     'Unknown Identifier',   wx.stc.STC_CSS_UNKNOWN_IDENTIFIER,      self.STE_STYLE_ERROR)
-        self.addSyntaxItem('value',                 'Value',                wx.stc.STC_CSS_VALUE,                   self.STE_STYLE_VALUE)
-        self.addSyntaxItem('comment',               'Comment',              wx.stc.STC_CSS_COMMENT,                 self.STE_STYLE_COMMENT)
-        self.addSyntaxItem('id',                    'Id',                   wx.stc.STC_CSS_ID,                      self.STE_STYLE_UUID)
-        self.addSyntaxItem('important',             'Important',            wx.stc.STC_CSS_IMPORTANT,               self.STE_STYLE_TEXT)
-        self.addSyntaxItem('directive',             'Directive',            wx.stc.STC_CSS_DIRECTIVE,               self.STE_STYLE_TEXT)
-        self.addSyntaxItem('doublestring',          'Double String',        wx.stc.STC_CSS_DOUBLESTRING,            self.STE_STYLE_STRING)
-        self.addSyntaxItem('singlestring',          'Single String',        wx.stc.STC_CSS_SINGLESTRING,            self.STE_STYLE_CHARACTER)
-        
+        self.addSyntaxItem('css_default',               'Default',                              wx.stc.STC_CSS_DEFAULT,                         self.STE_STYLE_TEXT)
+        self.addSyntaxItem('tag',                       'Tag',                                  wx.stc.STC_CSS_TAG,                             self.STE_STYLE_KEYWORD1)
+        self.addSyntaxItem('class',                     'Class',                                wx.stc.STC_CSS_CLASS,                           self.STE_STYLE_COMMAND)
+        self.addSyntaxItem('pseudoclass',               'Pseudo Class',                         wx.stc.STC_CSS_PSEUDOCLASS,                     self.STE_STYLE_KEYWORD2)
+        self.addSyntaxItem('unknownpseudoclass',        'Unknown Pseudo Class',                 wx.stc.STC_CSS_UNKNOWN_PSEUDOCLASS,             self.STE_STYLE_ERROR)                           
+        self.addSyntaxItem('operator',                  'Operator',                             wx.stc.STC_CSS_OPERATOR,                        self.STE_STYLE_OPERATOR)
+        self.addSyntaxItem('identifier',                'Identifier',                           wx.stc.STC_CSS_IDENTIFIER,                      self.STE_STYLE_IDENTIFIER)
+        self.addSyntaxItem('unknownidentifier',         'Unknown Identifier',                   wx.stc.STC_CSS_UNKNOWN_IDENTIFIER,              self.STE_STYLE_ERROR)
+        self.addSyntaxItem('value',                     'Value',                                wx.stc.STC_CSS_VALUE,                           self.STE_STYLE_VALUE)
+        self.addSyntaxItem('comment',                   'Comment',                              wx.stc.STC_CSS_COMMENT,                         self.STE_STYLE_COMMENT)
+        self.addSyntaxItem('id',                        'Id',                                   wx.stc.STC_CSS_ID,                              self.STE_STYLE_UUID)
+        self.addSyntaxItem('important',                 'Important',                            wx.stc.STC_CSS_IMPORTANT,                       self.STE_STYLE_TEXT)
+        self.addSyntaxItem('directive',                 'Directive',                            wx.stc.STC_CSS_DIRECTIVE,                       self.STE_STYLE_TEXT)
+        self.addSyntaxItem('doublestring',              'Double String',                        wx.stc.STC_CSS_DOUBLESTRING,                    self.STE_STYLE_STRING)
+        self.addSyntaxItem('singlestring',              'Single String',                        wx.stc.STC_CSS_SINGLESTRING,                    self.STE_STYLE_CHARACTER)
 class JSLexer(LexerClass.CLexer):
+
     metaname = 'js'
 
     def loadDefaultKeywords(self):
@@ -306,50 +308,3 @@ class ASPLexer(LexerClass.HtmlLexer):
 
     def loadPreviewCode(self):
         return """empty"""
-
-class LuaLexer(LexerBase.LexerBase):
-    metaname = 'lua'
-
-    def loadDefaultKeywords(self):
-        return ("and break do else elseif end false for function if in local nil not "
-           "or repeat return then true until while", )
-
-    def loadPreviewCode(self):
-        return """do
-  local f, s, var = explist
-  while true do
-    local var_1, var_n = f(s, var)
-    var = var_1
-    if var == nil then break end
-    block
-  end
-end
-"""
-
-    def pre_colourize(self, win):
-        #FOLDING
-        win.enablefolder = True
-        win.SetProperty("fold", "1")
-        win.SetProperty("fold.compact", "1")
-
-    def initSyntaxItems(self):
-        self.addSyntaxItem('lua_default',       'Default',              wx.stc.STC_LUA_DEFAULT,           self.STE_STYLE_TEXT)
-        self.addSyntaxItem('comment',           'Comment',              wx.stc.STC_LUA_COMMENT,           self.STE_STYLE_COMMENTLINE)
-        self.addSyntaxItem('number',            'Number',               wx.stc.STC_LUA_NUMBER,            self.STE_STYLE_NUMBER)
-        self.addSyntaxItem('string',            'String',               wx.stc.STC_LUA_STRING,            self.STE_STYLE_CHARACTER)
-        self.addSyntaxItem('stringeol',         'EOL unclosed string',  wx.stc.STC_LUA_STRINGEOL,         self.STE_STYLE_STRINGEOL)
-        self.addSyntaxItem('character',         'Character',            wx.stc.STC_LUA_CHARACTER,         self.STE_STYLE_CHARACTER)
-        self.addSyntaxItem('keyword',           'Keyword',              wx.stc.STC_LUA_WORD,              self.STE_STYLE_KEYWORD1)
-        self.addSyntaxItem('triple',            'Triple quotes',        wx.stc.STC_LUA_LITERALSTRING,     self.STE_STYLE_CHARACTER)
-        self.addSyntaxItem('classname',         'Class definition',     wx.stc.STC_LUA_PREPROCESSOR,      "fore:#FF0000")
-        self.addSyntaxItem('commentline',       'Comment line',         wx.stc.STC_LUA_COMMENTLINE,       self.STE_STYLE_COMMENTLINE)
-        self.addSyntaxItem('operator',          'Operators',            wx.stc.STC_LUA_OPERATOR,          self.STE_STYLE_OPERATOR)
-        self.addSyntaxItem('identifier',        'Identifiers',          wx.stc.STC_LUA_IDENTIFIER,        self.STE_STYLE_IDENTIFIER)
-        self.addSyntaxItem('commentblock',      'Comment blocks',       wx.stc.STC_LUA_COMMENTDOC,        self.STE_STYLE_COMMENTOTHER)
-        self.addSyntaxItem('word2',             'Word 2',               wx.stc.STC_LUA_WORD2,             self.STE_STYLE_CHARACTER)
-        self.addSyntaxItem('word3',             'Word 3',               wx.stc.STC_LUA_WORD3,             self.STE_STYLE_CHARACTER)
-        self.addSyntaxItem('word4',             'Word 4',               wx.stc.STC_LUA_WORD4,             self.STE_STYLE_CHARACTER)
-        self.addSyntaxItem('word5',             'Word 5',               wx.stc.STC_LUA_WORD5,             self.STE_STYLE_CHARACTER)
-        self.addSyntaxItem('word6',             'Word 6',               wx.stc.STC_LUA_WORD6,             self.STE_STYLE_CHARACTER)
-        self.addSyntaxItem('word7',             'Word 7',               wx.stc.STC_LUA_WORD7,             self.STE_STYLE_CHARACTER)
-        self.addSyntaxItem('word8',             'Word 8',               wx.stc.STC_LUA_WORD8,             self.STE_STYLE_CHARACTER)

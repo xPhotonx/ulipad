@@ -19,7 +19,7 @@
 #   along with this program; if not, write to the Free Software
 #   Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 #
-#       $Id: mCheckBrace.py 1621 2006-10-18 06:07:01Z limodou $
+#       $Id: mCheckBrace.py 1457 2006-08-23 02:12:12Z limodou $
 
 import wx
 import wx.stc
@@ -40,14 +40,14 @@ def on_editor_updateui(win, event):
         styleBefore = win.GetStyleAt(caretPos - 1)
 
     # check before
-    if charBefore and chr(charBefore) in "[]{}()": # and styleBefore == wx.stc.STC_P_OPERATOR:
+    if charBefore and chr(charBefore) in "[]{}()" and styleBefore == wx.stc.STC_P_OPERATOR:
         braceAtCaret = caretPos - 1
 
     # check after
     if braceAtCaret < 0:
         charAfter = win.GetCharAt(caretPos)
         styleAfter = win.GetStyleAt(caretPos)
-        if charAfter and chr(charAfter) in "[]{}()": # and styleAfter == wx.stc.STC_P_OPERATOR:
+        if charAfter and chr(charAfter) in "[]{}()" and styleAfter == wx.stc.STC_P_OPERATOR:
             braceAtCaret = caretPos
 
     if braceAtCaret >= 0:

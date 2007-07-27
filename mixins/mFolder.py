@@ -19,19 +19,19 @@
 #   along with this program; if not, write to the Free Software
 #   Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 #
-#   $Id: mFolder.py 1897 2007-02-03 10:33:43Z limodou $
+#   $Id: mFolder.py 1549 2006-10-03 09:55:52Z limodou $
 
 import wx
 import wx.stc
 from modules import Mixin
 
 def pref_init(pref):
-    pref.use_folder = True
+    pref.use_folder = False
 Mixin.setPlugin('preference', 'init', pref_init)
 
 def add_pref(preflist):
     preflist.extend([
-        (tr('Document'), 180, 'check', 'use_folder', tr('Show code folding margin'), None),
+        (tr('Document'), 180, 'check', 'use_folder', tr('Use code fold'), None),
     ])
 Mixin.setPlugin('preference', 'add_pref', add_pref)
 
@@ -112,7 +112,7 @@ def FoldAll(win):
 
             if expanding:
                 win.SetFoldExpanded(lineNum, True)
-                lineNum = Expand(win, lineNum, True)
+                lineNum = win.Expand(lineNum, True)
                 lineNum = lineNum - 1
             else:
                 lastChild = win.GetLastChild(lineNum, -1)

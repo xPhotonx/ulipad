@@ -65,13 +65,15 @@ Mixin.setMixin('dirbrowser', 'project_names', project_names)
 
 def set_project(ini, projectnames):
     if 'django' in projectnames:
-        common.set_acp_highlight(ini, '.html', ['html.acp', 'django_html.acp'], 'djangotmp')
-Mixin.setPlugin('dirbrowser', 'set_project', set_project)
-
-def remove_project(ini, projectnames):
-    if 'django' in projectnames:
-        common.remove_acp_highlight(ini, '.html', ['html.acp', 'django_html.acp'], 'djangotmp')
-Mixin.setPlugin('dirbrowser', 'remove_project', remove_project)
+        s = ini.acp.get('.html', [])
+        if not isinstance(s, list):
+            s = [s]
+        ini.acp['.html'] = s.append(['html.acp', 'django_html.acp'])
+        s = ini.highlight.get('.html', [])
+        if not isinstance(s, list):
+            s = [s]
+        ini.acp['.html'] = s.append('djangotmp')
+Mixin.setMixin('dirbrowser', 'set_project', set_project)
 
 def onprocess(v):
     if not hasattr(v, 'count'):
@@ -159,7 +161,7 @@ def OnDjangoInstallApp(win):
         if module not in ini['INSTALLED_APPS']:
             ini['INSTALLED_APPS'].append(module)
             ini.save()
-        fin, fout = os.popen4('python manage.py install %s' % appname)
+        fin, fout = os.popen4('manage.py install %s' % appname)
         text = fout.read()
         if not text.strip():
             wx.CallAfter(common.showmessage, win, tr('Completed!'))
@@ -182,7 +184,7 @@ def OnDjangoInstallConApp(win, appname):
         if module not in ini['INSTALLED_APPS']:
             ini['INSTALLED_APPS'].append(module)
             ini.save()
-        fin, fout = os.popen4('python manage.py install %s' % appname)
+        fin, fout = os.popen4('manage.py install %s' % appname)
         text = fout.read()
         if not text.strip():
             wx.CallAfter(common.showmessage, win, tr('Completed!'))

@@ -30,8 +30,8 @@ from modules import Globals
 def other_popup_menu(win, menus):
     menus.extend([(None, #parent menu id
         [
-            (190, '', '-', wx.ITEM_SEPARATOR, None, ''),
-            (200, 'IDPM_GOTO', tr('Goto error line'), wx.ITEM_NORMAL, 'OnGoto', tr('Goto the line that occurs the error.')),
+            (180, '', '-', wx.ITEM_SEPARATOR, None, ''),
+            (190, 'IDPM_GOGO', tr('Goto error line'), wx.ITEM_NORMAL, 'OnGoto', tr('Goto the line that occurs the error.')),
         ]),
     ])
 Mixin.setPlugin('messagewindow', 'other_popup_menu', other_popup_menu)
@@ -49,34 +49,3 @@ Mixin.setMixin('messagewindow', 'OnGoto', OnGoto)
 def messagewindow_init(win):
     wx.EVT_LEFT_DCLICK(win, win.OnGoto)
 Mixin.setPlugin('messagewindow', 'init', messagewindow_init)
-
-def pref_init(pref):
-    pref.clear_message = True
-    pref.message_wrap = False
-Mixin.setPlugin('preference', 'init', pref_init)
-
-def add_pref(preflist):
-    preflist.extend([
-        (tr('General'), 260, 'check', 'clear_message', tr('Auto clear message window content when running program'), None)
-    ])
-Mixin.setPlugin('preference', 'add_pref', add_pref)
-
-def add_mainframe_menu(menulist):
-    menulist.extend([
-        ('IDM_EDIT',
-        [
-            (291, 'IDM_EDIT_CLEARMESSAGE', tr('Clear Message Window') + '\tShift+F5', wx.ITEM_NORMAL, 'OnEditClearMessage', tr('Clears content of message window.')),
-        ]),
-    ])
-Mixin.setPlugin('mainframe', 'add_menu', add_mainframe_menu)
-
-def OnEditClearMessage(win, event):
-    if hasattr(win, 'messagewindow') and win.messagewindow:
-        win.messagewindow.OnClear(None)
-Mixin.setMixin('mainframe', 'OnEditClearMessage', OnEditClearMessage)
-
-def start_run(win, messagewindow):
-    if win.pref.clear_message:
-        messagewindow.SetText('')
-Mixin.setPlugin('mainframe', 'start_run', start_run)
-    

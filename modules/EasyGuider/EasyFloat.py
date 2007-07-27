@@ -80,7 +80,7 @@ class FloatValidator(wx.PyValidator):
         return True
 
     def OnChar(self, event):
-        key = event.GetKeyCode()
+        key = event.KeyCode()
         tc = self.GetWindow()
         val = tc._getValue()
         inpoint = tc.GetInsertionPoint()

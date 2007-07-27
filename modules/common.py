@@ -19,7 +19,7 @@
 #   along with this program; if not, write to the Free Software
 #   Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 #
-#   $Id: common.py 1868 2007-01-27 07:19:29Z limodou $
+#   $Id: common.py 1547 2006-10-01 13:50:46Z limodou $
 
 """Used to define commonly functions.
 """
@@ -256,11 +256,11 @@ def getProjectFile(filename):
         path = newpath
     return os.path.join(path, '_project')
 
-def getConfigPathFile(f, prefix=''):
-    filename = os.path.join(Globals.workpath, prefix, f)
+def getConfigPathFile(f):
+    filename = os.path.join(Globals.workpath, f)
     if os.path.exists(filename):
         return filename
-    filename = os.path.join(Globals.confpath, prefix, f)
+    filename = os.path.join(Globals.confpath, f)
     if os.path.exists(filename):
         return filename
     return ''
@@ -296,45 +296,13 @@ def show_in_message_window(text):
     win.messagewindow.SetText(text)
 
 def note(text):
-    wx.CallAfter(Globals.mainframe.statusbar.note, text)
-#    setmessage(Globals.mainframe, text)
+    Globals.mainframe.statusbar.note(text)
 
 def warn(text):
-    wx.CallAfter(Globals.mainframe.statusbar.warn, text)
-#    setmessage(Globals.mainframe, text)
+    Globals.mainframe.statusbar.warn(text)
 
 def curry(*args, **kwargs):
     def _curried(*moreargs, **morekwargs):
         return args[0](*(args[1:]+moreargs), **dict(kwargs.items() + morekwargs.items()))
     return _curried
 
-def set_acp_highlight(ini, suffix, acps, highlight):
-    if acps:
-        s = ini.acp.get(suffix, [])
-        if not isinstance(s, list):
-            s = [s]
-        if not isinstance(acps, list):
-            acps = [acps]
-        for i in acps:
-            if not i in s:
-                s.append(i)
-        ini.acp[suffix] = s
-    if highlight:
-        ini.highlight[suffix] = highlight
-    
-def remove_acp_highlight(ini, suffix, acps, highlight):
-    if acps:
-        s = ini.acp.get(suffix, [])
-        if not isinstance(s, list):
-            s = [s]
-        if not isinstance(acps, list):
-            acps = [acps]
-        for i in acps:
-            if i in s:
-                s.remove(i)
-        if not s:
-            del ini.acp[suffix]
-        else:
-            ini.acp[suffix] = s
-    if highlight:
-        del ini.highlight[suffix]

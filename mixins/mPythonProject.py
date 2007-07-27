@@ -24,7 +24,6 @@
 import sys
 from modules import Mixin
 from modules.Debug import error
-from modules import common
 
 def add_project(project_names):
     project_names.extend(['python'])
@@ -42,4 +41,3 @@ def project_end(dirwin, project_names, path):
         except:
             error.traceback()
 Mixin.setPlugin('dirbrowser', 'project_end', project_end)
-

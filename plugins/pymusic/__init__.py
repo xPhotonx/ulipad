@@ -84,6 +84,9 @@ def OnMusicPlay(win, event):
         win.playing=win.m3u[win.selectedid]
     else:
         return
+    filename=win.playing['Path']
+    encoding = locale.getdefaultlocale()[1]
+    filename = filename.encode(encoding)
     win.isloop=True
     win.flag_pause=False
     threading.Thread(target=playmusic, args=(win,)).start()
@@ -127,10 +130,7 @@ def playmusic(win):
             pass
         try:
             win.src=pySonic.Source()
-            filename=win.playing['Path']
-            encoding = locale.getdefaultlocale()[1]
-            filename = filename.encode(encoding)
-            win.src.Sound = pySonic.FileStream(filename, 0)
+            win.src.Sound = pySonic.FileStream(win.playing['Path'], 0)
             win.src.Play()
         except:
             dlg = wx.MessageDialog(win, tr('Can\'t play!'),
@@ -172,8 +172,8 @@ def createMusicListWindow(win):
     page = win.panel.getPage(tr('MusicList'))
     if not page:
         from MusicListManage import MusicListManage
-        page = MusicListManage(win.panel.createNotebook('bottom'), win)
-        win.panel.addPage('bottom', page, tr('MusicList'))
+        page = MusicListManage(win.panel.createNotebook('left'), win)
+        win.panel.addPage('left', page, tr('MusicList'))
     win.musiclist = page
 Mixin.setMixin('mainframe', 'createMusicListWindow', createMusicListWindow)
 

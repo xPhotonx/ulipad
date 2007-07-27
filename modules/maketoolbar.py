@@ -19,7 +19,7 @@
 #   along with this program; if not, write to the Free Software
 #   Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 #
-#   $Id: maketoolbar.py 1612 2006-10-15 14:34:03Z limodou $
+#   $Id: maketoolbar.py 1457 2006-08-23 02:12:12Z limodou $
 
 import wx
 import Id
@@ -43,33 +43,24 @@ def addtools(win, toolbar, toollist, toolbaritems):
             toolbar.AddSeparator()
             debug.info('\t%d -' % order)
         else:
-            style = toolbaritems[name][0]
-            if style == 10: 
-                #custom control, so others will be a function, it'll should be defined as
-                #func(mainframe, toolbar)
-                func = toolbaritems[name][1]
-                obj = func(win, toolbar)
-                debug.info('\t%d %s' % (order, 'call func...' + repr(func)))
-                toolbar.AddControl(obj)
+            style, idname, imagefile, shorttext, longtext, func = toolbaritems[name]
+            debug.info('\t%d %s' % (order, idname))
+            image = common.getpngimage(imagefile)
+            id = Id.makeid(win, idname)
+            if style == wx.ITEM_NORMAL:
+                toolbar.AddSimpleTool(id, image, shorttext, longtext)
+            elif style == wx.ITEM_CHECK:
+                toolbar.AddCheckTool(id, image, shortHelp=shorttext, longHelp=longtext)
+#           elif style == wx.ITEM_RADIO:
+#               toolbar.AddRadioTool(id, image, shortHelp=shorttext, longHelp=longtext)
             else:
-                style, idname, imagefile, shorttext, longtext, func = toolbaritems[name]
-                debug.info('\t%d %s' % (order, idname))
-                image = common.getpngimage(imagefile)
-                id = Id.makeid(win, idname)
-                if style == wx.ITEM_NORMAL:
-                    toolbar.AddSimpleTool(id, image, shorttext, longtext)
-                elif style == wx.ITEM_CHECK:
-                    toolbar.AddCheckTool(id, image, shortHelp=shorttext, longHelp=longtext)
-    #           elif style == wx.ITEM_RADIO:
-    #               toolbar.AddRadioTool(id, image, shortHelp=shorttext, longHelp=longtext)
-                else:
-                    raise EUnknowStyleType
-                if func:
-                    try:
-                        f = getattr(win, func)
-                        wx.EVT_TOOL(win, id, f)
-                    except:
-                        error.info("[addtools] Can't find function [%s] in class %s" % (func, win.__class__.__name__))
+                raise EUnknowStyleType
+            if func:
+                try:
+                    f = getattr(win, func)
+                    wx.EVT_TOOL(win, id, f)
+                except:
+                    error.info("[addtools] Can't find function [%s] in class %s" % (func, win.__class__.__name__))
     toolbar.Realize()
 
 def makebasetoolbar(win, toollist, toolbaritems):
@@ -92,41 +83,29 @@ def inserttoolbar(win, oldtoollist, toollist, toolbaritems):
     tl.extend(newtl)
     tl.sort()
 
-    debug.info('[insert tools] toolbar list...')
     for v in newtl:
         i = tl.index(v)
         order, name = v
         if name == '|':
             win.toolbar.InsertSeparator(i)
-            debug.info('\t%d -' % order)
         else:
-            style = toolbaritems[name][0]
-            if style == 10: 
-                #custom control, so others will be a function, it'll should be defined as
-                #func(mainframe, toolbar)
-                func = toolbaritems[name][1]
-                obj = func(win, win.toolbar)
-                debug.info('\t%d %s' % (order, 'call func...' + repr(func)))
-                win.toolbar.InsertControl(i, obj)
+            style, idname, imagefile, shorttext, longtext, func = toolbaritems[name]
+            image = common.getpngimage(imagefile)
+            id = Id.makeid(win, idname)
+            if style == wx.ITEM_NORMAL:
+                win.toolbar.InsertSimpleTool(i, id, image, shorttext, longtext)
+            elif style == wx.ITEM_CHECK:
+                win.toolbar.InsertTool(i, id, image, isToggle = True, shortHelpString=shorttext, longHelpString=longtext)
+#           elif style == wx.ITEM_RADIO:
+#               win.toolbar.InsertRadioTool(i, id, image, shortHelp=shorttext, longHelp=longtext)
             else:
-                style, idname, imagefile, shorttext, longtext, func = toolbaritems[name]
-                debug.info('\t%d %s' % (order, idname))
-                image = common.getpngimage(imagefile)
-                id = Id.makeid(win, idname)
-                if style == wx.ITEM_NORMAL:
-                    win.toolbar.InsertSimpleTool(i, id, image, shorttext, longtext)
-                elif style == wx.ITEM_CHECK:
-                    win.toolbar.InsertTool(i, id, image, isToggle = True, shortHelpString=shorttext, longHelpString=longtext)
-    #           elif style == wx.ITEM_RADIO:
-    #               win.toolbar.InsertRadioTool(i, id, image, shortHelp=shorttext, longHelp=longtext)
-                else:
-                    raise EUnknowStyleType
-                if func:
-                    try:
-                        f = getattr(win, func)
-                        wx.EVT_TOOL(win, id, f)
-                    except:
-                        debug.info("[maketoolbar] Can't find function [%s] in class %s" % (func, win.__class__.__name__))
+                raise EUnknowStyleType
+            if func:
+                try:
+                    f = getattr(win, func)
+                    wx.EVT_TOOL(win, id, f)
+                except:
+                    debug.info("[maketoolbar] Can't find function [%s] in class %s" % (func, win.__class__.__name__))
     win.toolbar.Realize()
 
 def removetoolbar(win, oldtoollist, toollist, toolbaritems):

@@ -25,7 +25,6 @@ import wx
 import os
 from modules import Mixin
 from modules import common
-from modules import makemenu
 
 def add_tool_list(toollist, toolbaritems):
     #order, IDname, imagefile, short text, long text, func
@@ -35,66 +34,88 @@ def add_tool_list(toollist, toolbaritems):
 Mixin.setPlugin('mainframe', 'add_tool_list', add_tool_list, Mixin.LOW)
 
 def OnFileNews(win, event):
-#    if win.pref.syntax_select:
-    eid = event.GetId()
-    size = win.toolbar.GetToolSize()
-    pos = win.toolbar.GetToolPos(eid)
-    menu = wx.Menu()
-    create_menu(win, menu)
-    win.PopupMenu(menu, (size[0]*pos, size[1]))
-    menu.Destroy()
-#    else:
-#        document = win.editctrl.new()
-#        if document:
-#            document.SetFocus()
+    if win.pref.syntax_select:
+        eid = event.GetId()
+        size = win.toolbar.GetToolSize()
+        pos = win.toolbar.GetToolPos(eid)
+        menu = wx.Menu()
+        ids = {}
+
+        def _OnFileNew(event, win=win, ids=ids):
+            lexname = ids.get(event.GetId(), '')
+            if lexname:
+                lexer = win.lexers.getNamedLexer(lexname)
+                if lexer:
+                    templatefile = common.getConfigPathFile('template.%s' % lexer.name)
+                    if os.path.exists(templatefile):
+                        text = file(templatefile).read()
+                        text = common.decode_string(text)
+                    else:
+                        text = ''
+                document = win.editctrl.new(defaulttext=text, language=lexer.name)
+#                if document:
+#                    lexer.colourize(document)
+
+        for name, lexname in win.filenewtypes:
+            _id = wx.NewId()
+            menu.Append(_id, "%s" % name)
+            ids[_id] = lexname
+            wx.EVT_MENU(win, _id, _OnFileNew)
+        win.PopupMenu(menu, (size[0]*pos, size[1]))
+        menu.Destroy()
+    else:
+        win.editctrl.new()
 Mixin.setMixin('mainframe', 'OnFileNews', OnFileNews)
 
-#def pref_init(pref):
-#    pref.syntax_select = True
-#Mixin.setPlugin('preference', 'init', pref_init)
+def pref_init(pref):
+    pref.syntax_select = True
+Mixin.setPlugin('preference', 'init', pref_init)
 
-#def add_pref(preflist):
-#    preflist.extend([
-#        (tr('General'), 175, 'check', 'syntax_select', tr('Enable syntax selection as new file'), None),
-#    ])
-#Mixin.setPlugin('preference', 'add_pref', add_pref)
+def add_pref(preflist):
+    preflist.extend([
+        (tr('General'), 175, 'check', 'syntax_select', tr('Enable syntax selection as new file'), None),
+    ])
+Mixin.setPlugin('preference', 'add_pref', add_pref)
 
 def add_mainframe_menu(menulist):
     menulist.extend([ ('IDM_FILE_NEWMORE',
         [
-           (100, 'IDM_FILE_NEWMORE_NULL', tr('(empty)'), wx.ITEM_NORMAL, '', ''),
+            (100, 'IDM_FILE_NEWMORE_TEXT', 'Text', wx.ITEM_NORMAL, 'OnFileNewMore', tr('Creates a text file.')),
+            (110, 'IDM_FILE_NEWMORE_C', 'C/C++', wx.ITEM_NORMAL, 'OnFileNewMore', tr('Creates a C file.')),
+            (120, 'IDM_FILE_NEWMORE_HTML', 'Html', wx.ITEM_NORMAL, 'OnFileNewMore', tr('Creates a HTML file.')),
+            (130, 'IDM_FILE_NEWMORE_PYTHON', 'Python', wx.ITEM_NORMAL, 'OnFileNewMore', tr('Creates a Python file.')),
+            (140, 'IDM_FILE_NEWMORE_JAVA', 'Java', wx.ITEM_NORMAL, 'OnFileNewMore', tr('Creates a Java file.')),
+            (150, 'IDM_FILE_NEWMORE_RUBY', 'Ruby', wx.ITEM_NORMAL, 'OnFileNewMore', tr('Creates a Ruby file.')),
+            (160, 'IDM_FILE_NEWMORE_PERL', 'Perl', wx.ITEM_NORMAL, 'OnFileNewMore', tr('Creates a Perl file.')),
+            (170, 'IDM_FILE_NEWMORE_CSS', 'Cascade Style Sheet', wx.ITEM_NORMAL, 'OnFileNewMore', tr('Creates a CSS file.')),
+            (180, 'IDM_FILE_NEWMORE_JS', 'JavaScript', wx.ITEM_NORMAL, 'OnFileNewMore', tr('Creates a JavaScript file.')),
         ]),
     ])
 Mixin.setPlugin('mainframe', 'add_menu', add_mainframe_menu)
 
-def init(win):
-#    if win.pref.syntax_select:
-    menu = makemenu.findmenu(win.menuitems, 'IDM_FILE_NEWMORE')
-    menu.Delete(win.IDM_FILE_NEWMORE_NULL)
-    create_menu(win, menu)
-Mixin.setPlugin('mainframe', 'init', init)
-
-def create_menu(win, menu):
-    ids = {}
-    def _OnFileNew(event, win=win, ids=ids):
-        lexname = ids.get(event.GetId(), '')
-        if lexname:
-            lexer = win.lexers.getNamedLexer(lexname)
-            text = ''
-            if lexer:
-                templatefile = common.getConfigPathFile('template.%s' % lexer.name)
-                if os.path.exists(templatefile):
-                    text = file(templatefile).read()
-                    text = common.decode_string(text)
-                else:
-                    text = ''
-            document = win.editctrl.new(defaulttext=text, language=lexer.name)
-            if document:
-                document.SetFocus()
-    
-    for name, lexname in win.filenewtypes:
-        _id = wx.NewId()
-        menu.Append(_id, "%s" % name)
-        ids[_id] = lexname
-        wx.EVT_MENU(win, _id, _OnFileNew)
-    
+def OnFileNewMore(win, event):
+    ids = {
+        win.IDM_FILE_NEWMORE_TEXT:'text',
+        win.IDM_FILE_NEWMORE_C:'c',
+        win.IDM_FILE_NEWMORE_HTML:'html',
+        win.IDM_FILE_NEWMORE_PYTHON:'python',
+        win.IDM_FILE_NEWMORE_JAVA:'java',
+        win.IDM_FILE_NEWMORE_RUBY:'ruby',
+        win.IDM_FILE_NEWMORE_PERL:'perl',
+        win.IDM_FILE_NEWMORE_CSS:'css',
+        win.IDM_FILE_NEWMORE_JS:'js',
+    }
+    lexname = ids.get(event.GetId(), '')
+    if lexname:
+        lexer = win.lexers.getNamedLexer(lexname)
+        if lexer:
+            templatefile = common.getConfigPathFile('template.%s' % lexer.name)
+            if os.path.exists(templatefile):
+                text = file(templatefile).read()
+                text = common.decode_string(text)
+            else:
+                text = ''
+        document = win.editctrl.new(defaulttext=text)
+        if document:
+            lexer.colourize(document)
+Mixin.setMixin('mainframe', 'OnFileNewMore', OnFileNewMore)

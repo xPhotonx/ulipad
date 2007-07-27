@@ -1,7 +1,6 @@
 # PyM3u.py
 import os
 import re
-from modules import common
 __doc__='Pym3u Class'
 
 class LoadMusicListException(Exception):
@@ -14,7 +13,6 @@ class M3u:
         self.data=[]
         self.ismodify=False
         self.template='#EXTINF:%s,%s\n%s\n'
-        
     def Load(self,filepath=None):
         if filepath:
             self.filepath=filepath
@@ -28,11 +26,9 @@ class M3u:
             if not lines[i].startswith('#EXTINF'):
                 continue
             result=p.search(lines[i].strip())
-            path = common.decode_string(lines[i+1].strip(), common.defaultfilesystemencoding)
-            title = common.decode_string(result.group('titleauthor'), common.defaultfilesystemencoding)
-            self.data.append({'Author-Title':title,'Time':result.group('time'),'Path':path})
+            path=lines[i+1].strip()
+            self.data.append({'Author-Title':result.group('titleauthor'),'Time':result.group('time'),'Path':path})
         return True
-    
     def SaveToFile(self,filepath=None):
         if filepath:
             self.filepath=filepath
@@ -45,23 +41,13 @@ class M3u:
             raise SaveMusicListException()
         fout.write('#EXTM3U\n')
         for data in self.data:
-            title = common.encode_string(data['Author-Title'], common.defaultfilesystemencoding)
-            path = common.encode_string(data['Path'], common.defaultfilesystemencoding)
-            fout.write(self.template%(data['Time'], title, path))
+            fout.write(self.template%(data['Time'],data['Author-Title'],data['Path']))
         return True
-    
-    def isExists(self, filename):
-        for d in self.data:
-            if d['Path'] == filename:
-                return True
-        return False
-    
     def Append(self,record):
         if not isinstance(record,dict):
             return False
         self.data.append(record)
         self.ismodify=True
-        
     def Insert(self,record,index=0):
         if not isinstance(record,dict):
             return False

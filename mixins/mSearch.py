@@ -19,7 +19,7 @@
 #   along with this program; if not, write to the Free Software
 #   Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 #
-#   $Id: mSearch.py 2036 2007-03-19 02:19:30Z limodou $
+#   $Id: mSearch.py 1566 2006-10-09 04:44:08Z limodou $
 
 """Search process"""
 
@@ -41,7 +41,7 @@ def add_mainframe_menu(menulist):
             (140, 'wx.ID_BACKWARD', tr('Find Previous') + '\tE=Shift+F3', wx.ITEM_NORMAL, 'OnSearchFindPrev', tr('Find previous occurance of text')),
             (150, '', '-', wx.ITEM_SEPARATOR, None, ''),
             (160, 'IDM_SEARCH_GOTO_LINE', tr('Go to Line...') + '\tE=Ctrl+G', wx.ITEM_NORMAL, 'OnSearchGotoLine', tr('Goes to specified line in the active document')),
-            (170, 'IDM_SEARCH_LAST_MODIFY', tr('Go to Last Modify') + '\tCtrl+B', wx.ITEM_NORMAL, 'OnSearchLastModify', tr('Goes to the last modify position')),
+            (170, 'IDM_SEARCH_LAST_MODIFY', tr('Go to Last Modify') + '\tE=Ctrl+B', wx.ITEM_NORMAL, 'OnSearchLastModify', tr('Goes to the last modify position')),
 
         ]),
     ])
@@ -72,27 +72,21 @@ def afterinit(win):
     import FindReplaceDialog
 
     win.finder = FindReplaceDialog.Finder()
-    win.finddialog = None
 Mixin.setPlugin('mainframe', 'afterinit', afterinit)
 
 def on_set_focus(win, event):
     win.mainframe.finder.setWindow(win)
 Mixin.setPlugin('editor', 'on_set_focus', on_set_focus)
 
-def on_document_enter(win, document):
-    win.mainframe.finder.setWindow(document)
-Mixin.setPlugin('editctrl', 'on_document_enter', on_document_enter)
-
 def OnSearchFind(win, event):
-    if not win.finddialog:
-        from modules import Resource
-        from modules import i18n
-        import FindReplaceDialog
+    from modules import Resource
+    from modules import i18n
+    import FindReplaceDialog
 
-        findresfile = common.uni_work_file('resources/finddialog.xrc')
-        filename = i18n.makefilename(findresfile, win.app.i18n.lang)
-        win.finddialog = dlg = Resource.loadfromresfile(filename, win, FindReplaceDialog.FindDialog, 'FindDialog', win.finder)
-        dlg.Show()
+    findresfile = common.uni_work_file('resources/finddialog.xrc')
+    filename = i18n.makefilename(findresfile, win.app.i18n.lang)
+    dlg = Resource.loadfromresfile(filename, win, FindReplaceDialog.FindDialog, 'FindDialog', win.finder)
+    dlg.Show()
 Mixin.setMixin('mainframe', 'OnSearchFind', OnSearchFind)
 
 def OnSearchDirectFind(win, event):
@@ -149,26 +143,21 @@ def OnSearchGotoLine(win, event):
             document.GotoLine(line-1)
 Mixin.setMixin('mainframe', 'OnSearchGotoLine', OnSearchGotoLine)
 
-def pref_init(pref):
-    pref.smart_nav_last_position = None
-Mixin.setPlugin('preference', 'init', pref_init)
+def editor_init(win):
+    win.lastmodify = -1
+Mixin.setPlugin('editor', 'init', editor_init, Mixin.HIGH)
 
-def on_modified(win, event):
-    type = event.GetModificationType()
-    for flag in (wx.stc.STC_MOD_INSERTTEXT, wx.stc.STC_MOD_DELETETEXT):
-        if flag & type:
-            win.pref.smart_nav_last_position = win.getFilename(), win.save_state()
-            win.pref.save()
-            return
-Mixin.setPlugin('editor', 'on_modified', on_modified)
-
-#this function will replace the one in mSearch.py
-def OnSearchLastModify(win, event=None):
-    if win.pref.smart_nav_last_position:
-        filename, status = win.pref.smart_nav_last_position
-        document = win.editctrl.new(filename)
-        if document.getFilename() == filename:
-            document.restore_state(status)
-        else:
-            win.pref.smart_nav_last_position = None
+def OnSearchLastModify(win, event):
+    document = event.GetEventObject()
+    if document.lastmodify > -1:
+        document.GotoPos(document.lastmodify)
 Mixin.setMixin('mainframe', 'OnSearchLastModify', OnSearchLastModify)
+
+def OnModified(win, event):
+    for flag in (wx.stc.STC_MOD_INSERTTEXT, wx.stc.STC_MOD_DELETETEXT,
+        wx.stc.STC_PERFORMED_UNDO,
+        wx.stc.STC_PERFORMED_REDO):
+        if event.GetModificationType() & flag:
+            win.lastmodify = event.GetPosition()
+            return
+Mixin.setPlugin('editor', 'on_modified', OnModified)
