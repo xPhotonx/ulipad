@@ -19,22 +19,11 @@
 #   along with this program; if not, write to the Free Software
 #   Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 #
-#   $Id: mDirBrowser.py 1897 2007-02-03 10:33:43Z limodou $
+#   $Id: mDirBrowser.py 1662 2006-10-31 14:47:59Z limodou $
 
 import wx
 from modules import Mixin
 from modules import Globals
-
-def add_tool_list(toollist, toolbaritems):
-    toollist.extend([
-        (115, 'dir'),
-    ])
-
-    #order, IDname, imagefile, short text, long text, func
-    toolbaritems.update({
-        'dir':(wx.ITEM_NORMAL, 'IDM_WINDOW_DIRBROWSER', 'images/dir.gif', tr('directory browser'), tr('Opens directory browser window.'), 'OnWindowDirBrowser'),
-    })
-Mixin.setPlugin('mainframe', 'add_tool_list', add_tool_list)
 
 def add_mainframe_menu(menulist):
     menulist.extend([('IDM_FILE',
@@ -104,7 +93,7 @@ Mixin.setPlugin('preference', 'init', pref_init)
 def add_pref(preflist):
     preflist.extend([
         (tr('General'), 115, 'num', 'recent_dir_paths_num', tr('Max number of recent browse directories:'), None),
-        (tr('General'), 240, 'check', 'open_last_dir_as_startup', tr('Open last directory browser upon startup'), None),
+        (tr('General'), 240, 'check', 'open_last_dir_as_startup', tr('Open last directory browser as startup'), None),
     ])
 Mixin.setPlugin('preference', 'add_pref', add_pref)
 

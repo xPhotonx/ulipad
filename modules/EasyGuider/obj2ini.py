@@ -22,7 +22,7 @@ def dump(obj, filename, encoding=None):
     else:
         f = file(filename, "w")
 
-    if hasattr(obj, '__dict__'):
+    if isinstance(obj, types.InstanceType):
         objects = {}
         f.write("#obj\n")
         f.write("[=%s.%s]\n" % (obj.__class__.__module__, obj.__class__.__name__))
@@ -171,11 +171,7 @@ def __uni_prt(a, encoding=None):
         t = a
         for i in escapechars:
             t = t.replace(i[0], i[1])
-        try:
-            s.append("u'%s'" % t.encode(encoding))
-        except:
-            import traceback
-            traceback.print_exc()
+        s.append("u'%s'" % t.encode(encoding))
     else:
         s.append(str(a))
     return ''.join(s)

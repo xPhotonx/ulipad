@@ -157,9 +157,6 @@ class RegexWindow(wx.Panel):
                 self.set_result(mobj.group())
             else:
                 self.load()
-                if mobj:
-                    if isinstance(mobj[0], tuple):
-                        mobj = ['\t'.join(x) for x in mobj]
                 self.set_result('\n'.join(mobj))
         else:
             self.set_error('Error: Nothing Found!')

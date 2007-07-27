@@ -19,7 +19,7 @@
 #   along with this program; if not, write to the Free Software
 #   Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 #
-#   $Id: mCase.py 1874 2007-01-29 00:47:08Z limodou $
+#   $Id: mCase.py 1710 2006-11-18 09:58:01Z limodou $
 
 __doc__ = 'uppercase and lowercase processing'
 
@@ -76,7 +76,7 @@ Mixin.setMixin('mainframe', 'OnEditCaseLowerCase', OnEditCaseLowerCase)
 
 def OnEditCaseInvertCase(win, event):
     text = win.document.GetSelectedText()
-    if len(text) > 0:
+    if len(text) == 0:
         text = text.swapcase()
         win.document.BeginUndoAction()
         win.document.ReplaceSelection(text)

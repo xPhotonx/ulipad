@@ -19,7 +19,7 @@
 #   along with this program; if not, write to the Free Software
 #   Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 #
-#   $Id: mAutoCheck.py 2000 2007-02-25 01:47:53Z limodou $
+#   $Id: mAutoCheck.py 1549 2006-10-03 09:55:52Z limodou $
 
 __doc__ = 'Auto check if the file is modified'
 
@@ -29,8 +29,8 @@ from modules import Mixin
 
 def add_pref(preflist):
     preflist.extend([
-        (tr('Document'), 210, 'check', 'auto_check', tr('Auto check if some opened files were modified by others'), None),
-        (tr('Document'), 220, 'check', 'auto_check_confirm', tr('Require confirmation before a file is auto-reloaded'), None)
+        (tr('Document'), 210, 'check', 'auto_check', tr('Auto check if there are some opened files were modified by others'), None),
+        (tr('Document'), 220, 'check', 'auto_check_confirm', tr('Need confirm as auto-reloading the file'), None)
     ])
 Mixin.setPlugin('preference', 'add_pref', add_pref)
 
@@ -49,7 +49,7 @@ def on_idle(win):
                         def fn():
                             answer = wx.ID_NO
                             if win.pref.auto_check_confirm:
-                                dlg = wx.MessageDialog(win, tr("Another application has modified [%s].\nReload it?") % document.filename, tr("Check"), wx.YES_NO | wx.ICON_QUESTION)
+                                dlg = wx.MessageDialog(win, tr("This file [%s] has been modified by others,\ndo you like reload it?") % document.filename, tr("Check"), wx.YES_NO | wx.ICON_QUESTION)
                                 answer = dlg.ShowModal()
                             if answer == wx.ID_YES or not win.pref.auto_check_confirm:
                                 state = document.save_state()

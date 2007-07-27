@@ -19,7 +19,7 @@
 #   along with this program; if not, write to the Free Software
 #   Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 #
-#   $Id: mRecentFile.py 1813 2007-01-09 01:43:13Z limodou $
+#   $Id: mRecentFile.py 1670 2006-11-09 05:32:34Z limodou $
 
 import wx
 import os
@@ -38,7 +38,7 @@ Mixin.setPlugin('mainframe', 'add_menu', add_mainframe_menu)
 
 def pref_init(pref):
     pref.recent_files = []
-    pref.recent_files_num = 20
+    pref.recent_files_num = 10
 #    pref.recent_paths = []
 #    pref.recent_paths_num = 10
 Mixin.setPlugin('preference', 'init', pref_init)

@@ -19,7 +19,7 @@
 #   along with this program; if not, write to the Free Software
 #   Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 #
-#   $Id: mEncoding.py 1897 2007-02-03 10:33:43Z limodou $
+#   $Id: mEncoding.py 1744 2006-12-03 14:15:19Z limodou $
 
 import wx
 from modules import Mixin
@@ -40,7 +40,7 @@ if 'utf-8' not in encodings:
 
 def add_pref(preflist):
     preflist.extend([
-        (tr('General'), 160, 'check', 'select_encoding', tr('Show encoding selection dialog when opening or saving file'), None),
+        (tr('General'), 160, 'check', 'select_encoding', tr('Show encoding selection dialog as openning or saving file.'), None),
         (tr('General'), 161, 'choice', 'default_encoding', tr('Default document encoding:'), encodings),
         (tr('General'), 162, 'text', 'custom_encoding', tr("Custom default encoding(if set, it'll be the default):"), None),
     ])

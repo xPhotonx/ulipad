@@ -20,7 +20,7 @@
 #   along with this program; if not, write to the Free Software
 #   Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 #
-#   $Id: UliPad.py 2009 2007-03-06 00:38:09Z limodou $
+#   $Id: UliPad.py 1730 2006-11-21 13:46:26Z limodou $
 
 __appname__ = 'UliPad'
 __author__ = 'limodou'

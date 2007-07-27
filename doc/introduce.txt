@@ -4,7 +4,8 @@
 
 :作者: limodou
 :联系: limodou@gmail.com
-:主页: http://wiki.woodpecker.org.cn/moin/UliPad
+:版本: $Id: introduce.txt 42 2005-09-28 05:19:21Z limodou $
+:主页: http://newedit.tigris.org/
 :BLOG: http://www.donews.net/limodou
 :版权: GPL
 

@@ -25,6 +25,7 @@ import os
 import wx.stc
 from modules import Mixin
 from modules import common
+from modules import Globals
 from modules import dict4ini
 from modules.Debug import error
 
@@ -52,7 +53,7 @@ def OnSearchJumpDef(win, event):
     from modules import ctags
     
     flag = False
-    prjfile = common.getProjectFile(win.document.getFilename())
+    prjfile = common.getProjectFile(Globals.workpath)
     if prjfile:
         path = os.path.dirname(prjfile)
         ini = dict4ini.DictIni(prjfile)
@@ -131,14 +132,12 @@ def jump_to_file(win, d, f, m):
             for i in range(count):
                 line = doc.GetLine(i)
                 if line.startswith(m):
-                    wx.CallAfter(doc.SetFocus)
-                    wx.CallAfter(doc.GotoLine, i)
-                    wx.CallAfter(doc.EnsureCaretVisible)
+                    doc.GotoLine(i)
+                    doc.EnsureCaretVisible()
                     return True
         elif m.isdigit():
-            wx.CallAfter(doc.SetFocus)
-            wx.CallAfter(doc.GotoLine, int(m))
-            wx.CallAfter(doc.EnsureCaretVisible)
+            doc.GotoLine(int(m))
+            doc.EnsureCaretVisible()
             return True
     return False
         

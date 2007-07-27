@@ -21,11 +21,10 @@
 #
 #   $Id$
 
-from modules.ZestyParser import *
-import NewCustomLexer
+import CustomLexer
 import re
     
-class RstLexer(NewCustomLexer.CustomLexer):
+class RstLexer(CustomLexer.CustomLexer):
 
     metaname = 'rst'
 
@@ -71,31 +70,20 @@ from the ``docs`` directory of the `Docutils distribution`_.
         win.SetProperty("tab.timmy.whinge.level", "1")
 
     def initSyntaxItems(self):
-        self.addSyntaxItem('r_default',         'Default',              self.syl_default,           self.STE_STYLE_TEXT)
-        self.addSyntaxItem('keyword',           'Keyword',              self.syl_keyword,           self.STE_STYLE_KEYWORD1)
+        self.addSyntaxItem('r_default',         'Default',              CustomLexer.CustomLexer.syl_default,           self.STE_STYLE_TEXT)
+        self.addSyntaxItem('keyword',           'Keyword',              CustomLexer.CustomLexer.syl_keyword,           self.STE_STYLE_KEYWORD1)
         self.addSyntaxItem('inlineliteral',     'Inline Literal',       3,           self.STE_STYLE_CHARACTER)
         self.addSyntaxItem('directurl',         'DirectUrl',            4,           'fore:#0000FF,underline')
         self.addSyntaxItem('interpretedtext',   'Interpreted Text',     5,           'fore:#339933')
         self.addSyntaxItem('bold',              'Bold',                 6,           'bold')
         self.addSyntaxItem('emphasis',          'Emphasis',             7,           'italic')
-
-        T_KEYWORD1 = Token(re.compile(r'^\.\. (.+?)::', re.MULTILINE), callback=self.is_keyword(1))
-        T_KEYWORD2 = Token(re.compile(r'^:(.+?):', re.MULTILINE), callback=self.is_keyword(1))
-        T_IDEN = Token(r'[_a-zA-Z][_a-zA-Z0-9]*', callback=self.just_return())
-        T_OTHER = Token(r'[^ _a-zA-Z0-9]', callback=self.just_return())
-        T_SP = Token(r'\s+', callback=self.just_return())
-        T_INTEGER = Token(r'[+-]?\d+\.?\d*[eE]*[+-]*\d*', callback=self.just_return())
-        T_URL = Token(r'((?:file|https?|ftp|mailto)://[^\s<]*)', callback=self.just_return(4))
-        
-        self.formats = [T_URL, T_KEYWORD1|T_KEYWORD2, T_IDEN, T_INTEGER, T_OTHER, T_SP]
-
-#        self.formats = [
-#            (re.compile(r'(``.*?``)'), 3),
-#            (re.compile(r'(`.*?`)'), 5),
-#            (re.compile(r'(\*\*.*?\*\*)'), 6),
-#            (re.compile(r'(\*.*?\*)'), 7),
-#            (re.compile("((?:file|https?|ftp|mailto)://[^\s<]*)"), 4),
-#            (re.compile(r'^\.\. (.+?)::', re.MULTILINE), 2),
-#            (re.compile(r'^:(.+?):', re.MULTILINE), 2),
-#        ]
+        self.formats = [
+            (re.compile(r'(``.*?``)'), 3),
+            (re.compile(r'(`.*?`)'), 5),
+            (re.compile(r'(\*\*.*?\*\*)'), 6),
+            (re.compile(r'(\*.*?\*)'), 7),
+            (re.compile("((?:file|https?|ftp|mailto)://[^\s<]*)"), 4),
+            (re.compile(r'^\.\. (.+?)::', re.MULTILINE), 2),
+            (re.compile(r'^:(.+?):', re.MULTILINE), 2),
+        ]
 

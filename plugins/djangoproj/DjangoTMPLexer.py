@@ -21,38 +21,23 @@
 #
 #   $Id$
 
-from mixins.NewCustomLexer import CustomLexer
+from mixins import CustomLexer
 import re
-from modules.ZestyParser import *
-import types
     
-class DjangoTmpLexer(CustomLexer):
+class DjangoTmpLexer(CustomLexer.CustomLexer):
 
     metaname = 'djangotmp'
-    casesensitive = True
-#    fulltext = True
 
     def loadDefaultKeywords(self):
         keys = ['extends', 'block', 'include', 'comment', 'load', 'firstof', 
             'now', 'for', 'regroup', 'ifequal', 'ifnotequal', 'widthratio', 
             'templatetag', 'ifchanged', 'filter', 'ssi', 'debug', 'if', 
-            'spaceless', 'cycle', 'else', 'expr', 'catch', 'call', 'pyif', 'pycall']
+            'spaceless', 'cycle']
         end_keys = ['end' + x for x in keys]
         return keys + end_keys
 
     def loadPreviewCode(self):
-        return """{% load i18n config %}
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN" "http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">
-<html>
-<head>
-    <title>{% block title %}Woodlog{% endblock %}</title>
-    <meta http-equiv="Content-type" content="text/html; charset=utf-8" />
-    {% block js %}{% endblock %}
-    {% block css %}
-    <link href="{% theme_media_path "home" "woodlog.css" %}" rel="stylesheet" type="text/css" />
-    {% endblock %}
-</head>
-"""
+        return """"""
 
     def initSyntaxItems(self):
         self.filters = ['truncatewords', 'removetags', 'linebreaksbr', 'yesno', 
@@ -65,115 +50,97 @@ class DjangoTmpLexer(CustomLexer):
             'default_if_none', 'pluralize', 'lower', 'join', 'center', 'default', 
             'upper', 'length', 'phone2numeric', 'wordwrap', 'time', 'addslashes', 
             'slugify', 'first']
-        self.syl_tag = self.syl_custom + 1
-        self.syl_attrname = self.syl_custom + 2
-        self.syl_attrvalue = self.syl_custom + 3
-        self.syl_variable = self.syl_custom + 4
-        self.syl_symbol = self.syl_custom + 5
-        self.syl_filter = self.syl_custom + 6
-        self.syl_tagtext = self.syl_custom + 7
-        self.syl_djangotag = self.syl_custom + 8
-        self.syl_script_text = self.syl_custom + 9
-        self.syl_style_text = self.syl_custom + 10
-        self.addSyntaxItem('r_default',         'Default',              self.syl_default,           self.STE_STYLE_TEXT)
-        self.addSyntaxItem('keyword',           'Keyword',              self.syl_keyword,           self.STE_STYLE_KEYWORD1)
-        self.addSyntaxItem('tag',               'Tag',                  self.syl_tag,               'bold')
-        self.addSyntaxItem('attribute',         'Attribute Name',       self.syl_attrname,          'bold,fore:red')
-        self.addSyntaxItem('attrvalue',         'Attribute Value',      self.syl_attrvalue,         'bold,fore:#008080')
-        self.addSyntaxItem('comment',           'Comment',              self.syl_comment,           self.STE_STYLE_COMMENT)
-        self.addSyntaxItem('variable',          'Variable',             self.syl_variable,          'bold,italic,back:#FFDCFF')
-        self.addSyntaxItem('symbol',            'Symbol',               self.syl_symbol,            'fore:#5c8f59,bold')
-        self.addSyntaxItem('filter',            'Filter',               self.syl_filter,            'fore:#7f7047,bold')
-        self.addSyntaxItem('tagtext',           'Tag Text',             self.syl_tagtext,           'back:#FFEBCD')
-        self.addSyntaxItem('djangotag',         'Django Tag',           self.syl_djangotag,         'fore:#228B22,bold')
-        self.addSyntaxItem('script_text',       'Script Text',          self.syl_script_text,       self.STE_STYLE_COMMENT)
-        self.addSyntaxItem('style_text',        'Style Text',           self.syl_style_text,        self.STE_STYLE_COMMENT)
-        
-        def p_match(matchobj, style=self.syl_default, group=0):
-            span = matchobj.span(group)
-            return style, span[0], span[1]
-        
-        T_DQUOTED_STRING = Token(r'"((?:\\.|[^"])*)?"', callback=self.just_return(5))
-        T_SQUOTED_STRING = Token(r"'((?:\\.|[^'])*)?'", callback=self.just_return(5))
-        T_SP = Token(r'\s+', callback=self.just_return(self.syl_default))
-        T_IDEN = Token(r'[_a-zA-Z][_a-zA-Z0-9:\-]*', callback=self.just_return(self.syl_default))
-        
-        def p(m):
-            m1, m2 = list(m[0]), list(m[1])
-            m1[0] = self.syl_attrname
-            m2[0] = self.syl_attrvalue
-            return [m1, m2]
-        
-        T_ATTR = (T_IDEN + Omit(Token('\s*=\s*')) + (T_DQUOTED_STRING|T_SQUOTED_STRING)) >> p
-        T_COMMENT = Token(r'<!--.*?-->', callback=self.just_return(self.syl_comment))
-        T_COMMENT1 = Token(r'\{#.*?#\}', callback=self.just_return(self.syl_comment))
-        T_COMMENT2 = Token(r'\{%\s*comment\s*%\}.*\{%\s*endcomment\s*%\}', callback=self.just_return(self.syl_comment))
-        T_TEXT = Token('[^<{]+', callback=self.just_return(self.syl_default))
-        T_CDATA = Token('<!\[CDATA\[', callback=self.just_return(3)) + Token('.*?(\]\]>)', callback=self.just_return(3, 1))
-        
-        T_SATTR = (T_IDEN) >> self.just_return(self.syl_attrname)
-#        T_SCRIPT = Token(re.compile(r'.*?(?=</script>)', re.DOTALL), callback=self.just_return(self.syl_comment))
+        self.addSyntaxItem('r_default',         'Default',              CustomLexer.CustomLexer.syl_default,           self.STE_STYLE_TEXT)
+        self.addSyntaxItem('keyword',           'Keyword',              CustomLexer.CustomLexer.syl_keyword,           self.STE_STYLE_KEYWORD1)
+        self.addSyntaxItem('variable',          'Variable',             3,           'fore:#ff0000,bold,italic')
+        self.addSyntaxItem('symbol',            'Symbol',               4,           'fore:#5C8F59,bold')
+        self.addSyntaxItem('filter',            'Filter',               5,           'fore:#7F7047,bold')
+        self.addSyntaxItem('comment',           'Comment',              6,           self.STE_STYLE_COMMENT)
+        self.formats = [
+            (re.compile(r'\{%\s*comment\s*%\}.*?\{%\s*endcomment\s*%\}', re.MULTILINE), 6),
+            (re.compile(r'\{\{.*?\}\}'), 3),
+            (re.compile(r'\{%.*?%\}'), 2),
+        ]
+        self.syl_filter = 5
+        self.syl_symbol = 4
+        self.syl_var = 3
 
-        @CallbackFor(Token(r'((?:</|<!|<\?|<))\s*([_a-zA-Z0-9\-]+)\s*(.*?)((?:\?>|>))'))
-        def T_TAGLINE(parser, m, cursor):
-            yield p_match(m, self.syl_tag, 1)
-            yield p_match(m, self.syl_keyword, 2)
-            if m.group(3):
-                begin, end = m.span(3)
-                p = ZestyParser(m.group(3))
-                for i in p.iter([T_ATTR, T_SATTR, T_SP]):
-                    if isinstance(i, (list, types.GeneratorType)):
-                        for x in i:
-                            t = list(x)
-                            t[1] += begin
-                            t[2] += begin
-                            yield t
+    def styleneeded(self, win, pos):
+        oldend = win.PositionFromLine(win.LineFromPosition(win.GetEndStyled()))
+        text = win.GetTextRange(oldend, pos).encode('utf-8')
+        positions = []
+        sbuf = [(oldend, text)]
+        for r, style in self.formats:
+            nbuf = []
+            for begin, txt in sbuf:
+                laststart = 0
+                while 1:
+                    m = r.search(txt, laststart)
+                    if not m:
+                        break
+                    
+                    start = m.start()
+                    if style == 3:  #variable
+                        self.process_variable(win, m.group(), m, begin, positions)
+                    elif style == 2:  #tag
+                        self.process_tag(win, m.group(), m, begin, positions)
                     else:
-                        t = list(i)
-                        t[1] += begin
-                        t[2] += begin
-                        yield t
-            yield p_match(m, self.syl_tag, 4)
-            if m.group(2).lower() == 'script' and m.group(1) == '<':
-                text = parser.data[parser.cursor:]
-                b = re.search(re.compile('</script>', re.IGNORECASE), text)
-                if b:
-                    pos = b.start()
-                else:
-                    pos = len(text)
-                yield self.syl_script_text, parser.cursor, parser.cursor + pos
-                
-                parser.cursor += pos
-            
-            elif m.group(2).lower() == 'style' and m.group(1) == '<':
-                text = parser.data[parser.cursor:]
-                b = re.search(re.compile('</style>', re.IGNORECASE), text)
-                if b:
-                    pos = b.start()
-                else:
-                    pos = len(text)
-                yield self.syl_script_text, parser.cursor, parser.cursor + pos
-                
-                parser.cursor += pos
-            
+                        self.process_default(win, m.group(), m, begin, style, positions)
+                    
+                    if start > laststart:
+                        nbuf.append((begin + laststart, txt[laststart:start]))
+                    laststart = m.end()
+                nbuf.append((begin + laststart, txt[laststart:]))
+                    
+            sbuf = nbuf
         
-        @CallbackFor(Token(r'(\{%)\s*(\w+)\s*(.*?)\s*(%\})'))
-        def T_D_TAG(parser, m ,cursor):
-            yield p_match(m, self.syl_symbol, 1)
-            yield p_match(m, self.syl_djangotag, 2)
-            yield p_match(m, self.syl_tagtext, 3)
-            yield p_match(m, self.syl_symbol, 4)
-            
-        @CallbackFor(Token(r'(\{\{)\s*(.*?)\s*(\}\})'))
-        def T_D_VAR(parser, m, cursor):
-            yield p_match(m, self.syl_symbol, 1)
-            yield p_match(m, self.syl_variable, 2)
-            yield p_match(m, self.syl_symbol, 3)
-        self.formats = [T_COMMENT, T_COMMENT1, T_COMMENT2, T_D_TAG, T_D_VAR, T_CDATA, T_TAGLINE, T_TEXT, T_SP]
+        self.set_default(win, oldend, pos, positions)
         
-    def initbackstyle(self):
-        return [(self.syl_comment, self.syl_comment),
-                (self.syl_script_text, self.syl_tag, re.compile(r'<script', re.I)),
-                (self.syl_style_text, self.syl_tag, re.compile(r'<style', re.I)),
-                ]
-    
+    r_var = re.compile(r'_\("[^"]+"\)|"[^"]+"|[A-Za-z._]+')
+    r_filter = re.compile(r'(?:\|([A-Za-z_]+)(:"[^"]+")?)')
+    def process_variable(self, win, txt, m, begin, positions):
+        _a = []
+        bpos = m.start()
+        epos = m.end()
+        self.set_style(win, begin + bpos, begin + bpos + 2, self.syl_symbol)
+        self.set_style(win, begin + epos - 2, begin + epos, self.syl_symbol)
+        _a.append((begin + bpos, begin + bpos + 2))
+        _a.append((begin + epos-2, begin + epos))
+        positions.append((begin + bpos, begin + epos))
+        begin += bpos
+        m = self.r_var.search(txt)
+        if m:
+            start = m.start()
+            end = m.end()
+            self.set_style(win, begin+start, begin+end, self.syl_var)
+            _a.append((begin + start, begin + end))
+            while 1:
+                m = self.r_filter.search(txt, end)
+                if not m: break
+                start = m.start()
+                end = m.end()
+                filter = m.groups()[0]
+                if filter in self.filters:
+                    self.set_style(win, begin+start+1, begin+start+len(filter)+1, self.syl_filter)
+                    _a.append((begin+start+1, begin+start+len(filter)+1))
+        self.set_default(win, begin, begin + len(txt), _a)
+            
+    def process_tag(self, win, txt, m, begin, positions):
+        _a = []
+        bpos = m.start()
+        epos = m.end()
+        self.set_style(win, begin + bpos, begin + bpos + 2, self.syl_symbol)
+        self.set_style(win, begin + epos - 2, begin + epos, self.syl_symbol)
+        _a.append((begin + bpos, begin + bpos + 2))
+        _a.append((begin + epos-2, begin + epos))
+        positions.append((begin + bpos, begin + epos))
+        begin += bpos
+        m = self.r_var.search(txt)
+        if m:
+            start = m.start()
+            end = m.end()
+            if m.group() in self.keywords:
+                self.set_style(win, begin+start, begin+end, self.syl_keyword)
+                _a.append((begin + start, begin + end))
+        self.set_default(win, begin, begin + len(txt), _a)
+        

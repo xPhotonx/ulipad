@@ -19,10 +19,11 @@
 #   along with this program; if not, write to the Free Software
 #   Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 #
-#   $Id: SnippetWindow.py 1839 2007-01-19 12:15:56Z limodou $
+#   $Id: SnippetWindow.py 1457 2006-08-23 02:12:12Z limodou $
 
 import wx
 import SnippetClass
+import os.path
 import os
 from modules import common
 from modules import Globals
@@ -104,12 +105,11 @@ class MySnippetCode(wx.ListCtrl):
         wx.ListCtrl.__init__(self, parent, -1, style=wx.LC_REPORT|wx.LC_SINGLE_SEL)
         self.parent = parent
         self.mainframe = mainframe
-        self.pref = mainframe.pref
 
         self.InsertColumn(0, tr("Abbreviation"))
         self.InsertColumn(1, tr("Description"))
-        self.SetColumnWidth(0, self.pref.snippet_snippet_firstcolumn)
-        self.SetColumnWidth(1, self.pref.snippet_snippet_secondcolumn)
+        self.SetColumnWidth(0, 100)
+        self.SetColumnWidth(1, 180)
 
         wx.EVT_LIST_ITEM_ACTIVATED(self, self.GetId(), self.OnActivated)
 
@@ -143,9 +143,7 @@ class MySnippetCode(wx.ListCtrl):
                 text = render(text, values, type='string')
             else:
                 return
-#        self.mainframe.document.AddText(text)
-        if not self.mainframe.Indent_paste(self.mainframe.document, text):
-            self.mainframe.document.AddText(text)
+        self.mainframe.document.AddText(text)
         self.mainframe.document.SetFocus()
 
     def dosup(self, matchobj):
@@ -172,22 +170,12 @@ class MySnippet(wx.SplitterWindow):
         self.items = MySnippetCode(self, mainframe)
 
         self.SetMinimumPaneSize(50)
-        self.SplitHorizontally(self.catalog, self.items, self.pref.snippet_splitter_pos)
+        self.SplitHorizontally(self.catalog, self.items,150)
 
         self.catalog.loadData()
-        self.Bind(wx.EVT_CLOSE, self.OnClose)
 
     def canClose(self):
         return True
-    
-    def OnClose(self, event):
-        self.save_state()
-        
-    def save_state(self):
-        self.pref.snippet_splitter_pos = self.GetSashPosition()
-        self.pref.snippet_snippet_firstcolumn = self.items.GetColumnWidth(0)
-        self.pref.snippet_snippet_secondcolumn = self.items.GetColumnWidth(1)
-        self.pref.save()
 
 class SnippetsCatalogDialog(wx.Dialog):
     def __init__(self, *args, **kwargs):
@@ -252,8 +240,7 @@ class SnippetsCatalogDialog(wx.Dialog):
 
     def getCatalogRealText(self, index):
         text = self.catalogitems[index][0]
-        return text.strip()
-#        return text.replace(' ', '')
+        return text.replace(' ', '')
 
     def getCatalogText(self, index):
         return self.catalogitems[index][0]

@@ -18,3 +18,5 @@ The main features:
  * An flexible mixin and plugin framework 
  * User can add his own plugin to process the text 
  
+---
+ZoomQuiet::061119 test svn hooks

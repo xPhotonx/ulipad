@@ -52,12 +52,11 @@ Mixin.setPlugin('messagewindow', 'init', messagewindow_init)
 
 def pref_init(pref):
     pref.clear_message = True
-    pref.message_wrap = False
 Mixin.setPlugin('preference', 'init', pref_init)
 
 def add_pref(preflist):
     preflist.extend([
-        (tr('General'), 260, 'check', 'clear_message', tr('Auto clear message window content when running program'), None)
+        (tr('General'), 260, 'check', 'clear_message', tr('Auto clear message window content on running program'), None)
     ])
 Mixin.setPlugin('preference', 'add_pref', add_pref)
 

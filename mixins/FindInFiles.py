@@ -19,7 +19,7 @@
 #   along with this program; if not, write to the Free Software
 #   Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 #
-#   $Id: FindInFiles.py 1837 2007-01-19 10:24:10Z limodou $
+#   $Id: FindInFiles.py 1595 2006-10-12 03:01:34Z limodou $
 
 import wx
 import os, fnmatch
@@ -104,10 +104,6 @@ class FindInFiles(wx.Dialog):
         self.re.SetValue(self.pref.searchinfile_regular)
         box1.Add(self.re, 1)
 
-        self.onlyfilename = wx.CheckBox(self, -1, tr("Only show filename"))
-        self.onlyfilename.SetValue(self.pref.searchinfile_onlyfilename)
-        box1.Add(self.onlyfilename, 1)
-
         box.Add(box1, 0, wx.ALL|wx.EXPAND, 4)
 
         self.ID_LIST = wx.NewId()
@@ -126,10 +122,6 @@ class FindInFiles(wx.Dialog):
         self.btnRun = wx.Button(self, self.ID_RUN, tr("Start Search"))
         box1.Add(self.btnRun, 0, wx.ALIGN_CENTER_VERTICAL)
 
-        self.ID_COPY = wx.NewId()
-        self.btnCopy = wx.Button(self, self.ID_COPY, tr("CopyClipboard"))
-        box1.Add(self.btnCopy, 0, wx.ALIGN_CENTER_VERTICAL)
-
         box.Add(box1, 0, wx.ALL|wx.EXPAND, 4)
 
         self.SetSizer(box)
@@ -138,7 +130,6 @@ class FindInFiles(wx.Dialog):
         wx.EVT_BUTTON(self, self.ID_BROW, self.OnDirButtonClick)
         wx.EVT_LISTBOX_DCLICK(self.results, self.ID_LIST, self.OpenFound)
         wx.EVT_BUTTON(self.btnRun, self.ID_RUN, self.OnFindButtonClick)
-        wx.EVT_BUTTON(self.btnCopy, self.ID_COPY, self.OnCopyButtonClick)
         tid = wx.NewId()
         self.timer = wx.Timer(self, tid)
         wx.EVT_TIMER(self, tid, self.OnFindButtonClick)
@@ -238,7 +229,6 @@ class FindInFiles(wx.Dialog):
         self.pref.searchinfile_case = self.cs.IsChecked()
         self.pref.searchinfile_subdir = self.ss.IsChecked()
         self.pref.searchinfile_regular = self.re.IsChecked()
-        self.pref.searchinfile_onlyfilename = self.onlyfilename.IsChecked()
         self.pref.save()
 
         search = self.search.GetValue()
@@ -294,8 +284,6 @@ class FindInFiles(wx.Dialog):
                         try:
                             for a in r:
                                 results.Append(a)
-                                if self.onlyfilename.IsChecked():
-                                    break
                         except:
                             #for platforms with limited sized
                             #wx.ListBox controls
@@ -369,16 +357,6 @@ class FindInFiles(wx.Dialog):
             except: pass
             wx.Yield()
         return found
-    
-    def OnCopyButtonClick(self, event):
-        text = '\n'.join(self.results.GetStrings())
-        do = wx.TextDataObject()
-        do.SetText(text)
-        if wx.TheClipboard.Open():
-            wx.TheClipboard.SetData(do)
-            wx.TheClipboard.Close()
-        else:
-            wx.MessageBox(tr("Unable to open the clipboard"), tr("Error"))
 
 def auto_uni_open_file(filename):
     import codecs

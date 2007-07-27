@@ -19,7 +19,7 @@
 #   along with this program; if not, write to the Free Software
 #   Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 #
-#   $Id: mLexerFactory.py 2051 2007-04-19 12:08:03Z limodou $
+#   $Id: mLexerFactory.py 1547 2006-10-01 13:50:46Z limodou $
 
 __doc__ = 'Lexer control'
 
@@ -30,40 +30,28 @@ from modules import common
 from modules import dict4ini
 from LexerFactory import LexerFactory
 
-def call_lexer(win, oldfilename, filename, language):
-#    if oldfilename == filename and filename:
-#        return
+def call_lexer(win, filename, language):
     for lexer in win.mainframe.lexers.lexobjs:
         prjfile = common.getProjectFile(filename)
         ini = dict4ini.DictIni(prjfile)
         ext = os.path.splitext(filename)[1]
         lexname = ini.highlight[ext]
-        
-        if lexname and lexname == lexer.name:   #find acp option
-            if not hasattr(win, 'lexer') or lexname != win.lexer.name:
-                lexer.colourize(win)
-                return
-            
-        if not lexname and (language and language == lexer.name or lexer.matchfile(filename)):
-            if not hasattr(win, 'lexer') or lexer.name != win.lexer.name:
-                lexer.colourize(win)
-                return
-            
+        if lexname == lexer.name or language and language == lexer.name or lexer.matchfile(filename):
+            lexer.colourize(win)
+            return
     else:
-#        if filename:
-#            win.mainframe.lexers.getNamedLexer('text').colourize(win)
-#        else:
-        if not hasattr(win, 'lexer'):
+        if filename:
+            win.mainframe.lexers.getNamedLexer('text').colourize(win)
+        else:
             win.mainframe.lexers.getDefaultLexer().colourize(win)
 Mixin.setPlugin('editor', 'call_lexer', call_lexer)
-Mixin.setPlugin('dirbrowser', 'call_lexer', call_lexer)
 
-#def aftersavefile(win, filename):
-#    for lexer in win.mainframe.lexers.lexobjs:
-#        if lexer.matchfile(filename) and lexer != win.lexer:
-##            lexer.colourize(win)
-#            return
-#Mixin.setPlugin('editor', 'aftersavefile', aftersavefile)
+def aftersavefile(win, filename):
+    for lexer in win.mainframe.lexers.lexobjs:
+        if lexer.matchfile(filename):
+            lexer.colourize(win)
+            return
+Mixin.setPlugin('editor', 'aftersavefile', aftersavefile)
 
 def beforeinit(win):
     win.lexers = LexerFactory(win)

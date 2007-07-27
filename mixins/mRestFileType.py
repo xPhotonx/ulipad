@@ -72,9 +72,8 @@ Mixin.setPlugin('mainframe', 'closefile', closefile)
 def setfilename(document, filename):
     for pagename, panelname, notebook, page in Globals.mainframe.panel.getPages():
         if is_resthtmlview(page, document):
-            print 'setfilename'
             title = document.getShortFilename()
-#            Globals.mainframe.panel.setName(page, title)
+            Globals.mainframe.panel.setName(page, title)
 Mixin.setPlugin('editor', 'setfilename', setfilename)
 
 def createRestHtmlViewWindow(win, side, document):

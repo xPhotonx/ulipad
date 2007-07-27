@@ -19,7 +19,7 @@
 #   along with this program; if not, write to the Free Software
 #   Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 #
-#   $Id: mUnicode.py 2081 2007-06-12 08:31:48Z limodou $
+#   $Id: mUnicode.py 1566 2006-10-09 04:44:08Z limodou $
 
 __doc__ = 'encoding selection and unicode support'
 
@@ -112,11 +112,8 @@ def savefileencoding(win, stext, encoding):
             win.locale = encoding
         except:
             error.traceback()
-            try:
-                s = text.encode(encoding, 'ignore')
-            except:
-                raise MyUnicodeException(win, tr("Cann't convert file to [%s] encoding!\nThe file cann't be saved!") % encoding,
-                    tr("Unicode Error"))
+            raise MyUnicodeException(win, tr("Cann't convert file to [%s] encoding!\nThe file cann't be saved!") % encoding,
+                tr("Unicode Error"))
     else:
         s = text
     stext[0] = s

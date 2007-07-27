@@ -1,13 +1,6 @@
-This is a contributing authors list. Thanks a lot:
+This is a contribute authors list. Thanks a lot:
 
-Claudio Grondi <claudio.grondi AT freenet.de>      Give a good name 'UliPad'. and big help on Column Mode, Ruler functionality
-Dick Moores <rdmoores AT gmail.com>                Proposal many suggestions
-Mario Lacunza <mlacunza AT gmail.com>              Commit Spanish translation file and proposal many suggestions
-Ye Naiquan <Naiquan.Ye AT marintek.sintef.no>      Commit Patch
-Cheng XiaoSan <chengxiaosan AT gmail.com>          Report bugs and proposal suggestions
-nmweizi <nmweizi AT 163.com>                       Report bugs and commit Patch
-Mkdir <ivan.pirog AT gmail.com>                    Report bugs and commit Patch
-Aleksey <Kapkaev AT yandex.ru>                     Report bugs and commit Patch
-yeyesho li <yeyesho AT gmail.com>                  Give advice to NoteBook
-ygao <ygao2004 AT gmail.com>                       Commit many patches
-chaoweilun <chaoweilun@gmail.com>                  Submit Traditional Chinese Translation File
+yeyesho li <yeyesho AT gmail.com>                  对NoteBook提出改进建议
+Claudio Grondi <claudio.grondi AT freenet.de>      提出保存上次位置的正确处理方式，列模式，标尺功能建议和测试改进，特别是起了UliPad这个名字。
+Cheng XiaoSan <chengxiaosan AT gmail.com>          报告Bug并提出改进建议
+nmweizi <nmweizi AT 163.com>                       报告Bug并提供关闭其它的插件，已经合并进UliPad。报错打开命令行窗口错误并提供patch。

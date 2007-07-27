@@ -1,10 +1,10 @@
-#   Programmer:     limodou
-#   E-mail:         limodou@gmail.com
-#  
-#   Copyleft 2006 limodou
-#  
-#   Distributed under the terms of the GPL (GNU Public License)
-#  
+#       Programmer:     limodou
+#       E-mail:         limodou@gmail.com
+#
+#       Copyleft 2006 limodou
+#
+#       Distributed under the terms of the GPL (GNU Public License)
+#
 #   UliPad is free software; you can redistribute it and/or modify
 #   it under the terms of the GNU General Public License as published by
 #   the Free Software Foundation; either version 2 of the License, or
@@ -19,7 +19,7 @@
 #   along with this program; if not, write to the Free Software
 #   Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 #
-#   $Id: PrefDialog.py 1886 2007-02-01 12:58:18Z limodou $
+#       $Id: PrefDialog.py 1731 2006-11-22 03:35:50Z limodou $
 
 import wx
 import Preference
@@ -85,7 +85,7 @@ class PrefDialog(wx.Dialog, Mixin.Mixin):
             self.addItem(page, kind, prefname, prefvalue, message, extern)
 
     def addItem(self, page, kind, prefname, prefvalue, message, extern):
-        if self.execplugin("additem", self, page, kind, prefname, prefvalue, message, extern):
+        if self.execplugin("additem", self, page, type, prefname, prefvalue, message, extern):
             return
         if kind == 'check':
             obj = wx.CheckBox(page, -1, message)

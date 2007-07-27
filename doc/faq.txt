@@ -2,216 +2,126 @@
  FAQ
 =====
 
-:Author: limodou
-:Email: limodou@gmail.com
-:Homepage: http://wiki.woodpecker.org.cn/moin/UliPad
+:作者: limodou
+:联系: limodou@gmail.com
+:版本: $Id: faq.txt 42 2005-09-28 05:19:21Z limodou $
+:主页: http://wiki.woodpecker.org.cn/moin/NewEdit
 :BLOG: http://www.donews.net/limodou
-:Copyright: GPL
+:版权: GPL
 
-.. contents:: Content
+.. contents:: 目录
 .. sectnum::
 
-About Project
-===============
+本文档列出了大家经常提的一些问题和一些在文档中不明显的内容，以FAQ的形式表现出来。文档会不断完善。
 
-What is UliPad
+项目
+====
+
+简单介绍一下NewEdit
 -------------------
 
-UliPad is a General Python Editor based on Python and wxPython. It supports many features that you can 
-find in other Editors, and the main feature of it is flexible mixin and plugin architecture. So user
-can extend his own functionality into UliPad, and you can treat UliPad as a developing platform.
+NewEdit是一个用python+wxPython编写的编辑器，它除了具有一般编辑器的功能外，还提供了灵活了扩展机制，如Script,
+Plugin等，用户可编写自已的东西与NewEdit进行融合，从而使NewEdit越来越强大。
 
-How to find & download it
-----------------------------
+项目主页及下载
+--------------
 
-For now, UliPad is hosted on China Woodpecker Community wiki site (http://wiki.woodpecker.org.cn), and
-it has its own wiki page (http://wiki.woodpecker.org.cn/moin/UliPad). You can download the lastest version
-of UliPad in this wiki page. And the svn url is: 
+NewEdit项目现位于 `tigris.org`_ 上，地址为 `newdit project`__ 。
+NewEdit软件的下载现存放于 `我的Python主页`_ 上。
 
-http://cvs.woodpecker.org.cn/svn/woodpecker/ulipad/trunk
+.. _tigris.org: http://www.tigris.org
+__ http://newedit.tigris.org
+.. _我的Python主页: http://pyrecord.freezope.org
 
-How do I get the newest source code from SVN
-----------------------------------------------
+环境要求
+--------
 
-There are a couple of free programs that make this extremely easy.
-Windows users should get TortoiseSVN http://tortoisesvn.tigris.org/.
-Others should get RapidSVN http://rapidsvn.tigris.org/.
+运行NewEdit需要安装Python 2.3和wxPython 2.4 Unicode以上版本。因为wxPython可以运行在windows, linux, mac环
+境上，原则上NewEdit可以运行在这些平台上。但我只是在windows下进行过测试，别的平台运行如何并不清楚。如果有问题
+请与我联系。
 
-This FAQ will explain the use of TortoiseSVN.
+启动
+====
 
-Once TortoiseSVN has been installed:
-
-If you have yet to install Ulipad, create a new, empty folder for it.
-
-The following apply whether you have yet to install Ulipad, or are
-updating it with TortoiseSVN for the first time:
-
-#. Right-click within your Ulipad folder to show the context menu.
-#. Note the two menu entries, SVN Checkout, and TortoiseSVN.
-#. Click on SVN Checkout. This will call TortoiseSVN.
-#. Enter http://cvs.woodpecker.org.cn/svn/woodpecker/ulipad/trunk in
-   the "URL of repository" box.
-#. The Checkout directory should already show the folder you created
-   for Ulipad, for example, C:\Program Files\Ulipad.
-#. Do not check "Only check out the top folder" or "Omit externals".
-#. Select the "HEAD revision" radio button. This will ensure you get
-   the latest revision. (Should you want an earlier revision for some
-   reason, select the "Revision" button and enter the revision number)
-#. Click OK. The download will begin. When finished, you're ready to use Ulipad!
-
-The second and subsequent times you update Ulipad using TortoiseSVN:
-
-#. Right-click within your Ulipad folder to show the context menu.
-#. Click on SVN Update and leave the rest to TortoiseSVN!
-
-Hints:
-
-#. Before updating, you may want to backup your Ulipad folder.
-#. Always make a note of the number of latest revision you have.
-#. http://cvs.woodpecker.org.cn/svn/woodpecker/ulipad/ will show the
-   number of the latest revision available. Or using svn update to see 
-   the lastest revision.
-#. Keep up-to-date by subscribing to the Ulipad mailing list at
-   http://groups.google.com/group/ulipad.
-
-Starting UliPad
-==================
-
-What's DDE
+什么是DDE功能？
 ------------------
 
-DDE is dynamic data exchange, this functionality is only existed in window platform. But in UliPad, it
-uses socket to simulate this function. And UliPad will use it to keep one instance, and when you start
-UliPad with filename parameter, then the second instance will transfer the filename to the first one, 
-then the file will be opened in the first instance.
+DDE是动态数据交换，原为windows下才有的功能。在NewEdit中利用socket摸拟了DDE功能，使用它你可以只启动一个NewEdit
+实例，并且，在命令行或资源管理器中打开文档时，NewEdit会查找已经存在的实例，并使用这个实例打开指定的文档。
 
-How to set DDE port
-----------------------
+重新设定DDE端口
+---------------
 
-Default, UliPad will bind 50000 port to DDE socket, but sometimes this port may be used by others, so
-you could not use DDE. So you can change the default DDE port in config.ini. Just write down below code
-in config.ini::
+由于NewEdit是利用socket来摸似DDE功能，这样在特殊情况下NewEdit异常退出时，这个端口可能没有被释放，再启动NewEdit
+可能无法启动。可以重启机器，或在修改安装目录下的config.ini文件中的端口值。如果config.ini不存在，就创建一个。
+如::
 
 	[server]
 	port=50001
 	
-How to disable DDE
----------------------
+如果上面的信息在config.ini中不存在，则创建就行。缺省情况下，port值为50000。因此如果与你的系统有冲突，需要修改
+这个值。
 
-Sometimes you may don't want to use DDE, so you can start UliPad with `-n` option::
+如何禁止DDE功能
+---------------
 
-    python UliPad.py -n
+有时为了调试需要关闭DDE功能。那么在启动时指定 -n 参数即可。
 
-Usage
-========
+如何使用psyco加速模块
+---------------------------
 
-How to use code folding
---------------------------
+只要在启动的命令行上增加 -s 选项。当系统安装了psyco模块，NewEdit会自动调用。
 
-Author: Dick Moores
+使用
+====
 
-#. Enable code folding by checking "Show code folding margin" on Edit
-   -> Preferences, the Document tab.
-#. Click on a "-" to fold. "+" to expand.
-#. Ctrl+Shift+Left-Click anywhere in folding margin will toggle
-   between Fold All and Expand All.
+如何选定文件所用的编码
+----------------------------
 
-How to create snippets
+缺省情况下，NewEdit判断一个文件的编码是首先判断一个文件是否为UTF-8编码，如果不是则认定为本地编码。但这只是打开文
+件时做这种判断。如果相将一个新文件保存为非本编码，或打开一个文件时指定一种本地编码，应该怎么做呢？可以选中：
+
+	选项－＞参数－＞通用　选中当打开或保存文件时打开编码选择对话框，然后确定退出。
+	
+这样当打开一个文件，保存新文件，或另存文件时，会弹出编码选择对话框。你就可以指用一种要使用的编码进行处理了。
+
+如何修改缺省编码
 ------------------------
 
-Author: Dick Moores
+缺省编码是当NewEdit不知道一个文档所用的编码时，会自动根据环境找出系统所用的编码。但有时可能不正确，如果想要改
+成你想要的编码，可以在启动时指定命令行选项 -e 后面为想用的编码，如： -e utf-8 即可。
 
-A snippet is usually some bit of code that you want to keep handy for
-repeated use. Within Ulipad it can be inserted into your code with
-just a double-click on the snippet's abbreviation in a list of
-snippets in the Snippets Window.
+如何安装一个插件
+-----------------------
 
-See the `Snippets How-to`_
+一个插件一般由两个文件组成，有的可有还要多一些。一个是xxx.pin，一个是xxx.py。
 
-.. _`Snippets How-to`: howto_snippet.htm
+1. 先将下载的插件解压后放到plugins目录下
+2. 启动NewEdit，打开[工具]->[插件管理...]然后你会看到插件的名称和描述。在需要使用的插件上双击，或点击下面的[选择切换]
+   按钮进行选中，保证要使用的插件前面有勾。然后点击确定。
+3. 重新启动NewEdit即可。
 
-Please explain the Edit->Format menu
-----------------------------------------------
+其它
+====
 
-Author: Dick Moores
-
-The top 4 items, ("Trim Trailing Spaces", "Leading Spaces To Tabs",
-"Leading Tabs To Spaces", "ALL Tabs To Spaces"):
-
-#. Before using any of these four, it's a good idea to click on View
-   -> Tabs and Spaces to make the space/tab marks visible.
-#. Select the lines you want to change and then click on the menu item
-   you want to use.
-#. If you want to change only one line, just position the caret
-   anywhere on that line. Selecting the line is not necessary.
-#. If you want the change to affect all lines in the document,
-   `Ctrl+Alt` of course will select them all.
-#. When converting spaces to tabs, if the number of leading
-   consecutive spaces in a line is not a multiple of the tab width you
-   set in Edit -> Preferences -> Document (e.g., 10 spaces and tab width
-   4), not all the spaces will be converted to tabs (for the example, 8
-   spaces will become 2 tabs, leaving 2 spaces unchanged).
-
-Increase and Decrease Indent
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-
-#. Select the lines you want to affect.
-#. Use the Tab key to Increase Indent (or click on the menu item).
-#. Use Shift+Tab to Decrease Indent (or click on the menu item).
-
-Comment Line and Uncomment Line
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-
-#. Select the lines you want to affect. If only one line, just
-   position the caret anywhere on that line.
-#. Use `Ctrl+/` to Comment the line(s) (or click on the menu item). This
-   puts a "#" at the head of each line.
-#. Use `Ctrl+\\` to Uncomment the line(s) (or click on the menu item).
-   This deletes the "#" at the head of each line.
-#. For documents in languages that use different comment characters
-   from "#", it's handy to enable "Show comment character dialog when
-   adding comment", on the Document tab in  Preferences.
-
-
-Text Quote and Unquote
-~~~~~~~~~~~~~~~~~~~~~~~~
-
-#. Select the text you want to enclose in quotes.
-#. `Ctrl+'` (or clicking on the menu item) will show the Quote Char Select dialog.
-#. Select the radio button for the quote characters you want and hit Enter.
-#. To Unquote, select the text to unquote plus its quote characters.
-#. `Ctrl+Shift+'` (or clicking on the menu item) will show the Quote
-   Char Select dialog.
-#. Select the radio button for the quote characters and hit Enter.
-#. If you usually use the same quote characters, it may be convenient
-   to define those characters in the dialog box, and check the "User
-   Define Quote Char" box.
-
-
-Others
-========
-
-What is config.ini used for
+config.ini文件是做什么的？
 ------------------------------
 
-config.ini is a configure file of UliPad, default it'll be not existed. Some functionality will 
-automatically create config.ini. And if there is no such file, you can create manually.
+config.ini文件是NewEdit启动的配置参数，现在有两个信息：使用的语言和DDE的端口。在一般情况下，这个文件是不存在的。
+因此，如果需要可以手工创建。
 
-More details about it you can see `Config Description`_ .
-
-.. _`Config Description`: config.html
-
-What is debug.txt used for
+debug.txt文件是做什么的？
 ------------------------------
 
-It's debug log of UliPad, UliPad will write some debug information into this file, for example:
-menu infos, toolbar infos, preference infos, etc. So you can use it to get some information of UliPad.
+它是NewEdit的调试文件，在启动NewEdit时会将自身的一些信息写到这个文件中，如：菜单信息、工具条信息、参数信息。使
+用它可以在编写一些扩展时用来定位信息。
 
-What is error.txt used for
+error.txt文件是做什么的？
 ------------------------------
 
-It's error log file. If there are errors when running UliPad, it'll write error message into this file.
+它是NewEdit运行的错误日志文件。如果在运行中出现错误，NewEdit会在error.txt中输出错误信息。
 
-`[Return]`_
 
-.. _`[Return]`: index.htm
+`[返回]`_
+
+.. _`[返回]`: index.htm

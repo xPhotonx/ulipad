@@ -19,7 +19,7 @@
 #   along with this program; if not, write to the Free Software
 #   Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 #
-#   $Id: PluginDialog.py 2093 2007-06-25 10:14:44Z limodou $
+#   $Id: PluginDialog.py 1680 2006-11-13 02:54:09Z limodou $
 
 import wx
 import glob
@@ -28,7 +28,6 @@ import re
 from modules import dict4ini
 from modules import CheckList
 from modules import common
-from modules.Debug import error
 
 class PluginDialog(wx.Dialog):
     def __init__(self, parent):
@@ -118,30 +117,10 @@ if flag:
         return plugins
 
     def copy_mo(self):
-        langpath = os.path.join(self.mainframe.workpath, 'lang')
-        dirs = [d for d in os.listdir(langpath) if os.path.isdir(os.path.join(langpath, d))]
         files = glob.glob(os.path.join(self.mainframe.workpath, 'plugins/*/*.mo'))
         import shutil
         for f in files:
             fname = os.path.splitext(os.path.basename(f))[0]
-            flag = False
-            for lang in dirs:
-                if fname.endswith(lang):
-                    flag = True
-                    break
-            if not flag:
-                lang = fname[-5:]
-                try:
-                    os.makedirs(os.path.join(self.mainframe.workpath, 'lang', fname[-5:]))
-                except Exception, e:
-                    error.traceback()
-                    common.showerror(self, str(e))
-                    continue
+            lang = fname.split('_', 1)[1]
             dst = os.path.join(self.mainframe.workpath, 'lang', lang, os.path.basename(f))
-            try:
-                shutil.copyfile(f, dst)
-            except Exception, e:
-                error.traceback()
-                common.showerror(self, str(e))
-                continue
-            
+            shutil.copyfile(f, dst)

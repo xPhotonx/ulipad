@@ -21,14 +21,13 @@
 #
 #   $Id$
 
-from mixins import NewCustomLexer
-from modules.ZestyParser import *
+from mixins import CustomLexer
 import re
     
-class FortranLexer(NewCustomLexer.CustomLexer):
+class FortranLexer(CustomLexer.CustomLexer):
 
     metaname = 'fortran'
-    casesensitive = False
+    case = False
 
     def loadDefaultKeywords(self):
         return ('''admit allocatable allocate assign assignment at
@@ -53,30 +52,94 @@ union until use
 where while write''').split()
 
     def loadPreviewCode(self):
-        return """
-! Free Format
-program main
-write(*,*) "Hello" !This is also comment
-write(*,*) &
-"Hello"
-wri&
-&te(*,*) "Hello"
-end
-"""
+        return """"""
 
     def initSyntaxItems(self):
-        self.addSyntaxItem('r_default',         'Default',              self.syl_default,           self.STE_STYLE_TEXT)
-        self.addSyntaxItem('keyword',           'Keyword',              self.syl_keyword,           self.STE_STYLE_KEYWORD1)
-        self.addSyntaxItem('comment',           'Comment',              self.syl_comment,           self.STE_STYLE_COMMENT)
-        self.addSyntaxItem('integer',           'Integer',              self.syl_integer,           self.STE_STYLE_NUMBER)
-        self.addSyntaxItem('string',            'String',               self.syl_string,            self.STE_STYLE_CHARACTER)
+        self.addSyntaxItem('r_default',         'Default',              CustomLexer.CustomLexer.syl_default,           self.STE_STYLE_TEXT)
+        self.addSyntaxItem('keyword',           'Keyword',              CustomLexer.CustomLexer.syl_keyword,           self.STE_STYLE_KEYWORD1)
+        self.formats = [
+            (re.compile(r'\b\w+\b'), 2),
+        ]
+#        self.syl_filter = 5
+#        self.syl_symbol = 4
+#        self.syl_var = 3
 
-        T_COMMENT = Token(re.compile(r'![^\n\r]*'), callback=self.just_return(self.syl_comment))
-        T_IDEN = Token(r'[_a-zA-Z][_a-zA-Z0-9]*', callback=self.is_keyword())
-        T_OTHER = Token(r'[^ _a-zA-Z0-9]', callback=self.just_return(self.syl_default))
-        T_INTEGER = Token(r'[+-]?\d+\.?\d*[eE]*', callback=self.just_return(self.syl_integer))
-        T_SP = Token(r'\s+', callback=self.just_return(self.syl_default))
-        T_DQUOTED_STRING = Token(r'"((?:\\.|[^"])*)?"', callback=self.just_return(self.syl_string))
-        T_SQUOTED_STRING = Token(r"'((?:\\.|[^'])*)?'", callback=self.just_return(self.syl_string))
-
-        self.formats = [T_COMMENT, T_DQUOTED_STRING, T_SQUOTED_STRING, T_IDEN, T_INTEGER, T_SP, T_OTHER]
+#    def styleneeded(self, win, pos):
+#        oldend = win.PositionFromLine(win.LineFromPosition(win.GetEndStyled()))
+#        text = win.GetTextRange(oldend, pos).encode('utf-8')
+#        positions = []
+#        sbuf = [(oldend, text)]
+#        for r, style in self.formats:
+#            nbuf = []
+#            for begin, txt in sbuf:
+#                laststart = 0
+#                while 1:
+#                    m = r.search(txt, laststart)
+#                    if not m:
+#                        break
+#                    
+#                    start = m.start()
+#                    if style == 3:  #variable
+#                        self.process_variable(win, m.group(), m, begin, positions)
+#                    elif style == 2:  #tag
+#                        self.process_tag(win, m.group(), m, begin, positions)
+#                    else:
+#                        self.process_default(win, m.group(), m, begin, style, positions)
+#                    
+#                    if start > laststart:
+#                        nbuf.append((begin + laststart, txt[laststart:start]))
+#                    laststart = m.end()
+#                nbuf.append((begin + laststart, txt[laststart:]))
+#                    
+#            sbuf = nbuf
+#        
+#        self.set_default(win, oldend, pos, positions)
+#        
+#    r_var = re.compile(r'_\("[^"]+"\)|"[^"]+"|[A-Za-z._]+')
+#    r_filter = re.compile(r'(?:\|([A-Za-z_]+)(:"[^"]+")?)')
+#    def process_variable(self, win, txt, m, begin, positions):
+#        _a = []
+#        bpos = m.start()
+#        epos = m.end()
+#        self.set_style(win, begin + bpos, begin + bpos + 2, self.syl_symbol)
+#        self.set_style(win, begin + epos - 2, begin + epos, self.syl_symbol)
+#        _a.append((begin + bpos, begin + bpos + 2))
+#        _a.append((begin + epos-2, begin + epos))
+#        positions.append((begin + bpos, begin + epos))
+#        begin += bpos
+#        m = self.r_var.search(txt)
+#        if m:
+#            start = m.start()
+#            end = m.end()
+#            self.set_style(win, begin+start, begin+end, self.syl_var)
+#            _a.append((begin + start, begin + end))
+#            while 1:
+#                m = self.r_filter.search(txt, end)
+#                if not m: break
+#                start = m.start()
+#                end = m.end()
+#                filter = m.groups()[0]
+#                if filter in self.filters:
+#                    self.set_style(win, begin+start+1, begin+start+len(filter)+1, self.syl_filter)
+#                    _a.append((begin+start+1, begin+start+len(filter)+1))
+#        self.set_default(win, begin, begin + len(txt), _a)
+#            
+#    def process_tag(self, win, txt, m, begin, positions):
+#        _a = []
+#        bpos = m.start()
+#        epos = m.end()
+#        self.set_style(win, begin + bpos, begin + bpos + 2, self.syl_symbol)
+#        self.set_style(win, begin + epos - 2, begin + epos, self.syl_symbol)
+#        _a.append((begin + bpos, begin + bpos + 2))
+#        _a.append((begin + epos-2, begin + epos))
+#        positions.append((begin + bpos, begin + epos))
+#        begin += bpos
+#        m = self.r_var.search(txt)
+#        if m:
+#            start = m.start()
+#            end = m.end()
+#            if m.group() in self.keywords:
+#                self.set_style(win, begin+start, begin+end, self.syl_keyword)
+#                _a.append((begin + start, begin + end))
+#        self.set_default(win, begin, begin + len(txt), _a)
+#        

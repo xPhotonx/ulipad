@@ -19,7 +19,7 @@ def default_identifier(win):
     ini = get_newest_ini()
     return ini.default.identifiers
 
-def calltip(win, word, syncvar):
+def calltip(win, word):
     ini = get_newest_ini()
     pos = word.rfind('.')
     if pos != -1:

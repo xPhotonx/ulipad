@@ -40,9 +40,6 @@ class CustomLexer(LexerBase.LexerBase):
     
     def initSyntaxItems(self):
         pass
-    
-    def is_keyword(self, word):
-        return word in self.keywords
 
     def styleneeded(self, win, pos):
         oldend = win.PositionFromLine(win.LineFromPosition(win.GetEndStyled()))
@@ -57,6 +54,7 @@ class CustomLexer(LexerBase.LexerBase):
                     m = r.search(txt, laststart)
                     if not m:
                         break
+                    
                     start = m.start()
                     if style == self.syl_keyword:  #keywords
                         self.process_keyword(win, m.group(), m, begin, positions)
@@ -83,7 +81,6 @@ class CustomLexer(LexerBase.LexerBase):
         else:
             start = m.start()
             end = m.end()
-            _a.append((begin + start, begin + end))
         self.set_style(win, begin + start, begin + end, style)
         positions.append((begin + start, begin + end))
         self.set_default(win, begin + m.start(), begin + m.end(), _a)
@@ -106,7 +103,7 @@ class CustomLexer(LexerBase.LexerBase):
             key = txt
         if not self.case:
             key = key.lower()
-        if self.is_keyword(key):
+        if key in self.keywords:
             _a.append((begin + start, begin + end))
             self.set_style(win, begin + start, begin + end, self.syl_keyword)
             positions.append((begin + start, begin + end))

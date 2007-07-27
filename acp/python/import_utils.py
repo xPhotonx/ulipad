@@ -1,14 +1,9 @@
 import sys
 import re
 import inspect
+import sets
 import wx.py.introspect as intro
 from modules.Debug import debug
-from mixins.InputAssistant import StopException
-
-try:
-    set
-except:
-    from sets import Set as set
 
 INDENT = ' '*4
 def pout(head, *args):
@@ -22,41 +17,24 @@ getattributes = intro.getAttributeNames
 
 namespace = {}
 
-def get_calltip(win, word, syncvar):
+def get_calltip(win, word):
     if not hasattr(win, 'syntax_info') or not win.syntax_info:
         return []
     
     pout('-'*50)
     pout('get_calltip', word)
     
-    flag, object = guessWordObject(win, word, False, syncvar)
+    flag, object = guessWordObject(win, word)
 
     pout(INDENT, 'ready to output:', flag, object)
     if object:
         if flag == 'obj':
-            signature = getargspec(win,object)
+            signature = getargspec(object)
             doc = object.__doc__
             return filter(None, [signature, doc])
         else:
             if object.type == 'function':
-                return '\n'.join([object.info, object.docstring])
-            elif object.type == 'class':
-                s = []
-                s.append(object.docstring)
-                t = object.get_local_name('__init__')
-                c = object.get_local_name('__call__')
-                if  t:
-                    _obj = t[1]
-                    s.append("\n")
-                    s.append(_obj.info)
-                    s.append(_obj.docstring)
-                if  c:
-                    _obj1 = c[1]
-                    s.append("\n")
-                    s.append(_obj1.info)
-                    s.append(_obj1.docstring)
-                return '\n'.join(s)
-                
+                return object.info
     pout(INDENT, 'return:', None)
     return None
     
@@ -101,72 +79,30 @@ def evaluate(win, word):
         except:
             return None
 
-def getargspec(win, func):
+def getargspec(func):
     """Get argument specifications"""
-    if  inspect.isclass(func):
-        s = []
-        # Get the __init__ method function for the class.
-        constructor = getConstructor(func)
-        init_docstring = inspect.getdoc(constructor)
-        if  constructor:
-            v = getargspec(win, constructor)
-            s.append('\n' + v + '\n')
-        if  init_docstring:
-            s.append(init_docstring)
-        call_docstring = None
-        v1 = None
-        # Handle  the __call__ method function for the class.
-        try:
-            call = func.__call__.im_func
-            v1 = getargspec(win, call)
-            call_docstring = inspect.getdoc(call)
-        except AttributeError:
-            pass
-        if  v1:
-            s.append('\n' + v1 + '\n')
-        if  call_docstring:
-            s.append(call_docstring)
-  
-        return '\n'.join(s)
     try:
         func=func.im_func
     except:
 #        error.traceback()
         pass
     try:
-        tt = inspect.getargspec(func)
-        if  win.pref.inputass_func_parameter_autocomplete:
-            win.function_parameter.extend(tt[0])
-        return func.func_name + inspect.formatargspec(*tt)
+        return inspect.formatargspec(*inspect.getargspec(func))
     except:
 #        error.traceback()
         pass
     try:
-        return func.func_name + inspect.formatargvalues(*inspect.getargvalues(func))
+        return inspect.formatargvalues(*inspect.getargvalues(func))
     except:
 #        error.traceback()
         return ''
-    
-def getConstructor(object):
-    """Return constructor for class object, or None if there isn't one."""
-    try:
-        return object.__init__.im_func
-    except AttributeError:
-        for base in object.__bases__:
-            constructor = getConstructor(base)
-            if constructor is not None:
-                return constructor
-    return None
 
-def import_document(win, syncvar):
+def import_document(win):
     root = win.syntax_info
     lineno = win.GetCurrentLine() + 1
     result = root.get_imports(lineno)
     pout('import_document')
     for importline, line in result:
-        if syncvar and not syncvar.empty:
-            raise StopException
-        
         pout('import', importline, line)
         if importline.startswith('from'):
             try:
@@ -181,62 +117,52 @@ def import_document(win, syncvar):
 #                error.traceback()
                 pass
 
-def autoComplete(win, word=None, syncvar=None):
+def autoComplete(win, word=None):
     if not word:
         word = getWord(win)
-    words = getAutoCompleteList(win, word, syncvar)
+    words = getAutoCompleteList(win, word)
     if words:
         return words
     else:
         if not word.startswith('self.'):
-            words = getWords(win, word, syncvar)
+            words = getWords(win, word)
             return words
     
-def getAutoCompleteList(win, command='', syncvar=None):
+def getAutoCompleteList(win, command=''):
     if not hasattr(win, 'syntax_info') or not win.syntax_info:
         return []
-
-    root = win.syntax_info
-    r_idens = _get_filter_list(win, command, root.idens)
 
     pout('-'*50)
     pout('getAutoCompleteList', command)
 
-    v = guessWordObject(win, command, True, syncvar)
+    v = guessWordObject(win, command)
     flag, object = v
     pout(INDENT, 'ready to output:', flag, object)
     if object:
         if flag == 'obj':
-            return getattributes(object) + r_idens
+            return getattributes(object)
         else:
             if object.type == 'class':
-                return getClassAttributes(win, object, syncvar) + r_idens
-    pout(INDENT, 'return:', '***')
-    return r_idens
+                return getClassAttributes(win, object)
+    pout(INDENT, 'return:', [])
+    return []
 
-def guessWordObject(win, command, striplast=True, syncvar=None):
-    '''
-    Guess command's type, if striplast is True, then don't care the last
-    word. command will be splitted into list according to '.'
-    '''
+def guessWordObject(win, command):
     root = win.syntax_info
     attributes = []
     # Get the proper chunk of code from the command.
     flag = None
     object = None
-#    while command.endswith('.'):
-#        command = command[:-1]
-    
-    if syncvar and not syncvar.empty:
-        raise StopException
+    while command.endswith('.'):
+        command = command[:-1]
     
     lineno = win.GetCurrentLine() + 1
     attributes = command.split('.')
-    if command == 'self.':    #process self.
+    if attributes[0] == 'self' and len(attributes) == 1:    #process self.
         cls = root.guess_class(lineno)
         if cls:
             return 'source', cls
-    elif command.startswith('self.'):   #process self.a. then treat self.a as a var
+    elif attributes[0] == 'self' and len(attributes) > 1:   #process self.a. then treat self.a as a var
         key = attributes[0] + '.' + attributes[1]
         del attributes[0]
         attributes[0] = key
@@ -245,8 +171,6 @@ def guessWordObject(win, command, striplast=True, syncvar=None):
         if result:
             attributes = [command]
         
-    if syncvar and not syncvar.empty:
-        raise StopException
    
     #deal first word
     firstword = attributes[0]
@@ -254,26 +178,11 @@ def guessWordObject(win, command, striplast=True, syncvar=None):
     pout(INDENT, 'attributes:', attributes, 'firstword:', firstword)
     result = root.guess_type(lineno, firstword)
     pout(INDENT, 'guess [%s] result:' % firstword, result)
-    
-    if syncvar and not syncvar.empty:
-        raise StopException
-    
-    if striplast:
-        if attributes:
-            del attributes[-1]
-            
     if result:
         t, v = result
         pout(INDENT, 'begin try_get_obj_type:', t, v, attributes)
         flag, object = try_get_obj_type(win, t, v, lineno)
         pout(INDENT, 'result:', flag, object, attributes)
-        
-        if syncvar and not syncvar.empty:
-            raise StopException
-        
-        if not attributes:
-            return flag, object
-        
         if flag == 'source' or attributes:
             #deal other rest
             flag, object = try_get_obj_attribute(win, flag, object, attributes)
@@ -282,27 +191,17 @@ def guessWordObject(win, command, striplast=True, syncvar=None):
         if firstword.startswith('self.'):
             word = firstword.split('.', 1)[1]
             cls = root.guess_class(lineno)
-            
-            if syncvar and not syncvar.empty:
-                raise StopException
-            
             if cls:
                 for b in cls.bases:
-                    if syncvar and not syncvar.empty:
-                        raise StopException
-                    
-                    obj = getObject(win, b, syncvar)
+                    obj = getObject(win, b)
                     if obj:
                         if hasattr(obj, word):
                             object = getattr(obj, word)
                             flag = 'obj'
         else:
             flag = 'obj'
-            object = getObject(win, firstword, syncvar)
+            object = getObject(win, firstword)
 
-    if syncvar and not syncvar.empty:
-        raise StopException
-    
     return flag, object
 
 def getWords(win, word=None, whole=None):
@@ -312,19 +211,15 @@ def getWords(win, word=None, whole=None):
         return []
     else:
         word = word.replace('.', r'\.')
-        words = list(set([x for x in re.findall(r"\b" + word + r"(\w+)\b", win.GetText())]))
+        words = list(sets.Set([x for x in re.findall(r"\b" + word + r"(\w+)\b", win.GetText())]))
         words.sort(lambda x, y:cmp(x.upper(), y.upper()))
         return words
 
 re_match = re.compile('^\s*from\s+')
-def getObject(win, word, syncvar=None):
+def getObject(win, word):
     pout(INDENT, 'getObject:', word)
     object = None
     line = win.GetLine(win.GetCurrentLine())
-
-    if syncvar and not syncvar.empty:
-        raise StopException
-    
     if re_match.match(line):
         if sys.modules.has_key(word):
             object = sys.modules[word]
@@ -336,14 +231,8 @@ def getObject(win, word, syncvar=None):
     else:
         try:
             object = eval(word, namespace)
-            if syncvar and not syncvar.empty:
-                raise StopException
-            
         except:
-            import_document(win, syncvar)
-            if syncvar and not syncvar.empty:
-                raise StopException
-            
+            import_document(win)
             try:
                 object = eval(word, namespace)
             except:
@@ -351,25 +240,21 @@ def getObject(win, word, syncvar=None):
     pout(INDENT, 'getObject result [%s]:' % word, object)
     return object
     
-def getClassAttributes(win, cls, syncvar):
-    s = set([])
+def getClassAttributes(win, cls):
+    s = sets.Set([])
     if cls:
         root = win.syntax_info
-        s = set(cls.locals)
+        s = sets.Set(cls.locals)
         for b in cls.bases:
-            if syncvar and not syncvar.empty:
-                raise StopException
-            
             c = root.search_name(cls.lineno, b)
             if c:
-                _cls = root.guess_class(c[2])
-                if _cls:
-                    s.update(_cls.locals)
-                    continue
-            obj = getObject(win, b, syncvar)
-            if obj:
-                s.update(getattributes(obj))
-#    pout(INDENT, "getClassAttributes", s)
+                cls = root.guess_class(c[2])
+                if cls:
+                    s.update(cls.locals)
+            else:
+                obj = getObject(win, b)
+                if obj:
+                    s.update(getattributes(obj))
     return list(s)
 
 def try_get_obj_type(win, t, v, lineno):
@@ -380,6 +265,19 @@ def try_get_obj_type(win, t, v, lineno):
     if t in ('class', 'function'):
         node = v
         flag = 'source'
+#        r = root.search_name(lineno, v)
+#        if r:
+#            cls = root.guess_class(r[2], v)
+#            if cls:
+#                node = cls
+#                flag = 'source'
+#    elif t == 'function':
+#        r = root.search_name(lineno, v)
+#        if r:
+#            func = root.guess_function(r[2], v)
+#            if func:
+#                node = func
+#                flag = 'source'
     elif t not in ('reference', 'import'):
         node = v
     else:
@@ -387,15 +285,12 @@ def try_get_obj_type(win, t, v, lineno):
     return flag, node
     
 def try_get_obj_attribute(win, flag, object, attributes):
-    pout(INDENT, "try_get_obj_attribute", flag, object, attributes)
+    if not attributes:
+        return flag, object
     root = win.syntax_info
     if object:
         if flag == 'obj':
-            if len(attributes) > 1:
-                attrs = attributes[:-1]
-            else:
-                attrs = attributes
-            for o in attrs:
+            for o in attributes:
                 if hasattr(object, o):
                     object = getattr(object, o)
                 else:
@@ -449,52 +344,22 @@ import keyword
 import types
 
 def default_identifier(win):
-    return keyword.kwlist + [x for x in dir(__builtin__) if isinstance(getattr(__builtin__, x), types.BuiltinFunctionType)] + ['None', 'as', 'True', 'False', 'self', 'file', 'str', 'int', 'unicode', 'list', 'dict', 'tuple', 'bool', 'float', 'object', 'set', 'property']
+    return keyword.kwlist + [x for x in dir(__builtin__) if isinstance(getattr(__builtin__, x), types.BuiltinFunctionType)] + ['None', 'as', 'True', 'False', 'self', 'file', 'str', 'int', 'unicode', 'list', 'dict', 'tuple', 'bool', 'float']
 
-def _get_filter_list(win, word, words):
-    if not win.pref.inputass_full_identifier:
-        return []
-
-    if not word:
-        return []
-    r = set([])
-    if '.' in word:
-        base, left = word.rsplit('.', 1)
-        base += '.'
-        _len = len(base)
-        for w in words:
-            wleft = w[_len:]
-            if w.startswith(base) and len(wleft) > 1:
-                if '.' in wleft:
-                    wleft = wleft.split('.', 1)[0]
-                r.add(wleft)
-    else:
-        ch = word[0].upper()
-        for w in list(words):
-            if ch == w[0].upper():
-                if '.' in w:
-                    w = w.split('.', 1)[0]
-                r.add(w)
-    return list(r)
-
-def get_locals(win, lineno, word, syncvar):
+def get_locals(win, lineno, word):
     root = win.syntax_info
-    r_idens = _get_filter_list(win, word, root.idens)
     if '.' in word:
         if word.endswith('.'):
-#            word = word[:-1]
+            word = word[:-1]
             length = 0
         else:
-            w, ext = word.rsplit('.', 1)
+            word, ext = word.rsplit('.', 1)
             length = len(ext)
         return length, getAutoCompleteList(win, word)
     else:
         r = root.get_locals(lineno)
         d = {}
         for i in r + default_identifier(win):
-            if syncvar and not syncvar.empty:
-                raise StopException
-            
             if len(i) <= 1:
                 continue
             k = i[0].upper()
@@ -503,14 +368,11 @@ def get_locals(win, lineno, word, syncvar):
                 s.append(i)
         for k, v in d.items():
             d[k].sort(lambda x, y:cmp(x.upper(), y.upper()))
-         
-        if len(word) > 0 and (d.has_key(word[0].upper()) or r_idens):
-            words = d.get(word[0].upper(), []) + r_idens
+            
+        if len(word) > 0 and d.has_key(word[0].upper()):
+            words = d.get(word[0].upper(), [])
             if words:
                 for i in words:
-                    if syncvar and not syncvar.empty:
-                        raise StopException
-                    
                     if i.startswith(word):
                         return len(word), words
         

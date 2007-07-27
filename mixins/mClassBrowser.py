@@ -19,7 +19,7 @@
 #   along with this program; if not, write to the Free Software
 #   Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 #
-#   $Id: mClassBrowser.py 1897 2007-02-03 10:33:43Z limodou $
+#   $Id: mClassBrowser.py 1730 2006-11-21 13:46:26Z limodou $
 
 import wx
 import os.path
@@ -33,8 +33,8 @@ Mixin.setPlugin('preference', 'init', pref_init)
 
 def add_pref(preflist):
     preflist.extend([
-        ('Python', 100, 'check', 'python_classbrowser_show', tr('Show class browser window when opening python source file'), None),
-        ('Python', 105, 'check', 'python_classbrowser_refresh_as_save', tr('Refresh class browser window when saving python source file'), None),
+        ('Python', 100, 'check', 'python_classbrowser_show', tr('Show class browser window as open python source file'), None),
+        ('Python', 105, 'check', 'python_classbrowser_refresh_as_save', tr('Refresh class browser window as saved python source file'), None),
     ])
 Mixin.setPlugin('preference', 'add_pref', add_pref)
 

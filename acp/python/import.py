@@ -26,27 +26,21 @@ def fromimport(win, matchobj):
         return 'blank', ''
 
 import import_utils
-def calltip(win, word, syncvar):
-    return import_utils.get_calltip(win, word, syncvar)
+def calltip(win, word):
+    return import_utils.get_calltip(win, word)
 
-def autodot(win, word, syncvar):
-    return import_utils.autoComplete(win, word, syncvar)
+def autodot(win, word):
+    return import_utils.autoComplete(win, word)
 
-def analysis(win, syncvar):
-    try:
-        win
-    except:
-        return
+def analysis(win):
     line = win.GetCurrentLine()
-    root = PyParse.parseString(win.getRawText(), syncvar)
-    if not syncvar.empty or not root:
-        return
+    root = PyParse.parseString(win.getRawText())
     win.lock.acquire()
     win.syntax_info = root
     win.lock.release()
     
-def locals(win, line, word, syncvar):
+def locals(win, line, word):
     if hasattr(win, 'syntax_info') and win.syntax_info:
-        return import_utils.get_locals(win, line, word, syncvar)
+        return import_utils.get_locals(win, line, word)
     else:
         return None, []

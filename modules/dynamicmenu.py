@@ -19,7 +19,7 @@
 #   along with this program; if not, write to the Free Software
 #   Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 #
-#   $Id: dynamicmenu.py 1871 2007-01-28 08:49:56Z limodou $
+#   $Id: dynamicmenu.py 1595 2006-10-12 03:01:34Z limodou $
 
 import makemenu
 from Debug import debug
@@ -33,9 +33,9 @@ def menuRemove(win, menulist):
     mlist = makemenu.mergemenu(win.menulist+menulist)
     removemlist = makemenu.mergemenu(menulist)
     m = sortmenu(removemlist)
-#    win.menubar.Freeze()
+    win.menubar.Freeze()
     removemenu(mlist, removemlist, m, win)
-#    win.menubar.Thaw()
+    win.menubar.Thaw()
 
 def menuInsert(win, menulist):
     if len(menulist) == 0:
@@ -49,10 +49,10 @@ def menuInsert(win, menulist):
     mlist = makemenu.mergemenu(win.menulist+menulist)
     insertmlist = makemenu.mergemenu(menulist)
     m = sortmenu(insertmlist)
-#    win.menubar.Freeze()
+    win.menubar.Freeze()
     insertmenu(mlist, insertmlist, m, win)
-#    win.menubar.Thaw()
-    
+    win.menubar.Thaw()
+
     return accel, editoraccel
 
 def sortmenu(menulist):

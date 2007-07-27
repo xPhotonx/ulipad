@@ -35,29 +35,27 @@ def add_tool_list(toollist, toolbaritems):
 Mixin.setPlugin('mainframe', 'add_tool_list', add_tool_list, Mixin.LOW)
 
 def OnFileNews(win, event):
-#    if win.pref.syntax_select:
-    eid = event.GetId()
-    size = win.toolbar.GetToolSize()
-    pos = win.toolbar.GetToolPos(eid)
-    menu = wx.Menu()
-    create_menu(win, menu)
-    win.PopupMenu(menu, (size[0]*pos, size[1]))
-    menu.Destroy()
-#    else:
-#        document = win.editctrl.new()
-#        if document:
-#            document.SetFocus()
+    if win.pref.syntax_select:
+        eid = event.GetId()
+        size = win.toolbar.GetToolSize()
+        pos = win.toolbar.GetToolPos(eid)
+        menu = wx.Menu()
+        create_menu(win, menu)
+        win.PopupMenu(menu, (size[0]*pos, size[1]))
+        menu.Destroy()
+    else:
+        win.editctrl.new()
 Mixin.setMixin('mainframe', 'OnFileNews', OnFileNews)
 
-#def pref_init(pref):
-#    pref.syntax_select = True
-#Mixin.setPlugin('preference', 'init', pref_init)
+def pref_init(pref):
+    pref.syntax_select = True
+Mixin.setPlugin('preference', 'init', pref_init)
 
-#def add_pref(preflist):
-#    preflist.extend([
-#        (tr('General'), 175, 'check', 'syntax_select', tr('Enable syntax selection as new file'), None),
-#    ])
-#Mixin.setPlugin('preference', 'add_pref', add_pref)
+def add_pref(preflist):
+    preflist.extend([
+        (tr('General'), 175, 'check', 'syntax_select', tr('Enable syntax selection as new file'), None),
+    ])
+Mixin.setPlugin('preference', 'add_pref', add_pref)
 
 def add_mainframe_menu(menulist):
     menulist.extend([ ('IDM_FILE_NEWMORE',
@@ -68,10 +66,10 @@ def add_mainframe_menu(menulist):
 Mixin.setPlugin('mainframe', 'add_menu', add_mainframe_menu)
 
 def init(win):
-#    if win.pref.syntax_select:
-    menu = makemenu.findmenu(win.menuitems, 'IDM_FILE_NEWMORE')
-    menu.Delete(win.IDM_FILE_NEWMORE_NULL)
-    create_menu(win, menu)
+    if win.pref.syntax_select:
+        menu = makemenu.findmenu(win.menuitems, 'IDM_FILE_NEWMORE')
+        menu.Delete(win.IDM_FILE_NEWMORE_NULL)
+        create_menu(win, menu)
 Mixin.setPlugin('mainframe', 'init', init)
 
 def create_menu(win, menu):
@@ -80,7 +78,6 @@ def create_menu(win, menu):
         lexname = ids.get(event.GetId(), '')
         if lexname:
             lexer = win.lexers.getNamedLexer(lexname)
-            text = ''
             if lexer:
                 templatefile = common.getConfigPathFile('template.%s' % lexer.name)
                 if os.path.exists(templatefile):
@@ -89,8 +86,6 @@ def create_menu(win, menu):
                 else:
                     text = ''
             document = win.editctrl.new(defaulttext=text, language=lexer.name)
-            if document:
-                document.SetFocus()
     
     for name, lexname in win.filenewtypes:
         _id = wx.NewId()

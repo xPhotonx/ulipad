@@ -28,19 +28,16 @@ from modules import dict4ini
 from modules.Debug import error
 from modules import common
 from modules import Mixin
-import SnipMixin
+from modules import Casing
+import threading
+import Queue
 
-try:
-    set
-except:
-    from sets import Set as set
-    
-#mylocal = threading.local()
+mylocal = threading.local()
 class DUMY_CLASS:pass
 
 assistant = {}
 assistant_objs = {}
-KEYS = {'<space>':' ', '<equal>':'=', '<div>':'/', '<square>':'['}
+KEYS = {'<space>':' ', '<tab>':'\t', '<equal>':'=', '<div>':'/', '<square>':'['}
 CALLTIP_AUTOCOMPLETE = 2
 class StopException(Exception):pass
 
@@ -55,62 +52,83 @@ class InputAssistant(Mixin.Mixin):
         self.acpmodules_time = {}
         self.lasteditor = None
         self.lastlanguage = None
+        self.queue = Queue.Queue(1)
+        self.run_queue = Queue.Queue(1)
 
     def run(self, editor, event, on_char=True, syncvar=None):
-        if not editor.pref.input_assistant:
-            return False
-
-        if not hasattr(editor, 'lexer') or editor.lexer.cannot_expand(editor):
-            return False
-        
-        if not syncvar.empty:
-            return True
-        
-        self.syncvar = syncvar
-        
-        key = event.GetKeyCode()
-        self.on_char = on_char
-        self.oldpos = editor.GetCurrentPos()
-        self.editor = editor
-        self.language = editor.languagename
-        if not hasattr(self.editor, 'default_auto_identifier'):
-            self.editor.default_auto_identifier = {}
-        if not hasattr(self.editor, 'input_calltip'):
-            self.editor.input_calltip = []
-        if not hasattr(self.editor, 'input_autodot'):
-            self.editor.input_autodot = []
-        if not hasattr(self.editor, 'input_locals'):
-            self.editor.input_locals = []
-        if not hasattr(self.editor, 'input_analysis'):
-            self.editor.input_analysis = []
-
-        if editor.hasSelection() and on_char and (31 < key < 127 or key > wx.WXK_PAGEDOWN):
-            self.check_selection(editor)
-        
-        f = 0
-        ctrl = event.ControlDown()
-        alt = event.AltDown()
-        shift = event.ShiftDown()
-        if not on_char:
-            if ctrl:
-                f |= wx.stc.STC_SCMOD_CTRL
-            elif alt:
-                f |= wx.stc.STC_SCMOD_ALT
-            elif shift:
-                f |= wx.stc.STC_SCMOD_SHIFT
+        if self.run_queue.empty():
+            try:
+                editor.lock.acquire()
+                try:
+                    self.run_queue.put_nowait(True)
+                except:
+                    return True
             
-        self.key = (f, key)
-        if not self.install_acp(editor, self.language) and not self.editor.custom_assistant:
-            return False
-       
-        try:
-            return self._run()
-        except StopException:
-#            error.traceback()
-            return True
-        except:
-            error.traceback()
-            return False
+                if not editor.pref.input_assistant:
+                    return False
+
+                if editor.lexer.cannot_expand(editor):
+                    return False
+                
+                if not syncvar:
+                    return True
+                
+                #set thread local variables
+                mylocal.syncvar = syncvar
+                mylocal.oldpos = editor.GetCurrentPos()
+                mylocal.on_char = on_char
+                key = event.GetKeyCode()
+                self.editor = editor
+                self.language = editor.languagename
+                if not hasattr(self.editor, 'default_auto_identifier'):
+                    self.editor.default_auto_identifier = {}
+                if not hasattr(self.editor, 'input_calltip'):
+                    self.editor.input_calltip = []
+                if not hasattr(self.editor, 'input_autodot'):
+                    self.editor.input_autodot = []
+                if not hasattr(self.editor, 'input_locals'):
+                    self.editor.input_locals = []
+                if not hasattr(self.editor, 'input_analysis'):
+                    self.editor.input_analysis = []
+
+                if editor.hasSelection() and on_char and (31 < key < 127 or key > wx.WXK_PAGEDOWN):
+                    self.check_selection(editor)
+                
+                f = 0
+                ctrl = event.ControlDown()
+                alt = event.AltDown()
+                shift = event.ShiftDown()
+                if not on_char:
+                    if ctrl:
+                        f |= wx.stc.STC_SCMOD_CTRL
+                    elif alt:
+                        f |= wx.stc.STC_SCMOD_ALT
+                    elif shift:
+                        f |= wx.stc.STC_SCMOD_SHIFT
+                    
+                mylocal.key = (f, key)
+                
+                if not self.install_acp(editor, self.language) and not self.editor.custom_assistant:
+                    return False
+                
+                if not mylocal.syncvar:
+                    return True
+                
+                try:
+                    return self._run()
+                except StopException:
+        #            error.traceback()
+                    return True
+                except:
+                    error.traceback()
+                    return False
+            finally:
+                editor.lock.release()
+                if not self.run_queue.empty():
+                    try:
+                        self.run_queue.get_nowait()
+                    except:
+                        pass
 
     def install_acp(self, editor, language):
         changeflag = False
@@ -119,17 +137,11 @@ class InputAssistant(Mixin.Mixin):
             if assistant.has_key(language):
                 del assistant[language]
                 changeflag = True
+#            return False
         else:
             changeflag = self.install_assistant(language, filename)
         self.editor = editor
         
-        try:
-            self.lasteditor
-        except:
-            error.traceback()
-            self.lasteditor = None
-            self.lastlanguage = None
-            
         if changeflag or not self.lasteditor is editor or self.lastlanguage != editor.languagename:
             self.lasteditor = editor
             self.lastlanguage = editor.languagename
@@ -145,37 +157,46 @@ class InputAssistant(Mixin.Mixin):
                 self.install_autodot(obj)
                 self.install_locals(obj)
                 self.install_analysis(obj)
+            
+            editor.auto_routin = Casing.Casing(self.call_analysis)
         return True
     
     def get_acp(self, language):
         return assistant.get(language, [])
-    
-    def get_all_acps(self):
-        return self.get_acp(self.language) + self.editor.custom_assistant
         
     def _run(self):
-        if not self.syncvar.empty:
+        if not mylocal.syncvar:
             return True
         win = self.editor
-        objs = self.get_all_acps()
+        objs = self.get_acp(self.language) + self.editor.custom_assistant
         if not objs:
             return False
         else:
+#            #dealing with analysis
+#            flag = False
+#            key = mylocal.key[1]
+#            if key in [wx.WXK_RETURN, wx.WXK_TAB, wx.WXK_DELETE, wx.WXK_BACK]:
+#                flag = True
+#            if mylocal.on_char and 31 < key < 127 and chr(key).isalnum():
+#                flag = True
+#            if flag and not win.auto_routin.isactive():
+#                win.auto_routin.start_thread()
+            
             #matching
             for obj in objs:
-                if not self.syncvar.empty:
+                if not mylocal.syncvar:
                     return True
                 if obj.projectname and obj.projectname not in common.getProjectName(win.filename):
                     continue
                 #autostring
-                if obj.autostring.has_key(self.key):
-                    s = obj.autostring[self.key]
+                if obj.autostring.has_key(mylocal.key):
+                    s = obj.autostring[mylocal.key]
                     for k, text in s:
-                        if not self.syncvar.empty:
+                        if not mylocal.syncvar:
                             return True
                         word, start, end = self.getWord(k)
                         if k == word:
-                            if self.parse_result(obj, text, start, end, self.key, matchtext=None):
+                            if self.parse_result(obj, text, start, end, mylocal.key, matchtext=None):
                                 return True
                             if win.AutoCompActive():
                                 self.postcall(win.AutoCompCancel)
@@ -193,7 +214,7 @@ class InputAssistant(Mixin.Mixin):
                             else:
                                 def f():
                                     win.BeginUndoAction()
-#                                    win.inputassistant_obj = obj
+                                    win.inputassistant_obj = obj
                                     win.word_len = start, end + 1
                                     win.replace_strings = None
                                     win.UserListShow(list_type, " ".join(text))
@@ -201,12 +222,12 @@ class InputAssistant(Mixin.Mixin):
                                 self.postcall(f)
                                 return True
                 #autostring_append
-                if obj.autostring_append.has_key(self.key):
-                    s = obj.autostring_append[self.key]
+                if obj.autostring_append.has_key(mylocal.key):
+                    s = obj.autostring_append[mylocal.key]
                     for k, text in s:
                         word, start, end = self.getWord(k)
                         if k == word:
-                            if self.parse_result(obj, text, start, end, self.key):
+                            if self.parse_result(obj, text, start, end, mylocal.key):
                                 return True
                             if win.AutoCompActive():
                                 self.postcall(win.AutoCompCancel)
@@ -220,7 +241,7 @@ class InputAssistant(Mixin.Mixin):
                             else:
                                 def f():
                                     win.BeginUndoAction()
-#                                    win.inputassistant_obj = obj
+                                    win.inputassistant_obj = obj
                                     win.replace_strings = None
                                     win.word_len = win.GetCurrentPos(), -1
                                     win.UserListShow(list_type, " ".join(text))
@@ -228,11 +249,11 @@ class InputAssistant(Mixin.Mixin):
                                 self.postcall(f)
                                 return True
                 #autore
-                if obj.autore.has_key(self.key):
+                if obj.autore.has_key(mylocal.key):
                     line = win.GetCurrentLine()
                     txt = win.GetTextRange(win.PositionFromLine(line), win.GetCurrentPos())
                     txt = txt.encode('utf-8')
-                    s = obj.autore[self.key]
+                    s = obj.autore[mylocal.key]
                     length = len(txt)
                     flag = False
                     for k, text in s:
@@ -249,7 +270,7 @@ class InputAssistant(Mixin.Mixin):
                             r = []
                             r.append(unicode(b.group(), 'utf-8'))
                             r.extend([unicode(x, 'utf-8') for x in b.groups()])
-                            if self.parse_result(obj, text, 0, 0, self.key, matchtext=r, line=line, matchobj=b):
+                            if self.parse_result(obj, text, 0, 0, mylocal.key, matchtext=r, line=line, matchobj=b):
                                 return True
                             if win.AutoCompActive():
                                 self.postcall(win.AutoCompCancel)
@@ -273,7 +294,7 @@ class InputAssistant(Mixin.Mixin):
                             else:
                                 def f():
                                     win.BeginUndoAction()
-#                                    win.inputassistant_obj = obj
+                                    win.inputassistant_obj = obj
                                     pos = win.PositionFromLine(line)
                                     win.replace_strings = r
                                     win.word_len = pos + b.start(), pos + b.end()
@@ -282,11 +303,11 @@ class InputAssistant(Mixin.Mixin):
                                 self.postcall(f)
                                 return True
                 #autore_append
-                if obj.autore_append.has_key(self.key):
+                if obj.autore_append.has_key(mylocal.key):
                     line = win.GetCurrentLine()
                     txt = win.GetTextRange(win.PositionFromLine(line), win.GetCurrentPos())
                     txt = txt.encode('utf-8')
-                    s = obj.autore_append[self.key]
+                    s = obj.autore_append[mylocal.key]
                     length = len(txt)
                     flag = False
                     for k, text in s:
@@ -303,7 +324,7 @@ class InputAssistant(Mixin.Mixin):
                             r = []
                             r.append(unicode(b.group(), 'utf-8'))
                             r.extend(unicode(x, 'utf-8') for x in b.groups())
-                            if self.parse_result(obj, text, 0, 0, self.key, matchtext=r, line=line, matchobj=b):
+                            if self.parse_result(obj, text, 0, 0, mylocal.key, matchtext=r, line=line, matchobj=b):
                                 return True
                             if win.AutoCompActive():
                                 self.postcall(win.AutoCompCancel)
@@ -322,7 +343,7 @@ class InputAssistant(Mixin.Mixin):
                             else:
                                 def f():
                                     win.BeginUndoAction()
-#                                    win.inputassistant_obj = obj
+                                    win.inputassistant_obj = obj
                                     pos = win.PositionFromLine(line)
                                     win.replace_strings = r
                                     win.word_len = win.GetCurrentPos(), -1
@@ -330,19 +351,22 @@ class InputAssistant(Mixin.Mixin):
                                     win.EndUndoAction()
                                 self.postcall(f)
                                 return True
-                            
             else:
-                if self.on_char: #in on_char event
+                #default auto identifier
+#                if not mylocal.on_char and mylocal.key[0] == 0 and mylocal.key[1] == wx.WXK_BACK:
+#                    self.postcall(self.process_default, True)
+#                    return False
+                if mylocal.on_char: #in on_char event
                     #deal with auto identifiers
                     result = False
                     try:
-                        if self.key[0] == 0 and self.key[1] == ord('('):
+                        if mylocal.key[0] == 0 and mylocal.key[1] == ord('('):
                             self.process_calltip_begin()
                             result = True
-                        elif self.key[0] == 0 and self.key[1] == ord(')'):
+                        elif mylocal.key[0] == 0 and mylocal.key[1] == ord(')'):
                             self.process_calltip_end()
                             result = True
-                        elif self.key[0] == 0 and self.key[1] == ord('.'):
+                        elif mylocal.key[0] == 0 and mylocal.key[1] == ord('.'):
                             self.process_autocomplete()
                             result = True
                         if not result:
@@ -356,9 +380,9 @@ class InputAssistant(Mixin.Mixin):
             return False
         
     def run_default(self, editor, syncvar):
-        self.syncvar = syncvar
-        self.oldpos = editor.GetCurrentPos()
-        self.on_char = True
+        mylocal.syncvar = syncvar
+        mylocal.oldpos = editor.GetCurrentPos()
+        mylocal.on_char = True
         return self.process_default(True, editor)
         
     def process_default(self, skipkey=False, editor=None):
@@ -372,157 +396,87 @@ class InputAssistant(Mixin.Mixin):
             return False
         
         win = self.editor
-        if not skipkey and self.key[1] > 127:
+        if not skipkey and mylocal.key[1] > 127:
             return False
         
-        if not self.syncvar.empty:
+        if not mylocal.syncvar:
             return False
         
         word = _getWord(win)
-        win.word_len = win.GetCurrentPos(), -1
-        
-        v = self.call_locals(win.GetCurrentLine() + 1, word, self.syncvar)
+        v = self.call_locals(win.GetCurrentLine() + 1, word)
         if v:
             length, words = v
             if words:
-                # function parameter autocomplete.
-                words.extend(win.function_parameter)
                 s = word[-1*length:].upper()
-                slist = self._get_popup_list(word, words)
-                if slist:
-                    if not self.syncvar.empty:
+                slen = len(s)
+                for i in words:
+                    if not mylocal.syncvar:
                         return False
-#                    def f():
-#                        win.replace_strings = word
-#                        win.word_len = win.GetCurrentPos(), -1
-#                        win.UserListShow(list_type, " ".join(slist))
-#                    self.postcall(f)
-                    
-                    win.word_len = win.GetCurrentPos() - length, -1
-                    self.postcall(win.AutoCompShow, length, ' '.join(slist))
-                    return True
-
+                    if i.upper().startswith(s) and slen < len(i):
+                        words.sort(lambda x, y:cmp(x.upper(), y.upper()))
+                        s = " ".join(words)
+                        self.postcall(win.AutoCompShow, length, s)
+                        return True
         if not word: return False
         d = win.default_auto_identifier
         if d.has_key(word[0].upper()):
             words = d.get(word[0].upper(), [])
             if words:
                 s = word.upper()
-                length = len(s)
-                slist = self._get_popup_list(word, words)
-                if slist:
-                    if not self.syncvar.empty:
+                slen = len(s)
+                for i in words:
+                    if not mylocal.syncvar:
                         return False
-#                    def f():
-#                        win.replace_strings = word
-#                        win.word_len = win.GetCurrentPos(), -1
-#                        win.UserListShow(list_type, " ".join(slist))
-#                    self.postcall(f)
-#                    print 'end2 process_default', win.AutoCompActive()
-                    
-                    win.word_len = win.GetCurrentPos() - length, -1
-                    self.postcall(win.AutoCompShow, len(s), ' '.join(slist))
-                    return True
+                    if i.upper().startswith(s) and slen < len(i):
+                        s = " ".join(words)
+                        self.postcall(win.AutoCompShow, slen, s)
+                        return True
             
         return False
     
-    def _get_popup_list(self, word, words):
-        r = []
-        flag = False
-        if words:
-            if '.' in word:
-                word = word.rsplit('.', 1)[1]
-            s = word.upper()
-            slen = len(s)
-            r = set([x for x in words if len(x)>1])
-            for w in r:
-                if len(w) > 1 and w.upper().startswith(s) and slen < len(w):
-                    flag = True
-                    break
-        
-        if flag:  
-            r = list(r)  
-            r.sort(lambda x, y:cmp(x.upper(), y.upper()))            
-            return r
-        
     def process_calltip_begin(self):
         win = self.editor
         if not win.pref.inputass_calltip:
             return False
-        pos = win.GetCurrentPos()
-        word = _getWord(win)
-        pos = win.GetCurrentPos()
-        r = self.call_calltip(word, self.syncvar)
-        if r:
-            if isinstance(r, (str, unicode)):
-                r = [r]
-            tip = '\n\n'.join(list(filter(None, r)) + [tr('(Press ESC to close)')])
-            if win.calltip.active and CALLTIP_AUTOCOMPLETE:
-                win.calltip.cancel()
-            t = tip.replace('\r\n','\n')
-            win.calltip_type = CALLTIP_AUTOCOMPLETE
-            win.calltip_stack[pos-1] = t
-            self.postcall(win.calltip.show, pos, t)
-            #save position
-            curpos = win.GetCurrentPos()
-            win.calltip_column = win.GetColumn(curpos)
-            win.calltip_line = win.GetCurrentLine()
-            return True
+        if win.calltip.active and win.calltip_type == CALLTIP_AUTOCOMPLETE:
+            win.calltip_times += 1
+            return False
+        else:
+            pos = win.GetCurrentPos()
+            word = _getWord(win)
+            pos = win.GetCurrentPos()
+            r = self.call_calltip(word)
+            if r:
+                if isinstance(r, (str, unicode)):
+                    r = [r]
+                tip = '\n\n'.join(list(filter(None, r)) + [tr('(Press ESC to close)')])
+#                wx.CallAfter(win.AddText, '(')
+#                if win.AutoCompActive():
+#                    win.AutoCompCancel()
+                win.calltip_times = 1
+                win.calltip_type = CALLTIP_AUTOCOMPLETE
+                self.postcall(win.calltip.show, pos, tip.replace('\r\n','\n'))
+                #save position
+                curpos = win.GetCurrentPos()
+                win.calltip_column = win.GetColumn(curpos)
+                win.calltip_line = win.GetCurrentLine()
+                return True
         return False
     
     def postcall(self, f, *args):
-        if self.on_char and not self.syncvar.empty or self.oldpos != self.editor.GetCurrentPos():
+        if mylocal.on_char and not mylocal.syncvar or mylocal.oldpos != self.editor.GetCurrentPos():
             raise StopException
         if self.editor.AutoCompActive():
-            wx.CallAfter(self.editor.AutoCompCancel)
+            self.editor.AutoCompCancel()
         wx.CallAfter(f, *args)
         return
         
     def process_calltip_end(self):
         win = self.editor
-        braceAtCaret = -1
-        braceOpposite = -1
-        charBefore = None
-        caretPos = win.GetCurrentPos()
-        if caretPos > 0:
-            charBefore = win.GetCharAt(caretPos - 1)
-            styleBefore = win.GetStyleAt(caretPos - 1)
-        # check before
-        if charBefore and chr(charBefore) in ")":
-            braceAtCaret = caretPos - 1
-        if braceAtCaret >= 0:
-            braceOpposite = win.BraceMatch(braceAtCaret)
-        try:
-            if  braceOpposite != -1:
-                calltip_text = win.calltip_stack.get(braceOpposite, None)
-                if  calltip_text is None:
-                    return
-                else:
-                    klist = win.calltip_stack.keys()
-                    klist.sort()
-                    i = klist.index(braceOpposite)
-                    s = klist[i-1]
-                    ss = min(klist)
-                    if  braceOpposite == ss:
-                        wx.CallAfter(win.calltip.cancel)
-                        win.calltip_stack.clear()
-                        del win.function_parameter[:]
-                        return 
-                    if  len(win.calltip_stack)>1:
-                        del win.calltip_stack[braceOpposite]
-                    calltip_text = win.calltip_stack.get(s, None)
-                    if  calltip_text:
-                        if win.calltip.active and CALLTIP_AUTOCOMPLETE:
-                            win.calltip.cancel()
-                        win.calltip_type = CALLTIP_AUTOCOMPLETE
-                        pos = win.GetCurrentPos()
-                        self.postcall(win.calltip.show, pos, calltip_text)
-                        #save position
-                        curpos = win.GetCurrentPos()
-                        win.calltip_column = win.GetColumn(curpos)
-                        win.calltip_line = win.GetCurrentLine()
-        except:
-            error.traceback()
+        if win.calltip.active and win.calltip_type == CALLTIP_AUTOCOMPLETE:
+            win.calltip_times -= 1
+            if win.calltip_times == 0:
+                wx.CallAfter(win.calltip.cancel)
         return False
         
     def process_autocomplete(self):
@@ -531,16 +485,11 @@ class InputAssistant(Mixin.Mixin):
             return False
         
         word = _getWord(win)
-        result = self.call_autodot(word, self.syncvar)
+        result = self.call_autodot(word)
         if result:
 #            wx.CallAfter(win.AddText, '.')
-            result = list(set(result))
             result.sort(lambda x, y:cmp(x.upper(), y.upper()))
             s = ' '.join(result)
-#            win.replace_strings = ''
-#            win.word_len = win.GetCurrentPos(), -1
-#            self.postcall(win.UserListShow, list_type, s)
-            win.word_len = win.GetCurrentPos(), -1
             self.postcall(win.AutoCompShow, 0, s)
             return True
         return False
@@ -575,7 +524,7 @@ class InputAssistant(Mixin.Mixin):
                     if isinstance(result, list):
                         def f():
                             win.BeginUndoAction()
-#                            win.inputassistant_obj = assistant_obj
+                            win.inputassistant_obj = assistant_obj
                             pos = win.PositionFromLine(line)
                             win.replace_strings = matchtext
                             win.word_len = pos + matchobj.start(), pos + matchobj.end()
@@ -601,7 +550,7 @@ class InputAssistant(Mixin.Mixin):
                     if isinstance(result, list):
                         def f():
                             win.BeginUndoAction()
-#                            win.inputassistant_obj = assistant_obj
+                            win.inputassistant_obj = assistant_obj
                             win.replace_strings = matchtext
                             win.word_len = win.GetCurrentPos(), -1
                             win.UserListShow(list_type, " ".join(result))
@@ -759,49 +708,54 @@ class InputAssistant(Mixin.Mixin):
         if func:
             self.editor.input_analysis.append(func)
 
-    def call_calltip(self, word, syncvar):
+    def call_calltip(self, word):
         for f in self.editor.input_calltip:
             try:
-                r = f(self.editor, word, syncvar)
+                r = f(self.editor, word)
                 if r:
                     return r
-            except StopException:
-                pass
             except:
                 error.traceback()
            
-    def call_autodot(self, word, syncvar):
+    def call_autodot(self, word):
         result = []
         for f in self.editor.input_autodot:
             try:
-                r = f(self.editor, word, syncvar)
+                r = f(self.editor, word)
                 if r:
                     result.extend(r)
-            except StopException:
-                pass
             except:
                 error.traceback()
         return result
     
-    def call_locals(self, line, word, syncvar):
+    def call_locals(self, line, word):
         for f in self.editor.input_locals:
             try:
-                r = f(self.editor, line, word, syncvar)
+                r = f(self.editor, line, word)
                 if r:
                     return r
-            except StopException:
-                pass
             except:
                 error.traceback()
 
-    def call_analysis(self, syncvar):
-        for f in self.editor.input_analysis:
+    def call_analysis(self):
+        if self.queue.empty():
             try:
-                r = f(self.editor, syncvar)
-            except StopException:
-                pass
-            except:
-                error.traceback()
+                try:
+                    self.queue.put_nowait(True)
+                except:
+                    return
+                else:
+                    for f in self.editor.input_analysis:
+                        try:
+                            r = f(self.editor)
+                        except:
+                            error.traceback()
+            finally:
+                if not self.queue.empty():
+                    try:
+                        self.queue.get_nowait()
+                    except:
+                        pass
                 
     r_key = re.compile(r'(.*?)%(.*?)%$')
     def install_keylist(self, items, re_flag=False):
@@ -838,59 +792,105 @@ class InputAssistant(Mixin.Mixin):
             return '', end, end
         line = win.LineFromPosition(end)
         linestart = win.PositionFromLine(line)
+#        ch = key[0]
+#        if ch.isalpha():
+#            txt = []
+#            start = end - 1
+#            while start >= linestart:
+#                if win.getChar(start) in win.mainframe.getWordChars() + '.':
+#                    txt.insert(0, win.getChar(start))
+#                    start -= 1
+#                else:
+#                    break
+#            start += 1
+#            text = ''.join(txt)
+#        else:
         start = max(end - len(key), linestart)
         text = win.GetTextRange(start, end)
         return text, start, end
 
     def gettext(self, text):
         if isinstance(text, (str, unicode)):
-            return tuple(filter(None, re.split(r'(\n|\t|!<)', text)))
+            s = self._split(text, r'\n')
+            r = []
+            for i in s:
+                t = self._split(i, r'\t')
+                for k in t:
+                    r.append(k)
+            return tuple(r)
         else:
+#            s = []
+#            for i in text:
+#                s.append(self.gettext(i))
+#            return s
             text.sort()
             return text
 
     def _split(self, text, delimeter):
-        return filter(None, re.split(delimeter, text))
+        s = []
+        pos = 0
+        index = text.find(delimeter, pos)
+        length = len(delimeter)
+        while index > -1:
+            s.append(text[pos:index])
+            s.append(delimeter)
+            pos = index + length
+            index = text.find(delimeter, pos)
+        if pos < len(text):
+            s.append(text[pos:])
+        return s
 
     def settext(self, text):
         win = self.editor
-        start = win.GetCurrentPos()
         cur_pos = -1
-        refline = win.GetCurrentLine()
+        sel_begin = -1
+        sel_end = -1
         for t in text:
             pos = t.encode('utf-8').find('!^')
             if pos > -1:
                 t = t.replace('!^', '')
                 cur_pos = win.GetCurrentPos() + pos
-            if t == '\n':
+            pos = t.encode('utf-8').find('{#')
+            if pos > -1:
+                t = t.replace('{#', '')
+                sel_begin = win.GetCurrentPos() + pos
+            pos = t.encode('utf-8').find('#}')
+            if pos > -1:
+                t = t.replace('#}', '')
+                sel_end = win.GetCurrentPos() + pos
+            if t == r'\n':
                 if win.pref.autoindent:
-                    n = win.GetLineIndentation(refline) / win.GetTabWidth()
-                    win.AddText(win.getEOLChar() + win.getIndentChar() * n)
+                    line = win.GetCurrentLine()
+                    txt = win.GetTextRange(win.PositionFromLine(line), win.GetCurrentPos())
+                    if txt.strip() == '':
+                        win.AddText(win.getEOLChar() + txt)
+                    else:
+                        n = win.GetLineIndentation(line) / win.GetTabWidth()
+                        win.AddText(win.getEOLChar() + win.getIndentChar() * n)
                 else:
                     win.AddText(win.getEOLChar())
-            elif t == r'!<':
-                win.execute_key('Shift+TAB')
-            elif t == '\t':
-                win.AddText(win.GetTabWidth()*' ')
+            elif t == r'\t':
+                win.execute_key('TAB')
             else:
                 win.AddText(t)
-        end = win.GetCurrentPos()
         if cur_pos > -1:
             win.GotoPos(cur_pos)
+        if sel_begin > -1 and sel_end > -1:
+            win.SetSelection(sel_begin, sel_end)
         win.EnsureCaretVisible()
-        self.call_snippet(win.GetTextRange(start, end), start, end)
-        
-    def call_snippet(self, tpl, start, end):
-        if self.editor.snippet:
-            snippet = self.editor.snippet
-        else:
-            snippet = self.editor.snippet = SnipMixin.SnipMixin(self.editor)
-        snippet.start(tpl, start, end)
 
     def check_selection(self, win):
         if win.GetSelectedText():
             win.ReplaceSelection('')
             
+#    def add_char(self, win, key):
+#        f, char = key
+#        if not f:
+#            if 31<char<127:
+#                wx.CallAfter(win.AddText, chr(char))
+#            elif char>wx.WXK_PAGEDOWN:
+#                wx.CallAfter(win.AddText, unichr(char))
+#                
     def set_modules_time(self, mod):
         try:
             sfile = mod.__file__
@@ -954,9 +954,4 @@ def _getWord(win, whole=None):
     else:
         end=pos
     return txt[start-linePos:end-linePos]
-
-
-
-
-
 

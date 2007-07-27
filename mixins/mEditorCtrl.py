@@ -19,7 +19,7 @@
 #   along with this program; if not, write to the Free Software
 #   Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 #
-#   $Id: mEditorCtrl.py 1909 2007-02-07 01:35:05Z limodou $
+#   $Id: mEditorCtrl.py 1663 2006-11-06 01:48:03Z limodou $
 
 import wx
 import os.path
@@ -219,8 +219,7 @@ def SaveFile(win, ctrl, issaveas=False):
 
     if issaveas or len(ctrl.filename)<=0:
         encoding = win.execplugin('getencoding', win, win)
-        filename = get_suffix_filename(ctrl, ctrl.getFilename())
-        dlg = wx.FileDialog(win, tr("Save File %s As") % filename, win.pref.last_dir, filename, '|'.join(win.filewildchar), wx.SAVE|wx.OVERWRITE_PROMPT)
+        dlg = wx.FileDialog(win, tr("Save File %s As") % ctrl.getFilename(), win.pref.last_dir, '', '|'.join(win.filewildchar), wx.SAVE|wx.OVERWRITE_PROMPT)
         dlg.SetFilterIndex(getFilterIndex(win))
         if (dlg.ShowModal() == wx.ID_OK):
             filename = dlg.GetPath()
@@ -239,21 +238,6 @@ def SaveFile(win, ctrl, issaveas=False):
 
     return win.editctrl.savefile(ctrl, filename, encoding)
 Mixin.setMixin('mainframe', 'SaveFile', SaveFile)
-
-def get_suffix_filename(editor, filename):
-    fname, ext = os.path.splitext(filename)
-    if not ext:
-        if hasattr(editor, 'lexer'):
-            wildchar = editor.lexer.getFilewildchar()
-            pos = wildchar.find('|')
-            if pos > -1:
-                suffix = wildchar[pos+1:].split(';', 1)[0]
-                suffix = suffix.replace('*', '')
-                if suffix:
-                    if not suffix.startswith('.'):
-                        suffix = '.' + suffix
-                    return fname + suffix
-    return filename
 
 def pref_init(pref):
     pref.last_dir = ''

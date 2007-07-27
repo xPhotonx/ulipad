@@ -20,7 +20,7 @@
 #   along with this program; if not, write to the Free Software
 #   Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 #
-#   $Id: LexerBase.py 2121 2007-07-11 03:17:42Z limodou $
+#   $Id: LexerBase.py 1576 2006-10-10 04:24:26Z limodou $
 
 __doc__ = 'Lexer base class'
 
@@ -104,15 +104,10 @@ class LexerBase(Mixin.Mixin):
             self.wildcharprompt, self.wildchar = filewildchar.split('|')
         else:
             self.wildchar = self.wildchar = ''
-            
-        #stx files will save in conf/stx folder
-        self.stxfile = common.getConfigPathFile(stxfile, prefix='stx')
+        self.stxfile = common.getConfigPathFile(stxfile)
         if not self.stxfile:
             from modules import Globals
-            path = os.path.join(Globals.confpath, 'stx')
-            if not os.path.exists(path):
-                os.makedirs(path)
-            self.stxfile = os.path.join(path, stxfile)
+            self.stxfile = os.path.join(Globals.confpath, stxfile)
         self.syntaxtype = syntaxtype
         self.keywords = ()
         self.syntaxitems = {}
@@ -137,8 +132,6 @@ class LexerBase(Mixin.Mixin):
             'lnsize':linesize,
         })
 
-        self.font = wx.Font(fontsize, wx.TELETYPE, wx.NORMAL, wx.NORMAL, face=fontname)
-        
         self.addSyntaxItem('default',       tr('Style default'),            wx.stc.STC_STYLE_DEFAULT,       self.STC_STYLE_DEFAULT % faces)
         self.addSyntaxItem('-caretfore',    tr('Caret fore colour'),        0,  "fore:#FF0000")
         self.addSyntaxItem('-caretback',    tr('CaretLine back colour'),    0,  "back:#EEEEEE")
@@ -151,26 +144,8 @@ class LexerBase(Mixin.Mixin):
         self.load()
 
     def matchfile(self, filename):
-        #add non-suffix testing, the first char should be '*' or non '*' char
         ext = os.path.splitext(filename)[1]
-        if ext:
-            for x in self.wildchar.split(';'):
-                if '.' in x:
-                    if x.startswith('*'):
-                        t = x[1:].lower()
-                    else:
-                        t = x.lower()
-                    if ext.lower() == t:
-                        return True
-        else:
-            for x in self.wildchar.split(';'):
-                if '.' not in x:
-                    if x.startswith('*'):
-                        t = x[1:].lower()
-                    else:
-                        t = x.lower()
-                    if filename.lower().endswith(t):
-                        return True
+        return ext.lower() in [ext[1:].lower() for ext in self.wildchar.split(';')]
 
     def colourize(self, win, force=False):
         if force or win.languagename != self.name:
@@ -181,7 +156,7 @@ class LexerBase(Mixin.Mixin):
 #            if wx.Platform == '__WXMSW__':
 #                win.StyleClearAll()
 #            win.ClearDocumentStyle()
-            win.StyleResetDefault()
+#            win.StyleResetDefault()
             win.SetLexer(self.syntaxtype)
             win.lexer = self
             win.SetStyleBits(7)
@@ -245,10 +220,7 @@ class LexerBase(Mixin.Mixin):
 
             ini.common.extension = self.wildchar
             ini.keywords.keywords = self.keywords
-            if self.preview_code:
-                ini.common.previewcode = self.preview_code.replace('\n', r'\n')
-            else:
-                ini.common.previewcode = ''
+            ini.common.previewcode = self.preview_code.replace('\n', r'\n')
             for name, item in self.syntaxitems.items():
                 ini.styleitems[name] = item.style.getStyleString()
             ini.save()

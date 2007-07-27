@@ -26,6 +26,7 @@ import LexerBase
 import LexerClass
 
 class JavaLexer(LexerClass.CLexer):
+
     metaname = 'java'
 
     def loadDefaultKeywords(self):
@@ -50,6 +51,7 @@ public class TestClass {
 """
 
 class RubyLexer(LexerBase.LexerBase):
+
     metaname = 'ruby'
 
     def loadDefaultKeywords(self):
@@ -85,8 +87,8 @@ class RubyLexer(LexerBase.LexerBase):
         self.addSyntaxItem('identifier',        'Identifiers',          wx.stc.STC_P_IDENTIFIER,        "fore:#808080")
         self.addSyntaxItem('commentblock',      'Comment blocks',       wx.stc.STC_P_COMMENTBLOCK,      "fore:#7F7F7F")
         self.addSyntaxItem('stringeol',         'EOL unclosed string',  wx.stc.STC_P_STRINGEOL,         "fore:#000000,back:#E0C0E0,eol")
-        
 class PerlLexer(LexerBase.LexerBase):
+
     metaname = 'perl'
 
     def loadDefaultKeywords(self):
@@ -160,8 +162,8 @@ class PerlLexer(LexerBase.LexerBase):
         self.addSyntaxItem('string_qx',         'string_qx',            wx.stc.STC_PL_STRING_QX,                self.STE_STYLE_STRING)
         self.addSyntaxItem('string_qr',         'string_qr',            wx.stc.STC_PL_STRING_QR,                self.STE_STYLE_STRING)
         self.addSyntaxItem('string_qw',         'string_qw',            wx.stc.STC_PL_STRING_QW,                self.STE_STYLE_STRING)
-        
 class CSSLexer(LexerBase.LexerBase):
+
     metaname = 'css'
 
     def loadDefaultKeywords(self):
@@ -215,8 +217,8 @@ class CSSLexer(LexerBase.LexerBase):
         self.addSyntaxItem('directive',             'Directive',            wx.stc.STC_CSS_DIRECTIVE,               self.STE_STYLE_TEXT)
         self.addSyntaxItem('doublestring',          'Double String',        wx.stc.STC_CSS_DOUBLESTRING,            self.STE_STYLE_STRING)
         self.addSyntaxItem('singlestring',          'Single String',        wx.stc.STC_CSS_SINGLESTRING,            self.STE_STYLE_CHARACTER)
-        
 class JSLexer(LexerClass.CLexer):
+
     metaname = 'js'
 
     def loadDefaultKeywords(self):
@@ -308,6 +310,7 @@ class ASPLexer(LexerClass.HtmlLexer):
         return """empty"""
 
 class LuaLexer(LexerBase.LexerBase):
+
     metaname = 'lua'
 
     def loadDefaultKeywords(self):
@@ -323,8 +326,7 @@ class LuaLexer(LexerBase.LexerBase):
     if var == nil then break end
     block
   end
-end
-"""
+end"""
 
     def pre_colourize(self, win):
         #FOLDING

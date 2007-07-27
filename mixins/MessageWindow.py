@@ -20,7 +20,7 @@
 #   along with this program; if not, write to the Free Software
 #   Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 #
-#   $Id: MessageWindow.py 1817 2007-01-10 10:02:56Z limodou $
+#   $Id: MessageWindow.py 1586 2006-10-10 09:41:50Z limodou $
 
 __doc__ = 'message window'
 
@@ -115,11 +115,6 @@ class MessageWindow(wx.stc.StyledTextCtrl, Mixin.Mixin):
         else:
             self.SetCaretLineBack('#FF8000')
         self.SetCaretLineVisible(True)
-        if self.mainframe.pref.message_wrap:
-            self.SetWrapMode(wx.stc.STC_WRAP_WORD)
-        else:
-            self.SetWrapMode(wx.stc.STC_WRAP_NONE)
-        self.SetScrollWidth(5000)
 
         self.callplugin('init', self)
 
@@ -210,10 +205,8 @@ class MessageWindow(wx.stc.StyledTextCtrl, Mixin.Mixin):
         mode = self.GetWrapMode()
         if mode == wx.stc.STC_WRAP_NONE:
             self.SetWrapMode(wx.stc.STC_WRAP_WORD)
-            self.mainframe.pref.message_wrap = True
         else:
             self.SetWrapMode(wx.stc.STC_WRAP_NONE)
-            self.mainframe.pref.message_wrap = False
 
     def OnClear(self, event):
         self.SetText('')

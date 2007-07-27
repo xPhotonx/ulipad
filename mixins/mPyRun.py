@@ -19,7 +19,7 @@
 #   along with this program; if not, write to the Free Software
 #   Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 #
-#   $Id: mPyRun.py 1888 2007-02-01 14:47:13Z limodou $
+#   $Id: mPyRun.py 1642 2006-10-25 06:50:46Z limodou $
 
 import wx
 import os
@@ -45,7 +45,7 @@ Mixin.setMixin('prefdialog', 'OnSetInterpreter', OnSetInterpreter)
 def add_pref(preflist):
     preflist.extend([
         ('Python', 150, 'button', 'python_interpreter', tr('Setup python interpreter'), 'OnSetInterpreter'),
-        ('Python', 155, 'check', 'python_show_args', tr('Show arguments dialog when running python program'), None),
+        ('Python', 155, 'check', 'python_show_args', tr('Show arguments dialog as running python program'), None),
     ])
 Mixin.setPlugin('preference', 'add_pref', add_pref)
 

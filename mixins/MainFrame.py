@@ -20,7 +20,7 @@
 #   along with this program; if not, write to the Free Software
 #   Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 #
-#   $Id: MainFrame.py 2013 2007-03-10 09:29:10Z limodou $
+#   $Id: MainFrame.py 1640 2006-10-24 05:16:06Z limodou $
 
 import wx
 import copy
@@ -127,13 +127,12 @@ class MainFrame(wx.Frame, Mixin.Mixin):
         try:
             while not self.closeflag:
                 if not self.app.wxApp.IsActive():
-                    self.callplugin('on_idle_non_active', self)
                     time.sleep(0.1)
                 else:
                     if wx.Platform == '__WXMSW__':
                         wx.CallAfter(self.SetStatusText, "%dM" % (wx.GetFreeMemory()/1024/1024), 5)
                     self.callplugin('on_idle', self)
-                    time.sleep(0.5)
+                    time.sleep(1)
         except:
             pass
 

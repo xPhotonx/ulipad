@@ -19,7 +19,7 @@
 #   along with this program; if not, write to the Free Software
 #   Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 #
-#   $Id: PyParse.py 1908 2007-02-07 00:45:02Z limodou $
+#   $Id: PyParse.py 1721 2006-11-19 13:17:45Z limodou $
 
 
 import tokenize # Python tokenizer
@@ -28,11 +28,6 @@ import StringIO
 import re
 import sys
 
-try:
-    set
-except:
-    from sets import Set as set
-    
 INDENT = ' '*4
 ONLY_ONE_NAME = True    #if there are many identifier definition, when ONLY_ONE_NAME is True, only one will add to locals
 
@@ -242,10 +237,7 @@ class Node(object):
             for i, n in enumerate(self.locals):
                 print indent+INDENT, n, '(', ', '.join(map(str, self.local_types[i])), ')'
         for v in self.values:
-            if hasattr(v, 'output'):
-                v.output(indent+INDENT)
-            else:
-                print v
+            v.output(indent+INDENT)
             
     def get_imports(self, lineno):
         nodes = self.guess(lineno)
@@ -339,15 +331,13 @@ class ClassNode(Node):
         s.append("[name=%s,type=%s,span=%r,info=%s,docstring=%s]" % (self.name, self.type, self.span, self.info, self.docstring))
         return ''.join(s)
     
-def parseFile(filename, syncvar=None):
+def parseFile(filename):
     text = open(filename).read()
-    return parseString(text, syncvar)
+    return parseString(text)
 
-def parseString(text, syncvar=None):
-    if text.find('\n') == -1:
-        text = text.replace('\r', '\n')
+def parseString(text):
     parser = PyParser(text)
-    return parser.parse(syncvar)
+    return parser.parse()
 
 class PyParser(object):
     def __init__(self, string):
@@ -364,7 +354,6 @@ class PyParser(object):
         self.class_nodes = root.add('class', Node(root))
         self.import_nodes = root.add('import', Node(root))
         self.importline_nodes = root.add('importline', Node(root))
-        self.idens = root.idens = set([])
 
         self.last_node = None
         
@@ -378,7 +367,7 @@ class PyParser(object):
             if last_node.type in ('class', 'function'):
                 last_node.span.append(lineno)
 
-    def parse(self, syncvar=None):
+    def parse(self):
         g = self.g
         stack = self.stack
         root = self.root
@@ -386,9 +375,6 @@ class PyParser(object):
         judge_indent = False
         self.lastnode = None
         while 1:
-            if syncvar and not syncvar.empty:
-                return None
-            
             r = self.read_line()
             if not r:
                 break
@@ -398,10 +384,7 @@ class PyParser(object):
             while stack and stack[-1][1] >= indent:
                 self.close_span(stack, lineno)
             for f in self.dispatcher:
-                try:
-                    v = f((x for x in linebuf))
-                except:
-                    break
+                v = f((x for x in linebuf))
                 if v:
                     if isinstance(v, tuple):
                         self.lastnode = v[1]
@@ -418,9 +401,6 @@ class PyParser(object):
     def read_line(self):
         g = self.g
         buf = []
-        lasttoken = None
-        lastword = None
-        words = []
         while 1:
             try:
                 v = g.next()
@@ -430,32 +410,6 @@ class PyParser(object):
                 else:
                     return None
             tokentype, t, start, end, line = v
-            if tokentype == token.NAME:
-                if not lastword:
-                    words = [t]
-                    lasttoken = tokentype
-                    lastword = t
-                elif lastword == '.':
-                    words.append(t)
-                    lasttoken = tokentype
-                    lastword = t
-                else:
-                    self._put_idens(words)
-                    lasttoken = None
-                    lastword = None
-                    words = [t]
-                    
-            else:
-                if t == '.' and lasttoken == token.NAME:
-                    words.append('.')
-                    lastword = t
-                    lasttoken = tokentype
-                else:
-                    self._put_idens(words)
-                    lasttoken = None
-                    lastword = None
-                    words = []
-                    
             if tokentype == 54:
                 continue
             if tokentype in (token.INDENT, token.DEDENT, tokenize.COMMENT):
@@ -465,12 +419,6 @@ class PyParser(object):
             else:
                 buf.append(v)
                 return buf[0][2], buf
-            
-    def _put_idens(self, words):
-        w = ''.join(words)
-        if len(w) > 1:
-            if w not in self.idens:
-                self.idens.add(w)
             
     def print_line_buf(self, lineinfo, buf):
         for v in buf:
@@ -866,7 +814,6 @@ def main():
 
     s = parseFile(file)
     s.output()
-    print s.idens
                 
 #    print s.get_imports(1)
     print 'self.ppp', s.guess_type(51, 'self.ppp')

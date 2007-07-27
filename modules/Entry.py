@@ -19,7 +19,7 @@
 #   along with this program; if not, write to the Free Software
 #   Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 #
-#   $Id: Entry.py 1783 2006-12-20 13:33:46Z limodou $
+#   $Id: Entry.py 1731 2006-11-22 03:35:50Z limodou $
 
 import wx
 
@@ -89,4 +89,4 @@ class MyFileEntry(wx.Dialog):
         dlg = wx.FileDialog(self, tr("Select A File"), "", "", tr("All file (*.*)|*.*"), wx.OPEN|wx.HIDE_READONLY)
         if dlg.ShowModal() == wx.ID_OK:
             filename = dlg.GetPath()
-            self.text.SetValue('%s' % filename)
+            self.text.SetValue('"%s"' % filename)

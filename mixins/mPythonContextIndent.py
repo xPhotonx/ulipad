@@ -21,12 +21,11 @@
 #
 #   This function is referenced with DrPython.
 #
-#   $Id: mPythonContextIndent.py 1897 2007-02-03 10:33:43Z limodou $
+#   $Id: mPythonContextIndent.py 1730 2006-11-21 13:46:26Z limodou $
 
 __doc__ = 'Context indent'
 
 from modules import Mixin
-from modules import Globals
 import wx
 import re
 
@@ -87,7 +86,7 @@ Mixin.setPlugin('preference', 'init', pref_init)
 
 def add_pref(preflist):
     preflist.extend([
-        (tr('General'), 250, 'check', 'paste_auto_indent', tr('Auto indent when pasting text block'), None)
+        (tr('General'), 250, 'check', 'paste_auto_indent', tr('Auto indent pasting text block.'), None)
     ])
 Mixin.setPlugin('preference', 'add_pref', add_pref)
 
@@ -95,9 +94,9 @@ re_spaces = re.compile(r'^(\s*)')
 re_eol = re.compile(r'\r\n|\r|\n')
 re_eol_end = re.compile(r'\r\n$|\r$|\n$', re.MULTILINE)
 
-def Indent_paste(mainframe, win, content):
+def on_paste(win, content):
     if win.pref.paste_auto_indent and not win.selection_column_mode:
-        b = re_eol.search(content)
+        b = re_eol_end.search(content)
         if not b:
             return False
         win.BeginUndoAction()
@@ -170,8 +169,4 @@ def Indent_paste(mainframe, win, content):
         return True
     else:
         return False
-Mixin.setMixin('mainframe', 'Indent_paste', Indent_paste)
-
-def on_paste(win, content):
-    return Globals.mainframe.Indent_paste(win, content)
 Mixin.setPlugin('editor', 'on_paste', on_paste)

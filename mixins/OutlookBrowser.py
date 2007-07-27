@@ -19,7 +19,7 @@
 #   along with this program; if not, write to the Free Software
 #   Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 #
-#   $Id: OutlookBrowser.py 1792 2006-12-23 02:54:21Z limodou $
+#   $Id: OutlookBrowser.py 1719 2006-11-19 08:34:32Z limodou $
 
 import wx
 from modules import common
@@ -247,8 +247,6 @@ class OutlookBrowser(wx.Panel, Mixin.Mixin):
         item = event.GetItem()
         lineno = self.get_node(item)
         if self.editor and not self.activeflag:
-            wx.CallAfter(self.editor.goto, lineno-5)
-            wx.CallAfter(self.editor.goto, lineno+10)
             wx.CallAfter(self.editor.goto, lineno)
 
     def OnChanging(self, event):

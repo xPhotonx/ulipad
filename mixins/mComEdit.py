@@ -19,7 +19,7 @@
 #   along with this program; if not, write to the Free Software
 #   Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 #
-#   $Id: mComEdit.py 1896 2007-02-03 09:02:39Z limodou $
+#   $Id: mComEdit.py 1731 2006-11-22 03:35:50Z limodou $
 
 __doc__ = 'Common edit menu. Redo, Undo, Cut, Paste, Copy'
 
@@ -67,15 +67,25 @@ Mixin.setPlugin('editor', 'add_menu_image_list', add_editor_menu_image_list)
 def OnPopupEdit(win, event):
     eid = event.GetId()
     if eid == win.IDPM_UNDO:
+        win.dont_analysis = True
         win.Undo()
+        win.dont_analysis = False
     elif eid == win.IDPM_REDO:
+        win.dont_analysis = True
         win.Redo()
+        win.dont_analysis = False
     elif eid == win.IDPM_CUT:
+        win.dont_analysis = True
         win.Cut()
+        win.dont_analysis = False
     elif eid == win.IDPM_COPY:
+        win.dont_analysis = True
         win.Copy()
+        win.dont_analysis = False
     elif eid == win.IDPM_PASTE:
+        win.dont_analysis = True
         win.Paste()
+        win.dont_analysis = False
     elif eid == win.IDPM_SELECTION_SELECTALL:
         win.SelectAll()
 Mixin.setMixin('editor', 'OnPopupEdit', OnPopupEdit)
@@ -125,16 +135,32 @@ Mixin.setPlugin('mainframe', 'add_menu_image_list', add_mainframe_menu_image_lis
 def DoSTCBuildIn(win, event):
     eid = event.GetId()
     doc = win.document
+#    if hasattr(win, 'shellwindow'):
+#        if win.shellwindow and win.shellwindow.GetSTCFocus():
+#            doc = win.shellwindow
+#    if hasattr(win, 'messagewindow'):
+#        if win.messagewindow and win.messagewindow.GetSTCFocus():
+#            doc = win.messagewindow
     if eid == win.IDM_EDIT_UNDO:
+        doc.dont_analysis = True
         doc.Undo()
+        doc.dont_analysis = False
     elif eid == win.IDM_EDIT_REDO:
+        doc.dont_analysis = True
         doc.Redo()
+        doc.dont_analysis = False
     elif eid == win.IDM_EDIT_CUT:
+        doc.dont_analysis = True
         doc.Cut()
+        doc.dont_analysis = False
     elif eid == win.IDM_EDIT_COPY:
+        doc.dont_analysis = True
         doc.Copy()
+        doc.dont_analysis = False
     elif eid == win.IDM_EDIT_PASTE:
+        doc.dont_analysis = True
         doc.Paste()
+        doc.dont_analysis = False
     elif eid == win.IDM_EDIT_SELECTION_SELECTALL:
         doc.SelectAll()
 Mixin.setMixin('mainframe', 'DoSTCBuildIn', DoSTCBuildIn)
@@ -238,7 +264,7 @@ def OnEditSelectionMatchLeft(win, event):
     pos = win.document.GetCurrentPos()
     text = win.document.getRawText()
 
-    token = [('\'', '\''), ('"', '"'), ('(', ')'), ('[', ']'), ('{', '}'), ('<', '>'), ('`', '`')]
+    token = [('\'', '\''), ('"', '"'), ('(', ')'), ('[', ']'), ('{', '}'), ('<', '>')]
     start, match = findLeft(text, pos, token)
     if start > -1:
         end, match = findRight(text, pos, token, match)

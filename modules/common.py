@@ -19,7 +19,7 @@
 #   along with this program; if not, write to the Free Software
 #   Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 #
-#   $Id: common.py 1868 2007-01-27 07:19:29Z limodou $
+#   $Id: common.py 1731 2006-11-22 03:35:50Z limodou $
 
 """Used to define commonly functions.
 """
@@ -256,11 +256,11 @@ def getProjectFile(filename):
         path = newpath
     return os.path.join(path, '_project')
 
-def getConfigPathFile(f, prefix=''):
-    filename = os.path.join(Globals.workpath, prefix, f)
+def getConfigPathFile(f):
+    filename = os.path.join(Globals.workpath, f)
     if os.path.exists(filename):
         return filename
-    filename = os.path.join(Globals.confpath, prefix, f)
+    filename = os.path.join(Globals.confpath, f)
     if os.path.exists(filename):
         return filename
     return ''

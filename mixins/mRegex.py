@@ -24,14 +24,14 @@
 import wx
 from modules import Mixin
 
-regex_pagename = tr("Regex")
+pagename = tr("Regex")
 def createRegexWindow(win):
-    if not win.panel.getPage(regex_pagename):
+    if not win.panel.getPage(pagename):
         from mixins import RegexWindow
         
         page = RegexWindow.RegexWindow(win.panel.createNotebook('bottom'))
-        win.panel.addPage('bottom', page, regex_pagename)
-    return regex_pagename
+        win.panel.addPage('bottom', page, pagename)
+    return pagename
 Mixin.setMixin('mainframe', 'createRegexWindow', createRegexWindow)
 
 def add_mainframe_menu(menulist):

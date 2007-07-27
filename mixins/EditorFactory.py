@@ -19,7 +19,7 @@
 #   along with this program; if not, write to the Free Software
 #   Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 #
-#   $Id: EditorFactory.py 2015 2007-03-11 10:59:12Z limodou $
+#   $Id: EditorFactory.py 1688 2006-11-13 08:43:33Z limodou $
 
 import wx
 import os
@@ -56,7 +56,7 @@ class EditorFactory(FNB.FlatNotebook, Mixin.Mixin):
             style = 0
         else:
             style = FNB.FNB_BOTTOM
-        FNB.FlatNotebook.__init__(self, parent, -1, style=style|FNB.FNB_SMART_TABS|FNB.FNB_VC8|FNB.FNB_X_ON_TAB|FNB.FNB_NO_X_BUTTON)
+        FNB.FlatNotebook.__init__(self, parent, -1, size=(0, 0), style=style|FNB.FNB_SMART_TABS|FNB.FNB_VC8|FNB.FNB_X_ON_TAB|FNB.FNB_NO_X_BUTTON)
         self.id = self.GetId()
 
 
@@ -165,13 +165,11 @@ class EditorFactory(FNB.FlatNotebook, Mixin.Mixin):
         return self.getDocuments()[index]
     
     def new(self, filename='', encoding='', delay=False, defaulttext='', language='', documenttype='texteditor'):
-        doc = None
         if filename:
             for document in self.getDocuments():  #if the file has been opened
                 if document.isMe(filename, documenttype):
                     self.switch(document, delay)
-                    doc = document
-                    break
+                    return document
             else:                   #the file hasn't been opened
                 #if current page is empty and has not been modified
                 if (self.document != None) and self.document.canopenfile(filename, documenttype):
@@ -181,21 +179,19 @@ class EditorFactory(FNB.FlatNotebook, Mixin.Mixin):
                     except MyUnicodeException, e:
                         error.traceback()
                         e.ShowMessage()
-                        doc = self.document
+                        return self.document
                     except:
                         error.traceback()
                         wx.MessageDialog(self, tr("Can't open the file [%s]!") % filename, tr("Open file..."), wx.OK).ShowModal()
-                        doc = self.document
-                    else:
-                        self.switch(self.document, delay)
-                        doc = self.document
-                else:
-                    doc = self.newPage(filename, encoding, delay=delay, defaulttext=defaulttext, language=language, documenttype=documenttype)
-        else:
-            doc = self.newPage(filename, encoding, delay=delay, defaulttext=defaulttext, language=language, documenttype=documenttype)
+                        return self.document
 
-        self.callplugin('afternewfile', self, doc)
-        return doc
+                    self.switch(self.document, delay)
+                    return self.document
+                else:
+                    return self.newPage(filename, encoding, delay=delay, defaulttext=defaulttext, language=language, documenttype=documenttype)
+        else:
+            return self.newPage(filename, encoding, delay=delay, defaulttext=defaulttext, language=language, documenttype=documenttype)
+
     def newPage(self, filename, encoding=None, documenttype='texteditor', delay=False, defaulttext='', language='', **kwargs):
         try:
             panelclass = self.panellist[documenttype]
@@ -229,17 +225,14 @@ class EditorFactory(FNB.FlatNotebook, Mixin.Mixin):
         if imageindex > -1:
             self.SetPageImage(self.GetPageCount() - 1, imageindex)
         self.switch(document, delay)
-
+        
         return document
 
     def OnChanged(self, event):
         if not self.skip_page_change:
             document = self.getDoc(event.GetSelection())
             self.changeDocument(document)
-        old = self.getDoc(event.GetOldSelection())
-        if old:
-            event.FNB = True
-            old.callplugin('on_kill_focus', old, event)
+            
         self.skip_page_change = False
         event.Skip()
 
@@ -340,11 +333,13 @@ class EditorFactory(FNB.FlatNotebook, Mixin.Mixin):
         else:
             self.new()
         self.document.SetFocus()
-        self.callplugin('afterclosefile', self)
 
     def savefile(self, document, filename, encoding):
         try:
+            state = document.save_state()
             document.savefile(filename, encoding)
+            self.switch(document)
+#            document.restore_state(state)
             document.SetFocus()
         except MyUnicodeException, e:
             error.traceback()
@@ -353,6 +348,7 @@ class EditorFactory(FNB.FlatNotebook, Mixin.Mixin):
         except:
             error.traceback()
             return False
+        wx.SafeYield()        
         return True
     
     def OnClose(self, event):
@@ -376,6 +372,7 @@ class EditorFactory(FNB.FlatNotebook, Mixin.Mixin):
         else:
             panel.restore_status(self.last_side_panel_status)
             self.full = False
+#        wx.CallAfter(self.document.SetFocus)
 
     def new_with_state(self, fullstate):
         filename = fullstate[0]

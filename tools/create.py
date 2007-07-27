@@ -1,5 +1,5 @@
 import re
-import sys
+
 text = file('../mixins/__init__.py').read()
 re_import = re.compile('^#import (.*)$', re.M)
 result = re_import.findall(text)
@@ -26,26 +26,20 @@ if result:
 #   along with this program; if not, write to the Free Software
 #   Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 #
+#   $Id: create.py 1578 2006-10-10 06:34:18Z limodou $
 
 
 """)
 #       importlist = []
     textlist = []
-    if sys.argv[1] == 'use_reload':
-        for f in result:
-            f = f.strip()
-            fp.write('import' + '    '+ f + '\n')
-        print "enable aouto reload plugins"        
-    else:
-        for f in result:
-            f = f.strip()
-            lines = file('../mixins/' + f + '.py').readlines()
-            fp.write("#-----------------------  %s.py ------------------\n" % f)
-            for line in lines:
-                t = line.rstrip()
-                if t and t[0] == '#': continue
-                fp.write(t+'\n')
-            fp.write("\n\n\n")
+    for f in result:
+        lines = file('../mixins/' + f + '.py').readlines()
+        fp.write("#-----------------------  %s.py ------------------\n" % f)
+        for line in lines:
+            t = line.rstrip()
+            if t and t[0] == '#': continue
+            fp.write(t+'\n')
+        fp.write("\n\n\n")
     fp.close()
 
     print "Successful!"
