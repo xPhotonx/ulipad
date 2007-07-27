@@ -1,0 +1,45 @@
+==========
+ 插件介绍
+==========
+
+:作者: limodou
+:联系: limodou@gmail.com
+:版本: $Id: plugins.txt 42 2005-09-28 05:19:21Z limodou $
+:主页: http://wiki.woodpecker.org.cn/moin/NewEdit
+:BLOG: http://www.donews.net/limodou
+:版权: GPL
+
+.. contents:: 目录
+
+说明
+----
+
+本文档用于对已有插件进行介绍
+
+BlogEdit
+
+  标准的Blog编辑功能
+
+  需要安装meteor模块
+
+  `使用说明`_
+
+.. _`使用说明`: blog.htm
+
+PyBlosxom
+
+  Pyblosxom的扩展功能支持，针对xmlrpc_newedit.py插件。
+
+  需要先安装BlogEdit插件
+
+wxPythonDocument
+
+  wxPython文档菜单显示
+
+PythonDoc
+
+  Python文档菜单显示
+
+`[返回]`_
+
+.. _`[返回]`: url.htm

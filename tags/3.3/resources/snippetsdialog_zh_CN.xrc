@@ -1,0 +1,208 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resource>
+  <object class="wxDialog" name="SnippetsCatalogDialog">
+    <title>片段分类管理</title>
+    <object class="wxListBox" name="ID_CATALOG">
+      <content/>
+      <pos>5, 20</pos>
+      <size>200, 105</size>
+      <style>wxLB_SINGLE|wxSUNKEN_BORDER</style>
+    </object>
+    <object class="wxStaticText">
+      <label>片段分类：</label>
+      <pos>5,2</pos>
+    </object>
+    <object class="wxStaticText">
+      <label>分类文本：</label>
+      <pos>220,2</pos>
+    </object>
+    <object class="wxTextCtrl" name="ID_CATALOG_TEXT">
+      <pos>220, 20</pos>
+      <size>160, -1</size>
+    </object>
+    <object class="wxButton" name="ID_ADDITEM">
+      <label>增加</label>
+      <pos>220, 45</pos>
+      <size>80, -1</size>
+    </object>
+    <object class="wxButton" name="ID_UP">
+      <label>上移</label>
+      <pos>302, 45</pos>
+      <size>80, -1</size>
+    </object>
+    <object class="wxButton" name="ID_ADDSUBITEM">
+      <label>增加子项</label>
+      <pos>220, 65</pos>
+      <size>80, -1</size>
+    </object>
+    <object class="wxButton" name="ID_DOWN">
+      <label>下移</label>
+      <pos>302, 65</pos>
+      <size>80, -1</size>
+    </object>
+    <object class="wxButton" name="ID_DELETE">
+      <label>删除</label>
+      <pos>220, 85</pos>
+      <size>80, -1</size>
+    </object>
+    <object class="wxButton" name="ID_LEFT">
+      <label>左移</label>
+      <pos>302, 85</pos>
+      <size>80, -1</size>
+    </object>
+    <object class="wxButton" name="ID_UPDATE">
+      <label>更新</label>
+      <pos>220, 105</pos>
+      <size>80, -1</size>
+    </object>
+    <object class="wxButton" name="ID_RIGHT">
+      <label>右移</label>
+      <pos>302, 105</pos>
+      <size>80, -1</size>
+    </object>
+    <object class="wxStaticLine">
+      <pos>5, 140</pos>
+      <size>390, -1</size>
+    </object>
+    <object class="wxButton" name="ID_OK">
+      <label>确定</label>
+      <pos>80, 145</pos>
+      <size>80, -1</size>
+    </object>
+    <object class="wxButton" name="ID_CANCEL">
+      <label>取消</label>
+      <pos>160, 145</pos>
+      <size>80, -1</size>
+    </object>
+    <object class="wxButton" name="ID_APPLY">
+      <label>应用</label>
+      <pos>240, 145</pos>
+      <size>80, -1</size>
+    </object>
+    <size>400, 200</size>
+    <style>wxDEFAULT_DIALOG_STYLE</style>
+  </object>
+  <object class="wxDialog" name="SnippetsCodeDialog">
+    <title>片段代码管理</title>
+    <object class="wxStaticText">
+      <label>片段代码：</label>
+      <pos>135,2</pos>
+    </object>
+    <object class="wxListBox" name="ID_CATALOG">
+      <content/>
+      <pos>5,20</pos>
+      <size>120, 125</size>
+      <style>wxLB_SINGLE|wxSUNKEN_BORDER</style>
+    </object>
+    <object class="wxStaticText">
+      <label>片段分类：</label>
+      <pos>5,2</pos>
+    </object>
+    <object class="wxListBox" name="ID_CODES">
+      <content/>
+      <pos>135,20</pos>
+      <size>120, 125</size>
+      <style>wxLB_SINGLE|wxSUNKEN_BORDER</style>
+    </object>
+    <object class="wxStaticText">
+      <label>英文缩写：</label>
+      <pos>265, 23</pos>
+    </object>
+    <object class="wxTextCtrl" name="ID_ABBR">
+      <pos>355, 20</pos>
+      <size>100, -1</size>
+    </object>
+    <object class="wxStaticText">
+      <label>描述：</label>
+      <pos>265, 48</pos>
+    </object>
+    <object class="wxTextCtrl" name="ID_DESCRIPTION">
+      <pos>355, 45</pos>
+      <size>100, -1</size>
+    </object>
+    <object class="wxStaticText">
+      <label>作者：</label>
+      <pos>265, 73</pos>
+    </object>
+    <object class="wxTextCtrl" name="ID_AUTHOR">
+      <pos>355, 70</pos>
+      <size>100, -1</size>
+    </object>
+    <object class="wxStaticText">
+      <label>版本：</label>
+      <pos>265, 98</pos>
+    </object>
+    <object class="wxTextCtrl" name="ID_VERSION">
+      <pos>355, 95</pos>
+      <size>100, -1</size>
+    </object>
+    <object class="wxStaticText">
+      <label>日期：</label>
+      <pos>265, 123</pos>
+    </object>
+    <object class="wxTextCtrl" name="ID_DATE">
+      <pos>355, 120</pos>
+      <size>100, -1</size>
+    </object>
+    <object class="wxStaticText">
+      <label>代码：</label>
+      <pos>5,150</pos>
+    </object>
+    <object class="wxTextCtrl" name="ID_CODE">
+      <pos>5, 165</pos>
+      <size>450, 100</size>
+      <style>wxTE_MULTILINE</style>
+    </object>
+    <size>470, 370</size>
+    <object class="wxButton" name="ID_IMPORT">
+      <label>导入</label>
+      <pos>20, 270</pos>
+      <size>80, -1</size>
+    </object>
+    <object class="wxButton" name="ID_EXPORT">
+      <label>导出</label>
+      <pos>105, 270</pos>
+      <size>80, -1</size>
+    </object>
+    <object class="wxButton" name="ID_ADD">
+      <label>增加</label>
+      <pos>190, 270</pos>
+      <size>80,-1</size>
+    </object>
+    <object class="wxButton" name="ID_DELETE">
+      <label>删除</label>
+      <pos>275, 270</pos>
+      <size>80, -1</size>
+    </object>
+    <object class="wxButton" name="ID_UPDATE">
+      <label>更新</label>
+      <pos>360, 270</pos>
+      <size>80, -1</size>
+    </object>
+    <object class="wxStaticLine">
+      <pos>5, 300</pos>
+      <size>450, -1</size>
+    </object>
+    <object class="wxButton" name="ID_OK">
+      <label>确定</label>
+      <pos>80, 305</pos>
+      <size>80, -1</size>
+    </object>
+    <object class="wxButton" name="ID_CANCEL">
+      <label>取消</label>
+      <pos>160, 305</pos>
+      <size>80, -1</size>
+    </object>
+    <object class="wxButton" name="ID_APPLY">
+      <label>应用</label>
+      <pos>240, 305</pos>
+      <size>80, -1</size>
+    </object>
+    <style>wxDEFAULT_DIALOG_STYLE</style>
+    <object class="wxButton" name="ID_DISCARD">
+      <label>放弃</label>
+      <pos>320, 305</pos>
+      <size>80, -1</size>
+    </object>
+  </object>
+</resource>

@@ -1,0 +1,911 @@
+$Rev: 497 $
+[2006/01/18]
+mRegister.py		修正在Linux平台下导入_winreg的bug
+
+[2006/01/17]
+					新版本上线
+mPyRun.py			更新工具按钮绑定错
+mDDESupport.py DDE.py NewEdit.py	修正DDE支持
+mRegister.py		修正注册表填写时pythonw没有路径的bug
+ModuleInfo.py		更新模块信息bug
+			准备发布新版本
+					
+[2006/01/12]
+					更新编译文件
+NewEdit.py NewEdit.pyw
+					解决pyw不能启动线程的问题。
+MessageWindow.py	增加自定义右键菜单
+Editor.py			修正某些菜单UpdateUI状态不正确
+mMessageWindow.py	增加消息窗口中跳转到出错文件的出错行，同时增加当前行反显
+					
+[2006/01/11]
+DirBrowser.py		实现了打开在某个目录下的dos窗口的功能，但只在pyw运行得挺好，只在windows
+					下可以用。如果是在命令行启动NewEdit，打开的窗口变成原来的dos窗口的子进程
+mDirBrowser.py		增加保存上次打开目录功能，在下次打开时自动打开，修改当目录为空时不打开
+LexerBase.py		可以在config.ini中设置缺省编辑器的字体，在中文环境下默认为“宋体”
+mDocument.py mFormat.py
+					进行tab与空格转换后重新设置tab使用设置，并将菜单由check改为normal
+mShowLocale.py mUnicode.py
+					自动判断python文件的编码并进行转换后保存					
+
+[2006/01/10]
+NewEdit.py			修正config.ini中debug选项错，原为DEBUG，应为debug
+Editor.py meditorCtrl.py mEncoding.py mUnicode.py
+					增加新建文件时缺省编码的设置，如果用户定义编码不为空，则用户定义编码将作为缺省编码。如果为空则使用缺省编码。
+mEncoding.py		在编辑窗口的右键菜单上增加修改文件编码菜单
+Pad.py mPad.py		保存Memo窗口的位置和大小
+mTodoWindow.py		修正保存文件时不更新todo的bug
+mFormat.py			根据文本类型自动选择注释符，并且可以在config.ini中设置使用comment_chars作为节，同时语言为key，可以有一个default作为缺省值
+
+[2006/01/04]
+InputAssistant.py dict4ini.py
+					修正auto extend的导入，include中的内容在前，处理按ini中定义的顺序进行
+					
+[2006/01/03]
+TodoWindow.py mTodoWindow.py
+					增加 TODO 窗口
+ruby 插件			增加ruby classbrowser功能
+dynamicmenu.py FiletypeBase.py
+					增加对动态菜单快捷键的定义功能
+Debug.py NewEdit.py	增加对debug生成的控制，缺省情况下debug不输出，需要在config.ini中设置才输出
+msyntaxPref.py PrefDialog.py
+					增加一个设置document语法高亮的按钮
+
+[2005/12/30]
+InputAssistant.py html.acp
+					修正自动扩展的bug
+dict4ini.py			增加只支持一级option的功能，这样key中可以有section分隔符
+
+[2005/12/28]
+InputAssistant.py mInputAssistant.py html.acp django_html.acp
+					修正自动扩展功能的bug
+					
+[2005/12/27]
+rss reader			更新image有效性的判断处理
+
+[2005/12/26]
+rss reader			去掉在增加feed时自动钻取功能，统一由feed更新时自动完成
+
+[2005/12/25]
+rss reader			增加导入 OPML 的功能 调整ShareWindow插件启动处理，提高启动速度，更新译文，支持网站图标
+HtmlPage.py			增加显示IE状态信息在状态条上
+
+[2005/12/24]
+rss reader			继续完善 RSS Reader增加Category, Feed的属性菜单，可以用来修改标题，增加导入OPML功以，
+					增加切换Feed时将未读Post全部置为已读的功能，增加停止刷新和自动挖掘功能，调整Feed的顺序
+Casing				修正bug
+
+[2005/12/22]
+SnipperWindow.py mSnipper.py
+					增加简单模板功能，可以在code snippet中加入 <#{name=inputname,description=info,defult=value}#>，这样在双击snippets会弹出对话框让你录入信息。
+					
+Template.py ModulesInfo.py
+					将扩展模块模块直接导入，不再是使用文件方式。这样应该对于py2exe有好处。
+					
+[2005/12/21]
+FtpClass.py			Fixed gif filename bug
+
+[2005/12/20] 
+					修改翻译文件
+					
+[2005/12/19]
+rssreader 插件		全部改用 SQLAlchemy 来访问数据库
+
+[2005/12/14]
+EasyGui				改名为EasyGuider，相应的模块进行调整
+Pad.py mPad.py		完善Pad功能，增加一个工具条按钮，并且执行为Check方式。底层控件改为StyledTextCtrl控件了。
+mPythonProject.py DirBrowser.py djangoproj
+					增加对于添加目录，修改project时对于程序的调用点功能，已经实现在目录浏览中打开一个django目录会自动添加DJANGO_SETTINGS_MODULE和sys.path的功能
+
+[2005/12/13]
+docbook 插件　		增加docbook插件，增加docbook工程，增加元素enclose或添加功能。
+mPad.py Pad.py		增加简易贴功能，可以随时增加内容，它会自动保存到memo.txt文件中。使用utf-8编码保存文本。
+
+[2005/12/12]
+DirBrowser.py		增加设置某个目录工程的菜单，工程名字需要使用插件的方法添加
+
+[2005/12/09]
+RssReader			优化,打开时自动更新,右键选择刷新,切换Feed时打开未读html页面
+dict4ini.py			增加转换为dict的方法
+Template.py			修改，当数据为非一般数据时，抛出Exception异常
+
+[2005/12/07]
+RssReader			Rss阅读器
+
+[2005/12/05]
+LexerClass.py LexerClass1.py mLexer.py
+					增加asp, php语法高亮支持
+					
+[2005/12/04]
+DocumentBase.py     修正文件名是unicode时转为小写报错
+LexerClass.py mLexer.py
+					增加xml文件类型
+InputAssistant.py mInputAssistant.py
+					修正acp的处理，将输入类型设为string_replace, string_append, re_replace, re_append，并且对于list可以在单独的autovalues中单独设置值。这样list显示出来的只是一个提示，真正的信息可以单独定义。
+common.py djangoproj-plugin
+					修正project的返回为一个list
+DirBrowser.py		增加打开NewEdit user/work path的功能，增加清除recent directories的功能
+					
+[2005/12/01]
+mChangeFileType.py EditorFactory.py
+					修正调整切换后查找功能失效。增加语言切换的插入点，与文档切换分离。
+Casing.py			增加线索管理功能
+					
+[2005/11/30]
+ftplistparse.py		修正ftp目录分析的一个bug
+
+[2005/11/29]
+EditorFactory.py	调整文档切换时菜单的动态生成，及语法切换的问题
+mProxy.py			增加代理服务器参数
+
+[2005/11/28]
+Mixin.py Debug.py NewEdit.py	增加在config.ini中配置default.DEBUG=0的设置可以关掉调试信息的生成。同时改正了到处生成debug.txt, error.txt生成的问题
+
+[2005/11/27]
+mShare.py ShareWindow.py
+					增加网络分享窗口
+					
+[2005/11/25]
+mWindow.py			增加清除Shell窗口的菜单，快捷键为Alt+C
+
+[2005/11/24]
+django-wizard		修正django-wizard，支持TEMPLATE_DEBUG变量，port如果为0则转为''，secret_key使用django方法生成
+
+[2005/11/23] 
+run.bat new.bat		移到tools目录下
+
+mRecentFile.py DirBrowser.py
+					修正保存条数处理
+					
+mLexer.py mFileNew.py TextPanel.py mEditorCtrl.py
+					修改新建功能，由对话框改为弹出菜单。同时在文件菜单中增加新建菜单
+					
+[2005/11/22]
+django plugin		增加创建 app 时可以选择是否创建template的提示
+					修改路径分隔符统一为'/'
+
+-------------------------------------- 3.1 -----------------------------
+[2005/11/22]
+					修正bug发布3.1 
+[2005/11/21]
+					准备发布3.1版
+mLexer.py mFileNew.py __init__.py
+					增加New时可以选择文件的语法
+DirBrowser.py		修改bug
+DocumentBase.py Editor.py EditorFactory.py
+					增加在打开文件时可以指定当空文件时，是否使用一个模板文本进行填充
+					
+[2005/11/19]
+LexClass1.py mLexing.py
+					增加js语法支持
+					
+[2005/11/18]
+djangoproject		完善model生成处理
+
+[2005/11/17]
+django-project		修正bug
+
+[2005/11/15]
+Debug.py			去除common的关联
+
+[2005/11/14]
+			修改译文。
+
+[2005/11/13]
+InputAssistant.py LexerBase.py
+					调整配置文件可以从NewEdit安装目录和conf目录下读取
+Editor.py			修正无法选择自动缩近和使用制表符缩近菜单，因为TextEditor没有设置canedit为True
+DirBrowser.py		可以使用缺省编辑器打开文件
+mFormat.py FindReplaceDialog.py
+					将修改设为一次性操作，使用BeginUndoAction()和EndUndoAction()
+FindInFiles.py		修改GotoLine改为goto
+mDocument.py		修正切换自动缩近符菜单bug
+					
+[2005/11/11]
+mComEdit.py Editor.py 
+					修改Editor，增加可扩展右键菜单接口
+mModuleFile.py		改成与Python相关
+LexerClass.py LexerClass1.py
+					去除语法高亮关键字的国际化处理
+					
+[2005/11/08]
+DirBrowser.py		修改在空目录下增加文件显示出错。修正当改变文件后缀时，文件图标会发生变化。
+
+[2005/11/07]
+					转换LineEnd格式为'\n'，修正按钮中的22, 20为-1，感谢lof的帮助
+RemoveBlankLine.py	删除当前窗口内容中的空行
+Editor.py ClassTree.py pycheck.py
+					增加Editor类的goto方法，保证输入焦点切换
+NewEdit.py			修改切换语言不正确的bug
+					
+[2005/11/06]
+Editor.py EditorFactory.py 
+					修正保存时标题条的星号不改变的bug
+i18n.py				修正缺省语言处理的bug
+					
+[2005/11/05]
+DirBrowser.py		修改扩展菜单plugin
+
+[2005/11/04]
+EditorFactory.py	修正文档切换时的bug
+FindReplaceDialog.py	修改findtext为空时死循环的错误
+djangoproj			增加django project的插件
+
+[2005/11/03]
+django(wizard)		增加django项目的wizard
+					一些代码调整
+
+[2005/11/02]
+DocumentBase.py		增加getProjectName()方法
+mAutoClose.py __init__.py
+					去掉自动关闭功能，用户需要自行使用自动扩展功能来实现
+InputAssistant.py	增加嵌套acp功能，可以根据project信息来自动使用
+
+[2005/10/29]
+EditorFactory.py	增加切换tab时光标转入document中
+
+[2005/10/23]
+LexerClass1.py mLexer.py  
+					修改语法高亮支持，增加CSS语法 
+
+[2005/10/22]
+winpdb.__init__.py	修改路径错误
+mDClickCloseFile.py	修正在notebook的tab空白处上双击时会关闭当前文档的bug
+LexerClass1.py mLexer.py 
+					增加java, ruby, perl语法高亮支持
+
+[2005/10/21]
+				完善自动扩展功能
+mAutocomplete.py InputAssistant.py
+				增加是否启动自动扩展功能的配置项
+				修改翻译文件
+CheckList.py PluginDialog.py
+				增加CheckList模块，改进插件管理界面
+
+[2005/10/20]
+EditorFactory.py Editor.py
+				修改当文档改变时，tab名前加*号
+mInputAssistant.py InputAssistant.py Editor.py
+				增加自动扩展功能
+
+				完善自动扩展功能
+				
+[2005/10/18]
+pycheck			增加自动检查设置项。可以在保存时自动检查Python语法。同时结果显示改为Listview
+makedot.py		增加转换dot文件和查看图片的脚本
+mScript.py		提升Script菜单为顶级菜单
+showerror		增加显示error.txt (Alt+E)和debug.txt (Alt+D)插件
+mWindow.py		增加执行左边窗与底边窗的快捷键Alt+L(eft), Alt+B(ottom)
+
+[2005/10/17]
+setup_inno.py		修改EXE生成
+PluginDialog.py		修改打开插件管理对话框错。因为Dict4Ini修改所致。
+					修改WizardPanel插件，使其支持program处理。同时增加plugintmp插件，它是一个生成plugin框架的模板
+pycheck			增加语法检查插件, 增加翻译文件
+
+-------------------------------------- 3.0 -----------------------------
+[2005/10/16]
+Dict4Ini.py		增加保持item的顺序和增加float类型数据的处理
+mFormat.py mComEdit.py mSearch.py
+			修改执行文件后会切换目录导入打开新文件时报错的bug
+new.bat			增加执行时自动将tools下的std_Version.py拷贝到modules目录下的处理，这样Rev就会每次更新了，在升级版本时使用
+			发布
+[2005/10/11]
+mAutoComplete.py
+				修改当出现自动完成下拉列表时，切换窗口下拉列表依然显示的bug
+mDirBrowser.py DirBrowser.py
+				完善目录浏览功能, 增加文件类型的图标显示功能，增加过文件和后缀过滤功能
+Version.py		修改显示信息为主版本号+Rev号
+mHelp.py		修改帮助信息，站点地址，blog，联系方式等
+                修改文档
+
+[2005/10/10]	
+				增加目录浏览功能
+				去除project和path功能
+
+[2005/10/2]
+mMainFrame.py   向mainframe增加userpath
+mModuleInfo.py ModulesInfo.py T_modulesinfo.py 
+                增加模块信息显示，主要用于扩展模块的信息显示
+                将Meteor转为内置模块
+				增加插件的翻译文件
+tools/makeplugin.bat tools/getfilelist.py
+				增加对插件的翻译文件提供处理功能
+                
+[2005/09/29]
+                调整plugins结构
+                修改图片处理支持gif, png和image对象
+                增加pytts插件
+
+[2005/09/28]
+                转移到svn中去
+
+[2005/09/23]
+winpdb          增加winpdb插件
+i18n.py         修改i18n的处理，支持多个mo文件串行处理
+wizard          增加wizard的处理
+
+[2005/07/27]
+mShowLocale.py  修正切换文档不改变文档编码的问题。
+
+[2005/07/25]
+FtpClass.py     修改ftp端口号不能大于100的问题。
+
+-------------------------------------- 2.9 -----------------------------
+[2005/07/24]
+mEditorCtrl.py  增加关闭快捷键Ctrl+F4
+                修正Close All时不对未打开文件进行处理
+
+[2005/04/19]
+FtpClass.py     修改上传文件文本文件未转换错
+mFormat.py      增加行注释和反注释的快捷键
+
+[2005/03/29]
+NewEdit.py      修正生成插件目录__init__.py文件的错误
+mMainFrame.py   修正未给frame.workpath赋值的错误
+
+[2005/03/21]
+NewEdit.py      调整 NewEdit 的应用结构。
+
+[2005/03/12]
+mModuleFile.py  增加导入指定模块文件的功能，选中一个字符串，按F6可以导入字符串所表示的模块文件，如果存在的话
+
+[2005/02/15]
+FindReplaceDialog.py
+                Find窗口按ESC可以关闭
+                
+[2005/02/06]
+mRun.py         在NewEdit中执行程序时，不进行输入输出重定向时采用异步执行
+Editor.py EditorFactory.py
+                更新文档时在Tag上显示*号
+                
+[2005/02/06]
+EditorFactory.py mSession.py Editor.py mEditorCtrl.py
+                启动时编辑窗口的文件延迟打开
+DDE.py mDDESupport.py
+                DDE支持使用CallAfter处理
+                
+[2005/01/28]
+mPythonContextIndent.py
+                修正当选中文本时，按回车不清除文本的bug
+                
+[2004/12/23]
+InterpreterDialog.py mPyRun.py mRun.py
+                增加设置解释器功能，可以在运行时执行要使用的解释器，同时可以设置是否使用输入输出重定向
+mShellRun.py    修正执行外部菜单时使用os.startfile()
+
+[2004/11/27]
+SnippetClass.py SnippetWindow.py
+                修正当snippet不存在时创建路径的处理
+                
+[2004/11/26]
+ShellWindow.py  修正取系统缺省编码的处理
+
+[2004/11/25]
+SnippetWindow.py 修正代码片段窗口按钮状态处理不正确错误
+common.py       修正asci为ascii
+
+[2004/11/12]
+mEditorCtrl.py  修改当文件修改时保存文件不成功的Bug
+
+[2004/11/10]
+mAutoComplete.py
+                修正自动完成中，从文本取出匹配串排序不正确的Bug
+i18n.py         当创建i18n模块时，如果缺省编码无法导入则
+common.py NewEdit.py
+                修改在读取缺省编码有误时，使用utf-8编码
+                
+[2004/11/09]
+mPyRun.py       增加执行程序时，自动切换到程序所在的目录功能
+
+[2004/11/08]
+mDocument.py    修正当有选中文本时，回车不删除的问题
+mRecentFile.py  增加记录上次打开路径的功能
+
+[2004/10/25]
+LexerBase.py, SyntaxDialog.py
+                修正改变语法颜色后，文档不更新的Bug。在colourize中增加force参数，当它为True时强制执行。
+
+[2004/10/20]
+EditorFactory.py
+                修改当在一件空文档上打开文件时，不能正确处理文件类型切换的处理
+mAutoBak.py     修改当自动保存文档时，不能正确保存unicode编码的问题。但对于其它的象ftp的文件保存可能有问题。
+
+[2004/10/16]
+DocumentBase.py 修改对象比较处理，增加__eq__, __ne__方法
+
+[2004/10/15]
+LexerFactory.py mLexerFactory.py
+                修改当找不到文件对应的语法器时，缺省使用option中的语法器设置的处理，改为缺省使用text语法器
+                
+[2004/10/14]
+common.py       增加一个公共模块，可以处理unicode转换和路径转换
+mAutoCheck.py   只有documenttype=='edit'才检查文件改变情况
+
+mAutoComplete.py
+                增加中文目录的支持
+
+[2004/10/12]
+mAutocomplete.py
+                修改，当文档有选中文本时，不进行自动完成的处理
+                
+EditorFactory.py
+                修改文档切换的处理 
+LexerBase.py    修改语法高亮的处理，当语言类型未变时不再进行语法高亮处理
+
+[2004/10/11]
+FtpClass.py ftplistparse.py
+                修改ftp list的分析处理
+                
+[2004/10/10]
+NewEdit.py      增加对导入mixins的异常保护
+
+--------------------------------2.8-----------------------------------
+
+[2004/10/08]
+mHotKey.py      修改热键方式，区分主窗体热键和编辑器热键
+
+[2004/10/07]
+mHotKey.py, makemenu.py, MainFrame.py
+                增加用户自定义快捷键，保存在config.ini
+PythonDoc.py wxPythonDocument.py
+                使用Python系统变量合成文档路径
+
+[2004/10/06]
+BlogManageWindow.py
+                增加分类显示为描述信息
+                
+[2004/10/04]
+mConvert.py     增加直接输出文本到HTML窗口的功能
+FindInFiles.py  重新设计在文件中查找界面
+
+[2004/10/02]
+MainFrame.py    在状态条最后面增加显示内存大小的栏位
+
+[2004/09/29]
+mAutoComplete.py
+                自动完成功能基本完成
+                
+[2004/09/28]
+BlogPage.py     修改当Blog帐号为空时的Bug
+mAutoComplete.py
+                自动完成，语法提示功能
+MyPanel.py ShellWindow.py SnippetWindow.py MessageWindow.py
+                允许关闭shell, message ,snippet窗口
+
+[2004/09/27]
+*, PyBlosxomPlugin.py
+                Blog功能完善
+ShellWindow.py mRun.py
+                命令行支持中文，脚本输入、输出支持中文
+ShellWindow.py  修改增加新Shell时，描述设为编辑状态
+ScriptWindow.py 修改增加新Script时，描述设为编辑状态
+                
+[2004/09/26]
+BlogManageWindow.py BlogPage.py
+                修改Blog编辑功能
+                
+[2004/09/25]
+mHelp.py        修正blog链接错
+
+[2004/09/23]
+mUnicode.py     不再使用Detect_utf8.py来检测试utf-8编码。改为直接进行utf-8编码转换，如果失败转为系统缺省编码
+FindReplaceDialog.py
+                增加替换文本是正则表达式的功能
+
+[2004/09/22]
+SnippetWindow.py
+                修正未选中分类时，保存代码出错的Bug
+                
+[2004/09/21]
+SnippetWindow.py
+                Fix the bug of saving of snippetwindow
+                
+[2004/09/20]
+BlogPanel.py Editor.py  
+                修正blog编辑窗口可以打开新文档的Bug
+                
+--------------------------------2.7-----------------------------------
+
+[2004/09/19]
+NewEdit.py		comment the lines of CheckVersion of python and wxPython. So if you don't use unicode 
+                version of wxPython, it won't borther you. But I only develop and test under unicode version.
+mConvert.py     Fix converting text to html bug that complained unicode error
+
+[2004/09/18]
+Project.py		Add "Add All" function that can add all openned documents to current project.
+NewEdit.py		修正workpath不正确的Bug。将workpath和plugins置入sys.path中，以便windows安装包可以正确使用。
+PluginDialog.py	改进plugin的导入处理，增加异常处理
+
+[2004/09/17]
+mConvert.py		将转换结果置于消息窗口中或弹出的HTML窗口中
+ClassTree.py	修改当在类浏览窗口中空白处点击时出错的Bug
+
+[2004/09/16]
+mShellRun.py	修改执行Shell时，打开消息窗口出错的bug
+ShellDialog.py	修改无法编辑Shell命令提示的bug
+
+[2004/09/14]
+HtmlPanel.py HtmlPage.py *
+				增加查看Html功能
+				
+[2004/09/12]
+mConvert.py		增加文本转换菜单，增加rest -> html, textil -> html, py -> html 的转换功能
+
+[2004/09/11]
+mRegister.py	增加将NewEdit注册到Explore的上下文菜单和反注册的功能。
+Editor.py MainFrame.py mComEdit.py makemenu.py Accelerator.py
+				重新设定系统热键，将与编辑器有关的热键分离定义，修改加速键提取方式，对\t后面有E=的表示与编辑器有关
+				的热键。从而使Shell和消息窗口可以正确处理Ctrl+C, Ctrl+V, Ctrl+X, Ctrl+A
+				
+--------------------------------2.6.1-----------------------------------
+
+[2004/09/09]
+Blog.py BlogPanel.py
+				增加写Blog的插件
+				
+[2004/09/08]
+mDocument.py	增加自动判断缩近的功能
+
+[2004/09/07]
+mEditorCtrl.py	修改当文件未做修改不能重新打开bug
+
+[2004/08/28]
+***				修改OnUpdate判断错误
+
+--------------------------------2.6-------------------------------------
+
+[2004/08/26]
+MyPanel.py		修正关闭程序不正确Bug
+
+[2004/08/25]
+Debug.py        改正生成的debug.txt和error.txt为绝对路径
+
+[2004/08/23]
+convert_opt2.6.py
+				增加2.6版切换脚本
+setup.py setup_inno.py
+				增加生成安装程序的脚本
+mFtp.py FtpClass.py
+				Ftp功能修改
+***				将所有文件相关的变量处理为全局变量
+mPath.py		增加设置当前路径的功能
+				
+[2004/08/22]
+***				布局调整、性能调优
+				所有Mixin均以m开头。尽量减少在启动时导入的模块。将类放在单独的文件中。modules目录下只有最通用的模块。
+				mixins目录下则为相关内容的模块。所有m开头的mixin模块在最终均将合并到一个文件中以减少读取文件的个数。
+mBookmark.py	bookmark支持循环跳转
+
+--------------------------------2.5-------------------------------------
+
+[2004/08/19]
+PrefDialog.py	修改maskednum为spinctrl
+SyntaxDialog.py SyntaxPref.py
+				打开文档的语法高亮参数窗口时，自动根据当前文档的语法类型选中初始语法种类
+
+[2004/08/18]
+mAutoClose.py	增加自动关闭功能，如输入(,[,{,',",<时，自动补上对应的字符
+Ftp.py FtpClass.py
+				增加ftp工具条，增加上传、下载功能。
+
+[2004/08/17]
+Ftp.py FtpClass.py Editor.py
+				增加Ftp支持
+LexerBase.py	修改显示语法高亮对话框示例对象无pref属性错
+Encoding.py		增加修改保存编码功能
+				
+[2004/08/14]
+NewEdit.py		增加一个启动或禁止psyco模块的使用的命令行选项 -s
+***				将modules和mixins作为模块，并修改导入mixins的调用方式
+PluginDialog.py	重新设计插件导入结构，根据导入算法重新修改了读取plugin和写入plugin的方法
+Lexers.py		增加是否显示光标行的选项
+PythonLexer.py CLexer.py HtmlLexer.py LexerBase.py
+				修改通用样式的设定，其它语法文件可以不设此项
+PrefDialog.py	将参数页由panel改为scrolledwindow
+
+[2004/08/11]
+newedit_cn.po	翻译文件编码转成utf-8
+Document.py MainFrame.py ComEdit.py Pref.py View.py Debug.py
+				修正OnUpdateUI事件挂接的位置，在MainFrame中增加afterinit接口，OnUpdateUI事件放在此处进行处理
+Lexers.py		修正保存文件后，当找不到文件名对应的语法解释器时，会使用缺省样式改变当前指定的样式。
+
+[2004/08/05]
+Project.py EditorCtrl.py
+				增加向项目导入文件的功能
+PythonLexer.py CLexer.py HtmlLexer.py
+				调整语法格式串，保留缺省格式串，将其它的格式串中的字体和大小去掉
+				
+[2004/08/04]
+NewEdit.py DDE.py
+				修改文件名中有汉字的情况。将文件名自动转为unicode处理，并在DDE传送时转为utf-8。
+Folder.py		修改调整lexer时造成弹出语法设置窗口出错的bug
+Project.py		增加简单项目管理功能
+				
+[2004/08/03]
+Document.py PythonContextIndent.py
+				修改当光标所在位置前为空白时，保持原空白不变
+				
+[2004/08/01]
+PythonContextIndent.py
+				上下文缩近
+Folder.py PythonLexer.py
+				修正Folder失效的问题
+				
+--------------------------------2.4-------------------------------------
+[2004/07/25]
+Run.py MessageWindow.py
+				可以接收运行时输入信息
+PyRun.py		增加停止运行菜单和工具条
+DDE.py DDESupport.py
+				修正无法处理config.ini中端口的错误
+Lineending.py	修正当出现混合回车符时，保存文件出错的错误
+FindInFile.py	修正双击查找结果时，行数跳转错
+Lexers.py Editor.py
+				增加可以指定缺省语法高亮
+				
+[2004/07/24]
+Plugins.py		增加plugin管理功能。所有其它可调整plugin均放在plugins目录下。
+PythonDoc.py	增加显示Python文档的插件。
+
+[2004/07/22]
+Help.py			修改doc/index.htm为全路径，并加上file:///头
+NewEdit.py		增加psyco的加速支持 psyco的主页：http://psyco.sourceforge.net/
+
+[2004/07/20]
+DDE.py	DDESupport.py
+				DDE Tcp server的端口可以存放在config.ini中。
+IniFile.py		Ini文件缺省文件名为config.ini,缺省编码为utf-8
+Snippets.py		当snippets目录不存在时，创建此目录
+Print.py		增加HTML格式打印功能（其它文档将转为HTML格式）
+SnippetClass.py	snippetsdialog.xrc snippetsdialog_cn.xrc
+				增加代码片段导入、导出功能
+
+--------------------------------2.3-------------------------------------
+[2004/07/19]
+PythonLexer.py CLexer.py HtmlLexer.py Lexers.py
+				调整语法样式的缺省样式属性
+NewEdit.py Language.py
+				将语言选择保存在modules/Lang.py改为保存在config.ini中
+Snippets.py		去掉显示代码片段窗口菜单
+Language.py		改正重新选定语言时菜单检查状态显示不正确bug
+Lexerbase.py Folder.py
+				改变语法高亮时，folder显示问题
+
+[2004/07/18]
+LexerBase.py PythonLexer.py CLexer.py HtmlLexer.py Lexers.py IniFile.py 
+				调整语法分析类，不同语言的语法及相应的参数存于stx文件中
+				
+SyntaxPref.py SyntaxDialog.py syntaxdialog.xrc
+				语法颜色及字体设置对话框处理
+FindAndReplaceDialog.py
+				改正查找时，单词选定选项无法保存的问题
+								
+[2004/07/14]
+DocumentBase.py EditCtrl.py	将文档窗口进行分类，以允许新型文档窗口的生成和处理。
+
+[2004/07/13]
+Lexers.py		语法高亮指定功能，可以重新指定一个文件使用的语法高亮
+LexerBase.py c.stx python.stx html.stx	可以支持外部关键字指定。
+
+[2004/07/12]
+Debug.py		增加traceback写入日志功能，增加错误日志对象error，输出文件为error.txt
+LexerBase.py Lexers.py PythonLexer.py CLexer.py HtmlLexer.py 调整语法处理结构
+ChangeFileType.py FiletypeBase.py	调整文件切换的处理结构
+
+[2004/07/11]
+NewEdit.py		增加取消DDE功能命令行参数 -n
+Shell.py		增加显示shell,message窗口的显示函数
+CheckVersion.py	增加版本检查功能，wxPython 必须在2.4u以上，Pythoon必须为2.3才可以运行
+PyRun.py Run.py	可以运行图形界面程序。感谢O.706的代码。
+
+[2004/07/10]
+DDE.py DDESupport.py	增加试验性的DDE处理，使用socket
+Mixin.py		修改execplugin的处理。plugin的返回值如果为假则继续下一个plugin的处理，如果为真，则如果类型为tuple，则判断tuple
+				的第一个元素，如果为真，则返回第二项。如果为假，继续下一个plugin的处理。
+				
+[2004/07/08]
+Editor.py		保存新文件时只有.tmp文件错，感谢ibrick的提供
+Script.py		修改traceback提示生成
+ClassBrowser.py	images/* 修改图形为透明，png改为gif格式
+Shell.py		去掉shell, message两个菜单，改为bottom window菜单，同时增加left windows菜单和工具条
+
+--------------------------------2.2-------------------------------------
+[2004/07/07]
+Unicode.py		修改Unicode出错处理
+Encoding.py EncodingDialog.py		增加编码选择
+Editor.py EditorCtrl.py	增加编码选择处理
+SnippetsClass.py	修正写入xml文件时utf-8编码错
+mergepo.py		修改生成的po文件，未翻译的条目排列在前
+MyUnicodeException.py	增加打开、保存时unicode转换出错异常类
+ShowLocale.py	在状态条显示文档的编码
+Lineending.py	修改在保存文件时转换行结束符
+
+[2004/07/06]
+Resource.py		修改生成的资源对象不正确
+
+[2004/07/05]
+SnippetClass.py Snippets.py snippetsdialog.xrc 增加代码片段功能
+
+[2004/06/30]
+Tool.py			增加tool菜单，将Script转移到此菜单下
+Run.py PyRun.py	将Run拆分为Run.py和PyRun.py两个模块
+ShellRun.py		增加shell命令行功能
+Entry.py		增加选择文件名选项对话框
+
+--------------------------------2.1-------------------------------------
+[2004/06/28]
+Language.py		修改读取language.ini文件时，过滤掉空行及#开头的行
+ComEdit.py		修改扩展选词功能失效bug
+
+[2004/06/24]
+NewEdit.py		增加缺省编码参数
+Unicode.py		增加unicode转换错误处理，已经不支持非unicode版本了。
+EditorCtrl.py	增加重新装入文档的功能
+AutoBak.py		打开文件时自动备份为.bak文件
+AutoCheck.py	自动检查文件是否被别人更新过
+
+[2004/06/22]
+NewEdit.py MainFrame.py	增加处理命令行文件功能
+-------			将翻译函数改为tr
+
+---------------------------------2.0-------------------------------------
+[2004/06/20]
+FindInFiles.py SearchInFiles.py 增加在文件中搜索的功能
+Format.py		增加将所有制表符转为空格的功能。修正将前导制表符转为空格时，会转换全部制表符的错误。
+
+[2004/06/16]
+CLexer.py		增加对C语言的语法支持
+HtmlLexer.py	增加对Html语言的语法支持
+
+[2004/06/15]
+Langage.py i18n.py 增加对国际化处理的支持
+
+[2004/06/13]
+Run.py			增加运行当前Python源程序的功能，设置命令行参数的功能，不支持交互功能
+Script.py		用户自定义脚本功能。
+
+[2004/06/12]
+Lineending.py	修正当文件换行符为MIX时，状态设置不正确的bug
+
+[2004/06/11]
+maketoolbar.py PythonLexer.py ClassBrowser.py 增加工具条动态变化处理
+ClassBrowser.py	修改树排序
+Calltip.py		修正有时显示看不清的bug
+Shell.py		实现Python脚本和message窗口
+Case.py			修改单词首字母变大写的bug
+FileDrop.py		文件拖动到编辑窗口中可以打开
+
+[2004/06/10]
+ClassBrowser.py	增加查看Python源代码类的能力，在树结点上单击左键可以跳转到相应的位置。
+
+[2004/06/09]
+PythonLexer.py	增加PythonLexer类，用于接收menulist的mixin
+dynamicmenu.py	将动态增加，删除菜单的功能独立为一个模块
+
+[2004/06/07]
+EditorCtrl.py	修改输入焦点无法自动切换到文档中的bug
+makemenu.py, PythonLexer.py	实现根据文件名不同增加或去除菜单项
+LastStatus.py	修改最小化时窗口坐标保存不正确bug
+EditorCtrl.py	文档切换plugin改为两个，一个表示离开，一个表示进入
+
+[2004/05/28]
+-------		升级到wxpython 2.5.1.5版本
+
+---------------------------------1.0-------------------------------------
+[2004/05/26]
+-------		编写文档
+
+[2004/05/25]
+newedit.ico	修改程序图标
+
+[2004/05/24]
+-------		修改unicode的支持功能
+Calltip.py	实现自已的调用提示窗口，支持unicode
+Bookmark.py	去掉在Margin 0的鼠标单击设置标签功能
+Folder.py	fold缺省为不显示
+QuoteDialog.py Format.py	增加括起功能
+
+[2004/05/23]
+ComEdit.py	增加扩展选词功能，'.'作为单词的一部分, Ctrl+双击可以实现扩展选词功能
+Version.py	版本号独立
+Help.py		增加About对话框
+Lineending.py	增加转换换行符功能
+
+[2004/05/22]
+Format.py	记住上次使用的注释串
+Duplicate.py	增加匹配查找并插入功能，包括字符、单词和句子
+-------		加入版权声明
+
+[2004/05/21]
+Debug.py	修改debug为一个类，增加相应的提示处理函数
+Mixin.py	修改setPlugin函数，增加优先级别和优先级数的参数
+		修改execplugin函数，如果有多个函数，则只要有一个返回值不为空则将些值返回。
+
+[2004/05/20]
+EditorCtrl.py	记住上次文档的后缀
+ComEdit.py	增加扩展选择功能
+
+[2004/05/19]
+Session.py	保存上次打开文件
+LastStatus.py	上次窗口状态
+
+[2004/05/18]
+Margin.py	可以在左边界上放置图标，将用来保存书签
+Folder.py	对于Python程序可以折叠
+PythonLexer.py	Python的语法高亮, 增加python的文件通配符
+OnUpdateUI.py	删除
+CheckBrace.py	对括号匹配进行检查
+Zoom.py		字体放大，缩小
+
+[2004/05/17]
+Format.py	增加注释与反注释的处理, 行首空格与TAB符转换, 截取行尾空格
+Document.py 	增加文档菜单，自动缩近处理，自动换行
+
+[2004/05/16]
+View.py		增加长行指示，回车符显示，缩近显示。启动时是否显示长行指示，缩近显示，空白显示
+Format.py	增加处理缩近和反缩近, 用户设置tab值
+makemenu.py	增加菜单图标的处理，不过现在不使用，好象显示有些乱
+Mixin.py	修改bug
+DefaultMenu.py	删除菜单移到MainFrame.py中
+----------	修改菜单Mixin结构
+Case.py     	大小写处理
+
+[2004/05/15]
+Search.py	增加replace工具按钮
+OnUpdateUI.py	增加对cut, copy, paste, undo, redo, save工具、菜单的动态更新
+SetScrollWidth.py	增加初始设置StyledTextCtrl横向滚动条宽度
+Editor.py	插入光标宽度设为3，调整第一列margin为符号而不是行号
+ComEdit.py	复制一行,复制上行字符
+maketoolbar.py	更新toolbar格式，增加样式项
+Format.py	增加格式菜单
+DClickCloseFile.py	双击tab将关闭tab页
+View.py		增加视图菜单，可以显示/不显示空白和制表符
+Toolbar.py	支持toggle工具
+
+[2004/05/14]
+Search.py	增加查找、替换功能，增加工具条显示，将选中文本直接进行查找功能
+EditorCtrl.py	增加关闭窗口时提示保存文件
+
+[2004/05/13]
+OnPosition.py	增加行、列坐标显示
+Lineending.py	行结束模式处理
+
+[2004/05/12]
+目录变更
+images  	存放图片
+modules 	存放模块
+mixins  	存放mixin和plugin
+resource	存放资源文件
+
+[2004/05/11]
+RecentFile.py   增加最近文件的菜单项处理
+CommEdit.py	增加Select All功能
+
+[2004/05/10]
+Preference.py   增加系统配置选项管理，使用pickle
+PrefDialog.py   处理prefercent对话框
+
+[2004/05/03]
+OnModified.py	增加文档修改后notebook和窗体的标题变化
+EditorCtrl.py	增加tab切换后标题的变化
+
+[2004/05/02]
+EditorCtrl.py   增加OnFileNew和OnFileOpen菜单
+
+[2004/05/01]
+MainSubFrame.py 修改MainSubFrame类，修改mixin OnSashDrag和OnSize，增加相应的plugin
+Mixin.py        修改initmixin方法，当无对应的mixin实现时，插入空__plugins__
+Debug.py        增加初始化代码，信息输出为即时更新
+EditorCtrl.py     Notebook结构用于保存每个文档
+Editor.py       增加编辑文档控件
+
+[2004/04/25]
+Debug.py        增加Debug模块，用于信息输出
+Mixin.py        修改Mixin模块信息输出
+NewEdit.py      将所有生成MainFrame的代码简代为一个init接口，删除原getMainFrame接口
+MainFrame.py    删除原getMainFrame接口，增加init接口，用于整个mainframe的生成
+StatusBar.py    将状态条代码分离出来
+
+[2004/04/22]
+NewEdit		初始框架搭建

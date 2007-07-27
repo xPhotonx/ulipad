@@ -1,0 +1,44 @@
+=================
+ Plugin的发布规范
+=================
+
+:作者: limodou
+:联系: limodou@gmail.com
+:版本: $Id: plugin_spec.txt 42 2005-09-28 05:19:21Z limodou $
+:主页: http://wiki.woodpecker.org.cn/moin/NewEdit
+:BLOG: http://www.donews.net/limodou
+:版权: GPL
+
+.. contents::
+
+说明
+----
+
+每一个plugin都应发布到plugins目录下，每个插件需要占用一个目录。这个目录将至少需要提供一个
+说明文件，如：plugin.pin，和一个__init__.py程序。如果plugin带有自已编写的其它模块，可以
+放在任何地方，但在plugin应可以访问得到。建议除了上述两个文件外，将其它文件放在
+plugins目录的一个子目录下，子目录名可以为plugin的名字，如::
+
+	plugins
+      \---myplugin
+          \------myplugin.pin
+          \------__init__.py
+          \------myplugin
+             \---other files
+             ...
+	
+.pin的作用是作为一个插件的标识文件，内容可以为空，如果不为空应包括以下信息::
+
+	[info]
+	author=xxx
+	date=xxx
+	version=xxx
+	description=xxx
+	homepage=xxx
+
+其中，author, date, version, description必须要有，但内容可以为空。其它你可以自行增加。如果有
+特殊的第三方模块还可以增加模块信息。
+
+`[返回]`_
+
+.. _`[返回]`: technical.htm

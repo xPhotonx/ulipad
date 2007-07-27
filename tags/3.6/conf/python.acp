@@ -1,0 +1,36 @@
+[include]
+1=django_py.acp
+2=epydoc.acp
+
+[autostring]
+
+[autostring_append]
+
+[autore]
+(^\s*)def<space> = \1def {#function_name#}!^():
+(^\s*)if<space> = \1if !^:
+(^\s*)for<space> = \1for !^ in :
+(^\s*)try = \1try:
+(^\s*)except = \1except:
+(^\s*)finally = \1finally:
+(^\s*)else = \1else:
+(^\s*)elif<space> = \1elif !^:
+(^\s*)class<space> = \1class !^:
+(^\s*)from<space> = "\1from !^ import"
+(^\s*)while<space> = \1while {#1#}!^:
+
+[autore_append]
+from\s+([\w.]+)\s+import(.*)<space> = @acp.python.import.fromimport
+except(.*)<space> = ArithmeticError,AssertionError,AttributeError,DeprecationWarning,EOFError,Ellipsis,EnvironmentError,Exception,FloatingPointError,FutureWarning,IOError,ImportError,IndentationError,IndexError,KeyError,KeyboardInterrupt,LookupError,MemoryError,NameError,NotImplemented,NotImplementedError,OSError,OverflowError,OverflowWarning,PendingDeprecationWarning,ReferenceError,RuntimeError,RuntimeWarning,StandardError,StopIteration,SyntaxError,SyntaxWarning,SystemError,SystemExit,TabError,TypeError,UnboundLocalError,UnicodeDecodeError,UnicodeEncodeError,UnicodeError,UnicodeTranslateError,UserWarning,ValueError,Warning,WindowsError,ZeroDivisionError
+if\s+__name__<space> = == '__main__'
+
+[autovalues]
+
+[auto_default]
+1 = @acp.python.import.default_identifier
+
+[auto_complete]
+calltip = @acp.python.import.calltip
+autodot = @acp.python.import.autodot
+locals = @acp.python.import.locals
+analysis = @acp.python.import.analysis

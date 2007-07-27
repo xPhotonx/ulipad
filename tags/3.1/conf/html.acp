@@ -1,0 +1,14 @@
+[include]
+1 = django_html.acp
+
+[autostring]
+< = a,blockquote,br,body,center,div,em,head,html,h1,h2,h3,h4,h5,h6,h7,img,li,link,ol,p,quote,script,style,table,td,th,title,tr,ul,
+<link<space> = "<link href=\"!^.css\" rel=\"stylesheet\" type=\"text/css\" />"
+<script<space> = "<script type=\"text/javascript\" src=\"!^.js\"></script>"
+<! = <!-- !^ -->
+<style<space> = "<style type=\"text/css\">\n<!--\n!^\n-->\n</style>\n"
+
+[autore]
+<(\w+).*?> = \0!^</\1>
+<(\w+)[^>]*<space> = align,class,color,
+<(\w+)[^>]*<equal> = "\0\"!^\""

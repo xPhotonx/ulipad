@@ -1,0 +1,28 @@
+[include]
+1=django_py.acp
+
+[autostring]
+def<space> = def !^():\n\t
+try = try:\n\t
+except = except:\n\t
+finally = finally:\n\t
+else = else:\n\t
+elif<space> = elif !^:\n\t
+class<space> = class !^:\n\t
+from<space> = "from !^ import"
+<square> = [!^]
+{ = {!^}
+__ = __!^__
+while<space> = while !^:\n\t
+
+[autostring_append]
+
+[autore]
+(^\s*)if<space> = \1if !^:\n\t
+(^\s*)for<space> = \1for !^ in :\n\t
+
+[autore_append]
+from\s+([\w.]+)\s+import(.*)<space> = @acp.python.import.fromimport
+if\s+__name__<space> = == '__main__'
+
+[autovalues]

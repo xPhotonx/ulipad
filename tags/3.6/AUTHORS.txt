@@ -1,0 +1,6 @@
+This is a contribute authors list. Thanks a lot:
+
+yeyesho li <yeyesho AT gmail.com>                  对NoteBook提出改进建议
+Claudio Grondi <claudio.grondi AT freenet.de>      提出保存上次位置的正确处理方式，列模式，标尺功能建议和测试改进，特别是起了UliPad这个名字。
+Cheng XiaoSan <chengxiaosan AT gmail.com>          报告Bug并提出改进建议
+nmweizi <nmweizi AT 163.com>                       报告Bug并提供关闭其它的插件，已经合并进UliPad。报错打开命令行窗口错误并提供patch。

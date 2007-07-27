@@ -1,0 +1,186 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<meta name="generator" content="Docutils 0.3.9: http://docutils.sourceforge.net/" />
+<title>模拟DDE功能的Socket实现</title>
+<link rel="stylesheet" href="default.css" type="text/css" />
+</head>
+<body>
+<div class="document" id="dde-socket">
+<h1 class="title">模拟DDE功能的Socket实现</h1>
+<table class="docinfo" frame="void" rules="none">
+<col class="docinfo-name" />
+<col class="docinfo-content" />
+<tbody valign="top">
+<tr class="field"><th class="docinfo-name">作者:</th><td class="field-body">limodou</td>
+</tr>
+<tr class="field"><th class="docinfo-name">联系:</th><td class="field-body"><a class="reference" href="mailto:limodou&#64;gmail.com">limodou&#64;gmail.com</a></td>
+</tr>
+<tr class="field"><th class="docinfo-name">版本:</th><td class="field-body">dde.txt 42 2005-09-28 05:19:21Z limodou</td>
+</tr>
+<tr class="field"><th class="docinfo-name">主页:</th><td class="field-body"><a class="reference" href="http://wiki.woodpecker.org.cn/moin/NewEdit">http://wiki.woodpecker.org.cn/moin/NewEdit</a></td>
+</tr>
+<tr class="field"><th class="docinfo-name">BLOG:</th><td class="field-body"><a class="reference" href="http://www.donews.net/limodou">http://www.donews.net/limodou</a></td>
+</tr>
+<tr class="field"><th class="docinfo-name">版权:</th><td class="field-body">GPL</td>
+</tr>
+</tbody>
+</table>
+<div class="contents topic" id="contents">
+<p class="topic-title first"><a name="contents">Contents</a></p>
+<ul class="simple">
+<li><a class="reference" href="#dde-dde-py" id="id2" name="id2">一、创建DDE模块--DDE.py</a></li>
+<li><a class="reference" href="#dde-ddesupport-py" id="id3" name="id3">二、DDE模块的调用--DDESupport.py</a></li>
+</ul>
+</div>
+<p>DDE是动态数据交换，原本为Windows下的一个进程间数据交换的功能，在 wxWindows 中提到了已经实现了些功能，在 
+Windows 下说是使用DDE，在Linux下使用Socket来模拟实现，不过我没有找到，最后学习了一些Socket和线程方面的编程终于简陋地实现了。我为什么要这个功能，原因是：</p>
+<ol class="arabic simple">
+<li>使用DDE可以避免启动多个 NewEdit 实例。</li>
+<li>当在命令行打开文件时，可以让已经存在的 NewEdit 实例打开此文件。</li>
+<li>在Windows下可以放到资源管理员中的右键发送菜单中，在打开其它目录下的文件时更加方便。</li>
+</ol>
+<p>下面是我实现的过程：</p>
+<div class="section" id="dde-dde-py">
+<h1><a class="toc-backref" href="#id2" name="dde-dde-py">一、创建DDE模块--DDE.py</a></h1>
+<pre class="literal-block">
+1       from socket import *
+2       import threading
+3       import traceback
+4       
+5       ADDR = '127.0.0.1'
+6       PORT = 50000
+7       
+8       server = None
+9       
+10      def init():
+11          server = socket(AF_INET, SOCK_STREAM)
+12          try:
+13              server.bind((ADDR, PORT))
+14          except:
+15      #       traceback.print_exc()
+16              server = None
+17              return server
+18          return server
+19      
+20      def start(server, app=None):
+21          server.listen(1)
+22      #   print 'server starting'
+23          while True:
+24              conn = server.accept()[0]
+25              try:
+26                  data = conn.recv(256)
+27                  if data:
+28                      lines = data.splitlines()
+29                      cmd = lines[0]
+30                      if cmd == 'data':
+31      #                   print 'data'
+32                          if app:
+33                              app.frame.readfiles = lines[1:]
+34                      elif cmd == 'stop':
+35      #                   print 'stop'
+36                          break
+37              except:
+38      #           traceback.print_exc()
+39                  pass
+40          
+41      
+42      def sendraw(cmd, data):
+43          sendSock = socket(AF_INET, SOCK_STREAM)
+44          sendSock.connect((ADDR, PORT))
+45          sendSock.send(cmd+'\n'+data)
+46          sendSock.close()
+47          
+48      def stop():
+49          sendraw('stop', '')
+50          
+51      def senddata(data):
+52          sendraw('data', data)
+53          
+54      def run(app=None):
+55          server = init()
+56          if server:
+57              threading.Thread(target=start, args=(server, app,)).start()
+58              return True
+59          else:
+60              return False
+</pre>
+<p>DDE.py是一个利用Socket来模拟实现DDE的功能。它使用50000端口，不知道会不会与其它程序有冲突。</p>
+<p>init()函数是将IP地址进行绑定，准备生成一个Server，如果成功，则说明以前没有启动过NewEdit实例，如果失败，则
+说明以前启动过，则当前实例可以作为一个客户端，将向服务器发送文件名信息。</p>
+<p>start()函数是当init()函数成功时，进入服务器的监听循环。它实现了两个简单的协议:</p>
+<pre class="literal-block">
+data\n数据行
+
+这里数据行为文件，如果有多个文件名，中间用\n隔开
+
+stop
+
+用于通知服务器关闭
+</pre>
+<p>sendraw()是一个发送数据的最底层函数</p>
+<p>stop()用于通知服务器退出</p>
+<p>senddata()用于发送文件名</p>
+<p>run()用来启动服务器，如果init()成功，则启动线程进行服务器监听循环，返回True，表示服务器启动成功。如果
+init()失败，则返回False，表示已经存在服务器程序。</p>
+</div>
+<div class="section" id="dde-ddesupport-py">
+<h1><a class="toc-backref" href="#id3" name="dde-ddesupport-py">二、DDE模块的调用--DDESupport.py</a></h1>
+<p>这里只是简单说明调用的地点和处理:</p>
+<pre class="literal-block">
+1       import DDE
+2       import Mixin
+3       import wx
+4       
+5       def init(app, filenames):
+6           if app.ddeflag:
+7               if not DDE.run(app):
+8       #           print &quot;send data&quot;
+9                   DDE.senddata('\n'.join(filenames))
+10                  return True, False
+11      Mixin.setPlugin('app', 'init', init, Mixin.HIGH, 0)
+12      
+13      def afterclosewindow(win):
+14          if win.app.ddeflag:
+15              DDE.stop()
+16      Mixin.setPlugin('mainframe', 'afterclosewindow', afterclosewindow)
+17      
+18      def init(win):
+19          win.readfiles = []
+20      Mixin.setPlugin('mainframe', 'init', init)
+21      
+22      def on_idle(win, event):
+23          if win.readfiles:
+24              for filename in win.readfiles:
+25                  win.editctrl.new(filename)
+26              win.readfiles = []
+27              win.Show()
+28      Mixin.setPlugin('mainframe', 'on_idle', on_idle)
+</pre>
+<p>大家可能对NewEdit 的结构不熟悉，没关系，我只简单地说明一下。</p>
+<p>DDE的处理是在生成主窗口之前进行的，上面的init()函数。如果调用DDE.run()成功，则什么都不做。如果不成功，则调
+用senddata()将命令行中的文件名发给上一个实例(服务器)。ddeflag表示是否启动DDE功能，此值由命令行选项-n来指定的。</p>
+<p>NewEdit对接收的文件名首先是在DDE.py模块中的start()函数(33行)处理的。可以看到:</p>
+<pre class="literal-block">
+33                              app.frame.readfiles = lines[1:]
+</pre>
+<p>它是把文件名存入到了主窗体的readfiles变量中，并不直接打开。(lines[1:]索引从1开始是因为引一个元素是data命令
+)。原来我是直接写的打开操作，但wxPython报错，说是不可以在线程中执行某些操作，只可以在主线程中进行。没有变法，
+我想了一个变通的方法：我先将文件名保存，然后在IDLE事件激活时，此时系统不忙，再描扫是否变量有值，有则打开，打
+开后，再将readfiles值置为[]即可。因此你会看到on_idle()函数的处理，就是完成这一功能。</p>
+<p>当退出NewEdit时，必须要关闭掉线程。如果不关闭，NewEdit无法正常结束。于是在关闭NewEdit事件中加上通知服务器
+线程关闭的命令，就是afterclosewindow()所做的工做。</p>
+<p>做完这些工作，NewEdit就可以只启动一个实例，并且当打开一个文件时，如果已经存在一个实例，则当前实例不会继续运
+行，而是将文件名发到上一个实例，则它打开文件。</p>
+<p>在Windows上，你可以在sendto菜单中增加一个快捷方式，这样在使用资源管理器时可以方便的使用右键发送功能打开这个
+文件。我的环境下的快捷方式的命令行为:</p>
+<pre class="literal-block">
+C:\Python23\python.exe D:\program\newedit\NewEdit.py
+</pre>
+<p><a class="reference" href="technical.htm">[返回]</a></p>
+</div>
+</div>
+</body>
+</html>

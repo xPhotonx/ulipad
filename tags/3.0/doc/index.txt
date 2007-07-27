@@ -1,0 +1,40 @@
+==============
+ NewEdit 文档
+==============
+
+:作者: limodou
+:联系: limodou@gmail.com
+:日期: $Date: 2005-10-11 12:58:28 +0800 (Tue, 11 Oct 2005) $
+:版本: $Id: index.txt 42 2005-09-28 05:19:21Z limodou $
+:主页: http://wiki.woodpecker.org.cn/moin/NewEdit
+:BLOG: http://www.donews.net/limodou
+:版权: GPL
+
+感谢你下载并使用 NewEdit 软件。本软件还在不停地完善，请经常访问项目主页或作者的Blog以获得最新的信息。
+
+`项目介绍`_
+-----------
+
+.. _`项目介绍`: introduce.htm 
+
+`用户手册`_
+-----------
+
+.. _`用户手册`: userguide.htm
+
+`技术手册`_
+-----------
+
+.. _`技术手册`: technical.htm
+
+`插件介绍`_
+-----------
+
+.. _`插件介绍`: plugins.htm
+
+`FAQ`_
+-------
+
+.. _FAQ: faq.htm
+
+本文档使用reStructuredText格式编写，并使用docutil工具转换而成。本软件文档全部使用NewEdit编写。

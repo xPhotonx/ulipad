@@ -1,0 +1,16 @@
+[include]
+
+[autostring]
+
+[autostring_append]
+
+[autore]
+
+[autore_append]
+
+[autovalues]
+
+[auto_default]
+
+[auto_complete]
+analysis = @acp.rst.utils.analysis

@@ -1,0 +1,135 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resource>
+  <object class="wxDialog" name="FindReplaceDialog">
+    <title>Find &amp; Replace...</title>
+    <centered>1</centered>
+    <size>410,222</size>
+    <style>wxDEFAULT_DIALOG_STYLE</style>
+    <object class="wxComboBox" name="ID_FINDTEXT">
+      <content/>
+      <pos>80,8</pos>
+      <size>200,-1</size>
+    </object>
+    <object class="wxComboBox" name="ID_REPLACETEXT">
+      <content/>
+      <pos>80,32</pos>
+      <size>200,-1</size>
+    </object>
+    <object class="wxButton" name="ID_FIND">
+      <label>Find</label>
+      <default>1</default>
+      <pos>320, 7</pos>
+      <size>80, 22</size>
+    </object>
+    <object class="wxButton" name="ID_REPLACE">
+      <label>Replace</label>
+      <pos>320, 32</pos>
+      <size>80, 22</size>
+    </object>
+    <object class="wxButton" name="ID_REPLACEALL">
+      <label>Replace All</label>
+      <pos>320, 57</pos>
+      <size>80, 22</size>
+    </object>
+    <object class="wxButton" name="ID_CLOSE">
+      <label>Close</label>
+      <pos>320, 83</pos>
+      <size>80, 22</size>
+    </object>
+    <object class="wxCheckBox" name="ID_MATCHCASE">
+      <label>Match Case</label>
+      <pos>10, 66</pos>
+    </object>
+    <object class="wxCheckBox" name="ID_WHOLEWORD">
+      <label>Whole Word</label>
+      <pos>10, 86</pos>
+    </object>
+    <object class="wxRadioBox" name="ID_DIRECTION">
+      <label>Direction</label>
+      <content>
+        <item>Forwards</item>
+        <item>Backwards</item>
+      </content>
+      <pos>100, 54</pos>
+      <style>wxRA_SPECIFY_ROWS</style>
+    </object>
+    <object class="wxCheckBox" name="ID_REGEX">
+      <label>Regular Expression</label>
+      <pos>10, 108</pos>
+    </object>
+    <object class="wxCheckBox" name="ID_REWIND">
+      <label>Rewind as reached the end of the file</label>
+      <checked>1</checked>
+      <pos>150, 108</pos>
+    </object>
+    <object class="wxStaticText">
+      <label>Find for:</label>
+      <pos>10,10</pos>
+    </object>
+    <object class="wxStaticText">
+      <label>Replace As:</label>
+      <pos>10,33</pos>
+    </object>
+    <object class="wxRadioBox" name="ID_SECTION">
+      <label>Repalce Section</label>
+      <content>
+        <item>Whole File</item>
+        <item>Selection</item>
+      </content>
+      <pos>10, 128</pos>
+      <style>wxRA_SPECIFY_ROWS</style>
+    </object>
+  </object>
+  <object class="wxDialog" name="FindDialog">
+    <title>Find...</title>
+    <centered>1</centered>
+    <size>410,142</size>
+    <style>wxDEFAULT_DIALOG_STYLE</style>
+    <object class="wxComboBox" name="ID_FINDTEXT">
+      <content/>
+      <pos>80,8</pos>
+      <size>200,-1</size>
+    </object>
+    <object class="wxButton" name="ID_FIND">
+      <label>Find</label>
+      <default>1</default>
+      <pos>320, 7</pos>
+      <size>80, 22</size>
+    </object>
+    <object class="wxButton" name="ID_CLOSE">
+      <label>Close</label>
+      <pos>320, 37</pos>
+      <size>80, 22</size>
+    </object>
+    <object class="wxCheckBox" name="ID_MATCHCASE">
+      <label>Match Case</label>
+      <pos>10, 40</pos>
+    </object>
+    <object class="wxCheckBox" name="ID_WHOLEWORD">
+      <label>Whole Word</label>
+      <pos>10, 60</pos>
+    </object>
+    <object class="wxRadioBox" name="ID_DIRECTION">
+      <label>Direction</label>
+      <content>
+        <item>Forwards</item>
+        <item>Backwards</item>
+      </content>
+      <pos>100, 30</pos>
+      <style>wxRA_SPECIFY_ROWS</style>
+    </object>
+    <object class="wxCheckBox" name="ID_REGEX">
+      <label>Regular Expression</label>
+      <pos>10, 80</pos>
+    </object>
+    <object class="wxCheckBox" name="ID_REWIND">
+      <label>Rewind as reached the end of the file</label>
+      <checked>1</checked>
+      <pos>150, 80</pos>
+    </object>
+    <object class="wxStaticText">
+      <label>Find for:</label>
+      <pos>10,10</pos>
+    </object>
+  </object>
+</resource>

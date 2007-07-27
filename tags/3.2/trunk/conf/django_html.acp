@@ -1,0 +1,15 @@
+[default]
+projectname = django
+
+[autostring]
+{% block<space> = "{% block !^ %}{% endblock %}"
+
+[autostring_append]
+{{<space> = !^ }}
+{%<space> = block,comment,cycle,debug,extends,filter,firstof,for,if,ifchanged,ifequal,ifnotequal,load,now,regroup,ssi,templatetag,widthratio,
+
+[autore]
+
+[autore_append]
+
+[autovalues]

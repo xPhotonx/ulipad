@@ -1,0 +1,13 @@
+[include]
+1 = mochiket_js.acp
+
+[autostring]
+
+[autostring_append]
+
+[autore]
+
+[autore_append]
+<(\w+).*?> = !^</\1>
+
+[autovalues]

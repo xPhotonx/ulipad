@@ -1,0 +1,15 @@
+[default]
+projectname = django
+
+[autostring]
+{% block<space> = "{% block !^ %}{% endblock %}"
+
+[autostring_append]
+{{<space> = !^ }}
+{%<space> = @acp.python.django_acp.tags
+
+[autore]
+
+[autore_append]
+
+[autovalues]

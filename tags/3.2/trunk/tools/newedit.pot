@@ -1,0 +1,2685 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) YEAR ORGANIZATION
+# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: PACKAGE VERSION\n"
+"POT-Creation-Date: Thu Jan 12 09:00:03 2006\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=CHARSET\n"
+"Content-Transfer-Encoding: ENCODING\n"
+"Generated-By: pygettext.py 1.5\n"
+
+
+#: ../NewEdit.py:137
+msgid "There is something wrong as importing plugins."
+msgstr ""
+
+#: ..\mixins\DirBrowser.py:39
+msgid "Add Directory"
+msgstr ""
+
+#: ..\mixins\DirBrowser.py:40
+msgid "Close Directory"
+msgstr ""
+
+#: ..\mixins\DirBrowser.py:41
+msgid "Set Project"
+msgstr ""
+
+#: ..\mixins\DirBrowser.py:42
+msgid "Open Command Window Here"
+msgstr ""
+
+#: ..\mixins\DirBrowser.py:44
+msgid "Open with Default Editor"
+msgstr ""
+
+#: ..\mixins\DirBrowser.py:45
+msgid "Add Sub Directory"
+msgstr ""
+
+#: ..\mixins\DirBrowser.py:46
+msgid "Add File"
+msgstr ""
+
+#: ..\mixins\DirBrowser.py:47 ..\mixins\Import.py:4414 ..\mixins\mFtp.py:101
+msgid "Rename"
+msgstr ""
+
+#: ..\mixins\DirBrowser.py:48 ..\mixins\FtpClass.py:456
+#: ..\mixins\Import.py:4413 ..\mixins\ShareWindow.py:39 ..\mixins\mFtp.py:100
+msgid "Delete"
+msgstr ""
+
+#: ..\mixins\DirBrowser.py:49 ..\mixins\FtpClass.py:111
+#: ..\mixins\HtmlPage.py:105 ..\mixins\Import.py:4416 ..\mixins\mFtp.py:103
+msgid "Refresh"
+msgstr ""
+
+#: ..\mixins\DirBrowser.py:51
+msgid "Ignore This"
+msgstr ""
+
+#: ..\mixins\DirBrowser.py:52
+msgid "Ignore This Type"
+msgstr ""
+
+#: ..\mixins\DirBrowser.py:56
+msgid "Open new directory"
+msgstr ""
+
+#: ..\mixins\DirBrowser.py:57
+msgid "Open NewEdit Work Path"
+msgstr ""
+
+#: ..\mixins\DirBrowser.py:58
+msgid "Open NewEdit User Path"
+msgstr ""
+
+#: ..\mixins\DirBrowser.py:60
+msgid "Clean Recently Directoris"
+msgstr ""
+
+#: ..\mixins\DirBrowser.py:62 ..\mixins\DirBrowser.py:190
+#: ..\mixins\Import.py:727 ..\mixins\Import.py:731 ..\mixins\Import.py:790
+#: ..\mixins\Import.py:809 ..\mixins\Import.py:873 ..\mixins\Import.py:3233
+#: ..\mixins\Import.py:3261 ..\mixins\Import.py:3766 ..\mixins\Import.py:3794
+#: ..\mixins\mRecentFile.py:37 ..\mixins\mRecentFile.py:41
+#: ..\mixins\mRecentFile.py:100 ..\mixins\mRecentFile.py:119
+#: ..\mixins\mRecentFile.py:184 ..\mixins\mScript.py:42
+#: ..\mixins\mScript.py:70 ..\mixins\mShellRun.py:47 ..\mixins\mShellRun.py:75
+msgid "(empty)"
+msgstr ""
+
+#: ..\mixins\DirBrowser.py:201
+msgid "Select directory:"
+msgstr ""
+
+#: ..\mixins\DirBrowser.py:310
+msgid "Filename %s has exists!"
+msgstr ""
+
+#: ..\mixins\DirBrowser.py:318
+msgid "Cannot change the filename %s to %s!"
+msgstr ""
+
+#: ..\mixins\DirBrowser.py:397
+msgid "Directory %s has exists!"
+msgstr ""
+
+#: ..\mixins\DirBrowser.py:404
+msgid "Create directory %s error!"
+msgstr ""
+
+#: ..\mixins\DirBrowser.py:432
+msgid "Do you want to delete %s ?"
+msgstr ""
+
+#: ..\mixins\DirBrowser.py:432 ..\mixins\Import.py:3077
+#: ..\mixins\Import.py:4587 ..\mixins\Import.py:4591 ..\mixins\Import.py:4592
+#: ..\mixins\Import.py:4602 ..\mixins\Import.py:4620 ..\mixins\Import.py:4673
+#: ..\mixins\Import.py:4684 ..\mixins\Import.py:4926
+#: ..\mixins\ShareWindow.py:285 ..\mixins\mConvert.py:261
+#: ..\mixins\mRegister.py:53 ..\mixins\mRegister.py:64 ..\mixins\mRun.py:55
+#: ..\mixins\mWindow.py:100 ..\mixins\mWindow.py:104 ..\mixins\mWindow.py:105
+#: ..\mixins\mWindow.py:115 ..\mixins\mWindow.py:133 ..\modules\common.py:101
+msgid "Message"
+msgstr ""
+
+#: ..\mixins\DirBrowser.py:440
+msgid "Cannot delete directory %s!"
+msgstr ""
+
+#: ..\mixins\DirBrowser.py:447
+msgid "Cannot delete file %s!"
+msgstr ""
+
+#: ..\mixins\DirBrowser.py:617
+msgid "Project Names"
+msgstr ""
+
+#: ..\mixins\DirBrowser.py:618
+msgid "Project Name"
+msgstr ""
+
+#: ..\mixins\DirBrowser.py:620 ..\mixins\FtpClass.py:361
+#: ..\mixins\PluginDialog.py:49
+msgid "Name"
+msgstr ""
+
+#: ..\mixins\DirBrowser.py:625
+msgid "Project Setting"
+msgstr ""
+
+#: ..\mixins\DirBrowser.py:656
+msgid ""
+"This features is only implemented in Windows Platform.\n"
+"If you know how to implement in Linux please tell me."
+msgstr ""
+
+#: ..\mixins\Editor.py:227
+msgid "Open file error!"
+msgstr ""
+
+#: ..\mixins\EditorFactory.py:105 ..\mixins\EditorFactory.py:149
+#: ..\mixins\EditorFactory.py:181
+msgid "Open file..."
+msgstr ""
+
+#: ..\mixins\EditorFactory.py:105 ..\mixins\EditorFactory.py:149
+#: ..\mixins\EditorFactory.py:181 ..\mixins\Import.py:827
+#: ..\mixins\Import.py:3282 ..\mixins\mRecentFile.py:137
+#: ..\mixins\mScript.py:91
+msgid "Can't open the file [%s]!"
+msgstr ""
+
+#: ..\mixins\EncodingDialog.py:30
+msgid "Default"
+msgstr ""
+
+#: ..\mixins\FindInFiles.py:30
+msgid "Find in files..."
+msgstr ""
+
+#: ..\mixins\FindInFiles.py:43
+msgid "Multiple directories or extensions should be separated by semicolons ';'"
+msgstr ""
+
+#: ..\mixins\FindInFiles.py:48
+msgid "Search for:"
+msgstr ""
+
+#: ..\mixins\FindInFiles.py:63
+msgid "Directories:"
+msgstr ""
+
+#: ..\mixins\FindInFiles.py:71
+msgid "Add Path"
+msgstr ""
+
+#: ..\mixins\FindInFiles.py:78
+msgid "Extensions:"
+msgstr ""
+
+#: ..\mixins\FindInFiles.py:90
+msgid "Case sensitive"
+msgstr ""
+
+#: ..\mixins\FindInFiles.py:94
+msgid "Search Subdirectories"
+msgstr ""
+
+#: ..\mixins\FindInFiles.py:98
+msgid "Regular Expression"
+msgstr ""
+
+#: ..\mixins\FindInFiles.py:110
+msgid "Status:"
+msgstr ""
+
+#: ..\mixins\FindInFiles.py:112
+msgid "Ready."
+msgstr ""
+
+#: ..\mixins\FindInFiles.py:117 ..\mixins\FindInFiles.py:180
+#: ..\mixins\FindInFiles.py:297
+msgid "Start Search"
+msgstr ""
+
+#: ..\mixins\FindInFiles.py:149
+msgid "Choose a directory"
+msgstr ""
+
+#: ..\mixins\FindInFiles.py:169
+msgid "Stopping...please wait."
+msgstr ""
+
+#: ..\mixins\FindInFiles.py:179
+msgid "Search cancelled."
+msgstr ""
+
+#: ..\mixins\FindInFiles.py:189
+msgid "Stop Search"
+msgstr ""
+
+#: ..\mixins\FindInFiles.py:196
+msgid "Waiting for another process to stop, please wait."
+msgstr ""
+
+#: ..\mixins\FindInFiles.py:267
+msgid "Found %i instances in %i files out of %i files checked."
+msgstr ""
+
+#: ..\mixins\FindInFiles.py:287
+msgid "...searching..."
+msgstr ""
+
+#: ..\mixins\FindInFiles.py:292
+msgid "...cancelled."
+msgstr ""
+
+#: ..\mixins\FindInFiles.py:296
+msgid "...done."
+msgstr ""
+
+#: ..\mixins\FindReplaceDialog.py:83 ..\mixins\FindReplaceDialog.py:103
+#: ..\mixins\FindReplaceDialog.py:125 ..\mixins\FindReplaceDialog.py:216
+msgid "Cann't find the text !"
+msgstr ""
+
+#: ..\mixins\FindReplaceDialog.py:110
+msgid "Find result"
+msgstr ""
+
+#: ..\mixins\FindReplaceDialog.py:218
+msgid "Total replaced %d places!"
+msgstr ""
+
+#: ..\mixins\FindReplaceDialog.py:252 ..\mixins\FindReplaceDialog.py:342
+#: ..\mixins\FindReplaceDialog.py:351
+msgid "Target text cann't be empty!"
+msgstr ""
+
+#: ..\mixins\FtpClass.py:62
+msgid "Site:"
+msgstr ""
+
+#: ..\mixins\FtpClass.py:69 ..\mixins\FtpClass.py:787
+msgid "User Name:"
+msgstr ""
+
+#: ..\mixins\FtpClass.py:75 ..\mixins\FtpClass.py:797
+msgid "Password:"
+msgstr ""
+
+#: ..\mixins\FtpClass.py:82
+msgid "Connect"
+msgstr ""
+
+#: ..\mixins\FtpClass.py:87
+msgid "Disconnect"
+msgstr ""
+
+#: ..\mixins\FtpClass.py:98
+msgid "Encoding:"
+msgstr ""
+
+#: ..\mixins\FtpClass.py:104
+msgid "Remote Path:"
+msgstr ""
+
+#: ..\mixins\FtpClass.py:116
+msgid "Site Set"
+msgstr ""
+
+#: ..\mixins\FtpClass.py:180
+msgid "Connecting to %s(%s:%s)"
+msgstr ""
+
+#: ..\mixins\FtpClass.py:184 ..\mixins\FtpClass.py:615
+#: ..\mixins\FtpClass.py:648
+msgid "Connect canceled"
+msgstr ""
+
+#: ..\mixins\FtpClass.py:187
+msgid "Loginning"
+msgstr ""
+
+#: ..\mixins\FtpClass.py:230
+msgid "Disconnected"
+msgstr ""
+
+#: ..\mixins\FtpClass.py:237
+msgid "Retrieving the file"
+msgstr ""
+
+#: ..\mixins\FtpClass.py:248
+msgid "Get Encoding"
+msgstr ""
+
+#: ..\mixins\FtpClass.py:248
+msgid "Input encoding name"
+msgstr ""
+
+#: ..\mixins\FtpClass.py:257
+msgid "Refresh current path"
+msgstr ""
+
+#: ..\mixins\FtpClass.py:337
+msgid "changing current directory"
+msgstr ""
+
+#: ..\mixins\FtpClass.py:362
+msgid "Size"
+msgstr ""
+
+#: ..\mixins\FtpClass.py:363 ..\mixins\Import.py:1399 ..\mixins\Import.py:1422
+#: ..\mixins\mFormat.py:30 ..\mixins\mFormat.py:53
+msgid "Format"
+msgstr ""
+
+#: ..\mixins\FtpClass.py:371
+msgid "Parent folder"
+msgstr ""
+
+#: ..\mixins\FtpClass.py:401
+msgid "Input Filename"
+msgstr ""
+
+#: ..\mixins\FtpClass.py:401
+msgid "Input new file name:"
+msgstr ""
+
+#: ..\mixins\FtpClass.py:410
+msgid ""
+"The filename has been existed!\n"
+"Please try another."
+msgstr ""
+
+#: ..\mixins\FtpClass.py:427
+msgid "Input directory name"
+msgstr ""
+
+#: ..\mixins\FtpClass.py:427
+msgid "Input new directory name:"
+msgstr ""
+
+#: ..\mixins\FtpClass.py:436
+msgid ""
+"The directory name has been existed!\n"
+"Please try another."
+msgstr ""
+
+#: ..\mixins\FtpClass.py:456
+msgid "Do you want to delete %s?"
+msgstr ""
+
+#: ..\mixins\FtpClass.py:479
+msgid "Change name"
+msgstr ""
+
+#: ..\mixins\FtpClass.py:479
+msgid "Input the new name:"
+msgstr ""
+
+#: ..\mixins\FtpClass.py:503
+msgid "The upload filename cann't be empty."
+msgstr ""
+
+#: ..\mixins\FtpClass.py:510
+msgid "The file is existed! Do you want to overwrite it?"
+msgstr ""
+
+#: ..\mixins\FtpClass.py:510
+msgid "Upload File"
+msgstr ""
+
+#: ..\mixins\FtpClass.py:515
+msgid "Uploading file..."
+msgstr ""
+
+#: ..\mixins\FtpClass.py:535
+msgid "Upload finished"
+msgstr ""
+
+#: ..\mixins\FtpClass.py:549
+msgid "The download filename cann't be empty."
+msgstr ""
+
+#: ..\mixins\FtpClass.py:554
+msgid "Downloading file..."
+msgstr ""
+
+#: ..\mixins\FtpClass.py:573
+msgid "Download finished"
+msgstr ""
+
+#: ..\mixins\FtpClass.py:604 ..\mixins\FtpClass.py:637
+msgid "Cann't find the ftp site entry."
+msgstr ""
+
+#: ..\mixins\FtpClass.py:706
+msgid "Add Ftp Site"
+msgstr ""
+
+#: ..\mixins\FtpClass.py:706
+msgid "The site name is duplicated! Try another."
+msgstr ""
+
+#: ..\mixins\FtpClass.py:781
+msgid "Ftp site: %s"
+msgstr ""
+
+#: ..\mixins\FtpClass.py:806 ..\mixins\FtpClass.py:854
+#: ..\mixins\FtpClass.py:901 ..\mixins\HtmlPage.py:54 ..\mixins\Import.py:2867
+#: ..\mixins\InterpreterDialog.py:59 ..\mixins\InterpreterDialog.py:179
+#: ..\mixins\PluginDialog.py:59 ..\mixins\PrefDialog.py:50
+#: ..\mixins\ScriptDialog.py:62 ..\mixins\ShellDialog.py:66
+#: ..\mixins\mHelp.py:54 ..\modules\Entry.py:37 ..\modules\Entry.py:70
+msgid "OK"
+msgstr ""
+
+#: ..\mixins\FtpClass.py:809 ..\mixins\FtpClass.py:857
+#: ..\mixins\FtpClass.py:904 ..\mixins\InterpreterDialog.py:62
+#: ..\mixins\InterpreterDialog.py:182 ..\mixins\PluginDialog.py:62
+#: ..\mixins\PrefDialog.py:53 ..\mixins\ScriptDialog.py:65
+#: ..\mixins\ShellDialog.py:69 ..\modules\Entry.py:40 ..\modules\Entry.py:73
+msgid "Cancel"
+msgstr ""
+
+#: ..\mixins\FtpClass.py:830
+msgid "Upload file"
+msgstr ""
+
+#: ..\mixins\FtpClass.py:833
+msgid "Upload filename:"
+msgstr ""
+
+#: ..\mixins\FtpClass.py:840 ..\mixins\FtpClass.py:892 ..\modules\Entry.py:66
+msgid "Browser"
+msgstr ""
+
+#: ..\mixins\FtpClass.py:844
+msgid "New filename:"
+msgstr ""
+
+#: ..\mixins\FtpClass.py:849 ..\mixins\FtpClass.py:896
+msgid "Use binary transfer mode"
+msgstr ""
+
+#: ..\mixins\FtpClass.py:871 ..\mixins\FtpClass.py:918
+#: ..\mixins\SnippetWindow.py:565 ..\mixins\SnippetWindow.py:582
+#: ..\modules\Entry.py:89
+msgid "Select A File"
+msgstr ""
+
+#: ..\mixins\FtpClass.py:871 ..\mixins\FtpClass.py:918 ..\modules\Entry.py:89
+msgid "All file (*.*)|*.*"
+msgstr ""
+
+#: ..\mixins\FtpClass.py:880
+msgid "Download file"
+msgstr ""
+
+#: ..\mixins\FtpClass.py:885
+msgid "Download filename:"
+msgstr ""
+
+#: ..\mixins\HtmlPage.py:93 ..\mixins\Import.py:386 ..\mixins\mComEdit.py:86
+msgid "Edit"
+msgstr ""
+
+#: ..\mixins\Import.py:51 ..\mixins\mPreference.py:29
+msgid "Option"
+msgstr ""
+
+#: ..\mixins\Import.py:55 ..\mixins\Import.py:686 ..\mixins\mPreference.py:33
+#: ..\mixins\mToolbar.py:57
+msgid "Setup program preferences"
+msgstr ""
+
+#: ..\mixins\Import.py:55 ..\mixins\PrefDialog.py:36
+#: ..\mixins\mPreference.py:33
+msgid "Preference..."
+msgstr ""
+
+#: ..\mixins\Import.py:114 ..\mixins\Import.py:115 ..\mixins\Import.py:678
+#: ..\mixins\mEditorCtrl.py:33 ..\mixins\mEditorCtrl.py:34
+#: ..\mixins\mToolbar.py:49
+msgid "Creates a new document"
+msgstr ""
+
+#: ..\mixins\Import.py:114 ..\mixins\Import.py:115 ..\mixins\mEditorCtrl.py:33
+#: ..\mixins\mEditorCtrl.py:34
+msgid "New"
+msgstr ""
+
+#: ..\mixins\Import.py:116 ..\mixins\Import.py:188 ..\mixins\Import.py:840
+#: ..\mixins\Import.py:4410 ..\mixins\mEditorCtrl.py:35
+#: ..\mixins\mEditorCtrl.py:107 ..\mixins\mFtp.py:97
+#: ..\mixins\mRecentFile.py:150
+msgid "Open"
+msgstr ""
+
+#: ..\mixins\Import.py:116 ..\mixins\Import.py:679 ..\mixins\mEditorCtrl.py:35
+#: ..\mixins\mToolbar.py:50
+msgid "Opens an existing document"
+msgstr ""
+
+#: ..\mixins\Import.py:117 ..\mixins\mEditorCtrl.py:36
+msgid "Reopen"
+msgstr ""
+
+#: ..\mixins\Import.py:117 ..\mixins\mEditorCtrl.py:36
+msgid "Reopens an existing document"
+msgstr ""
+
+#: ..\mixins\Import.py:118 ..\mixins\Import.py:130 ..\mixins\MyPanel.py:318
+#: ..\mixins\mEditorCtrl.py:37 ..\mixins\mEditorCtrl.py:49
+msgid "Close"
+msgstr ""
+
+#: ..\mixins\Import.py:118 ..\mixins\Import.py:130 ..\mixins\mEditorCtrl.py:37
+#: ..\mixins\mEditorCtrl.py:49
+msgid "Closes an opened document"
+msgstr ""
+
+#: ..\mixins\Import.py:119 ..\mixins\Import.py:131 ..\mixins\mEditorCtrl.py:38
+#: ..\mixins\mEditorCtrl.py:50
+msgid "Close All"
+msgstr ""
+
+#: ..\mixins\Import.py:119 ..\mixins\Import.py:131 ..\mixins\mEditorCtrl.py:38
+#: ..\mixins\mEditorCtrl.py:50
+msgid "Closes all document windows"
+msgstr ""
+
+#: ..\mixins\Import.py:121 ..\mixins\Import.py:133 ..\mixins\Import.py:680
+#: ..\mixins\mEditorCtrl.py:40 ..\mixins\mEditorCtrl.py:52
+#: ..\mixins\mToolbar.py:51
+msgid "Saves an opened document using the same filename"
+msgstr ""
+
+#: ..\mixins\Import.py:121 ..\mixins\Import.py:133 ..\mixins\mEditorCtrl.py:40
+#: ..\mixins\mEditorCtrl.py:52
+msgid "Save"
+msgstr ""
+
+#: ..\mixins\Import.py:122 ..\mixins\Import.py:134 ..\mixins\mEditorCtrl.py:41
+#: ..\mixins\mEditorCtrl.py:53
+msgid "Save As"
+msgstr ""
+
+#: ..\mixins\Import.py:122 ..\mixins\mEditorCtrl.py:41
+msgid "Saves an opened document to a specified filename"
+msgstr ""
+
+#: ..\mixins\Import.py:123 ..\mixins\Import.py:135 ..\mixins\mEditorCtrl.py:42
+#: ..\mixins\mEditorCtrl.py:54
+msgid "Save All"
+msgstr ""
+
+#: ..\mixins\Import.py:123 ..\mixins\Import.py:135 ..\mixins\mEditorCtrl.py:42
+#: ..\mixins\mEditorCtrl.py:54
+msgid "Saves all documents"
+msgstr ""
+
+#: ..\mixins\Import.py:163 ..\mixins\mEditorCtrl.py:82
+msgid "All files (*.*)|*"
+msgstr ""
+
+#: ..\mixins\Import.py:212 ..\mixins\mEditorCtrl.py:131
+msgid "Reopen file..."
+msgstr ""
+
+#: ..\mixins\Import.py:212 ..\mixins\mEditorCtrl.py:131
+msgid ""
+"This document has been modified,\n"
+"do you really want to reload the file?"
+msgstr ""
+
+#: ..\mixins\Import.py:249 ..\mixins\mEditorCtrl.py:168
+msgid "Would you like to save %s ?"
+msgstr ""
+
+#: ..\mixins\Import.py:250 ..\mixins\mEditorCtrl.py:169
+msgid "Close File"
+msgstr ""
+
+#: ..\mixins\Import.py:286 ..\mixins\mEditorCtrl.py:205
+msgid "Save File %s As"
+msgstr ""
+
+#: ..\mixins\Import.py:295 ..\mixins\mEditorCtrl.py:214
+msgid ""
+"Ths file %s has been openned!\n"
+"Cann't save new file to it."
+msgstr ""
+
+#: ..\mixins\Import.py:296 ..\mixins\mEditorCtrl.py:215
+msgid "Save As..."
+msgstr ""
+
+#: ..\mixins\Import.py:332 ..\mixins\Import.py:390 ..\mixins\Import.py:684
+#: ..\mixins\mComEdit.py:32 ..\mixins\mComEdit.py:90 ..\mixins\mToolbar.py:55
+msgid "Reverse previous editing operation"
+msgstr ""
+
+#: ..\mixins\Import.py:332 ..\mixins\Import.py:390 ..\mixins\mComEdit.py:32
+#: ..\mixins\mComEdit.py:90
+msgid "Undo"
+msgstr ""
+
+#: ..\mixins\Import.py:333 ..\mixins\Import.py:391 ..\mixins\Import.py:685
+#: ..\mixins\mComEdit.py:33 ..\mixins\mComEdit.py:91 ..\mixins\mToolbar.py:56
+msgid "Reverse previous undo operation"
+msgstr ""
+
+#: ..\mixins\Import.py:333 ..\mixins\Import.py:391 ..\mixins\mComEdit.py:33
+#: ..\mixins\mComEdit.py:91
+msgid "Redo"
+msgstr ""
+
+#: ..\mixins\Import.py:335 ..\mixins\Import.py:393 ..\mixins\Import.py:681
+#: ..\mixins\mComEdit.py:35 ..\mixins\mComEdit.py:93 ..\mixins\mToolbar.py:52
+msgid "Deletes text from the document and moves it to the clipboard"
+msgstr ""
+
+#: ..\mixins\Import.py:335 ..\mixins\Import.py:393 ..\mixins\mComEdit.py:35
+#: ..\mixins\mComEdit.py:93
+msgid "Cut"
+msgstr ""
+
+#: ..\mixins\Import.py:336 ..\mixins\Import.py:394 ..\mixins\Import.py:682
+#: ..\mixins\mComEdit.py:36 ..\mixins\mComEdit.py:94 ..\mixins\mToolbar.py:53
+msgid "Copies text from the document to the clipboard"
+msgstr ""
+
+#: ..\mixins\Import.py:336 ..\mixins\Import.py:394 ..\mixins\mComEdit.py:36
+#: ..\mixins\mComEdit.py:94
+msgid "Copy"
+msgstr ""
+
+#: ..\mixins\Import.py:337 ..\mixins\Import.py:395 ..\mixins\Import.py:683
+#: ..\mixins\mComEdit.py:37 ..\mixins\mComEdit.py:95 ..\mixins\mToolbar.py:54
+msgid "Pastes text from the clipboard into the document"
+msgstr ""
+
+#: ..\mixins\Import.py:337 ..\mixins\Import.py:395 ..\mixins\mComEdit.py:37
+#: ..\mixins\mComEdit.py:95
+msgid "Paste"
+msgstr ""
+
+#: ..\mixins\Import.py:339 ..\mixins\Import.py:397 ..\mixins\mComEdit.py:39
+#: ..\mixins\mComEdit.py:97
+msgid "Selection"
+msgstr ""
+
+#: ..\mixins\Import.py:344 ..\mixins\Import.py:402 ..\mixins\mComEdit.py:44
+#: ..\mixins\mComEdit.py:102
+msgid "Select Word"
+msgstr ""
+
+#: ..\mixins\Import.py:344 ..\mixins\Import.py:402 ..\mixins\mComEdit.py:44
+#: ..\mixins\mComEdit.py:102
+msgid "Selects current word"
+msgstr ""
+
+#: ..\mixins\Import.py:345 ..\mixins\Import.py:403 ..\mixins\mComEdit.py:45
+#: ..\mixins\mComEdit.py:103
+msgid "Select Word Extent"
+msgstr ""
+
+#: ..\mixins\Import.py:345 ..\mixins\Import.py:403 ..\mixins\mComEdit.py:45
+#: ..\mixins\mComEdit.py:103
+msgid "Selects current word include \".\""
+msgstr ""
+
+#: ..\mixins\Import.py:346 ..\mixins\Import.py:404 ..\mixins\mComEdit.py:46
+#: ..\mixins\mComEdit.py:104
+msgid "Match Select (Left First)"
+msgstr ""
+
+#: ..\mixins\Import.py:346 ..\mixins\Import.py:404 ..\mixins\mComEdit.py:46
+#: ..\mixins\mComEdit.py:104
+msgid "Selects the text encluded by (){}[]<>\"\"'', matching left first"
+msgstr ""
+
+#: ..\mixins\Import.py:347 ..\mixins\Import.py:405 ..\mixins\mComEdit.py:47
+#: ..\mixins\mComEdit.py:105
+msgid "Match Select (Right First)"
+msgstr ""
+
+#: ..\mixins\Import.py:347 ..\mixins\Import.py:405 ..\mixins\mComEdit.py:47
+#: ..\mixins\mComEdit.py:105
+msgid "Selects the text encluded by (){}[]<>\"\"'', matching right first"
+msgstr ""
+
+#: ..\mixins\Import.py:348 ..\mixins\Import.py:406 ..\mixins\mComEdit.py:48
+#: ..\mixins\mComEdit.py:106
+msgid "Enlarge Selection"
+msgstr ""
+
+#: ..\mixins\Import.py:348 ..\mixins\Import.py:406 ..\mixins\mComEdit.py:48
+#: ..\mixins\mComEdit.py:106
+msgid "Enlarges selection"
+msgstr ""
+
+#: ..\mixins\Import.py:349 ..\mixins\Import.py:407 ..\mixins\mComEdit.py:49
+#: ..\mixins\mComEdit.py:107
+msgid "Select Line"
+msgstr ""
+
+#: ..\mixins\Import.py:349 ..\mixins\Import.py:407 ..\mixins\mComEdit.py:49
+#: ..\mixins\mComEdit.py:107
+msgid "Select current phrase"
+msgstr ""
+
+#: ..\mixins\Import.py:350 ..\mixins\Import.py:408 ..\mixins\mComEdit.py:50
+#: ..\mixins\mComEdit.py:108
+msgid "Select All"
+msgstr ""
+
+#: ..\mixins\Import.py:350 ..\mixins\Import.py:408 ..\mixins\mComEdit.py:50
+#: ..\mixins\mComEdit.py:108
+msgid "Selects the entire document"
+msgstr ""
+
+#: ..\mixins\Import.py:678 ..\mixins\mToolbar.py:49
+msgid "new"
+msgstr ""
+
+#: ..\mixins\Import.py:679 ..\mixins\mToolbar.py:50
+msgid "open"
+msgstr ""
+
+#: ..\mixins\Import.py:680 ..\mixins\mToolbar.py:51
+msgid "save"
+msgstr ""
+
+#: ..\mixins\Import.py:681 ..\mixins\mToolbar.py:52
+msgid "cut"
+msgstr ""
+
+#: ..\mixins\Import.py:682 ..\mixins\mToolbar.py:53
+msgid "copy"
+msgstr ""
+
+#: ..\mixins\Import.py:683 ..\mixins\mToolbar.py:54
+msgid "paste"
+msgstr ""
+
+#: ..\mixins\Import.py:684 ..\mixins\mToolbar.py:55
+msgid "undo"
+msgstr ""
+
+#: ..\mixins\Import.py:685 ..\mixins\mToolbar.py:56
+msgid "redo"
+msgstr ""
+
+#: ..\mixins\Import.py:686 ..\mixins\mToolbar.py:57
+msgid "preference"
+msgstr ""
+
+#: ..\mixins\Import.py:722 ..\mixins\mRecentFile.py:32
+msgid "Open Recent File"
+msgstr ""
+
+#: ..\mixins\Import.py:723 ..\mixins\mRecentFile.py:33
+msgid "Open Recent Path"
+msgstr ""
+
+#: ..\mixins\Import.py:744 ..\mixins\Import.py:745 ..\mixins\Import.py:982
+#: ..\mixins\Import.py:2406 ..\mixins\Import.py:2475 ..\mixins\Import.py:2536
+#: ..\mixins\Import.py:3921 ..\mixins\Import.py:3922 ..\mixins\Import.py:3923
+#: ..\mixins\Import.py:4088 ..\mixins\Import.py:4089 ..\mixins\Import.py:5425
+#: ..\mixins\Import.py:5532 ..\mixins\Import.py:5533 ..\mixins\Import.py:5671
+#: ..\mixins\Import.py:5792 ..\mixins\Import.py:5793 ..\mixins\Import.py:5794
+#: ..\mixins\Import.py:5795 ..\mixins\mDirBrowser.py:94
+#: ..\mixins\mDirBrowser.py:95 ..\mixins\mDuplicate.py:38
+#: ..\mixins\mEncoding.py:42 ..\mixins\mEncoding.py:43
+#: ..\mixins\mEncoding.py:44 ..\mixins\mFileNew.py:96
+#: ..\mixins\mLastStatus.py:38 ..\mixins\mLexerFactory.py:74
+#: ..\mixins\mLexerFactory.py:75 ..\mixins\mProxy.py:37 ..\mixins\mProxy.py:38
+#: ..\mixins\mProxy.py:39 ..\mixins\mProxy.py:40 ..\mixins\mRecentFile.py:54
+#: ..\mixins\mRecentFile.py:55 ..\mixins\mSearch.py:119
+#: ..\mixins\mSession.py:36 ..\mixins\mSplashWin.py:31
+msgid "General"
+msgstr ""
+
+#: ..\mixins\Import.py:744 ..\mixins\mRecentFile.py:54
+msgid "Max number of recent files:"
+msgstr ""
+
+#: ..\mixins\Import.py:745 ..\mixins\mRecentFile.py:55
+msgid "Max number of recent paths:"
+msgstr ""
+
+#: ..\mixins\Import.py:848 ..\mixins\mRecentFile.py:158
+msgid "Can't open the path [%s]!"
+msgstr ""
+
+#: ..\mixins\Import.py:861 ..\mixins\mRecentFile.py:172 ..\mixins\mTest.py:13
+msgid "Open path"
+msgstr ""
+
+#: ..\mixins\Import.py:861 ..\mixins\mRecentFile.py:172 ..\mixins\mTest.py:13
+msgid "open path"
+msgstr ""
+
+#: ..\mixins\Import.py:896 ..\mixins\mSearch.py:33
+msgid "Search"
+msgstr ""
+
+#: ..\mixins\Import.py:900 ..\mixins\Import.py:928 ..\mixins\mSearch.py:37
+#: ..\mixins\mSearch.py:65
+msgid "Find text"
+msgstr ""
+
+#: ..\mixins\Import.py:900 ..\mixins\mSearch.py:37
+msgid "Find..."
+msgstr ""
+
+#: ..\mixins\Import.py:901 ..\mixins\mSearch.py:38
+msgid "Direct Find"
+msgstr ""
+
+#: ..\mixins\Import.py:901 ..\mixins\mSearch.py:38
+msgid "Direct find selected text"
+msgstr ""
+
+#: ..\mixins\Import.py:902 ..\mixins\Import.py:929 ..\mixins\mSearch.py:39
+#: ..\mixins\mSearch.py:66
+msgid "Find and replace text"
+msgstr ""
+
+#: ..\mixins\Import.py:902 ..\mixins\mSearch.py:39
+msgid "Replace..."
+msgstr ""
+
+#: ..\mixins\Import.py:903 ..\mixins\mSearch.py:40
+msgid "Find Next"
+msgstr ""
+
+#: ..\mixins\Import.py:903 ..\mixins\mSearch.py:40
+msgid "Find next occurance of text"
+msgstr ""
+
+#: ..\mixins\Import.py:904 ..\mixins\mSearch.py:41
+msgid "Find Previous"
+msgstr ""
+
+#: ..\mixins\Import.py:904 ..\mixins\mSearch.py:41
+msgid "Find previous occurance of text"
+msgstr ""
+
+#: ..\mixins\Import.py:906 ..\mixins\Import.py:996 ..\mixins\mSearch.py:43
+#: ..\mixins\mSearch.py:133
+msgid "Go to Line..."
+msgstr ""
+
+#: ..\mixins\Import.py:906 ..\mixins\mSearch.py:43
+msgid "Goes to specified line in the active document"
+msgstr ""
+
+#: ..\mixins\Import.py:907 ..\mixins\mSearch.py:44
+msgid "Go to Last Modify"
+msgstr ""
+
+#: ..\mixins\Import.py:907 ..\mixins\mSearch.py:44
+msgid "Goes to the last modify position"
+msgstr ""
+
+#: ..\mixins\Import.py:928 ..\mixins\mSearch.py:65
+msgid "find"
+msgstr ""
+
+#: ..\mixins\Import.py:929 ..\mixins\mSearch.py:66
+msgid "replace"
+msgstr ""
+
+#: ..\mixins\Import.py:982 ..\mixins\mSearch.py:119
+msgid "Max number of saved items:"
+msgstr ""
+
+#: ..\mixins\Import.py:996 ..\mixins\mSearch.py:133
+msgid "Enter the Line Number:"
+msgstr ""
+
+#: ..\mixins\Import.py:1039 ..\mixins\Import.py:1046 ..\mixins\Import.py:1053
+#: ..\mixins\mPosition.py:34 ..\mixins\mPosition.py:41
+#: ..\mixins\mPosition.py:48
+msgid "Line: %d"
+msgstr ""
+
+#: ..\mixins\Import.py:1040 ..\mixins\Import.py:1047 ..\mixins\Import.py:1054
+#: ..\mixins\mPosition.py:35 ..\mixins\mPosition.py:42
+#: ..\mixins\mPosition.py:49
+msgid "Col: %d"
+msgstr ""
+
+#: ..\mixins\Import.py:1065 ..\mixins\mLineending.py:28
+msgid "DOS/Windows Mode ('\\r\\n')"
+msgstr ""
+
+#: ..\mixins\Import.py:1065 ..\mixins\mLineending.py:28
+msgid "Mac Mode ('\\r')"
+msgstr ""
+
+#: ..\mixins\Import.py:1065 ..\mixins\mLineending.py:28
+msgid "Unix Mode ('\\n')"
+msgstr ""
+
+#: ..\mixins\Import.py:1077 ..\mixins\Import.py:1187 ..\mixins\Import.py:1327
+#: ..\mixins\Import.py:1328 ..\mixins\Import.py:1329 ..\mixins\Import.py:1330
+#: ..\mixins\Import.py:1486 ..\mixins\Import.py:1844 ..\mixins\Import.py:1867
+#: ..\mixins\Import.py:1868 ..\mixins\Import.py:1869 ..\mixins\Import.py:2012
+#: ..\mixins\Import.py:2178 ..\mixins\Import.py:3491 ..\mixins\Import.py:3521
+#: ..\mixins\Import.py:4147 ..\mixins\Import.py:4900 ..\mixins\Import.py:5617
+#: ..\mixins\Import.py:5912 ..\mixins\mAutoBak.py:31
+#: ..\mixins\mAutoCheck.py:31 ..\mixins\mConvert.py:235
+#: ..\mixins\mDClickCloseFile.py:32 ..\mixins\mDocument.py:31
+#: ..\mixins\mDocument.py:54 ..\mixins\mDocument.py:55
+#: ..\mixins\mDocument.py:56 ..\mixins\mFolder.py:33 ..\mixins\mFormat.py:131
+#: ..\mixins\mInputAssistant.py:90 ..\mixins\mLineending.py:40
+#: ..\mixins\mSyntaxPref.py:43 ..\mixins\mTodoWindow.py:48
+#: ..\mixins\mUnicode.py:38 ..\mixins\mView.py:92 ..\mixins\mView.py:93
+#: ..\mixins\mView.py:94 ..\mixins\mView.py:95
+msgid "Document"
+msgstr ""
+
+#: ..\mixins\Import.py:1077 ..\mixins\mLineending.py:40
+msgid "Default line ending used in document:"
+msgstr ""
+
+#: ..\mixins\Import.py:1090 ..\mixins\mLineending.py:53
+msgid "Convert Line Ending"
+msgstr ""
+
+#: ..\mixins\Import.py:1094 ..\mixins\mLineending.py:57
+msgid "Convert line ending to windows format"
+msgstr ""
+
+#: ..\mixins\Import.py:1094 ..\mixins\mLineending.py:57
+msgid "Convert to Windows Format"
+msgstr ""
+
+#: ..\mixins\Import.py:1095 ..\mixins\mLineending.py:58
+msgid "Convert line ending to unix format"
+msgstr ""
+
+#: ..\mixins\Import.py:1095 ..\mixins\mLineending.py:58
+msgid "Convert to Unix Format"
+msgstr ""
+
+#: ..\mixins\Import.py:1096 ..\mixins\mLineending.py:59
+msgid "Convert line ending to mac format"
+msgstr ""
+
+#: ..\mixins\Import.py:1096 ..\mixins\mLineending.py:59
+msgid "Convert to MAC Format"
+msgstr ""
+
+#: ..\mixins\Import.py:1144 ..\mixins\mLineending.py:107
+msgid ""
+"%s is currently Mixed.\n"
+"Would you like to change it to the default?\n"
+"The Default is: %s"
+msgstr ""
+
+#: ..\mixins\Import.py:1146 ..\mixins\mLineending.py:109
+msgid "Mixed Line Ending"
+msgstr ""
+
+#: ..\mixins\Import.py:1187 ..\mixins\mDClickCloseFile.py:32
+msgid "Double click will close the selected document"
+msgstr ""
+
+#: ..\mixins\Import.py:1268 ..\mixins\mView.py:32
+msgid "View"
+msgstr ""
+
+#: ..\mixins\Import.py:1272 ..\mixins\Import.py:1385 ..\mixins\mView.py:36
+#: ..\mixins\mView.py:151
+msgid "Shows or hides space and tab marks"
+msgstr ""
+
+#: ..\mixins\Import.py:1272 ..\mixins\mView.py:36
+msgid "Tabs And Spaces"
+msgstr ""
+
+#: ..\mixins\Import.py:1273 ..\mixins\mView.py:37
+msgid "Indentation Guides"
+msgstr ""
+
+#: ..\mixins\Import.py:1273 ..\mixins\mView.py:37
+msgid "Shows or hides indentation guides"
+msgstr ""
+
+#: ..\mixins\Import.py:1274 ..\mixins\mView.py:38
+msgid "Right edge indicator"
+msgstr ""
+
+#: ..\mixins\Import.py:1274 ..\mixins\mView.py:38
+msgid "Shows or hides right edge indicator"
+msgstr ""
+
+#: ..\mixins\Import.py:1275 ..\mixins\mView.py:39
+msgid "End-of-line marker"
+msgstr ""
+
+#: ..\mixins\Import.py:1275 ..\mixins\mView.py:39
+msgid "Shows or hides end-of-line marker"
+msgstr ""
+
+#: ..\mixins\Import.py:1327 ..\mixins\mView.py:92
+msgid "Whitespace is visible on startup"
+msgstr ""
+
+#: ..\mixins\Import.py:1328 ..\mixins\mView.py:93
+msgid "Indentation guides is visible on startup"
+msgstr ""
+
+#: ..\mixins\Import.py:1329 ..\mixins\mView.py:94
+msgid "Long line indicator is visible on startup"
+msgstr ""
+
+#: ..\mixins\Import.py:1330 ..\mixins\mView.py:95
+msgid "Long line indicator column"
+msgstr ""
+
+#: ..\mixins\Import.py:1385 ..\mixins\mView.py:151
+msgid "toggle white space"
+msgstr ""
+
+#: ..\mixins\Import.py:1403 ..\mixins\Import.py:1426 ..\mixins\mFormat.py:34
+#: ..\mixins\mFormat.py:57
+msgid "Trim Trailing Spaces"
+msgstr ""
+
+#: ..\mixins\Import.py:1403 ..\mixins\Import.py:1426 ..\mixins\mFormat.py:34
+#: ..\mixins\mFormat.py:57
+msgid "Trims trailing white spaces"
+msgstr ""
+
+#: ..\mixins\Import.py:1404 ..\mixins\Import.py:1427 ..\mixins\mFormat.py:35
+#: ..\mixins\mFormat.py:58
+msgid "Converts leading spaces to tabs"
+msgstr ""
+
+#: ..\mixins\Import.py:1404 ..\mixins\Import.py:1427 ..\mixins\mFormat.py:35
+#: ..\mixins\mFormat.py:58
+msgid "Leading Spaces to Tabs"
+msgstr ""
+
+#: ..\mixins\Import.py:1405 ..\mixins\Import.py:1428 ..\mixins\mFormat.py:36
+#: ..\mixins\mFormat.py:59
+msgid "Converts leading tabs to spaces"
+msgstr ""
+
+#: ..\mixins\Import.py:1405 ..\mixins\Import.py:1428 ..\mixins\mFormat.py:36
+#: ..\mixins\mFormat.py:59
+msgid "Leading Tabs To Spaces"
+msgstr ""
+
+#: ..\mixins\Import.py:1406 ..\mixins\Import.py:1429 ..\mixins\mFormat.py:37
+#: ..\mixins\mFormat.py:60
+msgid "ALL Tabs To Spaces"
+msgstr ""
+
+#: ..\mixins\Import.py:1406 ..\mixins\Import.py:1429 ..\mixins\mFormat.py:37
+#: ..\mixins\mFormat.py:60
+msgid "Converts all tabs to spaces"
+msgstr ""
+
+#: ..\mixins\Import.py:1408 ..\mixins\Import.py:1431 ..\mixins\mFormat.py:39
+#: ..\mixins\mFormat.py:62
+msgid "Increase Indent"
+msgstr ""
+
+#: ..\mixins\Import.py:1408 ..\mixins\Import.py:1431 ..\mixins\mFormat.py:39
+#: ..\mixins\mFormat.py:62
+msgid "Increases the indentation of current line or selected block"
+msgstr ""
+
+#: ..\mixins\Import.py:1409 ..\mixins\Import.py:1432 ..\mixins\mFormat.py:40
+#: ..\mixins\mFormat.py:63
+msgid "Decrease Indent"
+msgstr ""
+
+#: ..\mixins\Import.py:1409 ..\mixins\Import.py:1432 ..\mixins\mFormat.py:40
+#: ..\mixins\mFormat.py:63
+msgid "Decreases the indentation of current line or selected block"
+msgstr ""
+
+#: ..\mixins\Import.py:1411 ..\mixins\Import.py:1434 ..\mixins\mFormat.py:42
+#: ..\mixins\mFormat.py:65
+msgid "Inserts comment sign at the beginning of line"
+msgstr ""
+
+#: ..\mixins\Import.py:1411 ..\mixins\Import.py:1434 ..\mixins\mFormat.py:42
+#: ..\mixins\mFormat.py:65
+msgid "Line Comment..."
+msgstr ""
+
+#: ..\mixins\Import.py:1412 ..\mixins\Import.py:1435 ..\mixins\mFormat.py:43
+#: ..\mixins\mFormat.py:66
+msgid "Line Uncomment..."
+msgstr ""
+
+#: ..\mixins\Import.py:1412 ..\mixins\Import.py:1435 ..\mixins\mFormat.py:43
+#: ..\mixins\mFormat.py:66
+msgid "Removes comment sign at the beginning of line"
+msgstr ""
+
+#: ..\mixins\Import.py:1414 ..\mixins\Import.py:1437 ..\mixins\mFormat.py:45
+#: ..\mixins\mFormat.py:68
+msgid "Quote selected text"
+msgstr ""
+
+#: ..\mixins\Import.py:1414 ..\mixins\Import.py:1437 ..\mixins\mFormat.py:45
+#: ..\mixins\mFormat.py:68
+msgid "Text Quote..."
+msgstr ""
+
+#: ..\mixins\Import.py:1415 ..\mixins\Import.py:1438 ..\mixins\mFormat.py:46
+#: ..\mixins\mFormat.py:69
+msgid "Text Unquote..."
+msgstr ""
+
+#: ..\mixins\Import.py:1415 ..\mixins\Import.py:1438 ..\mixins\mFormat.py:46
+#: ..\mixins\mFormat.py:69
+msgid "Unquote selected text"
+msgstr ""
+
+#: ..\mixins\Import.py:1486 ..\mixins\mFormat.py:131
+msgid "Tab width:"
+msgstr ""
+
+#: ..\mixins\Import.py:1540 ..\mixins\Import.py:1562 ..\mixins\mFormat.py:185
+#: ..\mixins\mFormat.py:207
+msgid "Comment Char:"
+msgstr ""
+
+#: ..\mixins\Import.py:1540 ..\mixins\Import.py:1562 ..\mixins\mFormat.py:185
+#: ..\mixins\mFormat.py:207
+msgid "Comment..."
+msgstr ""
+
+#: ..\mixins\Import.py:1732 ..\mixins\Import.py:1746 ..\mixins\mCase.py:32
+#: ..\mixins\mCase.py:46
+msgid "Case"
+msgstr ""
+
+#: ..\mixins\Import.py:1736 ..\mixins\Import.py:1750 ..\mixins\mCase.py:36
+#: ..\mixins\mCase.py:50
+msgid "Changes the selected text to upper case"
+msgstr ""
+
+#: ..\mixins\Import.py:1736 ..\mixins\Import.py:1750 ..\mixins\mCase.py:36
+#: ..\mixins\mCase.py:50
+msgid "Upper Case"
+msgstr ""
+
+#: ..\mixins\Import.py:1737 ..\mixins\Import.py:1751 ..\mixins\mCase.py:37
+#: ..\mixins\mCase.py:51
+msgid "Changes the selected text to lower case"
+msgstr ""
+
+#: ..\mixins\Import.py:1737 ..\mixins\Import.py:1751 ..\mixins\mCase.py:37
+#: ..\mixins\mCase.py:51
+msgid "Lower Case"
+msgstr ""
+
+#: ..\mixins\Import.py:1738 ..\mixins\Import.py:1752 ..\mixins\mCase.py:38
+#: ..\mixins\mCase.py:52
+msgid "Invert Case"
+msgstr ""
+
+#: ..\mixins\Import.py:1738 ..\mixins\Import.py:1752 ..\mixins\mCase.py:38
+#: ..\mixins\mCase.py:52
+msgid "Inverts the case of the selected text"
+msgstr ""
+
+#: ..\mixins\Import.py:1739 ..\mixins\Import.py:1753 ..\mixins\mCase.py:39
+#: ..\mixins\mCase.py:53
+msgid "Capitalize"
+msgstr ""
+
+#: ..\mixins\Import.py:1739 ..\mixins\Import.py:1753 ..\mixins\mCase.py:39
+#: ..\mixins\mCase.py:53
+msgid "Capitalizes all words of the selected text"
+msgstr ""
+
+#: ..\mixins\Import.py:1848 ..\mixins\Import.py:1887 ..\mixins\mDocument.py:35
+#: ..\mixins\mDocument.py:75
+msgid "Toggles the word wrap feature of the active document"
+msgstr ""
+
+#: ..\mixins\Import.py:1848 ..\mixins\mDocument.py:35
+msgid "Word-wrap"
+msgstr ""
+
+#: ..\mixins\Import.py:1849 ..\mixins\mDocument.py:36
+msgid "Auto Indent"
+msgstr ""
+
+#: ..\mixins\Import.py:1849 ..\mixins\mDocument.py:36
+msgid "Toggles the auto-indent feature of the active document"
+msgstr ""
+
+#: ..\mixins\Import.py:1850 ..\mixins\Import.py:1960 ..\mixins\mDocument.py:37
+#: ..\mixins\mDocument.py:148
+msgid "Use Tab Indent"
+msgstr ""
+
+#: ..\mixins\Import.py:1850 ..\mixins\mDocument.py:37
+msgid "Uses tab as indent char or uses space as indent char."
+msgstr ""
+
+#: ..\mixins\Import.py:1867 ..\mixins\mDocument.py:54
+msgid "Auto indent"
+msgstr ""
+
+#: ..\mixins\Import.py:1868 ..\mixins\mDocument.py:55
+msgid "Use Tabs"
+msgstr ""
+
+#: ..\mixins\Import.py:1869 ..\mixins\mDocument.py:56
+msgid "Auto word-wrap"
+msgstr ""
+
+#: ..\mixins\Import.py:1887 ..\mixins\mDocument.py:75
+msgid "wrap"
+msgstr ""
+
+#: ..\mixins\Import.py:1962 ..\mixins\mDocument.py:150
+msgid "Use Space Indent"
+msgstr ""
+
+#: ..\mixins\Import.py:2012 ..\mixins\mUnicode.py:38
+msgid "Auto detect UTF-8 encoding"
+msgstr ""
+
+#: ..\mixins\Import.py:2048 ..\mixins\Import.py:2052 ..\mixins\mUnicode.py:74
+#: ..\mixins\mUnicode.py:78
+msgid ""
+"Cann't convert file encoding [%s] to unicode!\n"
+"The file cann't be openned!"
+msgstr ""
+
+#: ..\mixins\Import.py:2049 ..\mixins\Import.py:2053 ..\mixins\Import.py:2090
+#: ..\mixins\mUnicode.py:75 ..\mixins\mUnicode.py:79 ..\mixins\mUnicode.py:116
+msgid "Unicode Error"
+msgstr ""
+
+#: ..\mixins\Import.py:2089 ..\mixins\mUnicode.py:115
+msgid ""
+"Cann't convert file to [%s] encoding!\n"
+"The file cann't be saved!"
+msgstr ""
+
+#: ..\mixins\Import.py:2116 ..\mixins\mBookmark.py:40
+msgid "Set and clear marker at current line"
+msgstr ""
+
+#: ..\mixins\Import.py:2116 ..\mixins\mBookmark.py:40
+msgid "Toggle Marker"
+msgstr ""
+
+#: ..\mixins\Import.py:2117 ..\mixins\mBookmark.py:41
+msgid "Clear All Marker"
+msgstr ""
+
+#: ..\mixins\Import.py:2117 ..\mixins\mBookmark.py:41
+msgid "Clears all marker from the active document"
+msgstr ""
+
+#: ..\mixins\Import.py:2118 ..\mixins\mBookmark.py:42
+msgid "Goes to next marker position"
+msgstr ""
+
+#: ..\mixins\Import.py:2118 ..\mixins\mBookmark.py:42
+msgid "Next Marker"
+msgstr ""
+
+#: ..\mixins\Import.py:2119 ..\mixins\mBookmark.py:43
+msgid "Goes to previous marker position"
+msgstr ""
+
+#: ..\mixins\Import.py:2119 ..\mixins\mBookmark.py:43
+msgid "Previous Marker"
+msgstr ""
+
+#: ..\mixins\Import.py:2178 ..\mixins\mFolder.py:33
+msgid "Use code fold"
+msgstr ""
+
+#: ..\mixins\Import.py:2358 ..\mixins\Import.py:2385 ..\mixins\mZoom.py:34
+#: ..\mixins\mZoom.py:62
+msgid "Increases the font size of the document"
+msgstr ""
+
+#: ..\mixins\Import.py:2358 ..\mixins\mZoom.py:34
+msgid "Zoom In"
+msgstr ""
+
+#: ..\mixins\Import.py:2359 ..\mixins\Import.py:2386 ..\mixins\mZoom.py:35
+#: ..\mixins\mZoom.py:63
+msgid "Decreases the font size of the document"
+msgstr ""
+
+#: ..\mixins\Import.py:2359 ..\mixins\mZoom.py:35
+msgid "Zoom Out"
+msgstr ""
+
+#: ..\mixins\Import.py:2385 ..\mixins\mZoom.py:62
+msgid "zoom in"
+msgstr ""
+
+#: ..\mixins\Import.py:2386 ..\mixins\mZoom.py:63
+msgid "zoom out"
+msgstr ""
+
+#: ..\mixins\Import.py:2406 ..\mixins\mSession.py:36
+msgid "Auto load the files of last session"
+msgstr ""
+
+#: ..\mixins\Import.py:2475 ..\mixins\mLastStatus.py:38
+msgid "Saves current status when exit the program"
+msgstr ""
+
+#: ..\mixins\Import.py:2536 ..\mixins\mDuplicate.py:38
+msgid "Use duplication extend mode ('.' will be treated as word char)"
+msgstr ""
+
+#: ..\mixins\Import.py:2542 ..\mixins\Import.py:2601
+#: ..\mixins\mDuplicate.py:44 ..\mixins\mDuplicate.py:103
+msgid "Duplication"
+msgstr ""
+
+#: ..\mixins\Import.py:2546 ..\mixins\Import.py:2605
+#: ..\mixins\mDuplicate.py:48 ..\mixins\mDuplicate.py:107
+msgid "Duplicate Extend Mode"
+msgstr ""
+
+#: ..\mixins\Import.py:2546 ..\mixins\Import.py:2605
+#: ..\mixins\mDuplicate.py:48 ..\mixins\mDuplicate.py:107
+msgid "Toggle duplication extend mode"
+msgstr ""
+
+#: ..\mixins\Import.py:2547 ..\mixins\Import.py:2606
+#: ..\mixins\mDuplicate.py:49 ..\mixins\mDuplicate.py:108
+msgid "Duplicate Current Line"
+msgstr ""
+
+#: ..\mixins\Import.py:2547 ..\mixins\Import.py:2606
+#: ..\mixins\mDuplicate.py:49 ..\mixins\mDuplicate.py:108
+msgid "Duplicates current line"
+msgstr ""
+
+#: ..\mixins\Import.py:2548 ..\mixins\Import.py:2607
+#: ..\mixins\mDuplicate.py:50 ..\mixins\mDuplicate.py:109
+msgid "Copies a character from previous matched word"
+msgstr ""
+
+#: ..\mixins\Import.py:2548 ..\mixins\Import.py:2607
+#: ..\mixins\mDuplicate.py:50 ..\mixins\mDuplicate.py:109
+msgid "Duplicate Previous Char"
+msgstr ""
+
+#: ..\mixins\Import.py:2549 ..\mixins\Import.py:2608
+#: ..\mixins\mDuplicate.py:51 ..\mixins\mDuplicate.py:110
+msgid "Copies a character from next matched word"
+msgstr ""
+
+#: ..\mixins\Import.py:2549 ..\mixins\Import.py:2608
+#: ..\mixins\mDuplicate.py:51 ..\mixins\mDuplicate.py:110
+msgid "Duplicate Next Char"
+msgstr ""
+
+#: ..\mixins\Import.py:2550 ..\mixins\Import.py:2609
+#: ..\mixins\mDuplicate.py:52 ..\mixins\mDuplicate.py:111
+msgid "Copies a word from previous matched line"
+msgstr ""
+
+#: ..\mixins\Import.py:2550 ..\mixins\Import.py:2609
+#: ..\mixins\mDuplicate.py:52 ..\mixins\mDuplicate.py:111
+msgid "Duplicate Previous Word"
+msgstr ""
+
+#: ..\mixins\Import.py:2551 ..\mixins\Import.py:2610
+#: ..\mixins\mDuplicate.py:53 ..\mixins\mDuplicate.py:112
+msgid "Copies a word from next matched line"
+msgstr ""
+
+#: ..\mixins\Import.py:2551 ..\mixins\Import.py:2610
+#: ..\mixins\mDuplicate.py:53 ..\mixins\mDuplicate.py:112
+msgid "Duplicate Next Word"
+msgstr ""
+
+#: ..\mixins\Import.py:2552 ..\mixins\Import.py:2553 ..\mixins\Import.py:2611
+#: ..\mixins\Import.py:2612 ..\mixins\mDuplicate.py:54
+#: ..\mixins\mDuplicate.py:55 ..\mixins\mDuplicate.py:113
+#: ..\mixins\mDuplicate.py:114
+msgid "Copies a line from next matched line"
+msgstr ""
+
+#: ..\mixins\Import.py:2552 ..\mixins\Import.py:2611
+#: ..\mixins\mDuplicate.py:54 ..\mixins\mDuplicate.py:113
+msgid "Duplicate Previous Line"
+msgstr ""
+
+#: ..\mixins\Import.py:2553 ..\mixins\Import.py:2612
+#: ..\mixins\mDuplicate.py:55 ..\mixins\mDuplicate.py:114
+msgid "Duplicate Next Line"
+msgstr ""
+
+#: ..\mixins\Import.py:2849 ..\mixins\mHelp.py:36
+msgid "About"
+msgstr ""
+
+#: ..\mixins\Import.py:2852 ..\mixins\mHelp.py:39
+msgid "NewEdit Version %s"
+msgstr ""
+
+#: ..\mixins\Import.py:2857 ..\mixins\mHelp.py:44
+msgid "Author: %s (%s)"
+msgstr ""
+
+#: ..\mixins\Import.py:2863 ..\mixins\mHelp.py:50
+msgid ""
+"If you have any question please contact me !\n"
+"The NewEdit project homepage is : \n"
+"    %s\n"
+"My Blog is : \n"
+"    %s"
+msgstr ""
+
+#: ..\mixins\Import.py:2876 ..\mixins\mHelp.py:63
+msgid "NewEdit Help Document"
+msgstr ""
+
+#: ..\mixins\Import.py:2876 ..\mixins\mHelp.py:63
+msgid "NewEdit help document"
+msgstr ""
+
+#: ..\mixins\Import.py:2877 ..\mixins\mHelp.py:64
+msgid "Project Homepage %s"
+msgstr ""
+
+#: ..\mixins\Import.py:2877 ..\mixins\mHelp.py:64
+msgid "Visit Project Homepage"
+msgstr ""
+
+#: ..\mixins\Import.py:2878 ..\mixins\mHelp.py:65
+msgid "My Blog %s"
+msgstr ""
+
+#: ..\mixins\Import.py:2878 ..\mixins\mHelp.py:65
+msgid "Visit My Blog"
+msgstr ""
+
+#: ..\mixins\Import.py:2879 ..\mixins\mHelp.py:66
+msgid "Contact Me"
+msgstr ""
+
+#: ..\mixins\Import.py:2879 ..\mixins\mHelp.py:66
+msgid "Send email to me mailto:%s"
+msgstr ""
+
+#: ..\mixins\Import.py:2880 ..\mixins\mHelp.py:67
+msgid "About this program"
+msgstr ""
+
+#: ..\mixins\Import.py:2880 ..\mixins\mHelp.py:67
+msgid "About..."
+msgstr ""
+
+#: ..\mixins\Import.py:2930 ..\mixins\mClassBrowser.py:36
+msgid "Show class browser window as open python source file"
+msgstr ""
+
+#: ..\mixins\Import.py:2931 ..\mixins\mClassBrowser.py:37
+msgid "Refresh class browser window as saved python source file"
+msgstr ""
+
+#: ..\mixins\Import.py:2937 ..\mixins\mClassBrowser.py:43
+msgid "Class Browser"
+msgstr ""
+
+#: ..\mixins\Import.py:2937 ..\mixins\mClassBrowser.py:43
+msgid "Show python class browser window"
+msgstr ""
+
+#: ..\mixins\Import.py:2938 ..\mixins\mClassBrowser.py:44
+msgid "Class Browser Refresh"
+msgstr ""
+
+#: ..\mixins\Import.py:2938 ..\mixins\mClassBrowser.py:44
+msgid "Refresh python class browser window"
+msgstr ""
+
+#: ..\mixins\Import.py:3037 ..\mixins\mClassBrowser.py:144
+msgid "Class browser"
+msgstr ""
+
+#: ..\mixins\Import.py:3037 ..\mixins\mClassBrowser.py:144
+msgid "class browser"
+msgstr ""
+
+#: ..\mixins\Import.py:3038 ..\mixins\mClassBrowser.py:145
+msgid "Class browser refresh"
+msgstr ""
+
+#: ..\mixins\Import.py:3038 ..\mixins\mClassBrowser.py:145
+msgid "class browser refresh"
+msgstr ""
+
+#: ..\mixins\Import.py:3082 ..\mixins\mRun.py:60
+msgid "Running "
+msgstr ""
+
+#: ..\mixins\Import.py:3095 ..\mixins\mRun.py:73
+msgid ""
+"There are some problems when running the program!\n"
+"Please run it in shell."
+msgstr ""
+
+#: ..\mixins\Import.py:3193 ..\mixins\mRun.py:171
+msgid "Finished!"
+msgstr ""
+
+#: ..\mixins\Import.py:3227 ..\mixins\mScript.py:36
+msgid "Script"
+msgstr ""
+
+#: ..\mixins\Import.py:3231 ..\mixins\mScript.py:40
+msgid "Script Manage..."
+msgstr ""
+
+#: ..\mixins\Import.py:3231 ..\mixins\mScript.py:40
+msgid "Script manage"
+msgstr ""
+
+#: ..\mixins\Import.py:3233 ..\mixins\mScript.py:42
+msgid "Execute an script"
+msgstr ""
+
+#: ..\mixins\Import.py:3282 ..\mixins\mScript.py:91
+msgid "Running Script"
+msgstr ""
+
+#: ..\mixins\Import.py:3289 ..\mixins\mScript.py:98
+msgid ""
+"Error compiling script.\n"
+"\n"
+"Traceback:\n"
+"\n"
+msgstr ""
+
+#: ..\mixins\Import.py:3290 ..\mixins\Import.py:3300 ..\mixins\Import.py:4676
+#: ..\mixins\Import.py:4687 ..\mixins\mRegister.py:56
+#: ..\mixins\mRegister.py:67 ..\mixins\mScript.py:99 ..\mixins\mScript.py:109
+#: ..\modules\common.py:92
+msgid "Error"
+msgstr ""
+
+#: ..\mixins\Import.py:3299 ..\mixins\mScript.py:108
+msgid ""
+"Error running script.\n"
+"\n"
+"Traceback:\n"
+"\n"
+msgstr ""
+
+#: ..\mixins\Import.py:3322 ..\mixins\mLanguage.py:36
+msgid "Language"
+msgstr ""
+
+#: ..\mixins\Import.py:3322 ..\mixins\mLanguage.py:36
+msgid "Setup lanaguage"
+msgstr ""
+
+#: ..\mixins\Import.py:3361 ..\mixins\mLanguage.py:75
+msgid ""
+"Because you changed the language, \n"
+"it will be enabled at next startup."
+msgstr ""
+
+#: ..\mixins\Import.py:3361 ..\mixins\mLanguage.py:75
+msgid "Change language"
+msgstr ""
+
+#: ..\mixins\Import.py:3392 ..\mixins\mLexer.py:37
+msgid "C/C++|*.c;*.cc;*.cpp;*.cxx;*.cs;*.h;*.hh;*.hpp;*.hxx"
+msgstr ""
+
+#: ..\mixins\Import.py:3397 ..\mixins\mLexer.py:42
+msgid "Html|*.htm;*.html;*.shtml"
+msgstr ""
+
+#: ..\mixins\Import.py:3402 ..\mixins\mLexer.py:47
+msgid "Xml|*.xml;*.xslt"
+msgstr ""
+
+#: ..\mixins\Import.py:3407 ..\mixins\mLexer.py:52
+msgid "Python|*.py;*.pyw"
+msgstr ""
+
+#: ..\mixins\Import.py:3412 ..\mixins\mLexer.py:57
+msgid "Java|*.java"
+msgstr ""
+
+#: ..\mixins\Import.py:3417 ..\mixins\mLexer.py:62
+msgid "Ruby|*.rb"
+msgstr ""
+
+#: ..\mixins\Import.py:3422 ..\mixins\mLexer.py:67
+msgid "Perl|*.pl"
+msgstr ""
+
+#: ..\mixins\Import.py:3427 ..\mixins\mLexer.py:72
+msgid "Cascade Style Sheet|*.css"
+msgstr ""
+
+#: ..\mixins\Import.py:3432 ..\mixins\mLexer.py:77
+msgid "JavaScript|*.js"
+msgstr ""
+
+#: ..\mixins\Import.py:3437 ..\mixins\mLexer.py:82
+msgid "Php|*.php3;*.phtml;*.php"
+msgstr ""
+
+#: ..\mixins\Import.py:3442 ..\mixins\mLexer.py:87
+msgid "Active Server Pages (ASP)|*.asp"
+msgstr ""
+
+#: ..\mixins\Import.py:3458 ..\mixins\mSearchInFiles.py:31
+msgid "Find In Files..."
+msgstr ""
+
+#: ..\mixins\Import.py:3458 ..\mixins\mSearchInFiles.py:31
+msgid "Find text in files"
+msgstr ""
+
+#: ..\mixins\Import.py:3491 ..\mixins\mAutoBak.py:31
+msgid "Auto make backup file as open a file"
+msgstr ""
+
+#: ..\mixins\Import.py:3521 ..\mixins\mAutoCheck.py:31
+msgid "Auto check if there are some opened files were modified by others"
+msgstr ""
+
+#: ..\mixins\Import.py:3535 ..\mixins\Import.py:3574
+#: ..\mixins\mAutoCheck.py:45 ..\mixins\mAutoCheck.py:84
+msgid "Check"
+msgstr ""
+
+#: ..\mixins\Import.py:3535 ..\mixins\mAutoCheck.py:45
+msgid ""
+"This file [%s] has been modified by others,\n"
+"do you like reload it?"
+msgstr ""
+
+#: ..\mixins\Import.py:3574 ..\mixins\mAutoCheck.py:84
+msgid ""
+"This file [%s] has been removed by others,\n"
+"Do you like save it?"
+msgstr ""
+
+#: ..\mixins\Import.py:3597 ..\mixins\mTool.py:31
+msgid "Tool"
+msgstr ""
+
+#: ..\mixins\Import.py:3627 ..\mixins\mPyRun.py:45
+msgid "Setup python interpreter"
+msgstr ""
+
+#: ..\mixins\Import.py:3634 ..\mixins\Import.py:3654 ..\mixins\Import.py:4966
+#: ..\mixins\mHtmlFileType.py:55 ..\mixins\mPyRun.py:52 ..\mixins\mPyRun.py:72
+msgid "Run"
+msgstr ""
+
+#: ..\mixins\Import.py:3634 ..\mixins\Import.py:3712 ..\mixins\mPyRun.py:52
+#: ..\mixins\mPyRun.py:131
+msgid "Run python program"
+msgstr ""
+
+#: ..\mixins\Import.py:3635 ..\mixins\Import.py:3713 ..\mixins\mPyRun.py:53
+#: ..\mixins\mPyRun.py:132
+msgid "Set python program command line arugments"
+msgstr ""
+
+#: ..\mixins\Import.py:3635 ..\mixins\mPyRun.py:53
+msgid "Set Arguments..."
+msgstr ""
+
+#: ..\mixins\Import.py:3636 ..\mixins\Import.py:3714 ..\mixins\mPyRun.py:54
+#: ..\mixins\mPyRun.py:133
+msgid "Stop Program"
+msgstr ""
+
+#: ..\mixins\Import.py:3636 ..\mixins\Import.py:3714 ..\mixins\mPyRun.py:54
+#: ..\mixins\mPyRun.py:133
+msgid "Stop current python program."
+msgstr ""
+
+#: ..\mixins\Import.py:3650 ..\mixins\mPyRun.py:68
+msgid ""
+"You didn't setup python interpreter, \n"
+"please setup it first in Preference dialog"
+msgstr ""
+
+#: ..\mixins\Import.py:3654 ..\mixins\Import.py:4966
+#: ..\mixins\mHtmlFileType.py:55 ..\mixins\mPyRun.py:72
+msgid ""
+"The file has not been saved, and it would not be run.\n"
+"Would you like to save the file?"
+msgstr ""
+
+#: ..\mixins\Import.py:3685 ..\mixins\mPyRun.py:103
+msgid "Set Python Arguments"
+msgstr ""
+
+#: ..\mixins\Import.py:3686 ..\mixins\mPyRun.py:104
+msgid ""
+"Enter the command line arguments:\n"
+"$file will be replaced by current document filename\n"
+"$path will be replaced by current document filename's directory"
+msgstr ""
+
+#: ..\mixins\Import.py:3700 ..\mixins\mPyRun.py:118
+msgid "Stopped!"
+msgstr ""
+
+#: ..\mixins\Import.py:3712 ..\mixins\mPyRun.py:131
+msgid "run"
+msgstr ""
+
+#: ..\mixins\Import.py:3713 ..\mixins\mPyRun.py:132
+msgid "set arguments"
+msgstr ""
+
+#: ..\mixins\Import.py:3760 ..\mixins\mShellRun.py:41
+msgid "Shell Command"
+msgstr ""
+
+#: ..\mixins\Import.py:3764 ..\mixins\mShellRun.py:45
+msgid "Shell Command Manage..."
+msgstr ""
+
+#: ..\mixins\Import.py:3764 ..\mixins\mShellRun.py:45
+msgid "Shell command manage"
+msgstr ""
+
+#: ..\mixins\Import.py:3766 ..\mixins\mShellRun.py:47
+msgid "Execute an shell command"
+msgstr ""
+
+#: ..\mixins\Import.py:3827 ..\mixins\Import.py:3860 ..\mixins\Import.py:3864
+#: ..\mixins\Import.py:3869 ..\mixins\Import.py:3874
+#: ..\mixins\SnippetWindow.py:48 ..\mixins\SnippetWindow.py:180
+#: ..\mixins\SnippetWindow.py:346 ..\mixins\SnippetWindow.py:556
+#: ..\mixins\mSnippets.py:32 ..\mixins\mSnippets.py:65
+#: ..\mixins\mSnippets.py:69 ..\mixins\mSnippets.py:74
+#: ..\mixins\mSnippets.py:79
+msgid "Snippets"
+msgstr ""
+
+#: ..\mixins\Import.py:3831 ..\mixins\mSnippets.py:36
+msgid "Manage Snippets Catalog..."
+msgstr ""
+
+#: ..\mixins\Import.py:3831 ..\mixins\mSnippets.py:36
+msgid "Manage snippets catalog"
+msgstr ""
+
+#: ..\mixins\Import.py:3832 ..\mixins\mSnippets.py:37
+msgid "Manage Snippets Code..."
+msgstr ""
+
+#: ..\mixins\Import.py:3832 ..\mixins\mSnippets.py:37
+msgid "Manage snippets code"
+msgstr ""
+
+#: ..\mixins\Import.py:3836 ..\mixins\Import.py:3843 ..\mixins\mSnippets.py:41
+#: ..\mixins\mSnippets.py:48
+msgid "Open Snippets Window"
+msgstr ""
+
+#: ..\mixins\Import.py:3836 ..\mixins\Import.py:3843 ..\mixins\mSnippets.py:41
+#: ..\mixins\mSnippets.py:48
+msgid "Opens snippets window."
+msgstr ""
+
+#: ..\mixins\Import.py:3921 ..\mixins\mEncoding.py:42
+msgid "Show encoding selection dialog as openning or saving file."
+msgstr ""
+
+#: ..\mixins\Import.py:3922 ..\mixins\mEncoding.py:43
+msgid "Default document encoding:"
+msgstr ""
+
+#: ..\mixins\Import.py:3923 ..\mixins\mEncoding.py:44
+msgid "Custom default encoding(if set, it'll be the default):"
+msgstr ""
+
+#: ..\mixins\Import.py:3943 ..\mixins\Import.py:3951 ..\mixins\mEncoding.py:64
+#: ..\mixins\mEncoding.py:72
+msgid "Chanages current document's saving encoding."
+msgstr ""
+
+#: ..\mixins\Import.py:3943 ..\mixins\Import.py:3951 ..\mixins\mEncoding.py:64
+#: ..\mixins\mEncoding.py:72
+msgid "Change Encoding..."
+msgstr ""
+
+#: ..\mixins\Import.py:4072 ..\mixins\mLexerFactory.py:58
+msgid "Specifies the syntax highlight to current document."
+msgstr ""
+
+#: ..\mixins\Import.py:4072 ..\mixins\mLexerFactory.py:58
+msgid "Syntax Highlight..."
+msgstr ""
+
+#: ..\mixins\Import.py:4079 ..\mixins\mLexerFactory.py:65
+msgid "Select a syntax highlight"
+msgstr ""
+
+#: ..\mixins\Import.py:4079 ..\mixins\mLexerFactory.py:65
+msgid "Syntax Highlight"
+msgstr ""
+
+#: ..\mixins\Import.py:4088 ..\mixins\mLexerFactory.py:74
+msgid "Default syntax highlight"
+msgstr ""
+
+#: ..\mixins\Import.py:4089 ..\mixins\mLexerFactory.py:75
+msgid "Show caret line"
+msgstr ""
+
+#: ..\mixins\Import.py:4136 ..\mixins\mSyntaxPref.py:32
+msgid "Syntax Preference..."
+msgstr ""
+
+#: ..\mixins\Import.py:4136 ..\mixins\mSyntaxPref.py:32
+msgid "Syntax highlight preference setup."
+msgstr ""
+
+#: ..\mixins\Import.py:4147 ..\mixins\mSyntaxPref.py:43
+msgid "Setup document syntax highlight"
+msgstr ""
+
+#: ..\mixins\Import.py:4180 ..\mixins\mPrint.py:34
+msgid "Print"
+msgstr ""
+
+#: ..\mixins\Import.py:4184 ..\mixins\mPrint.py:38
+msgid "Page Setup..."
+msgstr ""
+
+#: ..\mixins\Import.py:4184 ..\mixins\mPrint.py:38
+msgid "Set page layout and options."
+msgstr ""
+
+#: ..\mixins\Import.py:4185 ..\mixins\mPrint.py:39
+msgid "Printer Setup..."
+msgstr ""
+
+#: ..\mixins\Import.py:4185 ..\mixins\mPrint.py:39
+msgid "Selects a printer and printer connection."
+msgstr ""
+
+#: ..\mixins\Import.py:4186 ..\mixins\mPrint.py:40
+msgid "Displays the document on the screen as it would appear printed."
+msgstr ""
+
+#: ..\mixins\Import.py:4186 ..\mixins\mPrint.py:40
+msgid "Print Preview..."
+msgstr ""
+
+#: ..\mixins\Import.py:4187 ..\mixins\Import.py:4204 ..\mixins\mPrint.py:41
+#: ..\mixins\mPrint.py:59
+msgid "Prints a document."
+msgstr ""
+
+#: ..\mixins\Import.py:4187 ..\mixins\mPrint.py:41
+msgid "Print..."
+msgstr ""
+
+#: ..\mixins\Import.py:4188 ..\mixins\mPrint.py:42
+msgid "Html File"
+msgstr ""
+
+#: ..\mixins\Import.py:4192 ..\mixins\mPrint.py:46
+msgid "Displays the html document on the screen as it would appear printed."
+msgstr ""
+
+#: ..\mixins\Import.py:4192 ..\mixins\mPrint.py:46
+msgid "Html File Preview..."
+msgstr ""
+
+#: ..\mixins\Import.py:4193 ..\mixins\mPrint.py:47
+msgid "Html File Print..."
+msgstr ""
+
+#: ..\mixins\Import.py:4193 ..\mixins\mPrint.py:47
+msgid "Prints a html document."
+msgstr ""
+
+#: ..\mixins\Import.py:4204 ..\mixins\mPrint.py:59
+msgid "print"
+msgstr ""
+
+#: ..\mixins\Import.py:4250 ..\mixins\mPlugins.py:32
+msgid "Plugins Manage..."
+msgstr ""
+
+#: ..\mixins\Import.py:4294 ..\mixins\mPythonContextIndent.py:43
+msgid "Use context sensitive indent"
+msgstr ""
+
+#: ..\mixins\Import.py:4347 ..\mixins\Import.py:4368 ..\mixins\Import.py:4489
+#: ..\mixins\mFtp.py:34 ..\mixins\mFtp.py:55 ..\mixins\mFtp.py:178
+msgid "Opens ftp window."
+msgstr ""
+
+#: ..\mixins\Import.py:4347 ..\mixins\Import.py:4368 ..\mixins\mFtp.py:34
+#: ..\mixins\mFtp.py:55
+msgid "Open Ftp Window"
+msgstr ""
+
+#: ..\mixins\Import.py:4410 ..\mixins\mFtp.py:97
+msgid "Open an file or directory."
+msgstr ""
+
+#: ..\mixins\Import.py:4411 ..\mixins\mFtp.py:98
+msgid "Create an new file."
+msgstr ""
+
+#: ..\mixins\Import.py:4411 ..\mixins\mFtp.py:98
+msgid "New File"
+msgstr ""
+
+#: ..\mixins\Import.py:4412 ..\mixins\mFtp.py:99
+msgid "Create an new directory."
+msgstr ""
+
+#: ..\mixins\Import.py:4412 ..\mixins\mFtp.py:99
+msgid "New Directory"
+msgstr ""
+
+#: ..\mixins\Import.py:4413 ..\mixins\mFtp.py:100
+msgid "Delete selected file or directory."
+msgstr ""
+
+#: ..\mixins\Import.py:4414 ..\mixins\mFtp.py:101
+msgid "Rename selected file or directory."
+msgstr ""
+
+#: ..\mixins\Import.py:4416 ..\mixins\mFtp.py:103
+msgid "Refresh current directory."
+msgstr ""
+
+#: ..\mixins\Import.py:4418 ..\mixins\mFtp.py:105
+msgid "Upload"
+msgstr ""
+
+#: ..\mixins\Import.py:4418 ..\mixins\mFtp.py:105
+msgid "Upload files."
+msgstr ""
+
+#: ..\mixins\Import.py:4419 ..\mixins\mFtp.py:106
+msgid "Download"
+msgstr ""
+
+#: ..\mixins\Import.py:4419 ..\mixins\mFtp.py:106
+msgid "Download files."
+msgstr ""
+
+#: ..\mixins\Import.py:4489 ..\mixins\mFtp.py:178
+msgid "open ftp window"
+msgstr ""
+
+#: ..\mixins\Import.py:4518 ..\mixins\mWindow.py:30
+msgid "Window"
+msgstr ""
+
+#: ..\mixins\Import.py:4522 ..\mixins\Import.py:4572 ..\mixins\mWindow.py:34
+#: ..\mixins\mWindow.py:85
+msgid "Left Window"
+msgstr ""
+
+#: ..\mixins\Import.py:4522 ..\mixins\Import.py:4572 ..\mixins\mWindow.py:34
+#: ..\mixins\mWindow.py:85
+msgid "Shows or hides the left Window"
+msgstr ""
+
+#: ..\mixins\Import.py:4523 ..\mixins\Import.py:4573 ..\mixins\mWindow.py:35
+#: ..\mixins\mWindow.py:86
+msgid "Bottom Window"
+msgstr ""
+
+#: ..\mixins\Import.py:4523 ..\mixins\Import.py:4573 ..\mixins\mWindow.py:35
+#: ..\mixins\mWindow.py:86
+msgid "Shows or hides the bottom Window"
+msgstr ""
+
+#: ..\mixins\Import.py:4525 ..\mixins\Import.py:4607 ..\mixins\mWindow.py:37
+#: ..\mixins\mWindow.py:120
+msgid "Open Shell Window"
+msgstr ""
+
+#: ..\mixins\Import.py:4525 ..\mixins\Import.py:4607 ..\mixins\mWindow.py:37
+#: ..\mixins\mWindow.py:120
+msgid "Opens shell window."
+msgstr ""
+
+#: ..\mixins\Import.py:4526 ..\mixins\Import.py:4608 ..\mixins\mWindow.py:38
+#: ..\mixins\mWindow.py:121
+msgid "Open Message Window"
+msgstr ""
+
+#: ..\mixins\Import.py:4526 ..\mixins\Import.py:4608 ..\mixins\mWindow.py:38
+#: ..\mixins\mWindow.py:121
+msgid "Opens message window."
+msgstr ""
+
+#: ..\mixins\Import.py:4578 ..\mixins\Import.py:4582 ..\mixins\Import.py:4583
+#: ..\mixins\Import.py:4597 ..\mixins\Import.py:4615 ..\mixins\Import.py:4633
+#: ..\mixins\mWindow.py:91 ..\mixins\mWindow.py:95 ..\mixins\mWindow.py:96
+#: ..\mixins\mWindow.py:110 ..\mixins\mWindow.py:128 ..\mixins\mWindow.py:146
+msgid "Shell"
+msgstr ""
+
+#: ..\mixins\Import.py:4627 ..\mixins\mWindow.py:140
+msgid "Clear Shell Window"
+msgstr ""
+
+#: ..\mixins\Import.py:4627 ..\mixins\mWindow.py:140
+msgid "Clears content of shell window."
+msgstr ""
+
+#: ..\mixins\Import.py:4656 ..\mixins\mRegister.py:36
+msgid "Register to Explore"
+msgstr ""
+
+#: ..\mixins\Import.py:4656 ..\mixins\mRegister.py:36
+msgid "Registers to explore context menu."
+msgstr ""
+
+#: ..\mixins\Import.py:4657 ..\mixins\mRegister.py:37
+msgid "Unregister from Explore"
+msgstr ""
+
+#: ..\mixins\Import.py:4657 ..\mixins\mRegister.py:37
+msgid "Unregisters from explore context menu."
+msgstr ""
+
+#: ..\mixins\Import.py:4673 ..\mixins\Import.py:4684 ..\mixins\mRegister.py:53
+#: ..\mixins\mRegister.py:64
+msgid "Successful!"
+msgstr ""
+
+#: ..\mixins\Import.py:4676 ..\mixins\mRegister.py:56
+msgid "Register to explore context menu failed!"
+msgstr ""
+
+#: ..\mixins\Import.py:4687 ..\mixins\mRegister.py:67
+msgid "Unregister from explore context menu failed!"
+msgstr ""
+
+#: ..\mixins\Import.py:4701 ..\mixins\Import.py:4719 ..\mixins\mConvert.py:31
+#: ..\mixins\mConvert.py:49
+msgid "Convert"
+msgstr ""
+
+#: ..\mixins\Import.py:4705 ..\mixins\Import.py:4723 ..\mixins\mConvert.py:35
+#: ..\mixins\mConvert.py:53
+msgid "Output In Html Window"
+msgstr ""
+
+#: ..\mixins\Import.py:4705 ..\mixins\Import.py:4723 ..\mixins\mConvert.py:35
+#: ..\mixins\mConvert.py:53
+msgid "Outputs converted text in html window."
+msgstr ""
+
+#: ..\mixins\Import.py:4706 ..\mixins\Import.py:4724 ..\mixins\mConvert.py:36
+#: ..\mixins\mConvert.py:54
+msgid "Output In Message Window"
+msgstr ""
+
+#: ..\mixins\Import.py:4706 ..\mixins\Import.py:4724 ..\mixins\mConvert.py:36
+#: ..\mixins\mConvert.py:54
+msgid "Outputs converted text in message window."
+msgstr ""
+
+#: ..\mixins\Import.py:4707 ..\mixins\Import.py:4725 ..\mixins\mConvert.py:37
+#: ..\mixins\mConvert.py:55
+msgid "Replace Selected Text"
+msgstr ""
+
+#: ..\mixins\Import.py:4707 ..\mixins\Import.py:4725 ..\mixins\mConvert.py:37
+#: ..\mixins\mConvert.py:55
+msgid "Replaces selected text with converted text."
+msgstr ""
+
+#: ..\mixins\Import.py:4709 ..\mixins\Import.py:4727 ..\mixins\mConvert.py:39
+#: ..\mixins\mConvert.py:57
+msgid "Output Directly In Html Window"
+msgstr ""
+
+#: ..\mixins\Import.py:4709 ..\mixins\Import.py:4727 ..\mixins\mConvert.py:39
+#: ..\mixins\mConvert.py:57
+msgid "Outputs directly the text in html window."
+msgstr ""
+
+#: ..\mixins\Import.py:4710 ..\mixins\Import.py:4728 ..\mixins\mConvert.py:40
+#: ..\mixins\mConvert.py:58
+msgid "Converts reStructuredText source to Html."
+msgstr ""
+
+#: ..\mixins\Import.py:4710 ..\mixins\Import.py:4728 ..\mixins\mConvert.py:40
+#: ..\mixins\mConvert.py:58
+msgid "reSt to Html"
+msgstr ""
+
+#: ..\mixins\Import.py:4711 ..\mixins\Import.py:4729 ..\mixins\mConvert.py:41
+#: ..\mixins\mConvert.py:59
+msgid "Converts python source to Html."
+msgstr ""
+
+#: ..\mixins\Import.py:4711 ..\mixins\Import.py:4729 ..\mixins\mConvert.py:41
+#: ..\mixins\mConvert.py:59
+msgid "Py to Html"
+msgstr ""
+
+#: ..\mixins\Import.py:4712 ..\mixins\Import.py:4730 ..\mixins\mConvert.py:42
+#: ..\mixins\mConvert.py:60
+msgid "Converts textile source to Html."
+msgstr ""
+
+#: ..\mixins\Import.py:4712 ..\mixins\Import.py:4730 ..\mixins\mConvert.py:42
+#: ..\mixins\mConvert.py:60
+msgid "Textile to Html"
+msgstr ""
+
+#: ..\mixins\Import.py:4778 ..\mixins\mConvert.py:108
+msgid "You should install textile module first!"
+msgstr ""
+
+#: ..\mixins\Import.py:4900 ..\mixins\mConvert.py:235
+msgid "Choose where converted text is be outputed:"
+msgstr ""
+
+#: ..\mixins\Import.py:4900 ..\mixins\mConvert.py:235
+msgid "In html window"
+msgstr ""
+
+#: ..\mixins\Import.py:4900 ..\mixins\mConvert.py:235
+msgid "In message window"
+msgstr ""
+
+#: ..\mixins\Import.py:4900 ..\mixins\mConvert.py:235
+msgid "Replace selected text"
+msgstr ""
+
+#: ..\mixins\Import.py:4923 ..\mixins\mConvert.py:258
+msgid "Html Convertion"
+msgstr ""
+
+#: ..\mixins\Import.py:4959 ..\mixins\mHtmlFileType.py:48
+msgid "Shows python content in Browser."
+msgstr ""
+
+#: ..\mixins\Import.py:4959 ..\mixins\mHtmlFileType.py:48
+msgid "View Content"
+msgstr ""
+
+#: ..\mixins\Import.py:5025 ..\mixins\Import.py:5026
+#: ..\mixins\mAutoComplete.py:43 ..\mixins\mAutoComplete.py:44
+msgid "Python"
+msgstr ""
+
+#: ..\mixins\Import.py:5025 ..\mixins\mAutoComplete.py:43
+msgid "Enable calltip"
+msgstr ""
+
+#: ..\mixins\Import.py:5026 ..\mixins\mAutoComplete.py:44
+msgid "Enable auto completion"
+msgstr ""
+
+#: ..\mixins\Import.py:5114 ..\mixins\mAutoComplete.py:132
+msgid ""
+"\n"
+"\n"
+"(Press ESC to close)"
+msgstr ""
+
+#: ..\mixins\Import.py:5349 ..\mixins\Import.py:5358
+#: ..\mixins\mModuleFile.py:33 ..\mixins\mModuleFile.py:42
+msgid "Open Module File"
+msgstr ""
+
+#: ..\mixins\Import.py:5349 ..\mixins\Import.py:5358
+#: ..\mixins\mModuleFile.py:33 ..\mixins\mModuleFile.py:42
+msgid "Open current word as Python module file"
+msgstr ""
+
+#: ..\mixins\Import.py:5425 ..\mixins\mSplashWin.py:31
+msgid "Show splash window on startup"
+msgstr ""
+
+#: ..\mixins\Import.py:5458 ..\mixins\mModuleInfo.py:31
+msgid "Extended Modules Info"
+msgstr ""
+
+#: ..\mixins\Import.py:5458 ..\mixins\mModuleInfo.py:31
+msgid "Extended modules infomation"
+msgstr ""
+
+#: ..\mixins\Import.py:5480 ..\mixins\Import.py:5487
+#: ..\mixins\mDirBrowser.py:32 ..\mixins\mDirBrowser.py:39
+msgid "Directory Browser"
+msgstr ""
+
+#: ..\mixins\Import.py:5480 ..\mixins\Import.py:5487
+#: ..\mixins\mDirBrowser.py:32 ..\mixins\mDirBrowser.py:39
+msgid "Opens directory browser window."
+msgstr ""
+
+#: ..\mixins\Import.py:5502 ..\mixins\Import.py:5507 ..\mixins\Import.py:5511
+#: ..\mixins\Import.py:5516 ..\mixins\Import.py:5521
+#: ..\mixins\mDirBrowser.py:54 ..\mixins\mDirBrowser.py:69
+#: ..\mixins\mDirBrowser.py:73 ..\mixins\mDirBrowser.py:78
+#: ..\mixins\mDirBrowser.py:83
+msgid "Dir Browser"
+msgstr ""
+
+#: ..\mixins\Import.py:5532 ..\mixins\mDirBrowser.py:94
+msgid "Max number of recent browse directories:"
+msgstr ""
+
+#: ..\mixins\Import.py:5533 ..\mixins\mDirBrowser.py:95
+msgid "Open last directory browser as startup"
+msgstr ""
+
+#: ..\mixins\Import.py:5617 ..\mixins\mInputAssistant.py:90
+msgid "Enable auto extend"
+msgstr ""
+
+#: ..\mixins\Import.py:5671 ..\mixins\mFileNew.py:96
+msgid "Enable syntax selection as new file"
+msgstr ""
+
+#: ..\mixins\Import.py:5677 ..\mixins\mFileNew.py:102
+msgid "Creates a text file."
+msgstr ""
+
+#: ..\mixins\Import.py:5678 ..\mixins\mFileNew.py:103
+msgid "Creates a C file."
+msgstr ""
+
+#: ..\mixins\Import.py:5679 ..\mixins\mFileNew.py:104
+msgid "Creates a HTML file."
+msgstr ""
+
+#: ..\mixins\Import.py:5680 ..\mixins\mFileNew.py:105
+msgid "Creates a Python file."
+msgstr ""
+
+#: ..\mixins\Import.py:5681 ..\mixins\mFileNew.py:106
+msgid "Creates a Java file."
+msgstr ""
+
+#: ..\mixins\Import.py:5682 ..\mixins\mFileNew.py:107
+msgid "Creates a Ruby file."
+msgstr ""
+
+#: ..\mixins\Import.py:5683 ..\mixins\mFileNew.py:108
+msgid "Creates a Perl file."
+msgstr ""
+
+#: ..\mixins\Import.py:5684 ..\mixins\mFileNew.py:109
+msgid "Creates a CSS file."
+msgstr ""
+
+#: ..\mixins\Import.py:5685 ..\mixins\mFileNew.py:110
+msgid "Creates a JavaScript file."
+msgstr ""
+
+#: ..\mixins\Import.py:5729 ..\mixins\Import.py:5736 ..\mixins\mShare.py:31
+#: ..\mixins\mShare.py:38
+msgid "Open Share Resouce Window"
+msgstr ""
+
+#: ..\mixins\Import.py:5729 ..\mixins\Import.py:5736 ..\mixins\mShare.py:31
+#: ..\mixins\mShare.py:38
+msgid "Opens share resouce window."
+msgstr ""
+
+#: ..\mixins\Import.py:5753 ..\mixins\Import.py:5757 ..\mixins\Import.py:5762
+#: ..\mixins\Import.py:5767 ..\mixins\Import.py:5771 ..\mixins\mShare.py:65
+#: ..\mixins\mShare.py:69 ..\mixins\mShare.py:74 ..\mixins\mShare.py:79
+#: ..\mixins\mShare.py:83
+msgid "Share Resouce"
+msgstr ""
+
+#: ..\mixins\Import.py:5792 ..\mixins\mProxy.py:37
+msgid "Use proxy"
+msgstr ""
+
+#: ..\mixins\Import.py:5793 ..\mixins\mProxy.py:38
+msgid "Proxy URL:"
+msgstr ""
+
+#: ..\mixins\Import.py:5794 ..\mixins\mProxy.py:39
+msgid "Proxy User:"
+msgstr ""
+
+#: ..\mixins\Import.py:5795 ..\mixins\mProxy.py:40
+msgid "Proxy Password:"
+msgstr ""
+
+#: ..\mixins\Import.py:5819 ..\mixins\Import.py:5831 ..\mixins\mPad.py:39
+#: ..\mixins\mPad.py:51
+msgid "Easy Memo"
+msgstr ""
+
+#: ..\mixins\Import.py:5819 ..\mixins\Import.py:5842 ..\mixins\mPad.py:39
+#: ..\mixins\mPad.py:63
+msgid "Show Easy Memo windows, and you can write down everything what you want."
+msgstr ""
+
+#: ..\mixins\Import.py:5842 ..\mixins\mPad.py:63
+msgid "easy memo"
+msgstr ""
+
+#: ..\mixins\Import.py:5895 ..\mixins\Import.py:5902
+#: ..\mixins\mTodoWindow.py:31 ..\mixins\mTodoWindow.py:38
+msgid "Open TODO Window"
+msgstr ""
+
+#: ..\mixins\Import.py:5895 ..\mixins\mTodoWindow.py:31
+msgid "Open the TODO window."
+msgstr ""
+
+#: ..\mixins\Import.py:5902 ..\mixins\mTodoWindow.py:38
+msgid "Opens the TODO window."
+msgstr ""
+
+#: ..\mixins\Import.py:5912 ..\mixins\mTodoWindow.py:48
+msgid "Auto show TODO window if TODO window already opened."
+msgstr ""
+
+#: ..\mixins\Import.py:5917 ..\mixins\Import.py:5921 ..\mixins\Import.py:5922
+#: ..\mixins\Import.py:5927 ..\mixins\Import.py:5933 ..\mixins\Import.py:5938
+#: ..\mixins\Import.py:5943 ..\mixins\mTodoWindow.py:53
+#: ..\mixins\mTodoWindow.py:57 ..\mixins\mTodoWindow.py:58
+#: ..\mixins\mTodoWindow.py:63 ..\mixins\mTodoWindow.py:69
+#: ..\mixins\mTodoWindow.py:74 ..\mixins\mTodoWindow.py:79
+msgid "TODO"
+msgstr ""
+
+#: ..\mixins\InterpreterDialog.py:33
+msgid "Interpreter Setting"
+msgstr ""
+
+#: ..\mixins\InterpreterDialog.py:39 ..\mixins\PluginDialog.py:50
+#: ..\mixins\ScriptDialog.py:39 ..\mixins\ShellDialog.py:40
+#: ..\mixins\SnippetWindow.py:103 ..\mixins\TodoWindow.py:54
+msgid "Description"
+msgstr ""
+
+#: ..\mixins\InterpreterDialog.py:40 ..\mixins\InterpreterDialog.py:100
+#: ..\mixins\InterpreterDialog.py:117
+msgid "Interpreter Path"
+msgstr ""
+
+#: ..\mixins\InterpreterDialog.py:53 ..\mixins\ScriptDialog.py:58
+#: ..\mixins\ShellDialog.py:60
+msgid "Add"
+msgstr ""
+
+#: ..\mixins\InterpreterDialog.py:55 ..\mixins\ShellDialog.py:62
+msgid "Modify"
+msgstr ""
+
+#: ..\mixins\InterpreterDialog.py:57 ..\mixins\ScriptDialog.py:60
+#: ..\mixins\ShellDialog.py:64
+msgid "Remove"
+msgstr ""
+
+#: ..\mixins\InterpreterDialog.py:85
+msgid "default"
+msgstr ""
+
+#: ..\mixins\InterpreterDialog.py:86
+msgid "You cann't delete the default interpreter!"
+msgstr ""
+
+#: ..\mixins\InterpreterDialog.py:88 ..\mixins\ScriptDialog.py:115
+#: ..\mixins\ShellDialog.py:120
+msgid "Do you realy want to delete current item [%s]?"
+msgstr ""
+
+#: ..\mixins\InterpreterDialog.py:89
+msgid "Deleting Interpreter"
+msgstr ""
+
+#: ..\mixins\InterpreterDialog.py:101 ..\mixins\InterpreterDialog.py:117
+msgid "Enter the interpreter path"
+msgstr ""
+
+#: ..\mixins\InterpreterDialog.py:113
+msgid "Modify Interpreter Path"
+msgstr ""
+
+#: ..\mixins\InterpreterDialog.py:113 ..\mixins\ScriptDialog.py:97
+#: ..\mixins\ScriptDialog.py:105 ..\mixins\ShellDialog.py:102
+#: ..\mixins\ShellDialog.py:110 ..\mixins\ShellDialog.py:143
+msgid "You can select only one item"
+msgstr ""
+
+#: ..\mixins\InterpreterDialog.py:130 ..\mixins\ScriptDialog.py:142
+#: ..\mixins\ShellDialog.py:160
+msgid "The description must not be empty or "
+msgstr ""
+
+#: ..\mixins\InterpreterDialog.py:131
+msgid "Saving Interpreter Setting"
+msgstr ""
+
+#: ..\mixins\InterpreterDialog.py:131 ..\mixins\ScriptDialog.py:143
+#: ..\mixins\ShellDialog.py:161
+msgid ""
+".\n"
+"Please change them first!"
+msgstr ""
+
+#: ..\mixins\InterpreterDialog.py:167
+msgid "Select Python Interpreter:"
+msgstr ""
+
+#: ..\mixins\InterpreterDialog.py:174
+msgid "ReDirect input and output"
+msgstr ""
+
+#: ..\mixins\LexerBase.py:113
+msgid "Style default"
+msgstr ""
+
+#: ..\mixins\LexerBase.py:114
+msgid "Caret fore colour"
+msgstr ""
+
+#: ..\mixins\LexerBase.py:115
+msgid "CaretLine back colour"
+msgstr ""
+
+#: ..\mixins\LexerBase.py:116
+msgid "Selection back colour"
+msgstr ""
+
+#: ..\mixins\LexerBase.py:117
+msgid "Line numbers"
+msgstr ""
+
+#: ..\mixins\LexerBase.py:118
+msgid "Control characters"
+msgstr ""
+
+#: ..\mixins\LexerBase.py:119
+msgid "Matched braces"
+msgstr ""
+
+#: ..\mixins\LexerBase.py:120
+msgid "Unmatched brace"
+msgstr ""
+
+#: ..\mixins\MainFrame.py:39
+msgid "File"
+msgstr ""
+
+#: ..\mixins\MainFrame.py:40
+msgid "Help"
+msgstr ""
+
+#: ..\mixins\MainFrame.py:45
+msgid "Exit\tAlt+X"
+msgstr ""
+
+#: ..\mixins\MainFrame.py:45
+msgid "Exit Program"
+msgstr ""
+
+#: ..\mixins\ModulesInfo.py:75
+msgid "Output modules information error!"
+msgstr ""
+
+#: ..\mixins\MyPanel.py:318
+msgid "Closes an opened window."
+msgstr ""
+
+#: ..\mixins\PluginDialog.py:33
+msgid "Plugin Manage"
+msgstr ""
+
+#: ..\mixins\PluginDialog.py:51
+msgid "Author"
+msgstr ""
+
+#: ..\mixins\PluginDialog.py:52
+msgid "Version"
+msgstr ""
+
+#: ..\mixins\PluginDialog.py:53
+msgid "Date"
+msgstr ""
+
+#: ..\mixins\ScriptDialog.py:33
+msgid "Script Manage"
+msgstr ""
+
+#: ..\mixins\ScriptDialog.py:40 ..\mixins\TodoWindow.py:52
+msgid "Filename"
+msgstr ""
+
+#: ..\mixins\ScriptDialog.py:54 ..\mixins\ShellDialog.py:56
+msgid "Up"
+msgstr ""
+
+#: ..\mixins\ScriptDialog.py:56 ..\mixins\ShellDialog.py:58
+msgid "Down"
+msgstr ""
+
+#: ..\mixins\ScriptDialog.py:97
+msgid "Up Script"
+msgstr ""
+
+#: ..\mixins\ScriptDialog.py:105
+msgid "Down Script"
+msgstr ""
+
+#: ..\mixins\ScriptDialog.py:115
+msgid "Deleting Script"
+msgstr ""
+
+#: ..\mixins\ScriptDialog.py:126
+msgid "Open Script"
+msgstr ""
+
+#: ..\mixins\ScriptDialog.py:126
+msgid "Python file (*.py)|*.py"
+msgstr ""
+
+#: ..\mixins\ScriptDialog.py:143
+msgid "Saving Script"
+msgstr ""
+
+#: ..\mixins\ShareWindow.py:38
+msgid "Add ..."
+msgstr ""
+
+#: ..\mixins\ShareWindow.py:285
+msgid "Do you realy want to delete current item?"
+msgstr ""
+
+#: ..\mixins\ShellDialog.py:34
+msgid "Shell Manage"
+msgstr ""
+
+#: ..\mixins\ShellDialog.py:41 ..\mixins\ShellDialog.py:131
+#: ..\mixins\ShellDialog.py:147
+msgid "Shell Command Line"
+msgstr ""
+
+#: ..\mixins\ShellDialog.py:102
+msgid "Up Shell Command"
+msgstr ""
+
+#: ..\mixins\ShellDialog.py:110
+msgid "Down Shell Command"
+msgstr ""
+
+#: ..\mixins\ShellDialog.py:120
+msgid "Deleting Shell Command"
+msgstr ""
+
+#: ..\mixins\ShellDialog.py:131 ..\mixins\ShellDialog.py:147
+msgid ""
+"Enter the shell command line:\n"
+"$file will be replaced by current document filename\n"
+"$path will be replaced by current document filename's directory"
+msgstr ""
+
+#: ..\mixins\ShellDialog.py:143
+msgid "Modify Shell Command"
+msgstr ""
+
+#: ..\mixins\ShellDialog.py:161
+msgid "Saving Shell Command"
+msgstr ""
+
+#: ..\mixins\SnippetWindow.py:102
+msgid "Abbreviation"
+msgstr ""
+
+#: ..\mixins\SnippetWindow.py:129
+msgid "Code Template"
+msgstr ""
+
+#: ..\mixins\SnippetWindow.py:278
+msgid "Delete Catalog"
+msgstr ""
+
+#: ..\mixins\SnippetWindow.py:278
+msgid ""
+"The node has child nodes, cann't be deleted!\n"
+"Please delete child nodes first!"
+msgstr ""
+
+#: ..\mixins\SnippetWindow.py:525
+msgid "Add Code"
+msgstr ""
+
+#: ..\mixins\SnippetWindow.py:525
+msgid ""
+"The abbreviation has been added,\n"
+"Please try another!"
+msgstr ""
+
+#: ..\mixins\SnippetWindow.py:565 ..\mixins\SnippetWindow.py:582
+msgid "Snippets code file (xml file)|*.*"
+msgstr ""
+
+#: ..\mixins\TodoWindow.py:53
+msgid "LineNo"
+msgstr ""
+

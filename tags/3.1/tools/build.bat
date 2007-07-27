@@ -1,0 +1,1 @@
+python msgfmt.py -o ../lang/newedit_cn.mo newedit_cn.po

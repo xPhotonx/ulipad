@@ -1,0 +1,16 @@
+[include]
+1=django_py.acp
+
+[autostring]
+def<space> = def !^():
+if<space> = if !^:
+class<space> = class !^:
+from<space> = from !^ import 
+__ = __!^__
+else = else:\n\t
+while<space> = while !^:
+for<space> = for !^ in :
+__name__<space> = "__name__ == '__main__'"
+
+[autore]
+<(\w+).*?> = \0!^</\1>

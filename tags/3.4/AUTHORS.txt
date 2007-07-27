@@ -1,0 +1,5 @@
+This is a contribute authors list. Thanks a lot:
+
+yeyesho li <yeyesho@gmail.com>                  对NoteBook提出改进建议
+Claudio Grondi <claudio.grondi@freenet.de>      提出保存上次位置的正确处理方式，列模式，标尺功能建议和测试改进，特别是起了UliPad这个名字。
+Cheng XiaoSan <chengxiaosan@gmail.com>          报告Bug并提出改进建议

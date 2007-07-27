@@ -1,0 +1,1319 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<meta name="generator" content="Docutils 0.3.9: http://docutils.sourceforge.net/" />
+<title>用户手册</title>
+<link rel="stylesheet" href="default.css" type="text/css" />
+</head>
+<body>
+<div class="document" id="id1">
+<h1 class="title">用户手册</h1>
+<table class="docinfo" frame="void" rules="none">
+<col class="docinfo-name" />
+<col class="docinfo-content" />
+<tbody valign="top">
+<tr class="field"><th class="docinfo-name">作者:</th><td class="field-body">limodou</td>
+</tr>
+<tr class="field"><th class="docinfo-name">联系:</th><td class="field-body"><a class="reference" href="mailto:limodou&#64;gmail.com">limodou&#64;gmail.com</a></td>
+</tr>
+<tr class="field"><th class="docinfo-name">日期:</th><td class="field-body">2005-10-11 12:58:28 +0800</td>
+</tr>
+<tr class="field"><th class="docinfo-name">版本:</th><td class="field-body">userguide.txt 42 2005-09-28 05:19:21Z limodou</td>
+</tr>
+<tr class="field"><th class="docinfo-name">主页:</th><td class="field-body"><a class="reference" href="http://wiki.woodpecker.org.cn/moin/NewEdit">http://wiki.woodpecker.org.cn/moin/NewEdit</a></td>
+</tr>
+<tr class="field"><th class="docinfo-name">BLOG:</th><td class="field-body"><a class="reference" href="http://www.donews.net/limodou">http://www.donews.net/limodou</a></td>
+</tr>
+<tr class="field"><th class="docinfo-name">版权:</th><td class="field-body">GPL</td>
+</tr>
+</tbody>
+</table>
+<div class="contents topic" id="id2">
+<p class="topic-title first"><a name="id2">目录</a></p>
+<ul class="auto-toc simple">
+<li><a class="reference" href="#id3" id="id33" name="id33">1&nbsp;&nbsp;&nbsp;说明</a></li>
+<li><a class="reference" href="#id4" id="id34" name="id34">2&nbsp;&nbsp;&nbsp;版权说明</a></li>
+<li><a class="reference" href="#id5" id="id35" name="id35">3&nbsp;&nbsp;&nbsp;成员及联及方式</a></li>
+<li><a class="reference" href="#id6" id="id36" name="id36">4&nbsp;&nbsp;&nbsp;屏幕说明</a></li>
+<li><a class="reference" href="#id7" id="id37" name="id37">5&nbsp;&nbsp;&nbsp;运行环境及安装说明</a><ul class="auto-toc">
+<li><a class="reference" href="#id8" id="id38" name="id38">5.1&nbsp;&nbsp;&nbsp;源码</a></li>
+<li><a class="reference" href="#windows" id="id39" name="id39">5.2&nbsp;&nbsp;&nbsp;Windows安装包</a></li>
+<li><a class="reference" href="#id9" id="id40" name="id40">5.3&nbsp;&nbsp;&nbsp;其它要求</a></li>
+</ul>
+</li>
+<li><a class="reference" href="#id10" id="id41" name="id41">6&nbsp;&nbsp;&nbsp;最新更新</a><ul class="auto-toc">
+<li><a class="reference" href="#id11" id="id42" name="id42">6.1&nbsp;&nbsp;&nbsp;3.0版本</a></li>
+<li><a class="reference" href="#id12" id="id43" name="id43">6.2&nbsp;&nbsp;&nbsp;2.9版本</a></li>
+<li><a class="reference" href="#id13" id="id44" name="id44">6.3&nbsp;&nbsp;&nbsp;2.8版本</a></li>
+<li><a class="reference" href="#id14" id="id45" name="id45">6.4&nbsp;&nbsp;&nbsp;2.7版本</a></li>
+<li><a class="reference" href="#id15" id="id46" name="id46">6.5&nbsp;&nbsp;&nbsp;2.6.1版本</a></li>
+<li><a class="reference" href="#id16" id="id47" name="id47">6.6&nbsp;&nbsp;&nbsp;2.6版本</a></li>
+<li><a class="reference" href="#id17" id="id48" name="id48">6.7&nbsp;&nbsp;&nbsp;2.5版本</a></li>
+<li><a class="reference" href="#id18" id="id49" name="id49">6.8&nbsp;&nbsp;&nbsp;2.4版本</a></li>
+<li><a class="reference" href="#id19" id="id50" name="id50">6.9&nbsp;&nbsp;&nbsp;2.3版本</a></li>
+<li><a class="reference" href="#id20" id="id51" name="id51">6.10&nbsp;&nbsp;&nbsp;2.2版本</a></li>
+<li><a class="reference" href="#id21" id="id52" name="id52">6.11&nbsp;&nbsp;&nbsp;2.1版本</a></li>
+<li><a class="reference" href="#id22" id="id53" name="id53">6.12&nbsp;&nbsp;&nbsp;2.0版本</a></li>
+</ul>
+</li>
+<li><a class="reference" href="#newedit" id="id54" name="id54">7&nbsp;&nbsp;&nbsp;启动NewEdit</a></li>
+<li><a class="reference" href="#file" id="id55" name="id55">8&nbsp;&nbsp;&nbsp;File(文件)</a></li>
+<li><a class="reference" href="#edit" id="id56" name="id56">9&nbsp;&nbsp;&nbsp;Edit(编辑)</a><ul class="auto-toc">
+<li><a class="reference" href="#selection" id="id57" name="id57">9.1&nbsp;&nbsp;&nbsp;Selection(选择)</a></li>
+<li><a class="reference" href="#duplication" id="id58" name="id58">9.2&nbsp;&nbsp;&nbsp;Duplication(复制)</a></li>
+<li><a class="reference" href="#format" id="id59" name="id59">9.3&nbsp;&nbsp;&nbsp;Format(格式)</a></li>
+<li><a class="reference" href="#case" id="id60" name="id60">9.4&nbsp;&nbsp;&nbsp;Case(大小写)</a></li>
+<li><a class="reference" href="#convert-2-7" id="id61" name="id61">9.5&nbsp;&nbsp;&nbsp;Convert(转换)(2.7新增)</a></li>
+</ul>
+</li>
+<li><a class="reference" href="#view" id="id62" name="id62">10&nbsp;&nbsp;&nbsp;View(视图)</a></li>
+<li><a class="reference" href="#search" id="id63" name="id63">11&nbsp;&nbsp;&nbsp;Search(查找)</a></li>
+<li><a class="reference" href="#document" id="id64" name="id64">12&nbsp;&nbsp;&nbsp;Document(文档)</a><ul class="auto-toc">
+<li><a class="reference" href="#convert-line-ending" id="id65" name="id65">12.1&nbsp;&nbsp;&nbsp;Convert Line Ending(转换行结束符)</a></li>
+</ul>
+</li>
+<li><a class="reference" href="#tool-2-2" id="id66" name="id66">13&nbsp;&nbsp;&nbsp;Tool(工具)(2.2新增)</a><ul class="auto-toc">
+<li><a class="reference" href="#shell-command-shell-2-2" id="id67" name="id67">13.1&nbsp;&nbsp;&nbsp;Shell Command(Shell命令)(2.2新增)</a></li>
+<li><a class="reference" href="#script-2-0" id="id68" name="id68">13.2&nbsp;&nbsp;&nbsp;Script(脚本)(2.0新增)</a></li>
+<li><a class="reference" href="#snippets-2-2" id="id69" name="id69">13.3&nbsp;&nbsp;&nbsp;Snippets(片段)(2.2新增)</a></li>
+<li><a class="reference" href="#plugin-manage-2-4" id="id70" name="id70">13.4&nbsp;&nbsp;&nbsp;Plugin Manage(插件管理)(2.4新增)</a></li>
+</ul>
+</li>
+<li><a class="reference" href="#option" id="id71" name="id71">14&nbsp;&nbsp;&nbsp;Option(选项)</a><ul class="auto-toc">
+<li><a class="reference" href="#id23" id="id72" name="id72">14.1&nbsp;&nbsp;&nbsp;Document(文档相关)</a></li>
+<li><a class="reference" href="#general" id="id73" name="id73">14.2&nbsp;&nbsp;&nbsp;General(通用)</a></li>
+<li><a class="reference" href="#python-2-0" id="id74" name="id74">14.3&nbsp;&nbsp;&nbsp;Python(2.0新增)</a></li>
+</ul>
+</li>
+<li><a class="reference" href="#window-2-6" id="id75" name="id75">15&nbsp;&nbsp;&nbsp;Window(窗口)(2.6新增)</a></li>
+<li><a class="reference" href="#id24" id="id76" name="id76">16&nbsp;&nbsp;&nbsp;Python(2.0新增)</a></li>
+<li><a class="reference" href="#help" id="id77" name="id77">17&nbsp;&nbsp;&nbsp;Help(帮助)</a></li>
+<li><a class="reference" href="#id25" id="id78" name="id78">18&nbsp;&nbsp;&nbsp;快捷键</a></li>
+<li><a class="reference" href="#id26" id="id79" name="id79">19&nbsp;&nbsp;&nbsp;弹出菜单</a></li>
+<li><a class="reference" href="#newedit-unicode" id="id80" name="id80">20&nbsp;&nbsp;&nbsp;NewEdit的Unicode支持</a></li>
+<li><a class="reference" href="#id27" id="id81" name="id81">21&nbsp;&nbsp;&nbsp;专题介绍</a><ul class="auto-toc">
+<li><a class="reference" href="#script" id="id82" name="id82">21.1&nbsp;&nbsp;&nbsp;Script(脚本)编写示例</a><ul class="auto-toc">
+<li><a class="reference" href="#id28" id="id83" name="id83">21.1.1&nbsp;&nbsp;&nbsp;最简单的脚本</a></li>
+<li><a class="reference" href="#id29" id="id84" name="id84">21.1.2&nbsp;&nbsp;&nbsp;给文本增加行号</a></li>
+<li><a class="reference" href="#restructuredtext-html" id="id85" name="id85">21.1.3&nbsp;&nbsp;&nbsp;转换reStructuredText文档转换为HTML</a></li>
+</ul>
+</li>
+<li><a class="reference" href="#ftp" id="id86" name="id86">21.2&nbsp;&nbsp;&nbsp;Ftp使用说明</a></li>
+<li><a class="reference" href="#id30" id="id87" name="id87">21.3&nbsp;&nbsp;&nbsp;用户自定义快捷键(2.8版新增)</a></li>
+<li><a class="reference" href="#id31" id="id88" name="id88">21.4&nbsp;&nbsp;&nbsp;目录浏览功能(3.0新增)</a></li>
+</ul>
+</li>
+</ul>
+</div>
+<div class="section" id="id3">
+<h1><a class="toc-backref" href="#id33" name="id3">1&nbsp;&nbsp;&nbsp;说明</a></h1>
+<p>本手册采用对照菜单功能进行描述，个别专题单独讲解。</p>
+</div>
+<div class="section" id="id4">
+<h1><a class="toc-backref" href="#id34" name="id4">2&nbsp;&nbsp;&nbsp;版权说明</a></h1>
+<p>本软件采用GPL版权发布。</p>
+</div>
+<div class="section" id="id5">
+<h1><a class="toc-backref" href="#id35" name="id5">3&nbsp;&nbsp;&nbsp;成员及联及方式</a></h1>
+<p>目前软件开发就是本人，如果你在使用过程中有什么意见和建议，欢迎给我写信 <a class="reference" href="mailto:chatme&#64;263.net">chatme&#64;263.net</a> 。也可以去我的 <a class="reference" href="http://www.donews.net/limodou">Blog</a> 留言。</p>
+</div>
+<div class="section" id="id6">
+<h1><a class="toc-backref" href="#id36" name="id6">4&nbsp;&nbsp;&nbsp;屏幕说明</a></h1>
+<p>这是NewEdit的主窗口：</p>
+<div class="image"><img alt="screenshot_01.jpg" src="screenshot_01.jpg" /></div>
+<p>NewEdit分为菜单条、工具条、文档窗口和状态条。</p>
+<p>文档窗口由Tab页组成，可以一次编辑多个文档。当前文档的标题会显示在主窗口的标题条上。
+状态条可以看到行、列值。文档回车类型：WIN为DOS/Windows格式，UNIX为UNIX格式，
+MAC为MAC格式。文档使用的编码。</p>
+</div>
+<div class="section" id="id7">
+<h1><a class="toc-backref" href="#id37" name="id7">5&nbsp;&nbsp;&nbsp;运行环境及安装说明</a></h1>
+<div class="section" id="id8">
+<h2><a class="toc-backref" href="#id38" name="id8">5.1&nbsp;&nbsp;&nbsp;源码</a></h2>
+<p>可以运行在Windows和Linux环境下。
+需安装Python 2.3以上版本，wxPython 2.4.2.4 Unicode版本
+将源码包解压放到一个目录下即可。
+强烈建议使用 python 2.4+ wxPython 2.6+版本。</p>
+</div>
+<div class="section" id="windows">
+<h2><a class="toc-backref" href="#id39" name="windows">5.2&nbsp;&nbsp;&nbsp;Windows安装包</a></h2>
+<p>只能运行在Windows环境。执行安装程序即可，不需要事先安装Python和wxPython。</p>
+</div>
+<div class="section" id="id9">
+<h2><a class="toc-backref" href="#id40" name="id9">5.3&nbsp;&nbsp;&nbsp;其它要求</a></h2>
+<blockquote>
+<ul class="simple">
+<li>使用reStructuredText转Html需安装docutils模块</li>
+<li>使用textile转Html需安装textile模块</li>
+</ul>
+</blockquote>
+</div>
+</div>
+<div class="section" id="id10">
+<h1><a class="toc-backref" href="#id41" name="id10">6&nbsp;&nbsp;&nbsp;最新更新</a></h1>
+<div class="section" id="id11">
+<h2><a class="toc-backref" href="#id42" name="id11">6.1&nbsp;&nbsp;&nbsp;3.0版本</a></h2>
+<p>新增：</p>
+<ol class="arabic simple">
+<li>版本号增加了Revision号</li>
+<li>增加目录浏览功能</li>
+<li>增加模块信息显示，主要用于扩展模块的信息显示</li>
+<li>增加pytts插件</li>
+<li>增加winpdb插件</li>
+<li>增加Wizard插件</li>
+</ol>
+<p>修改：</p>
+<ol class="arabic simple">
+<li>修改当出现自动完成下拉列表时，切换窗口下拉列表依然显示的bug</li>
+<li>修改帮助信息，站点地址，blog，联系方式等</li>
+<li>去除project和path功能</li>
+<li>扩展插件结构，插件为目录</li>
+<li>修改i18n的处理，支持多个mo文件串行处理，同时可以处理插件翻译文件</li>
+<li>修改图片处理支持gif, png和image对象</li>
+<li>网站主页及版本库转移到啄木鸟的SVN</li>
+<li>修正切换文档不改变文档编码的问题</li>
+<li>修改ftp端口号不能大于100的问题</li>
+</ol>
+</div>
+<div class="section" id="id12">
+<h2><a class="toc-backref" href="#id43" name="id12">6.2&nbsp;&nbsp;&nbsp;2.9版本</a></h2>
+<p>新增：</p>
+<ol class="arabic simple">
+<li>增加行注释和反注释的快捷键(Ctrl+/增加注释 Ctrl+\取消注释)</li>
+<li>增加导入指定模块文件的功能，选中一个字符串，按F6可以导入字符串所表示的模块文件</li>
+<li>启动时编辑窗口的文件延迟打开</li>
+<li>增加设置解释器功能，可以在运行时执行要使用的解释器，同时可以设置是否使用输入输出重定向</li>
+<li>增加执行程序时，自动切换到程序所在的目录功能</li>
+<li>增加记录上次打开路径的功能</li>
+<li>增加中文目录的支持</li>
+<li>增加关闭当前文档快捷键 Ctrl+F4</li>
+<li>增加对导入mixins的异常保护</li>
+</ol>
+<p>修改：</p>
+<ol class="arabic simple">
+<li>修改FTP中上传文件文本文件未转换错</li>
+<li>修正生成插件目录__init__.py文件的错误</li>
+<li>修正未给frame.workpath赋值的错误</li>
+<li>调整 NewEdit 的应用结构。</li>
+<li>Find窗口按ESC可以关闭</li>
+<li>在NewEdit中执行程序时，不进行输入输出重定向时采用异步执行</li>
+<li>DDE支持使用CallAfter处理</li>
+<li>修正当选中文本时，按回车不清除文本的bug</li>
+<li>修正执行外部菜单时使用os.startfile()</li>
+<li>修正当snippet不存在时创建路径的处理</li>
+<li>修正取系统缺省编码的处理</li>
+<li>修正代码片段窗口按钮状态处理不正确错误</li>
+<li>修正自动完成中，从文本取出匹配串排序不正确的Bug</li>
+<li>修改在读取缺省编码有误时，使用utf-8编码</li>
+<li>修正改变语法颜色后，文档不更新的Bug。在colourize中增加force参数，当它为True时强制执行。</li>
+<li>修改当在一件空文档上打开文件时，不能正确处理文件类型切换的处理</li>
+<li>修改当自动保存文档时，不能正确保存unicode编码的问题。但对于其它的象ftp的文件保存可能有问题。</li>
+<li>修改对象比较处理，增加__eq__, __ne__方法</li>
+<li>修改当找不到文件对应的语法器时，缺省使用option中的语法器设置的处理，改为缺省使用text语法器</li>
+<li>修改语法高亮的处理，当语言类型未变时不再进行语法高亮处理</li>
+<li>修改ftp list的分析处理</li>
+<li>修改全部保存、全部关闭时不对未打开文档进行处理</li>
+</ol>
+</div>
+<div class="section" id="id13">
+<h2><a class="toc-backref" href="#id44" name="id13">6.3&nbsp;&nbsp;&nbsp;2.8版本</a></h2>
+<p>新增：</p>
+<ol class="arabic simple">
+<li>查找替换功能中，如果查找是正则表达式时，则替换也是正则表达式替换</li>
+<li>Shell窗口，消息窗口，执行Python代码时，支持中文输入及输出</li>
+<li>增加自动补齐，函数语法提示功能</li>
+<li>在状态栏最后增加显示剩余内存的栏位(只用于Windows环境)</li>
+<li>直接将Html代码输出到Html窗口中</li>
+<li>增加用户自定义快捷键</li>
+</ol>
+<p>修改：</p>
+<ol class="arabic simple">
+<li>重新设计Blog的编辑功能</li>
+<li>修正保存代码片段窗口时的错误</li>
+<li>修正未选中代码片段分类时，按保存时出错的错误</li>
+<li>utf-8的编码检查改为直接进行转换，当出错时使用缺省编码。</li>
+<li>修正帮助中Blog链接错</li>
+<li>修改新加Shell命令和Script时，自动对提示进入编辑状态</li>
+<li>Shell, Message, 代码片段窗口均可以关闭</li>
+<li>在windows平台上注册到资源管理器上下文菜单时，根据文件后缀进行相应的处理</li>
+<li>重新设计在文件中查找界面</li>
+<li>Blog的分类信息显示为对应的分类描述</li>
+<li>修改wxPythonDoc插件为wxPythonDocument</li>
+<li>修改wxPythonDocument和PythonDoc的路径使用sys.prefix</li>
+</ol>
+</div>
+<div class="section" id="id14">
+<h2><a class="toc-backref" href="#id45" name="id14">6.4&nbsp;&nbsp;&nbsp;2.7版本</a></h2>
+<p>新增：</p>
+<ol class="arabic simple">
+<li>在Windows下支持将NewEdit注册到资源管理器的上下文菜单的功能，同时提供反注册。</li>
+<li>增加文本转换为Html的功能，现支持reSt-&gt;html, textile-&gt;html, py-&gt;html，
+同时提供多种输出方式：替换当前、输出到消息窗口、输出到独立的Html窗口</li>
+<li>增加查看Html文档的功能，可以使用内置的HtmlWindow来浏览Html文档。在Windows下
+是使用内嵌IE浏览器来查看</li>
+<li>在项目管理中增加将当前所有打开文档加入到项目中去的功能</li>
+<li>对于使用浏览器打开的窗口或Blog编辑窗口，Tab标签会显示不同的图标</li>
+</ol>
+<p>修改：</p>
+<ol class="arabic simple">
+<li>修改热键处理。Shell和Message窗口也可以使用Ctrl+C, Ctrl+V等热键了</li>
+<li>修改在增加一个Shell命令行时，无法修改命令行提示的Bug</li>
+<li>修正在执行Shell命令时，打开消息窗口出错的Bug</li>
+<li>修正在类浏览窗口的空白处理点击出错的Bug</li>
+<li>调整Plugins结构，增加异常处理功能</li>
+<li>取消对版本的检查</li>
+</ol>
+<p>增加的文本转Html和Html浏览功能主要是中以辅助Html编辑及对Blog写作预览的支持。对于Windows安装
+程序，在安装时会自动对注册表进行注册，即将NewEdit增加到资源管理器的上下文菜单中。卸载时自动删除
+注册表。</p>
+<p>对于plugins功能进行调整，因此如果你已经使用了plugin，需要重新进行设置。</p>
+</div>
+<div class="section" id="id15">
+<h2><a class="toc-backref" href="#id46" name="id15">6.5&nbsp;&nbsp;&nbsp;2.6.1版本</a></h2>
+<p>新增：</p>
+<ol class="arabic simple">
+<li>自动判断文件的缩近符，自动进行调整</li>
+<li>增加Blog编辑功能插件</li>
+</ol>
+<p>修改：</p>
+<ol class="arabic simple">
+<li>改正文件未修改不能重新打开的Bug</li>
+<li>Ftp下载时文件名自动填入</li>
+<li>调整Ftp布局</li>
+</ol>
+<p>升级说明：</p>
+<p>Blog插件是自选安装的，因此，在正式的安装包中不带。需要单独下载。如果要安装Blog插件，还要安装Meteor模块。</p>
+</div>
+<div class="section" id="id16">
+<h2><a class="toc-backref" href="#id47" name="id16">6.6&nbsp;&nbsp;&nbsp;2.6版本</a></h2>
+<p>新增：</p>
+<ol class="arabic simple">
+<li>BookMark支持循环跳转</li>
+<li>可以设置当前的运行路径，方便脚本运行</li>
+<li>可以生成InnoSetup格式的Windows安装程序</li>
+<li>增加Ftp的上传和下载功能</li>
+<li>增加命令行选项 -f 可以不打开上次会话所保存的文件名</li>
+</ol>
+<p>修改：</p>
+<ol class="arabic simple">
+<li>对整个软件结构进行调整，提高启动速度</li>
+<li>所有的文件路径均自动处理为绝对路径</li>
+</ol>
+<p>升级说明：</p>
+<p>因为此次修改了程序结构，应用2.5版升级相似，在运行 NewEdit 前应先执行tools/convert_opt2.6.py来转换newedit.opt。
+也可以简单地删除newedit.opt文件。</p>
+</div>
+<div class="section" id="id17">
+<h2><a class="toc-backref" href="#id48" name="id17">6.7&nbsp;&nbsp;&nbsp;2.5版本</a></h2>
+<p>新增：</p>
+<ol class="arabic simple">
+<li>增加上下文缩近</li>
+<li>增加简单项目管理功能</li>
+<li>增加是否显示光标所在行功能</li>
+<li>增加一个启动或禁止psyco模块的使用的命令行选项 -s，缺省为不启用</li>
+<li>增加改变文档的编码功能，保存文件时可按此编码进行保存</li>
+<li>增加Ftp功能，可以远程打开、编辑文件，并保存。还提供了建目录、新文件、删除、改名、上传、下传等常见Ftp功能</li>
+<li>增加自动封闭功能，如输入某些对称符号时，如(),[],{}时，输入左边符号时，自动会补齐右边符号</li>
+</ol>
+<p>修改：</p>
+<ol class="arabic simple">
+<li>修正Floder失效的问题</li>
+<li>修改当光标所在位置前为空白时，保持原空白不变</li>
+<li>修改文件名中有汉字的情况。将文件名自动转为unicode处理，并在DDE传送时转为utf-8</li>
+<li>语法高亮设置可以修改：光标颜色、光标所在行背景色、选择文本颜色</li>
+<li>修正保存文件后，当找不到文件名对应的语法解释器时，会使用缺省样式改变当前指定的样式</li>
+<li>翻译文件编码转成utf-8</li>
+<li>将参数页由panel改为scrolledwindow</li>
+<li>重新设计了插件导入结构，根据导入算法重新修改了读取plugin和写入plugin的方法</li>
+<li>打开文档的语法高亮参数窗口时，自动根据当前文档的语法类型选中初始语法种类</li>
+</ol>
+<p>升级说明：</p>
+<p>因为此次修改了程序结构，因此造成原配置文件处理在新版本下会发生错误。因此，在安装完2.5版软件后，可以执行tools
+目录下的convert_opt2.5.py来进行配置文件的转换。此程序只对2.5版以前的配置文件生效。还有最简单的方法就是删除
+配置文件即可。同时，本软件所提供的插件(从http://newedit.tigris.org上下载的)可能也存在问题，如果使用请重新下载。</p>
+</div>
+<div class="section" id="id18">
+<h2><a class="toc-backref" href="#id49" name="id18">6.8&nbsp;&nbsp;&nbsp;2.4版本</a></h2>
+<p>新增：</p>
+<ol class="arabic simple">
+<li>代码片段的导入和导出功能，可以导出或导入某个分类</li>
+<li>增加打印功能，支持HTML文档的打印</li>
+<li>增加psyco模块的加速支持，使用此功能要先安装psyco模块</li>
+<li>增加用户插件的管理功能</li>
+<li>在参数设置中可以设置新建文件缺省的语法高亮类型</li>
+<li>增加停止运行Python程序的菜单和工具条按钮</li>
+<li>运行Python程序时可以接收输入信息</li>
+</ol>
+<p>修改：</p>
+<ol class="arabic simple">
+<li>DDE服务的端口可以在config.ini中指定</li>
+<li>修改打印帮助文件为全路径，且使用file:///协议</li>
+<li>修改在文件中查找时，双击结果文件行数跳转总多一行的问题</li>
+<li>修改当存在混合回车符时，保存文件出错的问题</li>
+</ol>
+</div>
+<div class="section" id="id19">
+<h2><a class="toc-backref" href="#id50" name="id19">6.9&nbsp;&nbsp;&nbsp;2.3版本</a></h2>
+<p>新增：</p>
+<ol class="arabic simple">
+<li>增加模拟DDE功能，命令行增加禁用DDE选项</li>
+<li>增加版本检查功能，需要Python 2.3以上，wxPython 2.4以上</li>
+<li>增加语法属性设置：颜色、字体等，语法文件后缀。并通过配置文件进行保存。</li>
+<li>重新设定语法指定</li>
+</ol>
+<p>修改：</p>
+<ol class="arabic simple">
+<li>将某些窗口的显示/隐藏菜单合并到左侧窗口和底部窗口</li>
+<li>改正保存新文件时不正确的错误(已在2.2第二版中解决)</li>
+<li>运行功能支持.pyw后缀</li>
+<li>增加错误日志(error.txt)</li>
+<li>改正查找时，单词选定选项无法保存的问题</li>
+<li>改正重新选定语言时菜单检查状态显示不正确错误</li>
+</ol>
+</div>
+<div class="section" id="id20">
+<h2><a class="toc-backref" href="#id51" name="id20">6.10&nbsp;&nbsp;&nbsp;2.2版本</a></h2>
+<p>新增：</p>
+<ol class="arabic simple">
+<li>代码片段管理--你可以将可重用的代码保存起来，需要时插入到文档中</li>
+<li>Shell命令菜单管理--可以运行一些外部命令，并生成菜单在NewEdit中调用</li>
+<li>打开和另存时可以选择是否显示编码选择对话框，从而实现文件编码的转换</li>
+<li>在状态条可以显示当前文档的编码</li>
+</ol>
+<p>修改：</p>
+<ol class="arabic simple">
+<li>修正生成的资源文件对象不正确的问题</li>
+<li>增加在保存文件时按文档的回车符进行自动转换的处理</li>
+<li>修正保存代码片段时utf-8编码处理不正确的错误</li>
+<li>当unicode处理失败时，对文件不作处理</li>
+<li>增加工具菜单，将Script菜单转移到它的下面</li>
+</ol>
+</div>
+<div class="section" id="id21">
+<h2><a class="toc-backref" href="#id52" name="id21">6.11&nbsp;&nbsp;&nbsp;2.1版本</a></h2>
+<p>新增：</p>
+<ol class="arabic simple">
+<li>自动检查文件是否被别的程序更新过</li>
+<li>打开文件时可以设置是否自动做备份</li>
+<li>可以重新装入上次保存后的文档</li>
+<li>增加在命令行指定打开文件参数</li>
+<li>在命令行增加缺省使用编码选项</li>
+</ol>
+<p>修改：</p>
+<ol class="arabic simple">
+<li>修正PyShell窗口的内置函数_与gettext中的翻译函数_冲突的问题，将所有翻译函数改名为tr()</li>
+<li>增加unicode转换出错的处理，并且版本已经不支持非unicode版本</li>
+<li>修正扩展选词不能处理'.'的问题</li>
+<li>读取language.ini文件时，可以过滤掉空行及#开始的行</li>
+</ol>
+</div>
+<div class="section" id="id22">
+<h2><a class="toc-backref" href="#id53" name="id22">6.12&nbsp;&nbsp;&nbsp;2.0版本</a></h2>
+<p>新增：</p>
+<ol class="arabic simple">
+<li>窗体布局进行调整，增加Shell和消息窗口。</li>
+<li>针对不同的文件名菜单和工具条可动态切换(现在只对Python文件)。</li>
+<li>增加脚本(script)管理菜单。用户可以编写对编辑的文档进行处理的Python程序，并通过脚本菜单进行管理。</li>
+<li>增加文件拖拽功能，现在只可以拖到菜单及工具条上。</li>
+<li>增加Python的类浏览窗口功能。</li>
+<li>增加国际化处理，用户可以自已编写相应语言的译文。现在支持中文和英文两种。</li>
+<li>增加在文件中查找功能。</li>
+<li>增加对C, HTML, XML关键字识别的功能。</li>
+<li>增加对Python文件进行执行的功能，并可以设定命令行参数。</li>
+<li>增加将所有制表符转换为空格的功能。</li>
+</ol>
+<p>修改：</p>
+<ol class="arabic simple">
+<li>修正启动时输入焦点无法切换到文档中的错误。</li>
+<li>修正最大化，最小化时保存坐标不正确的错误。</li>
+<li>修正首字母大写功能的错误。</li>
+<li>修正当文件换行符为MIX时，切换文档显示不正确的错误。</li>
+</ol>
+</div>
+</div>
+<div class="section" id="newedit">
+<h1><a class="toc-backref" href="#id54" name="newedit">7&nbsp;&nbsp;&nbsp;启动NewEdit</a></h1>
+<p>启动NewEdit可以在命令行下执行:</p>
+<pre class="literal-block">
+python newedit.py -u|-v|-n|[-e defaultencoding] files ...
+
+-u 显示用法信息
+
+-v 显示版本信息
+
+-n 禁用DDE功能(2.3新增)
+
+-e defaultencoding 可选，缺省使用编码
+
+-s 使用psyco加速模块(2.5新增)
+
+-f 启动时忽略上次会话打开的文件
+
+files ... 文件名列表，可以有多个，以空格隔开
+</pre>
+<p>可以双击NewEdit.pyw图标启动。</p>
+</div>
+<div class="section" id="file">
+<h1><a class="toc-backref" href="#id55" name="file">8&nbsp;&nbsp;&nbsp;File(文件)</a></h1>
+<dl class="docutils">
+<dt>New(新建)</dt>
+<dd>生成新文档</dd>
+<dt>Open(打开文档)</dt>
+<dd>打开存在文档，一次可以打开多个文档</dd>
+<dt>Reopen(重新打开文档)</dt>
+<dd>重新装入上次保存后的文档</dd>
+<dt>Open Recent(打开最近文档)</dt>
+<dd>当用户打开或保存一个文件之后，这个文件名将保存在最近文档中，下次用户可以直接从最近文档菜
+单中打开此文档。如果被打开文档已经打开，则直接切换到文档所在的Tab页面。</dd>
+<dt>Open Recent Path(打开最近路径)</dt>
+<dd>当用户打开或保存一个文件之后，这个文件的路径将保存在最近路径中，下次用户可以直接从最近路径菜
+单中打开最新访问的路径。此功能还可以通过工具条的按钮来执行。</dd>
+<dt>Directory Browser(目录浏览)(3.0新增)</dt>
+<dd>可以浏览目录及相应的子目录。右键菜单会有更多的功能。</dd>
+<dt>Close(关闭)</dt>
+<dd>关闭当前文档</dd>
+<dt>Close All(关闭所有文档)</dt>
+<dd>关闭所有打开文档</dd>
+<dt>Save(保存)</dt>
+<dd>保存当前文档</dd>
+<dt>Save As(另存为)</dt>
+<dd>将当前文档改名保存</dd>
+<dt>Save All(保存全部)</dt>
+<dd>保存全部打开文档</dd>
+<dt>Page Setup(页面设置)(2.4版新增)</dt>
+<dd>打印页面的设置</dd>
+<dt>Printer Setup(打印机设置)(2.4版新增)</dt>
+<dd>打印机设置</dd>
+<dt>Print Preview(打印预览)(2.4版新增)</dt>
+<dd>打印效果预览</dd>
+<dt>Print(打印)(2.4版新增)</dt>
+<dd>打印当前文档</dd>
+<dt>Html File(Html文件)(2.4版新增)</dt>
+<dd>包括Html文档的打印预览和打印功能</dd>
+<dt>Ftp...(Ftp功能)(2.5版新增)</dt>
+<dd>Ftp支持，用户可以打开、编辑、保存、删除、改为、新建文件、新建目录、上传和下传。更详细的见Ftp使用介绍。</dd>
+<dt>Exit(退出)</dt>
+<dd>退出程序</dd>
+</dl>
+</div>
+<div class="section" id="edit">
+<h1><a class="toc-backref" href="#id56" name="edit">9&nbsp;&nbsp;&nbsp;Edit(编辑)</a></h1>
+<dl class="docutils">
+<dt>Undo(撤销)</dt>
+<dd>撤销上次编辑操作</dd>
+<dt>Redo(重做)</dt>
+<dd>重做刚才撤销的动作</dd>
+<dt>Cut(剪切)</dt>
+<dd>剪切选中文本到粘贴板中</dd>
+<dt>Copy(拷贝)</dt>
+<dd>拷贝选中文本到粘贴板中</dd>
+<dt>Paste(粘贴)</dt>
+<dd>从粘贴板中拷贝文本</dd>
+</dl>
+<div class="section" id="selection">
+<h2><a class="toc-backref" href="#id57" name="selection">9.1&nbsp;&nbsp;&nbsp;Selection(选择)</a></h2>
+<dl class="docutils">
+<dt>Select Word(选词)</dt>
+<dd>选中单词</dd>
+<dt>Select Word Extend(扩展选词)</dt>
+<dd>将'.'作为单词的一部分进行选择。按Ctrl+鼠标双击也可以执行与此相同的功能。</dd>
+<dt>Match Select (Left First)(匹配选择－－左向优先)</dt>
+<dd>可以选择括起来的文本，如文本使用()[]{}''&quot;&quot;包括起来，执行此功能可以将括起来的文本选中。如果某段文本中有嵌套，如</dd>
+</dl>
+<pre class="literal-block">
+(print &quot;%s%s&quot; % (a, b)  )
+    ^         ^       ^
+    a         b       c
+</pre>
+<p>在最外层的括号内还有&quot;&quot;和()的嵌套。如果想选中最外层括号内的文本，则可以将插入点置于最外层括号与嵌套的包括符&quot;&quot;之间,
+如上面所示可以有三个位置。如果为位置a，当执行向左匹配时，会先向左查找第一个包括符，这样会找到‘(’。然后，再向右查找与‘(’
+相匹配的‘)’。匹配查找可以识别出嵌套的括号对，直到找到正确的匹配符。然后将包括符中的文本全部选中。如果找不到对应的匹配
+符，则不做选择。如果将插入点置于位置b，则向左查找时会先找到‘&quot;’，这样可能与你的期望不符。这是因为双引号(还有单引号)是不
+分左右的，因此对于它们的处理要小心些。如果将插入点置于位置c，匹配查找仍然会认为左边的‘&quot;’是第一个包括符，从而产生和位置
+b一样的效果。因此为了正确选中文本，请将插入点置于a位置附近。或者将插入点放于位置c，但使用向右匹配功能。</p>
+<p>选中的文本不包括找到的最外面的包括符，在上例就是不包括最外面的括号。</p>
+<dl class="docutils">
+<dt>Match Select (Right First)(匹配选择－－右向优先)</dt>
+<dd>与左向优先相反，本功能是向右优先查找。选中的文本不包括最外面的包括符。</dd>
+<dt>Enlarge Selection(扩大选择)</dt>
+<dd>可以将选中的文本区域向左右扩展一个字符，只对半角字符有效。适用于使用匹配选择功能后，还想要选中包括它们的字符时，使用此功能。</dd>
+<dt>Select Line(选中当前行)</dt>
+<dd>将插入点所在的当前行全部选中，包括行尾的行结束符。</dd>
+<dt>Select All(全选)</dt>
+<dd>将当前文档全部选中。</dd>
+</dl>
+</div>
+<div class="section" id="duplication">
+<h2><a class="toc-backref" href="#id58" name="duplication">9.2&nbsp;&nbsp;&nbsp;Duplication(复制)</a></h2>
+<p>复制功能主要的想法是复用以前的输入，包括以前输入过的字符、单词和句子。要复用以前的输入首先要同以前的内容进行匹配，因此你首先需
+要输入要匹配的开始字符，可以是任意多个。注意，只处理标识符(英文字母，数字，'.', '_')。然后执行相应的功能进行匹配，匹配分为向前匹
+配和向后匹配。匹配会查找与所输入的字符序列开始相同的标识符，如果找到则会在当前位置显示一个提示窗口(只有词、句匹配才可)，如果为你
+想要的内容，按回车或空格选中匹配，按ESC可以取消本次匹配。如果不是想要的匹配，可以继续执行下一次匹配。</p>
+<p>想要匹配首先要输入几个字符作为匹配串，匹配串的识别是：从当前插入点开始向左查找，如果字符在标识符集中，则存入匹配串，再进行下一次
+查找。直到字符不在标识符集中为止。注意，匹配只针对于半角字符，不处理汉字。</p>
+<p>对于字符'.'是否算做标识符集，可以通过复制扩展模式进行选中或不选中。</p>
+<dl class="docutils">
+<dt>Duplicate Extend Mode(复制扩展模式)</dt>
+<dd>指明'.'是否做为单词的一部分。</dd>
+<dt>Duplicate Current Line(复制当前行)</dt>
+<dd>拷贝当前行，插入到当前行的下面。</dd>
+<dt>Duplicate Previous Char(复制上一个字符)</dt>
+<dd>向前匹配，复制匹配串后的一个字符。注意：只对前面的内容匹配最近的一个，不可以继续进行匹配。</dd>
+<dt>Duplicate Next Char(复制下一个字符)</dt>
+<dd>同上，只是方向向后。</dd>
+<dt>Duplicate Previous Word(复制上一个单词)</dt>
+<dd>向前匹配，如果匹配成功，则将匹配成功的完整单词显示在提示窗口中，按回车或空格选中，则将去掉匹配串的部分粘贴在当前插入点后面。如输入&quot;abc&quot;，
+匹配成功&quot;abcdef&quot;，则按回车后&quot;def&quot;将粘贴在当前插入点后面。如果匹配不是想要的，可以继续执行，那么将从当前所匹配成功的开始地方继续向
+前进行匹配。</dd>
+<dt>Duplicate Next Word(复制下一个单词)</dt>
+<dd>向后匹配，功能同上。</dd>
+<dt>Duplicate Previous Line(复制前一个句子)</dt>
+<dd>向前匹配，只不过是处理整个匹配成功的句子。</dd>
+<dt>Duplicate Previous Line(复制后一个句子)</dt>
+<dd>向后匹配，功能同上。</dd>
+</dl>
+</div>
+<div class="section" id="format">
+<h2><a class="toc-backref" href="#id59" name="format">9.3&nbsp;&nbsp;&nbsp;Format(格式)</a></h2>
+<p>格式菜单功能可以处理一行或多行。如果没有选中任何文本，则处理当前插入点所在的行。如果选中了文本，则处理选中文本所在的所有行。</p>
+<dl class="docutils">
+<dt>Trim Trailing Spaces(去除尾部空白)</dt>
+<dd>去除行尾的空白。</dd>
+<dt>Leading Spaces to Tabs(前导空白转换为制表符)</dt>
+<dd>将行首的空白转换为按缩近要求的制表符。</dd>
+<dt>Leading Tabs to Spaces(前导制表符转为空格)</dt>
+<dd>将行首的制表符转换为按缩近要求的空格。</dd>
+<dt>All Tabs to Spaces(所有制表符转为空格)(2.0新增)</dt>
+<dd>将所有的制表符转换为按缩近要求的空格。</dd>
+<dt>Increase Indent(增加缩近)</dt>
+<dd>增加文本的缩近。</dd>
+<dt>Decrease Indent(减少缩近)</dt>
+<dd>减少文本的缩近。</dd>
+<dt>Line Comment(行注释)</dt>
+<dd>在选中文本的前面加上注释符。执行时会弹出对话框要求你输入注释符。</dd>
+<dt>Line Uncomment(去掉行注释)</dt>
+<dd>去掉选中文本前的注释符。如果不存在，则不作处理。</dd>
+<dt>Text Quote(文本括起)</dt>
+<dd>在选中文本两头加上括起字符串。有几种预定义的包括字符串可以使用，如：()[]{}等。你也可以自已输入包括字符串。</dd>
+<dt>Text Unquote(去掉文本括起串)</dt>
+<dd>去掉选中文本两头括起的字符串。串的选择同上。</dd>
+</dl>
+</div>
+<div class="section" id="case">
+<h2><a class="toc-backref" href="#id60" name="case">9.4&nbsp;&nbsp;&nbsp;Case(大小写)</a></h2>
+<dl class="docutils">
+<dt>Upper Case(变为大写)</dt>
+<dd>将选中文本变为大写</dd>
+<dt>Lower Case(变为小写)</dt>
+<dd>将选中文本变为小定</dd>
+<dt>Invert Case(大小写互换)</dt>
+<dd>将选中文本大小写互换</dd>
+<dt>Capitalize(首字母大写)</dt>
+<dd>将选中文本中的所有单词的首字母变为大写。</dd>
+</dl>
+</div>
+<div class="section" id="convert-2-7">
+<h2><a class="toc-backref" href="#id61" name="convert-2-7">9.5&nbsp;&nbsp;&nbsp;Convert(转换)(2.7新增)</a></h2>
+<dl class="docutils">
+<dt>In Html Window(在Html窗口中输出)</dt>
+<dd>文本转换输出选项，选中后，在转换成Html时，结果会显示在单独的Html弹出窗口中</dd>
+<dt>In Message Window(在消息窗口中输出)</dt>
+<dd>文本转换输出选项，选中后，在转换成Html时，结果会显示在消息窗口中</dd>
+<dt>Replace Selected Text(替换选中文本)</dt>
+<dd>文本转换输出选项，选中后，在转换成Html时，结果会替换当前选中的文本</dd>
+<dt>reSt to Html(reSt转Html)</dt>
+<dd>reStructuredText 转换为Html</dd>
+<dt>Py to Html(Py转Html)</dt>
+<dd>Python 源代码转换为Html</dd>
+<dt>Textile to Html(Textil转Html)</dt>
+<dd>Textile格式文本转换为Html</dd>
+</dl>
+</div>
+</div>
+<div class="section" id="view">
+<h1><a class="toc-backref" href="#id62" name="view">10&nbsp;&nbsp;&nbsp;View(视图)</a></h1>
+<dl class="docutils">
+<dt>Tabs And Spaces(制表符和空白)</dt>
+<dd>显示或隐藏制表符和空白。制表符和空格一般是不可见的，如果切换为显示，则空格显示为一个点，制表符显示为一个箭头。</dd>
+<dt>Indentation Guides(缩近指示)</dt>
+<dd>显示或隐藏缩近指示。如果显示，则相同的缩近会有一根虚线连在一起。</dd>
+<dt>Right Edge Indicator(右边界指示)</dt>
+<dd>显示或隐藏左边界指示线。如果显示，则在设定的列处有一根线。它可以帮助你确定一行是否太长。</dd>
+<dt>End-Of-Line Marker(行结束符)</dt>
+<dd>显示或隐藏行结束符。</dd>
+<dt>Zoom In(放大)</dt>
+<dd>放大屏幕字体。</dd>
+<dt>Zoom Out(缩小)</dt>
+<dd>缩小屏幕字体。</dd>
+</dl>
+</div>
+<div class="section" id="search">
+<h1><a class="toc-backref" href="#id63" name="search">11&nbsp;&nbsp;&nbsp;Search(查找)</a></h1>
+<dl class="docutils">
+<dt>Find...(查找)</dt>
+<dd>查找指定串。支持正则表达式。如果先选中一段文本，则被选文本会作为待查字符串显示在查找对话框中。如果选中文本包含回车符，则不作为待查字符串。</dd>
+<dt>Direct Find(直接查找)</dt>
+<dd>当选中一段文本后，执行此功能不会弹出查找窗口，而是直接进行查找。</dd>
+<dt>Replace...(替换)</dt>
+<dd>先查找指定字符串，找到后进行替换。可以对全文档匹配串进行全部替换。如果在执行此功能之前已经选中一段文本，则可以指定在选定范围内进行全部替换。</dd>
+<dt>Find Next(查找下一个)</dt>
+<dd>向下查找下一处匹配串。</dd>
+<dt>Find Previous(查找上一个)</dt>
+<dd>向上查找下一处匹配串。</dd>
+<dt>Find In Files(在文件中查找)(2.0新增)</dt>
+<dd>可以在指定的目录，指定的文件扩展名中进行查找某个字符串。</dd>
+<dt>Go to Line...(行号跳转)</dt>
+<dd>跳转到指定行。</dd>
+<dt>Go to Last Modify(跳到最后修改)</dt>
+<dd>跳转到最后一次进行过修改的地方。</dd>
+<dt>Toggle Marker(标签切换)</dt>
+<dd>NewEdit可以设置任意多的标签，可以在这些标签之间进行跳转。设定或取消标签。有标签设定的行在行号左边有一个蓝色的箭头。</dd>
+<dt>Clear All Marker(清除所有标签)</dt>
+<dd>清除所有设定的标签。</dd>
+<dt>Next Marker(下一处标签)</dt>
+<dd>跳转到下一处标签所在的行。</dd>
+<dt>Previous Marker(上一处标签)</dt>
+<dd>跳转到上一处标签所在的行。</dd>
+</dl>
+</div>
+<div class="section" id="document">
+<h1><a class="toc-backref" href="#id64" name="document">12&nbsp;&nbsp;&nbsp;Document(文档)</a></h1>
+<dl class="docutils">
+<dt>Word-wrap(自动折行)</dt>
+<dd>设置/取消自动折行。当设置自动折行时，当文字一行过长，会根据窗口大小自动换到下一行。</dd>
+<dt>Auto Indent(自动缩近)</dt>
+<dd>设置/取消自动缩近。当设置自动缩近时，按下回车键，新的一行会自动保持上一行的缩近。如果取消些功能，则按下回车键时，插入点总是在一行的第1列位置。</dd>
+<dt>Change encoding...(改变保存编码)(2.5版新增)</dt>
+<dd>改变当前文档的编码，在保存时将使用此编码。对于转换远程文件的编码特别有用。</dd>
+<dt>Syntax Highlight...(语法高亮)(2.3新增)</dt>
+<dd>重新设置当前文件的语法指定。</dd>
+<dt>Syntax Preference...(语法参数设置)(2.3新增)</dt>
+<dd>语法参数设置，可以设置语法标记的颜色、字体名称、字体大小、字体属性。</dd>
+</dl>
+<div class="section" id="convert-line-ending">
+<h2><a class="toc-backref" href="#id65" name="convert-line-ending">12.1&nbsp;&nbsp;&nbsp;Convert Line Ending(转换行结束符)</a></h2>
+<p>可以将某种格式的换行符转换为其它格式。</p>
+<dl class="docutils">
+<dt>Convert to Windows Format(转换为Dos/Windows格式)</dt>
+<dd>转换为Dos/Windows格式</dd>
+<dt>Convert to Unix Format(转换为Unix格式)</dt>
+<dd>转换为Unix格式</dd>
+<dt>Convert to MAC Format(转换为MAC格式)</dt>
+<dd>转换为MAC格式</dd>
+</dl>
+</div>
+</div>
+<div class="section" id="tool-2-2">
+<h1><a class="toc-backref" href="#id66" name="tool-2-2">13&nbsp;&nbsp;&nbsp;Tool(工具)(2.2新增)</a></h1>
+<div class="section" id="shell-command-shell-2-2">
+<h2><a class="toc-backref" href="#id67" name="shell-command-shell-2-2">13.1&nbsp;&nbsp;&nbsp;Shell Command(Shell命令)(2.2新增)</a></h2>
+<p>Shell命令可以允许你加入外部的命令，生成菜单，在NewEdit中进行调用。</p>
+<dl class="docutils">
+<dt>Shell Command Manage...(Shell命令管理...)</dt>
+<dd>用于Shell命令的增加、删除、命名，移动</dd>
+</dl>
+</div>
+<div class="section" id="script-2-0">
+<h2><a class="toc-backref" href="#id68" name="script-2-0">13.2&nbsp;&nbsp;&nbsp;Script(脚本)(2.0新增)</a></h2>
+<p>脚本功能是我一直想实现的，你可以编写特别目的的Python程序，把它置于NewEdit之下，可以对当前文档进行特殊的文本
+处理。利用这一功能，用户可以扩展NewEdit的文本处理功能。要想将脚本置于NewEdit的菜单之下，首先要存在这个脚本，如果
+没有请先编辑一个。然后，执行脚本管理功能，可以将脚本文件增加到脚本菜单中。在脚本管理窗口中，你可以修改脚本的描述(
+用鼠标在某项描述上单击，即可进行修改)。这项描述将作为菜单项显示在脚本菜单中。</p>
+<p>用户编写的脚本将作为NewEdit的一部分进行执行，因此没有什么限制，所有NewEdit的资源均可以使用。只不过要注意，使用
+时要通过win这个对象来访问所有的资源。win对象为整个框架窗口，访问当前正在使用的文档窗口，可以使用win.document。
+访问消息窗口可以访问win.messagewindow。文档窗口可能会随着文件的不同而不同，缺省的文档窗口类为wxStyledTextCtrl。
+消息窗口为wxStyledTextCtrl类。因此你可以使用wxStyledTextCtrl的方法。最基本的方法可以为:</p>
+<pre class="literal-block">
+GetLength()                     返回文档长度
+GetText()                       返回文档的内容，如果为Unicode版本，将返回Unicode内容
+AddText(text)                   在当前光标处，插入文本
+InsertText(pos, text)           在文档指定位置前插入文本
+ReplaceSelection(text)          替换选中文本
+SetText(text)                   重新设置文档的文本为text，以前的文本全部丢失
+SelectAll()                     选中全部文本
+SetSelection(start, end)        设置选中区域
+GetSelectedText()               得到选中文本
+GetSelection()                  得到选中范围，返回为一个tuple，(start, end)
+GotoPos(pos)                    跳转到指定位置
+GotoLine(pos)                   跳转到指定行
+GetCurrentPos()                 取得插入点的位置
+</pre>
+<p>当前还有许多的方法，上面只是列出一些常用的方法。</p>
+<dl class="docutils">
+<dt>Script Manage...(脚本管理)</dt>
+<dd>用于脚本的增加、删除、命名、移动。</dd>
+</dl>
+</div>
+<div class="section" id="snippets-2-2">
+<h2><a class="toc-backref" href="#id69" name="snippets-2-2">13.3&nbsp;&nbsp;&nbsp;Snippets(片段)(2.2新增)</a></h2>
+<p>片段是为了实现代码的重用。在平时的编程中你可能有许多代码是可以被重用的，你可以将它们按照某个分类进行组织。同时
+在需要的时候你可以将它们插入到文档中。片段功能包括：片段的使用和片段的管理。</p>
+<p>当使用片段时会在文档的左边弹出一个窗口，窗口分为上下两部分。上部为片段的分类，组织为树状结构。下部为列表结构，
+用于显示每一个分类里面所有的代码片段。当在分类中进行选择时，下面的代码片段会随着分类的改变而发生变化。当在代
+码片段中双击时，选中的代码片段的内容会插入到当前文档的光标处。</p>
+<p>片段的组织分为：分类的管理和片段代码的管理。</p>
+<p>对于分类，你可以增加、删除、修改、增加一个子项。选中一顶后，可以将其上移、下移。并可以改变它的级别，通过左移
+和右移来实现。这样，分类就完全组织为一个树状结构。当改动中想要保存时，可以选中[应用]按钮。保存退出时，请选择
+[确定]按钮。</p>
+<p>对于片段代码，你可以增加、删除、修改。首先要选定某个分类，然后才可以对此分类下的片段进行管理。当对某个分类进
+行了修改时，分类列表框会被锁定，直到你保存它、或放弃保存才会被释放。这一点在使用时请注意。</p>
+<dl class="docutils">
+<dt>Manage Snippets Catalog(片段分类管理)</dt>
+<dd>对片段的分类进行管理，可以增加、删除和、修改、增加子项、移动顺序(上移、下移)、改变分类的级别(左移、右移)。</dd>
+<dt>Manage Snippets Code(片段代码管理)</dt>
+<dd>对分类的片段代码进行管理，可以 增加、删除和修改。</dd>
+</dl>
+</div>
+<div class="section" id="plugin-manage-2-4">
+<h2><a class="toc-backref" href="#id70" name="plugin-manage-2-4">13.4&nbsp;&nbsp;&nbsp;Plugin Manage(插件管理)(2.4新增)</a></h2>
+<blockquote>
+增加可由用户自已编写的插件管理功能。具体的插件发布见《技术手册》。此功能只有启动后设置的插件才起作用。</blockquote>
+</div>
+</div>
+<div class="section" id="option">
+<h1><a class="toc-backref" href="#id71" name="option">14&nbsp;&nbsp;&nbsp;Option(选项)</a></h1>
+<dl class="docutils">
+<dt>Preference...(参数设置)</dt>
+<dd>用于设置NewEdit的一些可变参数。</dd>
+<dt>Language(语言)(2.0新增)</dt>
+<dd><p class="first">用于选择程序界面所用的语言。现在支持中文和英文两种。并且在中文平台第一次运行时，如果判断平台环境为中文的话，会
+自动使用中文环境。如果用户想要增加自已的语言支持，可以在tools目录下找到相应的文档和工具，进行相应的语言翻译即可。
+步骤如下：</p>
+<blockquote class="last">
+<ol class="arabic simple">
+<li>复制newedit.pot为想要翻译语言的目标文件，文件名应为：newedit_地区代码.po。如中国为cn，台湾为tw。</li>
+<li>将newedit_地区代码.po中msgid不为空的内容进行翻译，译文写在msgstr处。格式要与msgid一致。如果有%d之类的
+格式替换符请不要改变它们的顺序。</li>
+<li>参与build.bat文件，执行相应的命令将po文件编译为mo文件，并拷贝到lang目录下。</li>
+<li>修改lang目录下的language.ini文件。增加新的语言说明，格式为：地区代码 说明。如：fr French</li>
+<li>启动NewEdit，然后在Option-&gt;Language下，选中新加的语言。再重启NewEdit即可。</li>
+</ol>
+</blockquote>
+</dd>
+<dt>Register to Explore(注册到资源管理器)(2.7新增)</dt>
+<dd>将NewEdit注册到资源管理器的上下文菜单中</dd>
+<dt>Unregister from Explore(从资源管理器反注册)(2.7新增)</dt>
+<dd>将NewEdit从资源管理器的上下文菜单中反注册</dd>
+</dl>
+<div class="section" id="id23">
+<h2><a class="toc-backref" href="#id72" name="id23">14.1&nbsp;&nbsp;&nbsp;Document(文档相关)</a></h2>
+<dl class="docutils">
+<dt>Double click will close the selected document</dt>
+<dd>选中则当你在一个Tab标签上双击时可以关闭选中的文档。</dd>
+<dt>Whitespace is visible on startup</dt>
+<dd>选中则启动NewEdit时，空格和制表符是可见的。</dd>
+<dt>Indentation guides is visible on startup</dt>
+<dd>选中则缩近指示在启动NewEdit时是可见的。</dd>
+<dt>Long line indicator is visible on startup</dt>
+<dd>长行指示(右边界)在启动NewEdit时是可见的。</dd>
+<dt>Long line indicator column</dt>
+<dd>用于设定长行指示的开始列，缺省为100列</dd>
+<dt>Tab width</dt>
+<dd>一个制表符相当于多少个空格，缺省为4个</dd>
+<dt>Auto indent</dt>
+<dd>自动缩近。设置保存后与执行菜单功能相同。</dd>
+<dt>Use Tabs</dt>
+<dd>缩近是否使用制表符，选中则使用制表符，未选中则使用空格。</dd>
+<dt>Auto detect UTF-8 encoding</dt>
+<dd>自动检测文件编码是否为utf-8，如果是则自动进行相应的编码转换。</dd>
+<dt>Auto word-wrap</dt>
+<dd>自动折行。</dd>
+<dt>Use code fold</dt>
+<dd>是否使用代码折叠功能。如果选中，则在行号右边会出现一个代码折叠边界区，用于指示代码的分级情况。点击相应的加号、减号图标，则
+可以对代码实现折叠。</dd>
+<dt>Default line ending used in document</dt>
+<dd>文档中缺省使用的行结束符。此选项用于新建文件。如果打开已存在的文件，NewEdit会自动识别于文件所用的行结束符，并且在状态条的最右边将文档
+的行结束符类型表示出来。</dd>
+<dt>Auto make backup file as open a file</dt>
+<dd>在打开文件时自动备份文件(2.1版新增)</dd>
+<dt>Auto check if there are some opened files were modified by others(2.1版新增)</dt>
+<dd>自动检查是否打开的文档被别人进行了修改</dd>
+<dt>Auto close enclosing char, like: (, [, {(2.5片新增)</dt>
+<dd>是否自动对(, [, {进行补齐右包括字符</dd>
+<dt>Auto close enclosing char, like: ', &quot;, &lt;(2.5片新增)</dt>
+<dd>是否自动对', &quot;, &lt;进行补齐右包括字符</dd>
+<dt>Choose where converted text is outputed (2.7新增)</dt>
+<dd>选择被转换文本在何处输出，功能同Convert菜单相应的菜单</dd>
+</dl>
+</div>
+<div class="section" id="general">
+<h2><a class="toc-backref" href="#id73" name="general">14.2&nbsp;&nbsp;&nbsp;General(通用)</a></h2>
+<dl class="docutils">
+<dt>Max number of recent files</dt>
+<dd>最近更新文件列表的最大个数。</dd>
+<dt>Max number of save find text</dt>
+<dd>保存的查找字符串的最大个数。NewEdit可以将以前查找到的内容保存起来，根据使用的频率进行自动刷新。这个值用于设定最多保存多少个以前查找
+过的内容。</dd>
+<dt>Auto load the files of last session</dt>
+<dd>自动装入上次会话打开过的文件。使用此功能时，上一次打开的文档，在程序直接退出时会保存起。再次启动时会自动打开上次处理过的文档。</dd>
+<dt>Saves current status when exit the program</dt>
+<dd>在退出程序时保存当前状态。是指上次执行时的窗口坐标，及上次插入点所在的行。</dd>
+<dt>Use duplication extend mode ('.' will be treated as word chars)</dt>
+<dd>设置复制的扩展模式，与Duplication Extend Word功能一样。</dd>
+<dt>Show encoding selection dialog as openning or saving file.(2.2新增)</dt>
+<dd>当打开或保存文件时显示编码选择对话框。</dd>
+<dt>Default syntax highlight.(2.4新增)</dt>
+<dd>缺省语法高亮。</dd>
+<dt>Show caret line.(2.5新增)</dt>
+<dd>显示光标所在行。选中此功能，则光标所在行的背景以将为指定颜色。可以语法设置中进行修改。</dd>
+</dl>
+</div>
+<div class="section" id="python-2-0">
+<h2><a class="toc-backref" href="#id74" name="python-2-0">14.3&nbsp;&nbsp;&nbsp;Python(2.0新增)</a></h2>
+<dl class="docutils">
+<dt>Show class browser window as open python source file</dt>
+<dd>在打开Python源文件时显示类浏览窗口</dd>
+<dt>Use context sensitive indent(2.5新增)</dt>
+<dd>使用上下文敏感缩近。比如：当输入函数定义，或语句块开始时，当最后为':'时，会在下一行自动
+增加一个缩近位。当输入行有return, break, continue时会自动减少一个缩进位。</dd>
+<dt>Enable Calltip(2.8新增)</dt>
+<dd>允许函数提示功能</dd>
+<dt>Enable auto completion(2.8新增)</dt>
+<dd>允许自动完成功能</dd>
+</dl>
+</div>
+</div>
+<div class="section" id="window-2-6">
+<h1><a class="toc-backref" href="#id75" name="window-2-6">15&nbsp;&nbsp;&nbsp;Window(窗口)(2.6新增)</a></h1>
+<dl class="docutils">
+<dt>Left Window(左侧窗口)(2.3新增)</dt>
+<dd>显示或隐藏左侧的窗口，现包含：代码片码窗口</dd>
+<dt>Bottom Window(底部窗口)(2.3新增)</dt>
+<dd>显示或隐藏底部的窗口，现包含：Python Shell窗口，它是一个Python 交互窗口，用户可以输入Python的命令；消息
+窗口，此窗口与Python Shell窗口是在一起的。当执行Python程序时它可以用来显示输出信息。如果用户编写了脚本，可以用来作为输出。</dd>
+<dt>Open Shell Window(打开Shell窗口)</dt>
+<dd>打开Shell窗口</dd>
+<dt>Open Message Window(打开消息窗口)</dt>
+<dd>打开消息窗口</dd>
+<dt>Open Snippets Window(打开代码片段窗口)</dt>
+<dd>打开代码片段窗口</dd>
+</dl>
+</div>
+<div class="section" id="id24">
+<h1><a class="toc-backref" href="#id76" name="id24">16&nbsp;&nbsp;&nbsp;Python(2.0新增)</a></h1>
+<p>此菜单只当你打开Python文件时才会出现。</p>
+<dl class="docutils">
+<dt>Class Browser(类浏览)</dt>
+<dd>在文档左侧将打开一个类浏览窗口，它将显示当前文档的全部函数和类的函数。在函数名上双击后，会跳转到相应的行。</dd>
+<dt>Class Browser Refresh(类浏览刷新)</dt>
+<dd>刷新类浏览窗口的内容。类浏览窗口中的内容在你编辑文档时自动发生变化，当执行了类浏览刷新功能后，才会发生相应的变化。</dd>
+<dt>Run(运行)</dt>
+<dd>运行当前程序。结果显示在消息窗口中。</dd>
+<dt>Set Arguments(设置命令行参数)</dt>
+<dd>设置在运行当前程序时所使用的命令行参数。</dd>
+</dl>
+</div>
+<div class="section" id="help">
+<h1><a class="toc-backref" href="#id77" name="help">17&nbsp;&nbsp;&nbsp;Help(帮助)</a></h1>
+<dl class="docutils">
+<dt>NewEdit Help Document(帮助文档)</dt>
+<dd>打开帮助文档页面。</dd>
+<dt>Extended Module Info(扩展模块信息)(3.0新增)</dt>
+<dd>可以查看写在插件配置文件中的扩展模块的信息</dd>
+<dt>Visit Project Homepage</dt>
+<dd>访问项目主页</dd>
+<dt>Visit My Blog</dt>
+<dd>访问我的Blog</dd>
+<dt>Contract to Me</dt>
+<dd>给我发邮件</dd>
+<dt>About...</dt>
+<dd>关于本软件</dd>
+</dl>
+</div>
+<div class="section" id="id25">
+<h1><a class="toc-backref" href="#id78" name="id25">18&nbsp;&nbsp;&nbsp;快捷键</a></h1>
+<p>使用快捷键可以加快编辑的速度。菜单对应的快捷键列在菜单项的右边。还有一些与编辑有关的快捷键没有与菜单关联。</p>
+<p><em>凡在功能解释前带有(M)的表示有相应的菜单功能。</em></p>
+<table border="1" class="docutils">
+<colgroup>
+<col width="29%" />
+<col width="71%" />
+</colgroup>
+<thead valign="bottom">
+<tr><th class="head">快捷键名称</th>
+<th class="head">对应功能</th>
+</tr>
+</thead>
+<tbody valign="top">
+<tr><td>F1</td>
+<td>(M)NewEdit Help Document(帮助文档)</td>
+</tr>
+<tr><td>F2</td>
+<td>(M)Directory Browser(目录浏览)</td>
+</tr>
+<tr><td>F9</td>
+<td>(M)Toggle Marker(标签切换)</td>
+</tr>
+<tr><td>Ctrl+Shift+F9</td>
+<td>(M)IDM_SEARCH_BOOKMARK_CLEARALL</td>
+</tr>
+<tr><td>F5</td>
+<td>(M)Next Marker(下一处标签)</td>
+</tr>
+<tr><td>Shift+F5</td>
+<td>(M)Previous Marker(上一处标签)</td>
+</tr>
+<tr><td>F10</td>
+<td>(M)Duplicate Extend Mode(复制扩展模式)</td>
+</tr>
+<tr><td>Ctrl+J</td>
+<td>(M)Duplicate Current Line(复制当前行)</td>
+</tr>
+<tr><td>Ctrl+M</td>
+<td>(M)Duplicate Previous Char(复制上一个字符)</td>
+</tr>
+<tr><td>Ctrl+Shift+M</td>
+<td>(M)Duplicate Next Char(复制下一个字符)</td>
+</tr>
+<tr><td>Ctrl+P</td>
+<td>(M)Duplicate Previous Word(复制上一个单词)</td>
+</tr>
+<tr><td>Ctrl+Shift+P</td>
+<td>(M)Duplicate Next Word(复制下一个单词)</td>
+</tr>
+<tr><td>Ctrl+L</td>
+<td>(M)Duplicate Previous Line(复制前一个句子)</td>
+</tr>
+<tr><td>Ctrl+Shift+L</td>
+<td>(M)Duplicate Previous Line(复制后一个句子)</td>
+</tr>
+<tr><td>Ctrl+N</td>
+<td>(M)New(新建)</td>
+</tr>
+<tr><td>Ctrl+O</td>
+<td>(M)Open(打开文档)</td>
+</tr>
+<tr><td>Ctrl+S</td>
+<td>(M)Save(保存)</td>
+</tr>
+<tr><td>Ctrl+F4</td>
+<td>(M)Close(关闭)(2.9版新增)</td>
+</tr>
+<tr><td>Alt+X</td>
+<td>(M)Exit(退出)</td>
+</tr>
+<tr><td>Ctrl+Z</td>
+<td>(M)Undo(撤销)</td>
+</tr>
+<tr><td>Ctrl+Y</td>
+<td>(M)Redo(重做)</td>
+</tr>
+<tr><td>Ctrl+X</td>
+<td>(M)Cut(剪切)</td>
+</tr>
+<tr><td>Ctrl+C</td>
+<td>(M)Copy(拷贝)</td>
+</tr>
+<tr><td>Ctrl+V</td>
+<td>(M)Paste(粘贴)</td>
+</tr>
+<tr><td>Ctrl+W</td>
+<td>(M)Select Word(选词)</td>
+</tr>
+<tr><td>Ctrl+Shift+W</td>
+<td>(M)Select Word Extend(扩展选词)</td>
+</tr>
+<tr><td>Ctrl+E</td>
+<td>(M)Match Select (Left First)(匹配选择－－左向优先)</td>
+</tr>
+<tr><td>Ctrl+Shift+E</td>
+<td>(M)Match Select (Right First)(匹配选择－－右向优先)</td>
+</tr>
+<tr><td>Ctrl+Alt+E</td>
+<td>(M)Enlarge Selection(扩大选择)</td>
+</tr>
+<tr><td>Ctrl+R</td>
+<td>(M)Select Line(选中当前行)</td>
+</tr>
+<tr><td>Ctrl+A</td>
+<td>(M)Select All(全选)</td>
+</tr>
+<tr><td>Ctrl+I或Tab</td>
+<td>(M)Increase Indent(增加缩近)</td>
+</tr>
+<tr><td>Ctrl+Shift+I或Shift+Tab</td>
+<td>(M)Decrease Indent(减少缩近)</td>
+</tr>
+<tr><td>Ctrl+Q</td>
+<td>(M)Text Quote(文本括起)</td>
+</tr>
+<tr><td>Ctrl+Shift+Q</td>
+<td>(M)Text Unquote(去掉文本括起串)</td>
+</tr>
+<tr><td>Ctrl+U</td>
+<td>(M)Upper Case(变为大写)</td>
+</tr>
+<tr><td>Ctrl+Shift+U</td>
+<td>(M)Lower Case(变为小写)</td>
+</tr>
+<tr><td>Ctrl+F</td>
+<td>(M)Find...(查找)</td>
+</tr>
+<tr><td>F4</td>
+<td>(M)Direct Find(直接查找)</td>
+</tr>
+<tr><td>F3</td>
+<td>(M)Find Next(查找下一个)</td>
+</tr>
+<tr><td>Shift+F3</td>
+<td>(M)Find Previous(查找上一个)</td>
+</tr>
+<tr><td>Ctrl+H</td>
+<td>(M)Replace...(替换)</td>
+</tr>
+<tr><td>Ctrl+G</td>
+<td>(M)Go to Line...(行号跳转)</td>
+</tr>
+<tr><td>Ctrl+B</td>
+<td>(M)Go to Last Modify(跳到最后修改)</td>
+</tr>
+<tr><td>Ctrl+D</td>
+<td>删除当前行</td>
+</tr>
+<tr><td>Ctrl+Shift+D</td>
+<td>删除当前行，并拷贝到粘贴板中</td>
+</tr>
+<tr><td>F6</td>
+<td>将当前串作为模块名打开模块所对应的源文件(2.9版新增)</td>
+</tr>
+<tr><td>Ctrl+/</td>
+<td>将选中文本前增加注释(2.9版新增)</td>
+</tr>
+<tr><td>Ctrl+\</td>
+<td>将选中文本前的注释去除(2.9版新增)</td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="section" id="id26">
+<h1><a class="toc-backref" href="#id79" name="id26">19&nbsp;&nbsp;&nbsp;弹出菜单</a></h1>
+<p>现在NewEdit在文档窗口支持弹出菜单。</p>
+<p>在文档内部的弹出菜单功能与主菜单的Edit(编程)功能相同。</p>
+<p>在文档Tab页的弹出菜单与主菜单File(文件)功能基本相同。</p>
+</div>
+<div class="section" id="newedit-unicode">
+<h1><a class="toc-backref" href="#id80" name="newedit-unicode">20&nbsp;&nbsp;&nbsp;NewEdit的Unicode支持</a></h1>
+<p>NewEdit是完全支持Unicode的，当然前提是你要安装wxPython的Unicode版本。</p>
+<p>支持Unicode，那么就面临本地编码与Unicode的转换问题。在NewEdit中，这种转换发生在打开文件和保存文件的时候。
+NewEdit在进行码制转换时所用到的编码有三个来源：指定的编码、文档编码和缺省编码。NewEdit在处理这三种编码是按
+顺序进行的，即如果指定编码为空则使用用文档编码，如果文档编码为空则使用缺省编码。那么这三种编码都是怎么来的？
+又会怎么处理的 ？</p>
+<ol class="arabic simple">
+<li>指定编码</li>
+</ol>
+<blockquote>
+如果用户想在打开文件或保存文件时单独指定某种编码，那么他需要在选项菜单中，设置“当打开或保存文件时显示编码
+选择对话框”选项为选中。这样，当打开或另存文件时，就会弹出编码选择对话框，用户选则好了编码后，NewEdit会使
+用这种编码对文件进行编码和解码。如果处理失败，则打开文件或保存文件失败。如果成功，则设置文档编码为此编码。</blockquote>
+<ol class="arabic simple" start="2">
+<li>文档编码</li>
+</ol>
+<blockquote>
+当用户使用了指定编码时，并且成功的打开或保存了文件，则此文档的编码为指定的编码。如果用户没有使用指定编码，
+则如果用户设置了选项菜单中的“自动进行utf-8编码检测”选项为选中时，则在打开某个文件时，NewEdit会自动判断
+文件内容是否为utf-8编码，如果是则文档的编码为utf-8，如果不是则文档编码为缺省编码。</blockquote>
+<ol class="arabic simple" start="3">
+<li>缺省编码</li>
+</ol>
+<blockquote>
+缺省编码支持是指当启动NewEdit时，NewEdit会根据操作系统的环境得到系统所使用的编码作为缺省编码。但个别情况
+下，NewEdit所得到的系统编码可能有问题，这时，你可以在启动时加入命令行选项 -e encoding 为正确的编码即可。</blockquote>
+<p>要注意的是如果设定了要使用指定编码，但也只可以在弹出打开文件对话框，和打开保存文件对话框的时候可以使用，其它
+情况下或者自动测试utf-8编码，或者使用缺省编码。</p>
+</div>
+<div class="section" id="id27">
+<h1><a class="toc-backref" href="#id81" name="id27">21&nbsp;&nbsp;&nbsp;专题介绍</a></h1>
+<div class="section" id="script">
+<h2><a class="toc-backref" href="#id82" name="script">21.1&nbsp;&nbsp;&nbsp;Script(脚本)编写示例</a></h2>
+<p>脚本功能允许用户编写自已的处理代码，可以对 NewEdit 中的对象进行处理。它的目的就是快速的编写，并且可以作为菜
+单放在 NewEdit 中。它是一个独立的 Python 源程序。编写一个脚本有以下几步：</p>
+<ol class="arabic simple">
+<li>编写脚本、保存</li>
+<li>在Script(脚本)菜单中添加入口项</li>
+</ol>
+<p>关于第二步操作此处不作说明。下面对一些可用的脚本进行一些举例。</p>
+<div class="section" id="id28">
+<h3><a class="toc-backref" href="#id83" name="id28">21.1.1&nbsp;&nbsp;&nbsp;最简单的脚本</a></h3>
+<pre class="literal-block">
+1       #---------------------------------------------------
+2       #                   NewEdit script
+3       # Author  :limodou(chatme&#64;263.net)
+4       # Date    :2004/07/11
+5       # Version :1.0
+6       # Description:
+7       #     Add linenum to each line of selected text
+8       #
+9       #---------------------------------------------------
+10      
+11      def run(win):
+12              win.document.SetText(&quot;Hello, NewEdit&quot;)
+13      
+14      run(win)
+</pre>
+<dl class="docutils">
+<dt>1-9行</dt>
+<dd>为注释，可以不写。但如果要给别人用，让人知道你的情况还是不错的。</dd>
+<dt>11-12</dt>
+<dd><p class="first">定义了一个run函数，win参数是可用的一个对象，它就是NewEdit最外层的窗口，它有菜单，工具条，状态条，还有你看
+到的文档。当前正在编辑的文档为win.document。通过win对象，你可以访问到NewEdit的任何一个对象。如：
+win.messagewindow就是消息窗口，你可以用它来输出一些信息。关于整个NewEdit的架框在技术文档中将会有详细的描
+述，这里不再细说。</p>
+<p class="last">12行调用了当前文档窗口的SetText方法，用来设置文档的内容为&quot;Hello, NewEdit&quot;。要记住，它会清除以前的所有东
+西。因此它只是一个示例。你可以将这代码改为：win.messagewindow.SetText(&quot;Hello, NewEdit&quot;)，看一看消息窗口
+中是不是有东西了。还可以改为：win.document.AddText(&quot;Hello, NewEdit&quot;)，看一看是不是在文档光标处理增加了
+文本，而原来的内容并未清除。</p>
+</dd>
+<dt>14行</dt>
+<dd><p class="first">对此函数进行调用。函数写法看上去清晰一些，但你完全可以不使用它，如可以改为:</p>
+<pre class="literal-block">
+win.document.SetText(&quot;Hello, NewEdit&quot;)
+</pre>
+<p class="last">再运行一下试试效果。</p>
+</dd>
+</dl>
+</div>
+<div class="section" id="id29">
+<h3><a class="toc-backref" href="#id84" name="id29">21.1.2&nbsp;&nbsp;&nbsp;给文本增加行号</a></h3>
+<pre class="literal-block">
+1       #---------------------------------------------------
+2       #                   NewEdit script
+3       # Author  :limodou
+4       # Date    :2004/07/11
+5       # Version :1.0
+6       # Description:
+7       #     Add linenum to each line of selected text
+8       #
+9       #---------------------------------------------------
+10      
+11      def run(win):
+12              linenums = win.document.getSelectionLines()
+13              for i, linenum in enumerate(linenums):
+14                      text = str(i+1).ljust(8) + win.document.getLineText(linenum)
+15                      win.document.replaceLineText(linenum, text)
+16      
+17      run(win)
+</pre>
+<p>此脚本用于给文档中选定的文本增加行号，从1开始。本例就是使用此功能实现的。</p>
+<dl class="docutils">
+<dt>12行</dt>
+<dd>得到需要处理的行号范围。getSelectionLines函数是在Editor.py中定义的</dd>
+<dt>14行</dt>
+<dd>得到要处理行的文本，并加上行号信息。getLineText是在Editor.py中定义的</dd>
+<dt>15行</dt>
+<dd>将处理后的文本替换原来的文本。replaceLineText函数是在Editor.py中定义的</dd>
+</dl>
+</div>
+<div class="section" id="restructuredtext-html">
+<h3><a class="toc-backref" href="#id85" name="restructuredtext-html">21.1.3&nbsp;&nbsp;&nbsp;转换reStructuredText文档转换为HTML</a></h3>
+<pre class="literal-block">
+1       #---------------------------------------------------
+2       #                   NewEdit script
+3       # Author  :limodou
+4       # Date    :2004/07/08
+5       # Version :1.0
+6       # Description:
+7       #     Convert reStructuredText to Html
+8       #
+9       #---------------------------------------------------
+10      def run(win):
+11              from docutils.core import publish_file
+12              import os.path
+13              import cStringIO
+14              
+15              filename = win.document.filename
+16              fi=cStringIO.StringIO(win.document.GetText().encode(win.document.locale))
+17              f, ext = os.path.splitext(filename)
+18              htmlfile = f+'.htm'
+19              fo=open(htmlfile, &quot;w&quot;)
+20              publish_file(source=fi, destination=fo, writer_name='html')
+21              fi.close()
+22              fo.close()
+23              win.messagewindow.SetText('Success!')
+24              win.panel.bottom.notebook.showWindow(1)
+25      #       win.editctrl.new(htmlfile)
+26      
+27      run(win)
+</pre>
+<p>此脚本调用docutil模块用来将当前的reStructureText转换为HTML。第25行可以将转换后的文本显示出来。不过此处注释掉了。</p>
+<p>详细处理不再描述，只讲述与NewEdit有关的内容</p>
+<dl class="docutils">
+<dt>15行</dt>
+<dd>取得当前文档的文件名。</dd>
+<dt>16行</dt>
+<dd>将文档的内容转换为文档所用的编码。因为NewEdit使用的是Unicode，因此在使用docutil处理前先要转成本地编码，再
+进行处理。locale是当前文档的编码。</dd>
+<dt>17-18行</dt>
+<dd>根据原文件名生成.htm文件名。</dd>
+<dt>20行</dt>
+<dd>调用docutil生成html文件</dd>
+<dt>21-22行</dt>
+<dd>关闭文件</dd>
+<dt>23行</dt>
+<dd>在消息窗口中显示成功信息</dd>
+<dt>24行</dt>
+<dd>显示消息窗口</dd>
+</dl>
+<p>这个脚本有一点要注意，对于新建的文档，如果没有保存，它的filename属性为''，因此直接对它进行转换时在文件名处理
+上可能有问题。此脚本不需要你先保存再转换，因此在使用时要小心一些。</p>
+</div>
+</div>
+<div class="section" id="ftp">
+<h2><a class="toc-backref" href="#id86" name="ftp">21.2&nbsp;&nbsp;&nbsp;Ftp使用说明</a></h2>
+<ol class="arabic simple">
+<li>选择 文件-&gt;Ftp或点中工具条上的Ftp按钮，即可以在下窗体上打开Ftp页。</li>
+<li>首先要进行Ftp站点的设置。点中Site Set(站点设置)，然后会弹出一个对话框。如果要增加一个新站点，必须输入站点
+名称和站点的IP地址，然后，增加按钮才可以使用。要删除一个站点，先选中要删除的站点，然后点删除。要修改一个站
+点，首先选中要修改的站点，然后进行修改，再选择更新即可。</li>
+<li>站点设置好，退出后，在主Ftp窗口上方有站点选择下拉列表。它的右侧为用户名和口令。当改变站点下拉列表时，用户
+名和口令会同时发生变化。再右边是连接与断开的按钮。选择连接，则将与选中的Ftp站点进行连接。如果用户名或口令
+为空，则会弹出对话框要求输入。注意，如果在本对用户名和口令进行修改并不影响保存的站点设置。也就是说，在此处
+进行设置用户名和口令，只对本次连接生效。如果想永久保存，请在站点设置中进行更新。选择断开，则断开与Ftp站点
+的连接。</li>
+<li>页的中间为文件、目录列表区。每次显示一个目录下的所有文件和目录。如果有父目录，则第一行为指定父目录的结点。
+当连接成功后，点鼠标右键会出现一个右键菜单，这些操作都是在连接状态下进行的。用户可以打开文件或目录，新建文件、
+新建目录、删除、改名、刷新当前目录、上传文件、下传文件。打开文件也可以在某个文件上双击即可。在打开文件时，都
+是使用二进制方式打开。对于上传和下传，则可以指定传输方式：二进制和文本方式。只用于文件上下传，并不会打开文件。
+当打开了远程文件后，如果进行了修改，则可以象通常保留文件的方法一样进行操作，即 文件-&gt;保存或点击工具条上的保
+存按钮。对于打开的远程文件，不能另存为远程文件，只可以另存为本地文件。</li>
+<li>页的下面为编码选择，此功能是当打开一个远程文件时使用何种编码进行打开。自动判断是否UTF-8的功能对远程文件仍然
+有效。在保存时此编码不起作用，如果想改变保存时的编码，则可以使用 文档-&gt;改变编码进行编码转换。再向右为远程目录，
+用户可以指定一个远程的目录，当与Ftp站点连接时，会自动跳转到此目录。并且在已经连接成功后，可以修改此路径，然后
+点击刷新按钮或执行右键菜单中的刷新，即可以改变当前目录。再右边是站点设置和关闭。</li>
+</ol>
+</div>
+<div class="section" id="id30">
+<h2><a class="toc-backref" href="#id87" name="id30">21.3&nbsp;&nbsp;&nbsp;用户自定义快捷键(2.8版新增)</a></h2>
+<p>现在只提供一个Hack的方法。用户可以对主窗体和编辑窗口的菜单自定义快捷键。即在config.ini中增加main_hotkey节或
+editor_hotkey节，然后增加：菜单消息=快捷键，如:</p>
+<pre class="literal-block">
+[main_hotkey]
+IDM_FILE_SAVE_AS=F12
+</pre>
+<p>上面就会为[另存为]菜单增加一个F12的快捷键。如果main_hotkey节不存在，只要自已创建即可。</p>
+<p>有关菜单消息号的查询可以在运行NewEdit后，在debug.txt文件中，关于&quot;[ INFO] -- [makemenu] makeaccelerator...&quot;的后
+面找到。</p>
+<p>关于main_hotkey与editor_hotkey的区别就是，在主窗体中定义的热键是全局生效的，而在编辑器中定义的热键，只有当输入焦
+点在编辑器中才会生效。</p>
+</div>
+<div class="section" id="id31">
+<h2><a class="toc-backref" href="#id88" name="id31">21.4&nbsp;&nbsp;&nbsp;目录浏览功能(3.0新增)</a></h2>
+<ol class="arabic simple">
+<li>增加一个目录</li>
+<li>关闭一个目录</li>
+<li>增加一个子文件夹</li>
+<li>增加一个文件</li>
+<li>删除一个目录或文件</li>
+<li>点击结点可以编辑从而改名</li>
+<li>刷新目录</li>
+<li>不会自动展现全部目录树，而是层层展现，提高速度，点击目录时才会打开一级目录</li>
+<li>双击文件结点将在编辑器中打开</li>
+<li>F2键可以打开此窗口</li>
+</ol>
+<p><a class="reference" href="index.htm">[返回]</a></p>
+</div>
+</div>
+</div>
+</body>
+</html>

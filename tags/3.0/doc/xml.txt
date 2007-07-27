@@ -1,0 +1,496 @@
+===========================
+ 使用minidom来处理XML的示例
+===========================
+
+:作者: limodou
+:联系: chatme@263.net
+:日期: $Date: 2005-10-11 12:58:28 +0800 (Tue, 11 Oct 2005) $
+:版本: $Id: xml.txt 42 2005-09-28 05:19:21Z limodou $
+:主页: http://wiki.woodpecker.org.cn/moin/NewEdit
+:BLOG: http://www.donews.net/limodou
+:版权: GPL
+
+.. contents::
+
+一、XML的读取 
+-------------
+
+在 NewEdit 中有代码片段的功能，代码片段分为片段的分类和片段的内容。在缺省情况下都是用XML格式保存的。下面我
+讲述一下，如何使用minidom来读取和保存XML文件。
+
+下面是片段分类的一个示例文件--catalog.xml::
+
+	<?xml version="1.0" encoding="utf-8"?>
+	<catalog>
+		<maxid>4</maxid>
+		<item id="1">
+			<caption>Python</caption>
+			<item id="4">
+				<caption>测试</caption>
+			</item>
+		</item>
+		<item id="2">
+			<caption>Zope</caption>
+		</item>
+	</catalog>
+
+分类是树状结构，显示出来可能为::
+
+	Python
+		测试
+	Zope
+
+先简单介绍一下XML的知识，如果你已经知道了可以跳过去。
+
+1. XML文档的编码
+
+   此XML文档的编码为utf-8，因此你看到的“测试”其实是UTF-8编码。在XML文档的处理中都是使用UTF-8编码进行的，
+   因此，如果你不写明encoding的话，都是认为文件是UTF-8编码的。在Python中，好象只支持几种编码，象我们常用的
+   GB2312码就不支持，因此建议大家在处理XML时使用UTF-8编码。
+
+2. XML文档的结构
+
+   XML文档有XML头信息和XML信息体。头信息如::
+
+	<?xml version="1.0" encoding="utf-8"?>
+
+   它表明了此XML文档所用的版本，编码方式。有些复杂的还有一些文档类型的定义(DOCTYPE)，用于定义此XML文档所用
+   的DTD或Schema和一些实体的定义。这里并没有用到，而且我也不是专家，就不再细说了。
+
+   XML信息体是由树状元素组成。每个XML文档都有一个文档元素，也就是树的根元素，所有其它的元素和内容都包含在根元素中。
+
+3. DOM
+
+   DOM是Document Object Model的简称，它是以对象树来表示一个XML文档的方法，使用它的好处就是你可以非常灵活
+   的在对象中进行遍历。
+
+4. 元素和结点
+
+   元素就是标记，它是成对出现的。XML文档就是由元素组成的，但元素与元素之间可以有文本，元素的内容也是文本。
+   在minidom中有许多的结点，元素也属于结点的一种，它不是叶子结点，即它存在子结点；还存在一些叶子结点，如文
+   本结点，它下面不再有子结点。
+
+   象catalog.xml中，文档元素是catalog，它下面有两种元素：maxid和item。maxid用来表示当前最大的item的id值。
+   每一个item都有一个id属性，id属性是唯一的，在 NewEdit 中用来生成每个分类所对应的代码片段的XML文档名，因此不能重复，而且它是一个递增的值。item元素有一个caption子元素，用来表示此分类项的名称，它还可以包含item元素。这样，就定义了一个树状XML结构，下面让我们看一看如果把它们读出来。
+
+
+1.1 得到dom对象
+
+::
+
+	>>> import xml.dom.minidom
+	>>> dom = xml.dom.minidom.parse('d:/catalog.xml')
+
+这样我们得到了一个dom对象，它的第一个元素应该是catalog。
+
+1.2 得到文档元素对象
+
+::
+
+	>>> root = dom.documentElement
+
+这样我们得到了根元素(catalog)。
+
+1.3 结点属性
+
+每一个结点都有它的nodeName，nodeValue，nodeType属性。nodeName为结点名字。
+
+::
+
+	>>> root.nodeName
+	u'catalog'
+
+nodeValue是结点的值，只对文本结点有效。nodeType是结点的类型，现在有以下几种::
+
+	'ATTRIBUTE_NODE'
+	'CDATA_SECTION_NODE'
+	'COMMENT_NODE'
+	'DOCUMENT_FRAGMENT_NODE'
+	'DOCUMENT_NODE'
+	'DOCUMENT_TYPE_NODE'
+	'ELEMENT_NODE'
+	'ENTITY_NODE'
+	'ENTITY_REFERENCE_NODE'
+	'NOTATION_NODE'
+	'PROCESSING_INSTRUCTION_NODE'
+	'TEXT_NODE'
+
+这些结点通过名字很好理解。catalog是ELEMENT_NODE类型。
+
+::
+
+	>>> root.nodeType
+	1
+	>>> root.ELEMENT_NODE
+	1
+
+1.4 子元素、子结点的访问
+
+访问子元素、子结点的方法很多，对于知道元素名字的子元素，可以使用getElementsByTagName方法，如读取maxid子元素::
+
+	>>> root.getElementsByTagName('maxid')
+	[<DOM Element: maxid at 0xb6d0a8>]
+
+这样返回一个列表，由于我们的例子中maxid只有一项，因此列表也只有一项。
+
+如果想得到某个元素下的所有子结点(包括元素)，可以使用childNodes属性::
+
+	>>> root.childNodes
+	[<DOM Text node "\n    ">, <DOM Element: maxid at 0xb6d0a8>, 
+	<DOM Text node "\n    ">, <DOM Element: item at 0xb6d918>, 
+	<DOM Text node "\n    ">, <DOM Element: item at 0xb6de40>, 
+	<DOM Text node "\n    ">, <DOM Element: item at 0xb6dfa8>, 
+	<DOM Text node "\n">]
+
+可以看出所有两个标记间的内容都被视为文本结点。象每行后面的回车，都被看到文本结点。从上面的结果我们可以看出每
+个结点的类型，本例中有文本结点和元素结点；结点的名字（元素结点）；结点的值（文本结点）。每个结点都是一个对象，
+不同的结点对象有不同的属性和方法，更详细的要参见文档。由于本例比较简单，只涉及文本结点和元素结点。
+
+getElementsByTagName可以搜索当前元素的所有子元素，包括所有层次的子元素。childNodes只保存了当前元素的第一层子结点。
+
+这样我们可以遍历childNodes来访问每一个结点，判断它的nodeType来得到不同的内容。如，打印出所有元素的名字::
+
+	>>> for node in root.childNodes:
+		if node.nodeType == node.ELEMENT_NODE:
+			print node.nodeName
+			
+	maxid
+	item
+	item
+
+对于文本结点，想得到它的文本内容可以使用: .data属性。
+
+对于简单的元素，如：<caption>Python</caption>，我们可以编写这样一个函数来得到它的内容（这里为Python）。
+
+::
+
+	def getTagText(root, tag):
+		node = root.getElementsByTagName(tag)[0]
+		rc = ""
+		for node in node.childNodes:
+			if node.nodeType in ( node.TEXT_NODE, node.CDATA_SECTION_NODE):
+				rc = rc + node.data
+		return rc
+
+这个函数只处理找到的第一个符合的子元素。它会将符合的第一个子元素中的所有文本结点拼在一起。当nodeType为文本
+类结点时，node.data为文本的内容。如果我们考查一下元素caption，我们可能看到::
+
+	[<DOM Text node "Python">]
+
+说明caption元素只有一个文本结点。
+
+如果一个元素有属性，那么可以使用getAttribute方法，如::
+
+	>>> itemlist = root.getElementsByTagName('item')
+	>>> item = itemlist[0]
+	>>> item.getAttribute('id')
+	u'1'
+
+这样就得到了第一个item元素的属性值。
+
+下面让我们简单地小结一下如何使用minidom来读取XML中的信息
+
+1. 导入xml.dom.minidom模块，生成dom对象
+2. 得到文档对象（根对象）
+3. 通过getElementsByTagName()方法和childNodes属性（还有其它一些方法和属性）找到要处理的元素
+4. 取得元素下文本结点的内容
+
+二、XML的写入
+-------------
+ 
+下面我来演示一下如何从无到有生成象catalog.xml一样的XML文件。
+
+2.1 生成dom对象
+
+::
+
+	>>> import xml.dom.minidom
+	>>> impl = xml.dom.minidom.getDOMImplementation()
+	>>> dom = impl.createDocument(None, 'catalog', None)
+
+这样就生成了一个空的dom对象。其中catalog为文档元素名，即根元素名。
+
+2.2 显示生成的XML内容
+
+每一个dom结点对象（包括dom对象本身）都有输出XML内容的方法，如：toxml(), toprettyxml()
+
+toxml()输出紧凑格式的XML文本，如::
+
+	<catalog><item>test</item><item>test</item></catalog>
+
+toprettyxml()输出美化后的XML文本，如::
+
+	<catalog>
+		<item>
+			test
+		</item>
+		<item>
+			test
+		</item>
+	</catalog>
+
+可以看出，它是将每个结点后面都加入了回车符，并且自动处理缩近。但对于每一个元素，如果元素只有文本内容，则我希
+望元素的tag与文本是在一起的，如::
+
+	<item>test</item>
+
+而不想是分开的格式，但minidom本身是不支持这样的处理。关于如何实现形如::
+
+	<catalog>
+		<item>test</item>
+		<item>test</item>
+	</catalog>
+
+这样的XML格式，后面我们再说。
+
+2.3 生成各种结点对象
+
+dom对象拥有各种生成结点的方法，下面列出文本结点，CDATA结点和元素结点的生成过程。
+
+  1. 文本结点的生成
+
+     ::
+
+		>>> text=dom.createTextNode('test')
+		test
+
+     要注意的是，在生成结点时，minidom并不对文本字符进行检查，象文本中如果出现了'<','&'之类的字符，应该转
+     换为相应的实体符号'&lt;','&amp;'才可以，这里没有做这个处理。
+
+  2. CDATA结点的生成
+
+     ::
+
+		>>> data = dom.createCDATASection('aaaaaa\nbbbbbb')
+		>>> data.toxml()
+		'<![CDATA[aaaaaa\nbbbbbb]]>'
+
+     CDATA是用于包括大块文本，同时可以不用转换'<','&'字符的标记，它是用<![CDATA[文本]]>来包括的。但文本中
+     不可以有"]]>"这样的串存在。生成结点时minidom不作这些检查，只有当你输出时才有可能发现有错。
+
+  3. 元素结点的生成
+
+     ::
+
+		>>> item = dom.createElement('caption')
+		>>> item.toxml()
+		'<caption/>'
+
+     对于象元素这样的结点，生成的元素结点其实是一个空元素，即不包含任何文本，如果要包含文本或其它的元素，我
+     们需要使用appendChild()或insertBefore()之类的方法将子结点加就到元素结点中。如将上面生成的text结点加入到caption元素结点中::
+
+		>>> item.appendChild(text)
+		<DOM Text node "test">
+		>>> item.toxml()
+		'<caption>test</caption>'
+
+     使用元素对象的setAttribute()方法可以向元素中加入属性，如::
+
+		>>> item.setAttribute('id', 'idvalue')
+		>>> item.toxml()
+		'<caption id="idvalue">test</caption>'
+
+2.4 生成dom对象树
+
+我们有了dom对象，又知道了如何生成各种结点，包括叶子结点（不包含其它结点的结点，如文本结点）和非叶子结点（包
+含其它结点的结点，如元素结点）的生成，然后就需要利用结点对象本身的appendChild()或insertBefore()方法将各个
+结点根据在树中的位置连起来，串成一棵树。最后要串到文档结点上，即根结点上。如一个完整的示例为::
+
+	>>> import xml.dom.minidom
+	>>> impl = xml.dom.minidom.getDOMImplementation()
+	>>> dom = impl.createDocument(None, 'catalog', None)
+	>>> root = dom.documentElement
+	>>> item = dom.createElement('item')
+	>>> text = dom.createTextNode('test')
+	>>> item.appendChild(text)
+	<DOM Text node "test">
+	>>> root.appendChild(item)
+	<DOM Element: item at 0xb9cf80>
+	>>> print root.toxml()
+	<catalog><item>test</item></catalog>
+
+2.5 简单生成元素结点的函数
+
+下面是我写的一个小函数，用于简单的生成类似于::
+
+	<caption>test</caption>
+
+或形如::
+
+	<item><![CDATA[test]]></item>
+
+的元素结点
+
+::
+
+	1       def makeEasyTag(dom, tagname, value, type='text'):
+	2           tag = dom.createElement(tagname)
+	3           if value.find(']]>') > -1:
+	4               type = 'text'
+	5           if type == 'text':
+	6               value = value.replace('&', '&amp;')
+	7               value = value.replace('<', '&lt;')
+	8               text = dom.createTextNode(value)
+	9           elif type == 'cdata':
+	10              text = dom.createCDATASection(value)
+	11          tag.appendChild(text)
+	12          return tag
+
+参数说明：
+
+	dom
+	  为dom对象 
+	
+	tagname
+	  为要生成元素的名字，如'item' 
+	
+	value
+	  为其文本内容，可以为多行 
+	
+	type
+	  为文本结点的格式，'text'为一般Text结点，'cdata'为CDATA结点
+
+函数处理说明：
+
+	* 首先创建元素结点 
+	* 查找文本内容是否有']]>'，如果找到，则此文本结点只可以是Text结点 
+	* 如果结点类型为'text'，则对文本内容中的'<'替换为'&lt;'，'&'替换为'&amp;'，再生成文本结点 
+	* 如果结点类型为'cdata'，则生成CDATA结点 
+	* 将生成的文本结点追加到元素结点上
+	
+	因此这个小函数可以自动地处理字符转化及避免CDATA结点中出现']]>'串。
+
+上面生成'item'结点的语句可以改为::
+
+	>>> item = makeEasyTag(dom, 'item', 'test')
+	>>> item.toxml()
+	'<item>test</item>'
+
+2.6 写入到XML文件中
+
+dom对象树已经生成好了，我们可以调用dom的writexml()方法来将内容写入文件中。writexml()方法语法格式为::
+
+	writexml(writer, indent, addindent, newl, encoding)
+
+* writer 是文件对象 
+* indent 是每个tag前填充的字符，如：'  '，则表示每个tag前有两个空格 
+* addindent 是每个子结点的缩近字符 
+* newl 是每个tag后填充的字符，如：'\n'，则表示每个tag后面有一个回车 
+* encoding 是生成的XML信息头中的encoding属性值，在输出时minidom并不真正进行编码的处理，如果你保存的文本内容中有汉字，则需要自已进行编码转换。
+* writexml 方法是除了writer参数必须要有外，其余可以省略。
+
+下面给出一个文本内容有汉字的示例::
+
+	1       >>> import xml.dom.minidom
+	2       >>> impl = xml.dom.minidom.getDOMImplementation()
+	3       >>> dom = impl.createDocument(None, 'catalog', None)
+	4       >>> root = dom.documentElement
+	5       >>> text = unicode('汉字示例', 'cp936')
+	6       >>> item = makeEasyTag(dom, 'item', text)
+	7       >>> root.appendChild(item)
+	8       <DOM Element: item at 0xb9ceb8>
+	9       >>> root.toxml()
+	10      u'<catalog><item>\u6c49\u5b57\u793a\u4f8b</item></catalog>'
+	11      >>> f=file('d:/test.xml', 'w')
+	12      >>> import codecs
+	13      >>> writer = codecs.lookup('utf-8')[3](f)
+	14      >>> dom.writexml(writer, encoding='utf-8')
+	15      >>> writer.close()
+
+5行 因为XML处理时内部使用Unicode编码，因此象汉字首先要转成Unicode，如果你不做这一步minicode并不检查，并且
+保存时可能不会出错。但读取时可能会出错。
+12-13行 生成UTF-8编码的写入流对象，这样在保存时会自动将Unicode转换成UTF-8编码。
+
+这样写XML文件就完成了。
+
+
+三、XML的美化 
+-------------
+
+对于dom对象的writexml()方法，虽然可以控制一些格式上的输出，但结果并不让人满意。比如我想实现::
+
+	<catalog>
+		<item>test</item>
+		<item>test</item>
+	</catalog>
+
+而不是::
+
+	<catalog>
+		<item>
+			test
+		</item>
+		<item>
+			test
+		</item>
+	</catalog>
+
+如果是象下面的输出结果我无法区分原来文本中是否带有空白，而上一种结果则不存在这一问题。好在我在wxPython自带
+的XML资源编辑器(xred)发现了美化的代码。代码如下::
+
+	1       def Indent(dom, node, indent = 0):
+	2           # Copy child list because it will change soon
+	3           children = node.childNodes[:]
+	4           # Main node doesn't need to be indented
+	5           if indent:
+	6               text = dom.createTextNode('\n' + '\t' * indent)
+	7               node.parentNode.insertBefore(text, node)
+	8           if children:
+	9               # Append newline after last child, except for text nodes
+	10              if children[-1].nodeType == node.ELEMENT_NODE:
+	11                  text = dom.createTextNode('\n' + '\t' * indent)
+	12                  node.appendChild(text)
+	13              # Indent children which are elements
+	14              for n in children:
+	15                  if n.nodeType == node.ELEMENT_NODE:
+	16                      Indent(dom, n, indent + 1)
+
+参数说明：
+
+	dom
+	  为dom对象
+	
+	node
+	  为要处理的元素结点
+	
+	indent
+	  指明缩近的层数
+
+函数说明：
+
+Indent是一个递归函数，当一个结点有子元素时进行递归处理。主要是解决子元素的换行和缩近的处理。这里缩近是写
+死的，每一级缩近使用一个制表符。如果你愿意可以改为你想要的内容。就是把函数中的'\t'换替一下。或干脆写成一个
+全局变量，或参数以后改起来可能要容易的多。不过在 NewEdit 中，这样的处理足够了，就没有做这些工作。
+
+Indent基本的想法就是递归遍历所有子结点，在所有需要加入回车和缩近的地方插入相应的文本结点。这样再使用
+writexml()输出时就是缩近好了的。具体程序不再细说，直接用就行了。
+
+但这里要注意的是：
+
+Indent()要修改原dom对象，因此在调用它之前最好先复制一个临时dom对象，使用完毕后再清除这个临时dom对象即可。
+下面是详细的调用过程::
+
+	1       domcopy = dom.cloneNode(True)
+	2       Indent(domcopy, domcopy.documentElement)
+	3       f = file(xmlfile, 'wb')
+	4       writer = codecs.lookup('utf-8')[3](f)
+	5       domcopy.writexml(writer, encoding = 'utf-8')
+	6       domcopy.unlink()
+
+1行 
+  克隆一个dom对象
+2行 
+  进行缩近处理
+3-4行 
+  进行UTF-8编码处理
+5行 
+  生成XML文件
+6行 
+  清除dom对象的内容
+
+经过这番处理之后，你的XML文档应该好看多了。
+
+
+`[返回]`_
+
+.. _`[返回]`: technical.htm

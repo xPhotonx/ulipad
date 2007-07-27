@@ -1,0 +1,69 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<meta name="generator" content="Docutils 0.3.9: http://docutils.sourceforge.net/" />
+<title>Plugin的发布规范</title>
+<link rel="stylesheet" href="default.css" type="text/css" />
+</head>
+<body>
+<div class="document" id="plugin">
+<h1 class="title">Plugin的发布规范</h1>
+<table class="docinfo" frame="void" rules="none">
+<col class="docinfo-name" />
+<col class="docinfo-content" />
+<tbody valign="top">
+<tr class="field"><th class="docinfo-name">作者:</th><td class="field-body">limodou</td>
+</tr>
+<tr class="field"><th class="docinfo-name">联系:</th><td class="field-body"><a class="reference" href="mailto:limodou&#64;gmail.com">limodou&#64;gmail.com</a></td>
+</tr>
+<tr class="field"><th class="docinfo-name">日期:</th><td class="field-body">2005-10-11 12:58:28 +0800</td>
+</tr>
+<tr class="field"><th class="docinfo-name">版本:</th><td class="field-body">plugin_spec.txt 42 2005-09-28 05:19:21Z limodou</td>
+</tr>
+<tr class="field"><th class="docinfo-name">主页:</th><td class="field-body"><a class="reference" href="http://wiki.woodpecker.org.cn/moin/NewEdit">http://wiki.woodpecker.org.cn/moin/NewEdit</a></td>
+</tr>
+<tr class="field"><th class="docinfo-name">BLOG:</th><td class="field-body"><a class="reference" href="http://www.donews.net/limodou">http://www.donews.net/limodou</a></td>
+</tr>
+<tr class="field"><th class="docinfo-name">版权:</th><td class="field-body">GPL</td>
+</tr>
+</tbody>
+</table>
+<div class="contents topic" id="contents">
+<p class="topic-title first"><a name="contents">Contents</a></p>
+<ul class="simple">
+<li><a class="reference" href="#id1" id="id3" name="id3">说明</a></li>
+</ul>
+</div>
+<div class="section" id="id1">
+<h1><a class="toc-backref" href="#id3" name="id1">说明</a></h1>
+<p>每一个plugin都应发布到plugins目录下，每个插件需要占用一个目录。这个目录将至少需要提供一个
+说明文件，如：plugin.pin，和一个__init__.py程序。如果plugin带有自已编写的其它模块，可以
+放在任何地方，但在plugin应可以访问得到。建议除了上述两个文件外，将其它文件放在
+plugins目录的一个子目录下，子目录名可以为plugin的名字，如:</p>
+<pre class="literal-block">
+  plugins
+\---myplugin
+    \------myplugin.pin
+    \------__init__.py
+    \------myplugin
+       \---other files
+       ...
+</pre>
+<p>.pin的作用是作为一个插件的标识文件，内容可以为空，如果不为空应包括以下信息:</p>
+<pre class="literal-block">
+[info]
+author=xxx
+date=xxx
+version=xxx
+description=xxx
+homepage=xxx
+</pre>
+<p>其中，author, date, version, description必须要有，但内容可以为空。其它你可以自行增加。如果有
+特殊的第三方模块还可以增加模块信息。</p>
+<p><a class="reference" href="technical.htm">[返回]</a></p>
+</div>
+</div>
+</body>
+</html>

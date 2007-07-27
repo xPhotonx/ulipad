@@ -1,0 +1,61 @@
+==========
+ 技术手册
+==========
+
+:作者: limodou
+:联系: limodou@gmail.com
+:版本: $Id: technical.txt 42 2005-09-28 05:19:21Z limodou $
+:主页: http://wiki.woodpecker.org.cn/moin/NewEdit
+:BLOG: http://www.donews.net/limodou
+:版权: GPL
+
+.. contents:: 目录
+
+说明
+----
+
+本手册是开发 NewEdit 中技术架构说明，技术规范，技术实现，及一些相关的技术文章。不少文章是从我的Blog中整理而来的。
+
+体系结构设计书
+--------------
+
+`NewEdit的体系结构设计`_
+~~~~~~~~~~~~~~~~~~~~
+
+.. _`NewEdit的体系结构设计`: architecture.htm
+
+技术规范
+--------
+
+`Plugin的发布规范`_
+~~~~~~~~~~~~~~~~~~~
+
+.. _`Plugin的发布规范`: plugin_spec.htm
+
+技术实现
+--------
+
+`模拟DDE功能的Socket实现`_
+~~~~~~~~~~~~~~~~~~~~~~~~~
+
+.. _`模拟DDE功能的Socket实现`: dde.htm
+
+
+`i18n的实现`_
+~~~~~~~~~~~~~
+
+.. _`i18n的实现`: i18n.htm
+
+`wxStyledTextCtrl中Unicode的处理问题`_
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+.. _`wxStyledTextCtrl中Unicode的处理问题`: unicode.htm
+
+`使用minidom来处理XML的示例`_
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+.. _`使用minidom来处理XML的示例`: xml.htm
+
+`[返回]`_
+
+.. _`[返回]`: index.htm

@@ -1,0 +1,13 @@
+[default]
+projectname = django
+
+[autostring]
+
+[autostring_append]
+
+[autore]
+
+[autore_append]
+<(\w+).*?> = !^</\1>
+
+[autovalues]

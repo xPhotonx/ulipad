@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<meta name="generator" content="Docutils 0.3.9: http://docutils.sourceforge.net/" />
+<title>Mixin编写规范</title>
+<link rel="stylesheet" href="default.css" type="text/css" />
+</head>
+<body>
+<div class="document" id="mixin">
+<h1 class="title">Mixin编写规范</h1>
+<div class="contents topic" id="id1">
+<p class="topic-title first"><a name="id1">目录</a></p>
+<ul class="simple">
+<li><a class="reference" href="#id2" id="id4" name="id4">目的</a></li>
+<li><a class="reference" href="#id3" id="id5" name="id5">文件</a></li>
+</ul>
+</div>
+<div class="section" id="id2">
+<h1><a class="toc-backref" href="#id4" name="id2">目的</a></h1>
+<p>用于描述 NewEdit 的 Mixin 编写规范。</p>
+</div>
+<div class="section" id="id3">
+<h1><a class="toc-backref" href="#id5" name="id3">文件</a></h1>
+<p>Mixin 一般放在 mixins 目录下，文件名以小写的 m 开头，如 mAutoBack.py 。文件中只放简单地挂接函数
+(mixin和plugin)，一般只应导入通用的类，对于某些特殊的处理可能需要导入其它的类，这些类如果是自已
+编写的，则应该独立一个文件。一般放在mixins目录下。并且如果不是对全局产生作用的话，则应在相应的处
+理函数中导入这些类，而不是放在开头的地方。</p>
+</div>
+</div>
+</body>
+</html>
