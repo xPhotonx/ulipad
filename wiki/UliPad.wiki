@@ -21,12 +21,17 @@ Wonderful! It seems many people like it.
 
 == Description ==
 
-UliPad(NewEdit) uses Mixin and Plugin technique as its architecture. Most of its classes can be extended via mixin and plugin components, and finally become an integrity class at creating the instance. So UliPad(NewEdit) is very dynamic. You can write the new features in new files, and hardly need to modify the existing code. And if you want to extend the existing classes, you could write mixins and plugins, and this will be bound to the target class that I call "Slot Class". This technique will make the changes centralized and easily managed.
+UliPad uses Mixin and Plugin technique as its architecture. Most of its classes can be extended via mixin and plugin components, and finally become an integrity class at creating the instance. So UliPad is very dynamic. You can write the new features in new files, and hardly need to modify the existing code. And if you want to extend the existing classes, you could write mixins and plugins, and this will be bound to the target class that I call "Slot Class". This technique will make the changes centralized and easily managed.
 
 Requirements:
 
  * Python 2.3+ 
  * wxPython 2.4.2.4+ Unicode Version 
+
+Recommends:
+
+ * Python 2.4+
+ * wxPython 2.8+ Unicode Version
 
 Some plugins may have additional requirements, please read the readme information before installing them.
 
@@ -75,7 +80,7 @@ Tasks:
    * Last session support -- It'll save all the filenames as closed, and reopen the files as next started.
    * Smart judge the indent char -- It'll auto guess the indent char, and sets it.
    * Finding in files
-   * Bookmark support
+   * Bookmark supports
  * *Python support*
    * built-in python interactive window based on PyShell, support Unicode
    * Auto completion
@@ -89,8 +94,8 @@ Tasks:
  * *Simple project support*
    Can create a special file _project, so every file and folder under the folder which has the _project can be considered as a whole project.
  * *Extension mechanism*
-   * Script -- You can write easy script to manipulate the all resource of UliPad(NewEdit), just like: text conversion, etc.
-   * Plugin -- Customized function. More complex but more powerful. Can easily merge with UliPad(NewEdit), and can be 
+   * Script -- You can write easy script to manipulate the all resource of UliPad, just like: text conversion, etc.
+   * Plugin -- Customized function. More complex but more powerful. Can easily merge with UliPad, and can be 
      managed via menu.
    * Shell command -- Add often used shell commands, and execute them.
  * *Ftp support*
@@ -98,18 +103,18 @@ Tasks:
  * *Multilanguage support*
    Currently supports two languages: English and Chinese, which can be auto-detected.
  * *Shipped plugins*(must be configed as used them before)
-   * Blog editor -- You can use UliPad(NewEdit) to edit your blog, but this funcation not be wildly tested.
+   * Blog editor -- You can use UliPad to edit your blog, but this funcation not be wildly tested.
    * Document links -- Python documentation and wxPython documentation.
-   * Many plugins can be found at UliPad(NewEdit) wiki page.
+   * Many plugins can be found at UliPad wiki page.
  * *Shipped scripts*
-   * Many scripts can be found at UliPad(NewEdit) wiki page.
- * *Wizard* (New)
+   * Many scripts can be found at UliPad wiki page.
+ * *Wizard* 
    You can make your own wizard template. The wizard can input user data, combine with template, and output the result. And wizard also support code framework created. This feature will help you improving coding efficiency.
- * *Direcotry Browser*(New)
+ * *Direcotry Browser*
    Browse multiple directories, and you can really add, delete, rename directories and files. Double click will open the file in Editor window. 
- * *AutoComPlete(acp)*(New)
-   Suport user autocomplete file, it can help to input code very helpful and functional. Just like EditPlus, but may be more powerful.
- * *Column Editing Mode*(New)
+ * *AutoComPlete(acp)*
+   Suport user autocomplete file, it can help to input code very helpful and functional.
+ * *Column Editing Mode*
    You can select multilines, and then set a column mode region, so in any line of this region, if you enter a character, other lines will also add this character. If you want to deal with multilines as a similar mode, this functionality will be very handy.
  * *Smart Navigation*
    UliPad can remember the visit order of your opened files, and you can go back or go forward in  these files.
@@ -121,7 +126,3 @@ Tasks:
    Multi-user can modify some files at the same time. You should enable pairprog plugin.
  
 More features are in development...
-
-== Documents ==
-
- Many documents ship with UliPad/NewEdit source code, and you can also find other document on [http://www.donews.net/limodou limodou blog]^chinese blog^.
