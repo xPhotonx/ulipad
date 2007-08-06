@@ -122,7 +122,7 @@ Tasks:
    You can type some regular expression on the fly, and see the result dynamiclly.
  * *Spell check plugin*
    Need to install PyEnchant module.
- * *ConCurrent Programming*
-   Multi-user can modify some files at the same time. You should enable pairprog plugin.
+ * *Collaborative Programming*
+   Multi-user can modify some files at the same time. You should enable *pairprog* plugin.
  
 More features are in development...
