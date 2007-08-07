@@ -834,7 +834,7 @@ from modules import Globals
 def add_mainframe_menu(menulist):
     menulist.extend([('IDM_FILE',
         [
-            (130, 'IDM_FILE_RECENTFILES', tr('Open Recent Files'), wx.ITEM_NORMAL, 'OnOpenRecentFiles', 'Opens recent files.'),
+            (130, 'IDM_FILE_RECENTFILES', tr('Open Recent Files')+'\tAlt+R', wx.ITEM_NORMAL, 'OnOpenRecentFiles', 'Opens recent files.'),
         ]),
     ])
 Mixin.setPlugin('mainframe', 'add_menu', add_mainframe_menu)
