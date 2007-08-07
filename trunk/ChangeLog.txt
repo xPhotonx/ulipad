@@ -1,4 +1,7 @@
 ﻿$Rev: 2129 $
+[2007/08/07]
+mRecentFile.py      增加Alt+R给最近打开文件菜单
+
 [2007/07/19]
 DirBrowser.py       修正在文件浏览中无法使用光标键的bug
 
