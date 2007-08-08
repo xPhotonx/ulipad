@@ -1,7 +1,7 @@
 #! /usr/bin/env python
 
 """
-rpdb2.py - version 2.1.2
+rpdb2.py - version 2.2.0
 
 A remote Python debugger for CPython
 
@@ -269,13 +269,13 @@ import xmlrpclib
 import threading
 import linecache
 import traceback
-import compiler
 import commands
 import tempfile
 import __main__
-import cPickle
+import weakref
 import httplib
 import os.path
+import pickle
 import socket
 import getopt
 import string
@@ -283,6 +283,7 @@ import thread
 import random
 import base64
 import atexit
+import errno
 import time
 import copy
 import hmac
@@ -342,7 +343,7 @@ TIMEOUT_FIVE_MINUTES = 5 * 60.0
 
 
 def start_embedded_debugger(
-            pwd, 
+            _rpdb2_pwd, 
             fAllowUnencrypted = True, 
             fAllowRemote = False, 
             timeout = TIMEOUT_FIVE_MINUTES, 
@@ -353,11 +354,11 @@ def start_embedded_debugger(
     Use 'start_embedded_debugger' to invoke the debugger engine in embedded 
     scripts. put the following line as the first line in your script:
 
-    import rpdb2; rpdb2.start_embedded_debugger(pwd)
+    import rpdb2; rpdb2.start_embedded_debugger(<some-password-string>)
 
     This will cause the script to freeze until a debugger console attaches.
 
-    pwd     - The password that governs security of client/server communication
+    _rpdb2_pwd - The password that governs security of client/server communication
     fAllowUnencrypted - Allow unencrypted communications. Communication will
                         be authenticated but encrypted only if possible.
     fAllowRemote - Allow debugger consoles from remote machines to connect.
@@ -375,7 +376,7 @@ def start_embedded_debugger(
     """
 
     return __start_embedded_debugger(
-                        pwd, 
+                        _rpdb2_pwd, 
                         fAllowUnencrypted, 
                         fAllowRemote, 
                         timeout, 
@@ -399,10 +400,10 @@ def start_embedded_debugger_interactive_password(
     if stdout is not None:
         stdout.write('Please type password:')
         
-    pwd = stdin.readline().rstrip('\n')
+    _rpdb2_pwd = stdin.readline().rstrip('\n')
     
     return __start_embedded_debugger(
-                        pwd, 
+                        _rpdb2_pwd, 
                         fAllowUnencrypted, 
                         fAllowRemote, 
                         timeout, 
@@ -442,9 +443,9 @@ def setbreak():
 
 
 
-VERSION = (2, 1, 2, 0, '')
-RPDB_VERSION = "RPDB_2_1_2"
-RPDB_COMPATIBILITY_VERSION = "RPDB_2_1_2"
+VERSION = (2, 2, 0, 0, '')
+RPDB_VERSION = "RPDB_2_2_0"
+RPDB_COMPATIBILITY_VERSION = "RPDB_2_2_0"
 
 
 
@@ -468,7 +469,7 @@ class CSimpleSessionManager:
     
     def __init__(self, fAllowUnencrypted = True):
         self.__sm = CSessionManagerInternal(
-                            pwd = None, 
+                            _rpdb2_pwd = None, 
                             fAllowUnencrypted = fAllowUnencrypted, 
                             fAllowRemote = False, 
                             host = LOCALHOST
@@ -515,7 +516,7 @@ class CSimpleSessionManager:
         exception is caught.
         """
         
-        pwd = self.__sm.get_password()
+        _rpdb2_pwd = self.__sm.get_password()
             
         si = self.__sm.get_server_info()
         rid = si.m_rid
@@ -525,14 +526,14 @@ class CSimpleSessionManager:
             # On posix systems the password is set at the debuggee via
             # a special temporary file.
             #
-            create_pwd_file(rid, pwd)
-            pwd = None
+            create_pwd_file(rid, _rpdb2_pwd)
+            _rpdb2_pwd = None
 
-        return (rid, pwd)
+        return (rid, _rpdb2_pwd)
 
 
     #
-    # Override these callback to react to the related events.
+    # Override these callbacks to react to the related events.
     #
     
     def unhandled_exception_callback(self):
@@ -540,8 +541,8 @@ class CSimpleSessionManager:
         self.request_go()
 
 
-    def script_about_to_terminate_callback(self):
-        print 'script_about_to_terminate_callback'
+    def script_paused(self):
+        print 'script_paused'
         self.request_go()
 
 
@@ -556,7 +557,11 @@ class CSimpleSessionManager:
     def __unhandled_exception(self, event):   
         self.unhandled_exception_callback()
 
-        
+
+    def __termination_callback(self, event):
+        self.script_terminated_callback()
+
+
     def __state_calback(self, event):   
         """
         Handle state change notifications from the debugge.
@@ -585,35 +590,23 @@ class CSimpleSessionManager:
             return
             
         e = s[-1]
-        
-        lineno = e[1]
-        path = e[0]
+       
+        function_name = e[2]
         filename = os.path.basename(e[0])
 
-        if filename == DEBUGGER_FILENAME and lineno == self.__get_termination_lineno(path):
-            self.script_about_to_terminate_callback()
+        if filename != DEBUGGER_FILENAME:
+            #
+            # This is a user breakpoint (e.g. rpdb2.setbreak())
+            #
+            self.script_paused()
+            return
 
-    
-    def __termination_callback(self, event):
-        self.script_terminated_callback()
-
-
-    def __get_termination_lineno(self, path):
-        """
-        Return the last line number of a file.
-        """
-        
-        if self.m_termination_lineno is not None:
-            return self.m_termination_lineno
-            
-        f = open(path, 'rb')
-        l = f.read()
-        f.close()
-        _l = l.rstrip()
-        _s = _l.split('\n')
-
-        self.m_termination_lineno = len(_s)
-        return self.m_termination_lineno
+        #
+        # This is the setbreak() before a fork, exec or program 
+        # termination.
+        #
+        self.request_go()
+        return
 
         
 
@@ -626,9 +619,9 @@ class CSessionManager:
     You can study the way it is used in StartClient()
     """
     
-    def __init__(self, pwd, fAllowUnencrypted, fAllowRemote, host):
+    def __init__(self, _rpdb2_pwd, fAllowUnencrypted, fAllowRemote, host):
         self.__smi = CSessionManagerInternal(
-                            pwd, 
+                            _rpdb2_pwd, 
                             fAllowUnencrypted, 
                             fAllowRemote, 
                             host
@@ -877,6 +870,31 @@ class CSessionManager:
         """
 
         return self.__smi.get_trap_unhandled_exceptions()
+
+
+    def set_fork_mode(self, ffork_into_child, ffork_auto):
+        """
+        Determine how to handle os.fork().
+        
+        ffork_into_child - True|False - If True, the debugger will debug the 
+            child process after a fork, otherwise the debugger will continue
+            to debug the parent process.
+
+        ffork_auto - True|False - If True, the debugger will not pause before
+            a fork and will automatically make a decision based on the 
+            value of the ffork_into_child flag.
+        """
+
+        return self.__smi.set_fork_mode(ffork_into_child, ffork_auto)
+
+
+    def get_fork_mode(self):
+        """
+        Return the fork mode in the form of a (ffork_into_child, ffork_auto) 
+        flags tuple.
+        """
+
+        return self.__smi.get_fork_mode()
     
 
     def get_stack(self, tid_list, fAll):   
@@ -955,7 +973,7 @@ class CSessionManager:
         return self.__smi.get_server_info()
 
 
-    def get_namespace(self, nl, fFilter):
+    def get_namespace(self, nl, fFilter, repr_limit = 128):
         """
         get_namespace is designed for locals/globals panes that let 
         the user inspect a namespace tree in GUI debuggers such as Winpdb.
@@ -966,8 +984,11 @@ class CSessionManager:
              value, that is, to return its children as well in case it has 
              children e.g. lists, dictionaries, etc...
              
-        fFilter - Flag. Filter functions and classes out of the globals 
-             dictionary, to make it more readable.
+        fFilter - Flag. Filter out __methods__ from objects and classes in 
+             the namespace viewer.
+
+        repr_limit - Length limit (approximated) to be imposed repr() of 
+             returned items.
         
         examples of expression lists: 
 
@@ -981,6 +1002,8 @@ class CSessionManager:
         Each dictionary has the following keys and values:
           DICT_KEY_EXPR - the original expression string.
           DICT_KEY_REPR - A repr of the evaluated value of the expression.
+          DICT_KEY_IS_VALID - A boolean that indicates if the repr value is 
+                          valid for the purpose of re-evaluation.
           DICT_KEY_TYPE - A string representing the type of the experession's 
                           evaluated value.
           DICT_KEY_N_SUBNODES - If the evaluated value has children like items 
@@ -1001,6 +1024,8 @@ class CSessionManager:
           DICT_KEY_NAME - a repr of the child name, e.g '0' for the first item
                           in a list.
           DICT_KEY_REPR - A repr of the evaluated value of the expression. 
+          DICT_KEY_IS_VALID - A boolean that indicates if the repr value is 
+                          valid for the purpose of re-evaluation.
           DICT_KEY_TYPE - A string representing the type of the experession's 
                           evaluated value.
           DICT_KEY_N_SUBNODES - If the evaluated value has children like items 
@@ -1008,7 +1033,7 @@ class CSessionManager:
                           etc, this key will have their number as value.
         """
         
-        return self.__smi.get_namespace(nl, fFilter)
+        return self.__smi.get_namespace(nl, fFilter, repr_limit)
 
 
     #
@@ -1071,13 +1096,13 @@ class CSessionManager:
         return self.__smi.set_thread(tid)
 
 
-    def set_password(self, pwd):
+    def set_password(self, _rpdb2_pwd):
         """
         Set the password that will govern the authentication and encryption
         of client-server communication.
         """
         
-        return self.__smi.set_password(pwd)
+        return self.__smi.set_password(_rpdb2_pwd)
 
 
     def get_password(self):
@@ -1187,6 +1212,13 @@ class CConsole:
 #
 
 
+
+
+class NotPythonSource(IOError):
+    """
+    Raised when an attempt to load non Python source is made.
+    """
+    
 
 
 class CException(Exception):
@@ -1368,20 +1400,22 @@ DARWIN = 'darwin'
 POSIX = 'posix'
 
 #
-# REVIEW: Go over this mechanism
-#
-# map between OS type and relvant command to initiate a new OS console.
+# Map between OS type and relevant command to initiate a new OS console.
 # entries for other OSs can be added here. 
 # '%s' serves as a place holder.
 #
+# Currently there is no difference between 'nt' and NT_DEBUG, since now
+# both of them leave the terminal open after termination of debuggee to
+# accommodate scenarios of scripts with child processes.
+#
 osSpawn = {
-    'nt': 'start "rpdb2 - Version ' + get_version() + ' - Debuggee Console" cmd /c %s %s', 
-    NT_DEBUG: 'start "rpdb2 - Version ' + get_version() + ' - Debuggee Console" cmd /k %s %s', 
-    POSIX: "%s -e %s %s &", 
-    GNOME_DEFAULT_TERM: "gnome-terminal -x %s %s &", 
-    MAC: '%s %s',
-    DARWIN: '%s %s',
-    SCREEN: 'screen -t debuggee_console %s %s'
+    'nt': 'start "rpdb2 - Version ' + get_version() + ' - Debuggee Console" cmd /k ""%(exec)s" %(options)s"', 
+    NT_DEBUG: 'start "rpdb2 - Version ' + get_version() + ' - Debuggee Console" cmd /k ""%(exec)s" %(options)s"', 
+    POSIX: "%(term)s -e %(shell)s -c '%(exec)s %(options)s; %(shell)s' &", 
+    GNOME_DEFAULT_TERM: "gnome-terminal --disable-factory -x %(shell)s -c '%(exec)s %(options)s; %(shell)s' &", 
+    MAC: '%(exec)s %(options)s',
+    DARWIN: '%(exec)s %(options)s',
+    SCREEN: 'screen -t debuggee_console %(exec)s %(options)s'
 }
 
 RPDBTERM = 'RPDBTERM'
@@ -1400,6 +1434,7 @@ RPDB_BPL_FOLDER = os.path.join(RPDB_SETTINGS_FOLDER, 'breakpoints')
 RPDB_BPL_FOLDER_NT = 'rpdb2_breakpoints'
 MAX_BPL_FILES = 100
 
+HEARTBEAT_TIMEOUT = 16
 IDLE_MAX_RATE = 2.0
 PING_TIMEOUT = 4.0
 LOCAL_TIMEOUT = 1.0
@@ -1415,10 +1450,6 @@ LOCALHOST = 'localhost'
 
 SERVER_PORT_RANGE_START = 51000
 SERVER_PORT_RANGE_LENGTH = 20
-
-ERROR_SOCKET_ADDRESS_IN_USE_WIN = 10048
-ERROR_SOCKET_ADDRESS_IN_USE_UNIX = 98
-ERROR_SOCKET_ADDRESS_IN_USE_MAC = 48
 
 SOURCE_EVENT_CALL = 'C'
 SOURCE_EVENT_LINE = 'L'
@@ -1448,7 +1479,7 @@ STR_NO_THREADS = "Operation failed since no traced threads were found."
 STR_AUTOMATIC_LAUNCH_UNKNOWN = "RPDB doesn't know how to launch a new terminal on this platform. Please start the debuggee manually with the -d flag on a separate console and then use the 'attach' command to attach to it."
 STR_STARTUP_NOTICE = "Attaching to debuggee..."
 STR_SPAWN_UNSUPPORTED = "Launch command supported on 'posix' and 'nt', systems only. Please start the debuggee manually with the -d flag on a separate console and then use the 'attach' command to attach to it."
-STR_STARTUP_SPAWN_NOTICE = "Spawning debuggee..."
+STR_STARTUP_SPAWN_NOTICE = "Starting debuggee..."
 STR_KILL_NOTICE = "Stopping debuggee..."
 STR_STARTUP_FAILURE = "Debuggee failed to start in a timely manner."
 STR_OUTPUT_WARNING = "Textual output will be done at the debuggee."
@@ -1466,6 +1497,7 @@ STR_BAD_FILENAME = "Bad File Name."
 STR_SOME_BREAKPOINTS_NOT_LOADED = "Some breakpoints were not loaded, because of an error."
 STR_BAD_EXPRESSION = "Bad expression '%s'."
 STR_FILE_NOT_FOUND = "File '%s' not found."
+STR_DISPLAY_ERROR = "If the X server (Windowing system) is not started you need to use the screen utility and invoke rpdb2 in screen mode with the -s command-line flag as follows: screen rpdb2 -s ..."
 STR_EXCEPTION_NOT_FOUND = "No exception was found."
 STR_SCOPE_NOT_FOUND = "Scope '%s' not found."
 STR_NO_SUCH_BREAKPOINT = "Breakpoint not found."
@@ -1477,6 +1509,7 @@ STR_ILEGAL_ANALYZE_MODE_ARG = "Argument is not allowed in analyze mode. Type 'he
 STR_ILEGAL_ANALYZE_MODE_CMD = "Command is not allowed in analyze mode. Type 'help analyze' for more info."
 STR_ANALYZE_MODE_TOGGLE = "Analyze mode was set to: %s."
 STR_BAD_ARGUMENT = "Bad Argument."
+STR_PSYCO_WARNING = "The psyco module was detected. The debugger is incompatible with the psyco module and will not function correctly as long as the psyco module is imported and used."
 STR_DEBUGGEE_TERMINATED = "Debuggee has terminated."
 STR_DEBUGGEE_NOT_BROKEN = "Debuggee has to be waiting at break point to complete this command."
 STR_DEBUGGER_HAS_BROKEN = "Debuggee is waiting at break point for further commands."
@@ -1484,6 +1517,7 @@ STR_ALREADY_ATTACHED = "Already attached. Detach from debuggee and try again."
 STR_NOT_ATTACHED = "Not attached to any script. Attach to a script and try again."
 STR_COMMUNICATION_FAILURE = "Failed to communicate with debugged script."
 STR_ERROR_OTHER = "Command returned the following error:\n%(type)s, %(value)s.\nPlease check stderr for stack trace and report to support."
+STR_LOST_CONNECTION = "Lost connection to debuggee."
 STR_BAD_VERSION = "A debuggee was found with incompatible debugger version %(value)s."
 STR_BAD_VERSION2 = "While attempting to find the specified debuggee at least one debuggee was found that uses incompatible version of RPDB2."
 STR_UNEXPECTED_DATA = "Unexpected data received."
@@ -1505,7 +1539,7 @@ STR_ATTACH_FAILED_NAME = "Failed to attach to '%s'."
 STR_ATTACH_CRYPTO_MODE = "Debug Channel is%s encrypted."
 STR_ATTACH_CRYPTO_MODE_NOT = "NOT"
 STR_ATTACH_SUCCEEDED = "Successfully attached to '%s'."
-STR_ATTEMPTING_TO_STOP = "Requesting script to stop."
+STR_ATTEMPTING_TO_STOP = "Requesting script to stop (with os.abort())."
 STR_ATTEMPTING_TO_DETACH = "Detaching from script..."
 STR_DETACH_SUCCEEDED = "Detached from script."
 STR_DEBUGGEE_UNKNOWN = "Failed to find script."
@@ -1544,10 +1578,22 @@ STR_PASSWORD_NOT_SET = 'Password is not set.'
 STR_PASSWORD_SET = 'Password is set to: "%s"'
 STR_ENCRYPT_MODE = 'Force encryption mode: %s'
 STR_REMOTE_MODE = 'Allow remote machines mode: %s'
-STR_TRAP_MODE = 'Trap unhandled exceptions mode is: %s'
+STR_TRAP_MODE = 'Trap unhandled exceptions mode is set to: %s'
 STR_TRAP_MODE_SET = "Trap unhandled exceptions mode was set to: %s."
+STR_FORK_MODE = "Fork mode is set to: %s, %s."
+STR_FORK_MODE_SET = "Fork mode was set to: %s, %s."
 STR_LOCAL_NAMESPACE_WARNING = 'Debugger modifications to the original bindings of the local namespace of this frame will be committed before the execution of the next statement of the frame. Any code using these variables executed before that point will see the original values.'
 STR_WARNING = 'Warning: %s' 
+
+STR_MAX_NAMESPACE_WARNING_TITLE = 'Namespace Warning'
+STR_MAX_NAMESPACE_WARNING_TYPE = '*** WARNING ***'
+STR_MAX_NAMESPACE_WARNING_MSG = 'Number of items exceeds capacity of namespace browser.'
+STR_MAX_EVALUATE_LENGTH_WARNING = 'Output length exeeds maximum capacity.'
+
+FORK_CHILD = 'child'
+FORK_PARENT = 'parent'
+FORK_MANUAL = 'manual'
+FORK_AUTO = 'auto'
 
 ENCRYPTION_ENABLED = 'encrypted'
 ENCRYPTION_DISABLED = 'plain-text'
@@ -1575,7 +1621,6 @@ BP_EVAL_SEP = ','
 
 DEBUGGER_FILENAME = 'rpdb2.py'
 THREADING_FILENAME = 'threading.py'
-CODECS_FILENAME = 'codecs.py'
 
 STR_STATE_BROKEN = 'waiting at break point'
 
@@ -1604,6 +1649,7 @@ DICT_KEY_EVENT = 'event'
 DICT_KEY_EXPR = 'expr'
 DICT_KEY_NAME = 'name'
 DICT_KEY_REPR = 'repr'
+DICT_KEY_IS_VALID = 'fvalid'
 DICT_KEY_TYPE = 'type'
 DICT_KEY_SUBNODES = 'subnodes'
 DICT_KEY_N_SUBNODES = 'n_subnodes'
@@ -1613,6 +1659,20 @@ RPDB_EXEC_INFO = 'rpdb_exception_info'
 
 MODE_ON = 'ON'
 MODE_OFF = 'OFF'
+
+MAX_EVALUATE_LENGTH = 256 * 1024
+MAX_NAMESPACE_ITEMS = 1024
+MAX_SORTABLE_LENGTH = 256 * 1024
+REPR_ID_LENGTH = 4096
+
+MAX_NAMESPACE_WARNING = {
+    DICT_KEY_EXPR: STR_MAX_NAMESPACE_WARNING_TITLE, 
+    DICT_KEY_NAME: STR_MAX_NAMESPACE_WARNING_TITLE, 
+    DICT_KEY_REPR: STR_MAX_NAMESPACE_WARNING_MSG,
+    DICT_KEY_IS_VALID: False,
+    DICT_KEY_TYPE: STR_MAX_NAMESPACE_WARNING_TYPE, 
+    DICT_KEY_N_SUBNODES: 0
+    }
 
 MAX_EVENT_LIST_LENGTH = 1000
 
@@ -1630,10 +1690,10 @@ XML_DATA = """<?xml version='1.0'?>
 <methodName>dispatcher_method</methodName>
 <params>
 <param>
-<value><string>RPDB_02_00_04</string></value>
+<value><string>%s</string></value>
 </param>
 </params>
-</methodCall>"""
+</methodCall>""" % RPDB_COMPATIBILITY_VERSION
 
 N_WORK_QUEUE_THREADS = 8
 
@@ -1667,7 +1727,8 @@ g_initial_cwd = []
 
 g_error_mapping = {
     socket.error: STR_COMMUNICATION_FAILURE,
-    
+   
+    CConnectionException: STR_LOST_CONNECTION,
     BadVersion: STR_BAD_VERSION,
     UnexpectedData: STR_UNEXPECTED_DATA,
     SpawnUnsupported: STR_SPAWN_UNSUPPORTED,
@@ -1685,6 +1746,30 @@ g_error_mapping = {
     NoThreads: STR_NO_THREADS,
     NoExceptionFound: STR_EXCEPTION_NOT_FOUND,
 }
+
+#
+# These globals are related to handling the os.fork() os._exit() and exec
+# pattern.
+#
+g_forkpid = None
+g_forktid = None
+
+g_exectid = None
+g_execpid = None
+
+g_fos_exit = False
+
+
+#
+# To hold a reference to __main__ to prevent its release if an unhandled
+# exception is raised.
+#
+g_module_main = None
+
+g_fsent_psyco_warning = False
+
+g_fignore_atexit = False
+g_ignore_broken_pipe = 0
 
 
 
@@ -1727,30 +1812,159 @@ def safe_repr(x):
         return y
 
     except:
-        pass
+        return 'N/A'
+
+
+
+def repr_list(pattern, l, length, is_valid):
+    length = max(0, length - len(pattern) + 2)
+
+    s = ''
+
+    index = 0
+    for i in l:
+        #
+        # Remove any trace of session password from data structures that 
+        # go over the network.
+        #
+        if i in ['_rpdb2_args', '_rpdb2_pwd', 'm_rpdb2_pwd']:
+            continue
+        
+        s += repr_ltd(i, length - len(s), is_valid)
+
+        index += 1
+        
+        if index < len(l) and len(s) > length:
+            is_valid[0] = False
+            if not s.endswith('...'):
+                s += '...'
+            break
+
+        if index < len(l):
+            s += ', '
+
+    return pattern % s
+
+
+
+def repr_dict(pattern, d, length, is_valid):
+    length = max(0, length - len(pattern) + 2)
+
+    s = ''
+
+    index = 0
+    for k in d:
+        #
+        # Remove any trace of session password from data structures that 
+        # go over the network.
+        #
+        if k in ['_rpdb2_args', '_rpdb2_pwd', 'm_rpdb2_pwd']:
+            continue
+        
+        v = d[k]
+
+        s += repr_ltd(k, length - len(s), is_valid)
+
+        if len(s) > length:
+            is_valid[0] = False
+            if not s.endswith('...'):
+                s += '...'
+            break
+
+        s +=  ': ' + repr_ltd(v, length - len(s), is_valid)
+
+        index += 1
+
+        if index < len(d) and len(s) > length:
+            is_valid[0] = False
+            if not s.endswith('...'):
+                s += '...'
+            break
+
+        if index < len(d):
+            s += ', '
+
+    return pattern % s
+
+
+
+def repr_str(s, length, is_valid):
+    if len(s) > length:
+        is_valid[0] = False
+        s = s[: length] + '...'
+
+    return repr(s)
+
+
+
+def repr_base(v, length, is_valid):
+    r = repr(v)
+
+    if len(r) > length:
+        is_valid[0] = False
+        r = r[: length] + '...'
+
+    return r
+
+
+
+def repr_ltd(x, length, is_valid = [True]):
+    length = max(0, length)
 
     try:
-        y = str(x)
-        return y
-        
-    except:
+        if isinstance(x, set):
+            return repr_list('set([%s])', x, length, is_valid)
+
+        if isinstance(x, frozenset):
+            return repr_list('frozenset([%s])', x, length, is_valid)
+
+    except NameError:
         pass
 
-    return 'N/A'
+    if isinstance(x, sets.Set):
+        return repr_list('sets.Set([%s])', x, length, is_valid)
 
+    if isinstance(x, sets.ImmutableSet):
+        return repr_list('sets.ImmutableSet([%s])', x, length, is_valid)
 
+    if isinstance(x, list):
+        return repr_list('[%s]', x, length, is_valid)
 
-def safe_repr_limited(x):
-    y = safe_repr(x)[0:128]
+    if isinstance(x, tuple):
+        return repr_list('(%s)', x, length, is_valid)
 
-    if len(y) == 128:
+    if isinstance(x, dict):
+        return repr_dict('{%s}', x, length, is_valid)
+
+    if type(x) in [str, unicode]:
+        return repr_str(x, length, is_valid)
+
+    if type(x) in [bool, int, float, long, type(None)]:
+        return repr_base(x, length, is_valid)
+
+    is_valid[0] = False
+
+    y = safe_repr(x)[: length]
+    if len(y) == length:
         y += '...'
 
     return y
 
-    
-    
-def print_debug(fForce = False):
+
+
+def print_debug(str):
+    if not g_fDebug:
+        return
+
+    t = time.time()
+    l = time.localtime(t)
+    s = time.strftime('%H:%M:%S', l) + '.%03d' % ((t - int(t)) * 1000, )
+
+    print >> sys.__stderr__, s, 'RPDB2:', str
+
+
+
+def print_debug_exception(fForce = False):
     """
     Print exceptions to stdout when in debug mode.
     """
@@ -1765,7 +1979,7 @@ def print_debug(fForce = False):
 
 def print_exception(t, v, tb, fForce = False):
     """
-    Print exceptions to stdout when in debug mode.
+    Print exceptions to stderr when in debug mode.
     """
     
     if not g_fDebug and not fForce:
@@ -1919,14 +2133,28 @@ def my_abspath1(path):
 
 
 
-def IsPythonSourceFile(filename):
-    if filename.endswith(PYTHON_FILE_EXTENSION):
+def IsPythonSourceFile(path):
+    if path.endswith(PYTHON_FILE_EXTENSION):
         return True
         
-    if filename.endswith(PYTHONW_FILE_EXTENSION):
+    if path.endswith(PYTHONW_FILE_EXTENSION):
         return True
 
-    return False
+    try:
+        f = open(path, 'r')
+        c = f.read(10000)
+        f.close()
+  
+        ll = c.split('\n')
+
+        for l in ll:
+            if l.startswith('#!') and 'python' in l:
+                return True
+
+        return False
+
+    except:
+        return False
 
 
 
@@ -2071,6 +2299,7 @@ def FindFile(
         raise IOError
         
     filename = filename.strip('\'"')
+    filename = os.path.expanduser(filename)
 
     if fModules and not (os.path.isabs(filename) or filename.startswith('.')):
         try:    
@@ -2404,14 +2633,14 @@ def generate_random_password():
     """
     
     s = 'abdefghijmnqrt' + 'ABDEFGHJLMNQRTY'
-    ds = '23456789~!@#$%^&*-_+=' + s
+    ds = '23456789_' + s
         
-    pwd = generate_random_char(s)
+    _rpdb2_pwd = generate_random_char(s)
 
     for i in range(0, 7):
-        pwd += generate_random_char(ds)
+        _rpdb2_pwd += generate_random_char(ds)
 
-    return pwd    
+    return _rpdb2_pwd    
 
 
 
@@ -2525,7 +2754,7 @@ def calc_bpl_filename(filename):
         try:
             os.mkdir(bpldir, 0700)
         except:
-            print_debug()
+            print_debug_exception()
             raise CException
 
     else:    
@@ -2550,7 +2779,7 @@ def calc_pwd_file_path(rid):
 
             
 
-def create_pwd_file(rid, pwd):
+def create_pwd_file(rid, _rpdb2_pwd):
     """
     Create password file for Posix systems.
     """
@@ -2562,7 +2791,7 @@ def create_pwd_file(rid, pwd):
 
     fd = os.open(path, os.O_WRONLY | os.O_CREAT, 0600)
     
-    os.write(fd, pwd)
+    os.write(fd, _rpdb2_pwd)
     os.close(fd)
     
         
@@ -2577,10 +2806,10 @@ def read_pwd_file(rid):
     path = calc_pwd_file_path(rid)
 
     p = open(path, 'r')
-    pwd = p.read()
+    _rpdb2_pwd = p.read()
     p.close()
 
-    return pwd
+    return _rpdb2_pwd
     
     
     
@@ -2636,7 +2865,267 @@ def ParseEncoding(txt):
     return e
 
 
+
+def CalcUserShell():
+    try:
+        s = os.getenv('SHELL')
+        if s != None:
+            return s
+
+        import getpass
+        username = getpass.getuser()
+
+        f = open('/etc/passwd', 'r')
+        l = f.read()
+        f.close()
+
+        ll = l.split('\n')
+        d = dict([(e.split(':', 1)[0], e.split(':')[-1]) for e in ll])
+
+        return d[username]
+
+    except:
+        return 'sh'
+
+
+
+def IsFilteredProperty(a):
+    if not (a.startswith('__') and a.endswith('__')):
+        return False
+
+    if a in ['__class__', '__bases__', '__file__', '__doc__', '__name__']:
+        return False
+
+    return True
+
+
+
+def CalcFilteredDir(r, fFilter):
+    d = dir(r)
+
+    if not fFilter:
+        return d
+
+    fd = [e for e in d if not IsFilteredProperty(e)]
+
+    return fd
+
+
+
+def CalcIdentity(r, fFilter):
+    if not fFilter:
+        return r
+
+    if not hasattr(r, 'im_func'):
+        return r
+
+    return r.im_func
+
+
+
+def CalcDictKeys(r, fFilter):
+    d = CalcFilteredDir(r, fFilter)
+    rs = sets.Set(d)
+
+    if hasattr(r, '__class__'):
+        c = getattr(r, '__class__')
+        d = CalcFilteredDir(c, fFilter)
+        cs = sets.Set(d)
+        s = rs & cs
+
+        for e in s:
+            o1 = getattr(r, e)
+            o2 = getattr(c, e)
+
+            if CalcIdentity(o1, fFilter) is CalcIdentity(o2, fFilter):
+                rs.discard(e)
+
+    if hasattr(r, '__bases__'):
+        bl = getattr(r, '__bases__')
+        if type(bl) == tuple:
+            for b in bl:
+                d = CalcFilteredDir(b, fFilter)
+                bs = sets.Set(d)
+                s = rs & bs
+
+                for e in s:
+                    o1 = getattr(r, e)
+                    o2 = getattr(b, e)
+
+                    if CalcIdentity(o1, fFilter) is CalcIdentity(o2, fFilter):
+                        rs.discard(e)
+      
+    l = [a for a in rs]
+
+    return l
+
+
+
+class _RPDB2_FindRepr:
+    def __init__(self, o, repr_limit):
+        self.m_object = o
+        self.m_repr_limit = repr_limit
+
+
+    def __getitem__(self, key):
+        index = 0
+        for i in self.m_object:
+            if repr_ltd(i, self.m_repr_limit) == key:
+                if isinstance(self.m_object, dict):
+                    return self.m_object[i]
+
+                return i
+
+            index += 1
+            if index > MAX_SORTABLE_LENGTH:
+                return None
+
+
+    def __setitem__(self, key, value):
+        if not isinstance(self.m_object, dict):
+            return 
+
+        index = 0
+        for i in self.m_object:
+            if repr_ltd(i, self.m_repr_limit) == key:
+                self.m_object[i] = value
+                return
+
+            index += 1
+            if index > MAX_SORTABLE_LENGTH:
+                return
+
+
+
+def SafeCmp(x, y):
+    try:
+        return cmp(x, y)
+
+    except:
+        pass
+
+    return cmp(repr_ltd(x, 256), repr_ltd(y, 256))
+
+
+
+#
+# ---------------------------------- CThread ---------------------------------------
+#
+
+
+
+class CThread (threading.Thread):
+    m_fstop = False
+    m_threads = {}
+
+    m_lock = threading.RLock()
+    m_id = 0
+
+
+    def __init__(self, name = None, target = None, args = (), shutdown = None):
+        threading.Thread.__init__(self, name = name, target = target, args = args)
+
+        self.m_fstarted = False
+        self.m_shutdown_callback = shutdown
+
+        self.m_id = self.__getId()
+
+
+    def __del__(self):
+        #print_debug('Destructor called for ' + self.getName())
+        
+        #threading.Thread.__del__(self)
+
+        if self.m_fstarted:
+            try:
+                del CThread.m_threads[self.m_id]
+            except KeyError:
+                pass
+
+
+    def start(self):
+        if CThread.m_fstop:
+            return
+
+        CThread.m_threads[self.m_id] = weakref.ref(self)
+
+        if CThread.m_fstop:
+            del CThread.m_threads[self.m_id]
+            return
+
+        self.m_fstarted = True
+
+        threading.Thread.start(self)
+
+
+    def run(self):
+        sys.settrace(None)
+        sys.setprofile(None)
+ 
+        threading.Thread.run(self)
+
     
+    def join(self, timeout = None):
+        try:
+            threading.Thread.join(self, timeout)
+        except AssertionError:
+            pass
+
+
+    def shutdown(self):
+        if self.m_shutdown_callback:
+            self.m_shutdown_callback()
+
+
+    def joinAll(cls):
+        print_debug('Shutting down debugger threads...')
+
+        CThread.m_fstop = True
+
+        for tid, w in CThread.m_threads.items():
+            t = w()
+            if not t:
+                continue
+
+            try:
+                #print_debug('Calling shutdown of thread %s.' % (t.getName(), ))
+                t.shutdown()
+            except:
+                pass
+
+            t = None
+
+        t0 = time.time()
+
+        while len(CThread.m_threads) > 0:
+            if time.time() - t0 > 16:
+                print_debug('Shut down of debugger threads has TIMED OUT!')
+                return
+
+            #print_debug(repr(CThread.m_threads))
+            time.sleep(0.1)
+
+        print_debug('Shut down debugger threads, done.')
+
+    joinAll = classmethod(joinAll)
+
+
+    def clearJoin(cls):
+        CThread.m_fstop = False
+
+    clearJoin = classmethod(clearJoin)
+
+
+    def __getId(self):
+        CThread.m_lock.acquire()
+        id = CThread.m_id
+        CThread.m_id += 1
+        CThread.m_lock.release()
+
+        return id
+
+    
+
 #
 #--------------------------------------- Crypto ---------------------------------------
 #
@@ -2650,9 +3139,9 @@ class CCrypto:
 
     m_keys = {}
     
-    def __init__(self, pwd, fAllowUnencrypted, rid):
-        self.m_pwd = pwd
-        self.m_key = self.__calc_key(pwd)
+    def __init__(self, _rpdb2_pwd, fAllowUnencrypted, rid):
+        self.m_rpdb2_pwd = _rpdb2_pwd
+        self.m_key = self.__calc_key(_rpdb2_pwd)
         
         self.m_fAllowUnencrypted = fAllowUnencrypted
         self.m_rid = rid
@@ -2670,17 +3159,17 @@ class CCrypto:
         self.m_max_index = 0
 
 
-    def __calc_key(self, pwd):
+    def __calc_key(self, _rpdb2_pwd):
         """
         Create and return a key from a password.
         A Weak password means a weak key.
         """
         
-        if pwd in CCrypto.m_keys:
-            return CCrypto.m_keys[pwd]
+        if _rpdb2_pwd in CCrypto.m_keys:
+            return CCrypto.m_keys[_rpdb2_pwd]
 
         d = md5.new()
-        key = pwd 
+        key = _rpdb2_pwd 
 
         #
         # The following loop takes around a second to complete
@@ -2692,7 +3181,7 @@ class CCrypto:
             d.update(key * 64)       
             key = d.digest()
             
-        CCrypto.m_keys[pwd] = key
+        CCrypto.m_keys[_rpdb2_pwd] = key
 
         return key
         
@@ -2744,9 +3233,9 @@ class CCrypto:
         """
 
         (_s, fEncryption) = self.__decrypt(s_encrypted)            
-        s = self.__verify_signature(_s, fVerifyIndex)
+        s, id = self.__verify_signature(_s, fVerifyIndex)
 
-        return (s, fEncryption)
+        return (s, id, fEncryption)
 
     
     def __encrypt(self, s):
@@ -2792,12 +3281,12 @@ class CCrypto:
 
     def __sign(self, s):
         i = self.__get_next_index()
-        _s = cPickle.dumps((self.m_index_anchor_ex, i, self.m_rid, s))
+        _s = pickle.dumps((self.m_index_anchor_ex, i, self.m_rid, s))
         
         h = hmac.new(self.m_key, _s, md5)
         _d = h.digest()
         r = (_d, _s)
-        s_signed = cPickle.dumps(r)
+        s_signed = pickle.dumps(r)
 
         return s_signed
 
@@ -2815,7 +3304,7 @@ class CCrypto:
 
     def __verify_signature(self, s, fVerifyIndex):
         try:
-            r = cPickle.loads(s)
+            r = pickle.loads(s)
             
             (_d, _s) = r
             
@@ -2826,19 +3315,19 @@ class CCrypto:
                 self.__wait_a_little()
                 raise AuthenticationFailure
 
-            (anchor, i, id, s_original) = cPickle.loads(_s)
+            (anchor, i, id, s_original) = pickle.loads(_s)
                 
         except AuthenticationFailure:
             raise
         except:
-            print_debug()
+            print_debug_exception()
             self.__wait_a_little()
             raise AuthenticationBadData
             
         if fVerifyIndex:
             self.__verify_index(anchor, i, id)
 
-        return s_original
+        return s_original, id
 
         
     def __verify_index(self, anchor, i, id):
@@ -2906,9 +3395,46 @@ class CEvent:
 
 
 
+class CEventPsycoWarning(CEvent):
+    """
+    The psyco module was detected. Rpdb2 is incompatible with this module.
+    """
+    
+    pass
+
+
+
+class CEventSyncReceivers(CEvent):
+    """
+    A base class for events that sync all receivers before being fired.
+    """
+
+    def __init__(self, sync_n):
+        self.m_sync_n = sync_n
+
+
+
+class CEventForkSwitch(CEventSyncReceivers):
+    """
+    Debuggee is about to fork. Try to reconnect.
+    """
+
+    pass
+
+
+
+class CEventExecSwitch(CEventSyncReceivers):
+    """
+    Debuggee is about to exec. Try to reconnect.
+    """
+
+    pass
+
+
+
 class CEventExit(CEvent):
     """
-    Debuggee is about to terminate.
+    Debuggee is terminating.
     """
     
     pass
@@ -2942,6 +3468,18 @@ class CEventTrap(CEvent):
 
     def is_match(self, arg):
         return self.m_ftrap == arg
+
+
+
+class CEventForkMode(CEvent):
+    """
+    Mode of fork behavior has changed.
+    Sent when the mode changes.
+    """
+    
+    def __init__(self, ffork_into_child, ffork_auto):
+        self.m_ffork_into_child = ffork_into_child
+        self.m_ffork_auto = ffork_auto
 
 
 
@@ -3226,10 +3764,12 @@ class CEventQueue:
     def __init__(self, event_dispatcher, max_event_list_length = MAX_EVENT_LIST_LENGTH):
         self.m_event_dispatcher = event_dispatcher
 
-        self.m_event_lock = threading.Condition(threading.Lock())
+        self.m_event_lock = threading.Condition(threading.RLock())
         self.m_max_event_list_length = max_event_list_length
         self.m_event_list = []
         self.m_event_index = 0
+
+        self.m_n_waiters = []
 
  
     def shutdown(self):
@@ -3243,6 +3783,11 @@ class CEventQueue:
     def event_handler(self, event):
         try:
             self.m_event_lock.acquire()
+
+            if isinstance(event, CEventSyncReceivers):
+                t0 = time.time()
+                while len(self.m_n_waiters) < event.m_sync_n and time.time() < t0 + HEARTBEAT_TIMEOUT:
+                    time.sleep(0.1)
 
             self.m_event_list.append(event)
             if len(self.m_event_list) > self.m_max_event_list_length:
@@ -3265,6 +3810,8 @@ class CEventQueue:
         """
         
         try:
+            self.m_n_waiters.append(0)
+
             self.m_event_lock.acquire()
             if event_index >= self.m_event_index:
                 self.m_event_lock.wait(timeout)
@@ -3276,6 +3823,8 @@ class CEventQueue:
             return (self.m_event_index, sub_event_list)
             
         finally:
+            self.m_n_waiters.pop()
+
             self.m_event_lock.release()
 
 
@@ -3546,7 +4095,7 @@ class CFileBreakInfo:
             fqn = fqn + [c.co_name]  
             valid_lines = CalcValidLines(c)
             self.m_last_line = max(self.m_last_line, valid_lines[-1])
-            _fqn = string.join(fqn, '.')
+            _fqn = '.'.join(fqn)
             si = (_fqn, valid_lines)  
             subcodeslist = self.__CalcSubCodesList(c)
             t = subcodeslist + [si] + t
@@ -4163,7 +4712,7 @@ class CCodeContext:
         Return True if this code object should not be traced.
         """
         
-        return self.m_basename in [THREADING_FILENAME, DEBUGGER_FILENAME, CODECS_FILENAME]
+        return self.m_basename in [THREADING_FILENAME, DEBUGGER_FILENAME]
 
 
     def is_exception_trap_frame(self):
@@ -4172,7 +4721,13 @@ class CCodeContext:
         exceptions.
         """
         
-        return self.m_basename == THREADING_FILENAME
+        if self.m_basename == THREADING_FILENAME:
+            return True
+
+        if self.m_basename == DEBUGGER_FILENAME and self.m_code.co_name in ['__execv', '__execve', '__function_wrapper']:
+            return True
+
+        return False
 
 
 
@@ -4734,6 +5289,8 @@ class CDebuggerCore:
         self.m_current_ctx = None 
         self.m_f_first_to_break = True
         self.m_f_break_on_init = False
+        
+        self.m_builtins_hack = None
 
         self.m_timer_embedded_giveup = None
         
@@ -4744,6 +5301,9 @@ class CDebuggerCore:
         self.m_event_dispatcher = CEventDispatcher()
         self.m_state_manager = CStateManager(STATE_RUNNING, self.m_event_dispatcher)
 
+        self.m_ffork_into_child = False
+        self.m_ffork_auto = False
+
         self.m_ftrap = True
         self.m_fUnhandledException = False        
         self.m_fBreak = False
@@ -4752,12 +5312,16 @@ class CDebuggerCore:
         self.m_step_tid = None
         self.m_next_frame = None
         self.m_return_frame = None       
+        self.m_saved_step = (None, None, None)
+        self.m_saved_next = None
 
         self.m_bp_manager = CBreakPointsManager()
 
         self.m_code_contexts = {None: None}
 
         self.m_fembedded = fembedded
+
+        self.m_heartbeats = {0: time.time() + 3600}
         
 
     def shutdown(self):
@@ -4769,6 +5333,39 @@ class CDebuggerCore:
         return self.m_fembedded
 
         
+    def send_fork_switch(self, sync_n):
+        """
+        Notify client that debuggee is forking and that it should
+        try to reconnect to the child.
+        """
+        
+        print_debug('Sending fork switch event')
+
+        event = CEventForkSwitch(sync_n)
+        self.m_event_dispatcher.fire_event(event)
+
+
+    def send_exec_switch(self, sync_n):
+        """
+        Notify client that debuggee is doing an exec and that it should 
+        try to reconnect (in case the exec failed).
+        """
+        
+        print_debug('Sending exec switch event')
+
+        event = CEventExecSwitch(sync_n)
+        self.m_event_dispatcher.fire_event(event)
+
+
+    def send_event_exit(self):
+        """
+        Notify client that the debuggee is shutting down.
+        """
+        
+        event = CEventExit()
+        self.m_event_dispatcher.fire_event(event)
+
+
     def send_events(self, event):
         pass
 
@@ -4799,13 +5396,21 @@ class CDebuggerCore:
         Set thread to break on next statement.
         """
         
+        if not self.m_ftrace:
+            return 
+            
         tid = thread.get_ident()
+
+        if not tid in self.m_threads:
+            return self.settrace(f)
+        
         ctx = self.m_threads[tid]
         f.f_trace = ctx.trace_dispatch_break
+        self.m_saved_next = self.m_next_frame
         self.m_next_frame = f
 
         
-    def settrace(self, f = None, f_break_on_init = True, timeout = None):
+    def settrace(self, f = None, f_break_on_init = True, timeout = None, builtins_hack = None):
         """
         Start tracing mechanism for thread.
         """
@@ -4820,6 +5425,7 @@ class CDebuggerCore:
         self.set_request_go_timer(timeout)
             
         self.m_f_break_on_init = f_break_on_init
+        self.m_builtins_hack = builtins_hack
         
         threading.settrace(self.trace_dispatch_init)
         sys.settrace(self.trace_dispatch_init)
@@ -4830,9 +5436,13 @@ class CDebuggerCore:
 
     def stoptrace(self):
         """
-        Stop tracing mechanism for thread.
+        Stop tracing mechanism.
         """
         
+        global g_fignore_atexit
+        
+        g_fignore_atexit = True
+
         threading.settrace(None)
         sys.settrace(None)
         sys.setprofile(None)
@@ -4852,6 +5462,11 @@ class CDebuggerCore:
         try:
             return self.m_code_contexts[frame.f_code]
         except KeyError:
+            if self.m_builtins_hack != None:
+                if calc_frame_path(frame) == self.m_builtins_hack:
+                    self.m_builtins_hack = None
+                    frame.f_globals['__builtins__'] = sys.modules['__builtin__']
+
             code_context = CCodeContext(frame, self.m_bp_manager)
             return self.m_code_contexts.setdefault(frame.f_code, code_context)
 
@@ -4918,9 +5533,9 @@ class CDebuggerCore:
             return None
 
         code_context = self.get_code_context(frame)
-        if code_context.is_untraced():
+        if event == 'call' and code_context.is_untraced():
             return None
-        
+
         self.set_exception_trap_frame(frame)
 
         try:
@@ -4996,11 +5611,41 @@ class CDebuggerCore:
 
         return False    
 
+    
+    def record_client_heartbeat(self, id, finit, fdetach):
+        """
+        Record that client id is still attached.
+        """
+       
+        if finit:
+            self.m_heartbeats.pop(0, None)
+
+        if fdetach:
+            self.m_heartbeats.pop(id, None)
+            return
+
+        if finit or id in self.m_heartbeats:
+            self.m_heartbeats[id] = time.time()
+
+
+    def get_clients_attached(self):
+        n = 0
+        t = time.time()
         
+        for v in self.m_heartbeats.values():
+            if t < v + HEARTBEAT_TIMEOUT:
+                n += 1
+
+        return n
+
+
     def _break(self, ctx, frame, event, arg):
         """
         Main break logic.
         """
+
+        global g_fos_exit
+        global g_module_main
         
         if not self.is_break(ctx, frame, event) and not ctx.is_breakpoint():
             ctx.set_tracers()
@@ -5015,6 +5660,12 @@ class CDebuggerCore:
             if self.m_state_manager.get_state() != STATE_BROKEN:
                 self.set_break_dont_lock()
 
+            if g_module_main == -1:
+                try:
+                    g_module_main = sys.modules['__main__']
+                except:
+                    g_module_main = None
+
             if not frame.f_exc_traceback is None:
                 ctx.set_exc_info((frame.f_exc_type, frame.f_exc_value, frame.f_exc_traceback))
 
@@ -5024,10 +5675,15 @@ class CDebuggerCore:
             except:
                 pass
             
-            if ctx.m_fUnhandledException and not self.m_fUnhandledException and not 'SCRIPT_TERMINATED' in frame.f_locals:
+            if ctx.m_fUnhandledException and not self.m_fUnhandledException:
                 self.m_fUnhandledException = True
                 f_uhe_notification = True
-                
+            
+            if self.is_auto_fork_first_stage(ctx.m_thread_id):
+                self.m_saved_step = (self.m_step_tid, self.m_saved_next, self.m_return_frame)
+                self.m_saved_next = None
+                self.m_bp_manager.m_fhard_tbp = True
+
             if self.m_f_first_to_break or (self.m_current_ctx == ctx):                
                 self.m_current_ctx = ctx
                 self.m_lastest_event = event
@@ -5035,6 +5691,7 @@ class CDebuggerCore:
                 self.m_step_tid = None
                 self.m_next_frame = None
                 self.m_return_frame = None       
+                self.m_saved_next = None
 
                 self.m_bp_manager.del_temp_breakpoint(breakpoint = ctx.get_breakpoint())
 
@@ -5044,20 +5701,157 @@ class CDebuggerCore:
         finally:
             self.m_state_manager.release()
 
-        if f_full_notification:
-            self.send_events(None) 
-        else:
-            self.notify_thread_broken(ctx.m_thread_id, ctx.m_thread_name)
-            self.notify_namespace()
+        ffork_second_stage = self.handle_fork(ctx)
+        self.handle_exec(ctx)
 
-        if f_uhe_notification:
-            self.send_unhandled_exception_event()
-            
-        state = self.m_state_manager.wait_for_state([STATE_RUNNING])
-        
+        if self.is_auto_fork_first_stage(ctx.m_thread_id):
+            self.request_go_quiet()
+
+        elif self.m_ffork_auto and ffork_second_stage:
+            (self.m_step_tid, self.m_next_frame, self.m_return_frame) = self.m_saved_step
+            self.m_saved_step = (None, None, None)
+            self.m_bp_manager.m_fhard_tbp = False
+            self.request_go_quiet()
+
+        elif self.get_clients_attached() == 0:
+            #print_debug('state: %s' % self.m_state_manager.get_state())
+            self.request_go_quiet()
+
+        else:
+            if f_full_notification:
+                self.send_events(None) 
+            else:
+                self.notify_thread_broken(ctx.m_thread_id, ctx.m_thread_name)
+                self.notify_namespace()
+
+            if f_uhe_notification:
+                self.send_unhandled_exception_event()
+                
+            state = self.m_state_manager.wait_for_state([STATE_RUNNING])
+      
+        self.prepare_fork_step(ctx.m_thread_id)
+        self.prepare_exec_step(ctx.m_thread_id)
+
         ctx.m_fUnhandledException = False
         ctx.m_fBroken = False 
         ctx.set_tracers()
+
+        if g_fos_exit:
+            g_fos_exit = False
+            self.send_event_exit()
+            
+            time.sleep(1.0)
+
+
+    def is_auto_fork_first_stage(self, tid):
+        if not self.m_ffork_auto:
+            return False
+
+        return tid == g_forktid and g_forkpid == None
+
+
+    def prepare_fork_step(self, tid):
+        global g_forkpid
+        global g_ignore_broken_pipe
+
+        if tid != g_forktid:
+            return
+
+        self.m_step_tid = tid
+        g_forkpid = os.getpid()
+        
+        if not self.m_ffork_into_child:
+            return
+
+        n = self.get_clients_attached()
+        self.send_fork_switch(n)
+        time.sleep(0.5)
+        g_server.shutdown()
+        CThread.joinAll()
+
+        g_ignore_broken_pipe = time.time()
+
+
+    def handle_fork(self, ctx):
+        global g_forktid
+        global g_forkpid
+
+        tid = ctx.m_thread_id
+
+        if g_forkpid == None or tid != g_forktid:
+            return False
+
+        forkpid = g_forkpid
+        g_forkpid = None
+        g_forktid = None
+
+        if os.getpid() == forkpid:
+            #
+            # Parent side of fork().
+            #
+
+            if not self.m_ffork_into_child:
+                #CThread.clearJoin()
+                #g_server.jumpstart()
+               
+                return True
+
+            self.stoptrace()
+            return False
+
+        #
+        # Child side of fork().
+        #
+
+        if not self.m_ffork_into_child:
+            self.stoptrace()
+            return False
+       
+        self.m_threads = {tid: ctx}
+        
+        CThread.clearJoin()
+        g_server.jumpstart()
+        
+        return True
+
+
+    def prepare_exec_step(self, tid):
+        global g_execpid
+
+        if tid != g_exectid:
+            return
+
+        self.m_step_tid = tid
+        g_execpid = os.getpid()
+
+        n = self.get_clients_attached()
+        self.send_exec_switch(n)
+        time.sleep(0.5)
+        g_server.shutdown()
+        CThread.joinAll()
+
+
+    def handle_exec(self, ctx):
+        global g_exectid
+        global g_execpid
+
+        tid = ctx.m_thread_id
+
+        if g_execpid == None or tid != g_exectid:
+            return False
+
+        g_execpid = None
+        g_exectid = None
+
+        #
+        # If we are here it means that the exec failed.
+        # Jumpstart the debugger to allow debugging to continue.
+        #
+
+        CThread.clearJoin()
+        g_server.jumpstart()
+        
+        return True
 
 
     def notify_thread_broken(self, tid, name):
@@ -5144,6 +5938,14 @@ class CDebuggerCore:
             self.m_state_manager.release()
 
         self.send_events(None)
+
+
+    def request_go_quiet(self, fLock = True):
+        try:
+            self.request_go(fLock)
+        
+        except DebuggerNotBroken:
+            pass
 
 
     def request_go(self, fLock = True):
@@ -5354,7 +6156,12 @@ class CDebuggerEngine(CDebuggerCore):
             CEventNamespace: {},
             CEventUnhandledException: {},
             CEventStack: {},
-            CEventExit: {}
+            CEventExit: {},
+            CEventForkSwitch: {},
+            CEventExecSwitch: {},
+            CEventTrap: {},
+            CEventForkMode: {},
+            CEventPsycoWarning: {}
             }
 
         self.m_event_queue = CEventQueue(self.m_event_dispatcher)
@@ -5370,15 +6177,7 @@ class CDebuggerEngine(CDebuggerCore):
         CDebuggerCore.shutdown(self)
 
 
-    def send_event_exit(self):
-        """
-        Notify client that the debuggee is shutting down.
-        """
-        
-        event = CEventExit()
-        self.m_event_dispatcher.fire_event(event)
-
-        
+       
     def sync_with_events(self, fException, fSendUnhandled):
         """
         Send debugger state to client.
@@ -5393,13 +6192,26 @@ class CDebuggerEngine(CDebuggerCore):
         return index
 
 
+    def trap_psyco_module(self):
+        global g_fsent_psyco_warning
+       
+        if g_fsent_psyco_warning or not 'psyco' in sys.modules:
+            return
+
+        g_fsent_psyco_warning = True
+
+        event = CEventPsycoWarning()
+        self.m_event_dispatcher.fire_event(event)
+
+
     def wait_for_event(self, timeout, event_index):
         """
         Wait for new events and return them as list of events.
         """
-        
+
         self.cancel_request_go_timer()
-        
+        self.trap_psyco_module()
+
         (new_event_index, sel) = self.m_event_queue.wait_for_event(timeout, event_index)
         return (new_event_index, sel)
 
@@ -5503,10 +6315,10 @@ class CDebuggerEngine(CDebuggerCore):
             self.send_no_threads_event()
             
         except:
-            print_debug()
+            print_debug_exception()
             raise
 
-
+       
     def send_unhandled_exception_event(self):
         event = CEventUnhandledException()
         self.m_event_dispatcher.fire_event(event)
@@ -5709,9 +6521,6 @@ class CDebuggerEngine(CDebuggerCore):
             lineno = 1
             nlines = -1
 
-        #if (filename != '') and not IsPythonSourceFile(filename):
-        #    raise IOError
-            
         _lineno = lineno
         r = {}
         frame_filename = None
@@ -5748,12 +6557,15 @@ class CDebuggerEngine(CDebuggerCore):
             __filename = filename
         else:    
             __filename = FindFile(filename, fModules = True)
+            if not IsPythonSourceFile(__filename):
+                raise NotPythonSource
 
         _filename = winlower(__filename)    
 
         lines = []
         breakpoints = {}
-        
+        fhide_pwd_mode = False
+
         while nlines != 0:
             try:
                 g_traceback_lock.acquire()
@@ -5764,6 +6576,28 @@ class CDebuggerEngine(CDebuggerCore):
 
             if line == '':
                 break
+
+            #
+            # Remove any trace of session password from data structures that 
+            # go over the network.
+            #
+
+            if fhide_pwd_mode:
+                if not ')' in line:
+                    line = '...\n'
+                else:
+                    line = '...""")' + line.split(')', 1)[1]
+                    fhide_pwd_mode = False
+
+            elif 'start_embedded_debugger(' in line:
+                ls = line.split('start_embedded_debugger(', 1)
+                line = ls[0] + 'start_embedded_debugger("""...Removed-password-from-output...'
+                
+                if ')' in ls[1]:
+                    line += '""")' + ls[1].split(')', 1)[1]
+                else:
+                    line += '\n'
+                    fhide_pwd_mode = True
 
             lines.append(line)
 
@@ -5818,6 +6652,7 @@ class CDebuggerEngine(CDebuggerCore):
         fBlender = is_blender_file(frame_filename)
         lines = []
         breakpoints = {}
+        fhide_pwd_mode = False
         
         while nlines != 0:
             try:
@@ -5829,6 +6664,28 @@ class CDebuggerEngine(CDebuggerCore):
 
             if line == '':
                 break
+
+            #
+            # Remove any trace of session password from data structures that 
+            # go over the network.
+            #
+
+            if fhide_pwd_mode:
+                if not ')' in line:
+                    line = '...\n'
+                else:
+                    line = '...""")' + line.split(')', 1)[1]
+                    fhide_pwd_mode = False
+
+            elif 'start_embedded_debugger(' in line:
+                ls = line.split('start_embedded_debugger(', 1)
+                line = ls[0] + 'start_embedded_debugger("""...Removed-password-from-output...'
+                
+                if ')' in ls[1]:
+                    line += '""")' + ls[1].split(')', 1)[1]
+                else:
+                    line += '\n'
+                    fhide_pwd_mode = True
 
             lines.append(line)
 
@@ -5878,100 +6735,32 @@ class CDebuggerEngine(CDebuggerCore):
         return (_globals, _locals, _original_locals_copy)
 
 
-    def __is_verbose_attr(self, r, a):
-        try:
-            v = getattr(r, a)
-        except AttributeError:
-            return True
-            
-        if a == '__class__':
-            if self.__parse_type(type(v)) != 'type':
-                return False
-
-            #return self.__parse_type(v) in BASIC_TYPES_LIST
-
-        if (a == '__bases__'):
-            if (type(v) == tuple) and (len(v) > 0):    
-                return False
-
-        if a in ['__name__', '__file__', '__doc__']:
-            return False
-        
-        if a.startswith('__') and a.endswith('__'):
-            return True
-        
-        if self.__is_property_attr(r, a):
-            return True
-            
-        t = self.__parse_type(type(v))
-
-        if ('method' in t) and not ('builtin' in t):
-            return True
-
-        return False    
-
-
-    def __is_property_attr(self, r, a):
-        if a.startswith('__') and a.endswith('__'):
-            return False
-
-        try:
-            v = getattr(r, a)            
-        except AttributeError:
-            return False
-            
-        t = self.__parse_type(type(v))
-        
-        if 'descriptor' in t:
-            return True
-            
-        if t == 'property':
-            return True
-            
-        return False    
-
-
-    def __calc_property_list(self, r):
-        pl = [a for a in r.__dict__.keys() if self.__is_property_attr(r, a)]
-
-        for b in r.__bases__:
-            if (self.__parse_type(type(b)) == 'type') and (self.__parse_type(b) == 'object'):
-                continue
-
-            pl += self.__calc_property_list(b)
-
-        return pl    
-
-        
-    def __calc_attribute_list(self, r):
-        if hasattr(r, '__dict__'):
-            al = r.__dict__.keys()
-        else:
-            al = [a for a in dir(r)]
-
+    def __calc_attribute_list(self, r, fFilter):
+        al = CalcDictKeys(r, fFilter)    
+                
         if hasattr(r, '__class__') and not '__class__' in al:
             al = ['__class__'] + al
 
         if hasattr(r, '__bases__') and not '__bases__' in al:
             al = ['__bases__'] + al
 
-        if hasattr(r, '__class__'):
-            pl = self.__calc_property_list(r.__class__)
-            _pl = [p for p in pl if not p in al]
-            
-            al += _pl
-
-        _al = [a for a in al if hasattr(r, a)]           
-        __al = [a for a in _al if not self.__is_verbose_attr(r, a)]    
-
-        return __al
+        _al = [a for a in al if hasattr(r, a)] 
+  
+        return _al
 
     
     def __calc_number_of_subnodes(self, r):
         if self.__parse_type(type(r)) in BASIC_TYPES_LIST:
             return 0
-            
-        if type(r) in [dict, list, tuple]:
+        
+        try:
+            if isinstance(r, set) or isinstance(r, frozenset):
+                return len(r)
+
+        except NameError:
+            pass
+
+        if isinstance(r, sets.BaseSet):
             return len(r)
 
         if isinstance(r, dict):
@@ -5987,8 +6776,6 @@ class CDebuggerEngine(CDebuggerCore):
             return 1
 
         return 0
-        
-        #return len(self.__calc_attribute_list(r))
 
 
     def __parse_type(self, t):
@@ -5997,52 +6784,121 @@ class CDebuggerEngine(CDebuggerCore):
         return st
 
 
-    def __is_filtered_type(self, v):
-        t = self.__parse_type(type(v))
-
-        if 'function' in t:
-            return True
-
-        if 'module' in t:
-            return True
-
-        if 'classobj' in t:
-            return True
-
-        return False
-        
-        
-    def __calc_subnodes(self, expr, r, fForceNames, fFilter):
+    def __calc_subnodes(self, expr, r, fForceNames, fFilter, repr_limit):
         snl = []
         
-        if (type(r) in [list, tuple]) or isinstance(r, list) or isinstance(r, tuple):
-            for i, v in enumerate(r):
+        try:
+            if isinstance(r, set) or isinstance(r, frozenset):
+                if len(r) > MAX_SORTABLE_LENGTH:
+                    g = r
+                else:
+                    g = [i for i in r]
+                    g.sort(SafeCmp)
+
+                for i in g:
+                    if len(snl) >= MAX_NAMESPACE_ITEMS:
+                        snl.append(MAX_NAMESPACE_WARNING)
+                        break
+                    
+                    is_valid = [True]
+                    rk = repr_ltd(i, REPR_ID_LENGTH)
+
+                    e = {}
+                    e[DICT_KEY_EXPR] = '_RPDB2_FindRepr((%s), %d)["%s"]' % (expr, REPR_ID_LENGTH, rk)
+                    e[DICT_KEY_NAME] = repr_ltd(i, repr_limit)
+                    e[DICT_KEY_REPR] = repr_ltd(i, repr_limit, is_valid)
+                    e[DICT_KEY_IS_VALID] = is_valid[0]
+                    e[DICT_KEY_TYPE] = self.__parse_type(type(i))
+                    e[DICT_KEY_N_SUBNODES] = self.__calc_number_of_subnodes(i)
+
+                    snl.append(e)
+                
+                return snl
+
+        except NameError:
+            pass
+        
+        if isinstance(r, sets.BaseSet):
+            if len(r) > MAX_SORTABLE_LENGTH:
+                g = r
+            else:
+                g = [i for i in r]
+                g.sort(SafeCmp)
+
+            for i in g:
+                if len(snl) >= MAX_NAMESPACE_ITEMS:
+                    snl.append(MAX_NAMESPACE_WARNING)
+                    break
+
+                is_valid = [True]
+                rk = repr_ltd(i, REPR_ID_LENGTH)
+
                 e = {}
-                e[DICT_KEY_EXPR] = '%s[%d]' % (expr, i)
+                e[DICT_KEY_EXPR] = '_RPDB2_FindRepr((%s), %d)["%s"]' % (expr, REPR_ID_LENGTH, rk)
+                e[DICT_KEY_NAME] = repr_ltd(i, repr_limit)
+                e[DICT_KEY_REPR] = repr_ltd(i, repr_limit, is_valid)
+                e[DICT_KEY_IS_VALID] = is_valid[0]
+                e[DICT_KEY_TYPE] = self.__parse_type(type(i))
+                e[DICT_KEY_N_SUBNODES] = self.__calc_number_of_subnodes(i)
+
+                snl.append(e)
+            
+            return snl
+
+        if isinstance(r, list) or isinstance(r, tuple):
+            for i, v in enumerate(r[0: MAX_NAMESPACE_ITEMS]):
+                is_valid = [True]
+                e = {}
+                e[DICT_KEY_EXPR] = '(%s)[%d]' % (expr, i)
                 e[DICT_KEY_NAME] = repr(i)
-                e[DICT_KEY_REPR] = safe_repr_limited(v)
+                e[DICT_KEY_REPR] = repr_ltd(v, repr_limit, is_valid)
+                e[DICT_KEY_IS_VALID] = is_valid[0]
                 e[DICT_KEY_TYPE] = self.__parse_type(type(v))
                 e[DICT_KEY_N_SUBNODES] = self.__calc_number_of_subnodes(v)
 
                 snl.append(e)
 
+            if len(r) > MAX_NAMESPACE_ITEMS:
+                snl.append(MAX_NAMESPACE_WARNING)
+
             return snl
 
-        if (type(r) == dict) or isinstance(r, dict):
-            for k, v in r.items():
-                if fFilter and (expr in ['globals()', 'locals()']) and self.__is_filtered_type(v):
+        if isinstance(r, dict):
+            if len(r) > MAX_SORTABLE_LENGTH:
+                kl = r
+            else:
+                kl = r.keys()
+                kl.sort(SafeCmp)
+
+            for k in kl:
+                #
+                # Remove any trace of session password from data structures that 
+                # go over the network.
+                #
+                if k in ['_RPDB2_FindRepr', '_rpdb2_args', '_rpdb2_pwd', 'm_rpdb2_pwd']:
                     continue
-                    
+
+                v = r[k]
+
+                if len(snl) >= MAX_NAMESPACE_ITEMS:
+                    snl.append(MAX_NAMESPACE_WARNING)
+                    break
+
+                is_valid = [True]
                 e = {}
 
-                rk = repr(k)
-                if rk.startswith('<'):
-                    e[DICT_KEY_EXPR] = '[v for k, v in (%s).items() if repr(k) == "%s"][0]' % (expr, rk)
-                else:    
-                    e[DICT_KEY_EXPR] = '%s[%s]' % (expr, rk)
-                    
-                e[DICT_KEY_NAME] = [repr(k), k][fForceNames]
-                e[DICT_KEY_REPR] = safe_repr_limited(v)
+                if type(k) in [bool, int, float, str, unicode, type(None)]:
+                    rk = repr(k)
+                    if len(rk) < REPR_ID_LENGTH:
+                        e[DICT_KEY_EXPR] = '(%s)[%s]' % (expr, rk)
+
+                if not DICT_KEY_EXPR in e:
+                    rk = repr_ltd(k, REPR_ID_LENGTH)
+                    e[DICT_KEY_EXPR] = '_RPDB2_FindRepr((%s), %d)["%s"]' % (expr, REPR_ID_LENGTH, rk)
+
+                e[DICT_KEY_NAME] = [repr_ltd(k, repr_limit), k][fForceNames]
+                e[DICT_KEY_REPR] = repr_ltd(v, repr_limit, is_valid)
+                e[DICT_KEY_IS_VALID] = is_valid[0]
                 e[DICT_KEY_TYPE] = self.__parse_type(type(v))
                 e[DICT_KEY_N_SUBNODES] = self.__calc_number_of_subnodes(v)
 
@@ -6050,20 +6906,28 @@ class CDebuggerEngine(CDebuggerCore):
 
             return snl            
 
-        al = self.__calc_attribute_list(r)
+        al = self.__calc_attribute_list(r, fFilter)
+        al.sort(SafeCmp)
+
         for a in al:
+            if a == 'm_rpdb2_pwd':
+                continue
+
             try:
                 v = getattr(r, a)
             except AttributeError:
                 continue
             
-            if fFilter and self.__is_filtered_type(v):
-                continue
-                
+            if len(snl) >= MAX_NAMESPACE_ITEMS:
+                snl.append(MAX_NAMESPACE_WARNING)
+                break
+
+            is_valid = [True]
             e = {}
-            e[DICT_KEY_EXPR] = '%s.%s' % (expr, a)
+            e[DICT_KEY_EXPR] = '(%s).%s' % (expr, a)
             e[DICT_KEY_NAME] = a
-            e[DICT_KEY_REPR] = safe_repr_limited(v)
+            e[DICT_KEY_REPR] = repr_ltd(v, repr_limit, is_valid)
+            e[DICT_KEY_IS_VALID] = is_valid[0]
             e[DICT_KEY_TYPE] = self.__parse_type(type(v))
             e[DICT_KEY_N_SUBNODES] = self.__calc_number_of_subnodes(v)
 
@@ -6100,10 +6964,7 @@ class CDebuggerEngine(CDebuggerCore):
         return False        
 
 
-    def calc_expr(self, expr, fExpand, fFilter, frame_index, fException, _globals, _locals, lock, rl, index):
-        sys.settrace(None)
-        sys.setprofile(None)
-                
+    def calc_expr(self, expr, fExpand, fFilter, frame_index, fException, _globals, _locals, lock, rl, index, repr_limit):
         e = {}
 
         try:
@@ -6115,20 +6976,24 @@ class CDebuggerEngine(CDebuggerCore):
                 __globals = globals()
                 __locals = locals()
 
+            __locals['_RPDB2_FindRepr'] = _RPDB2_FindRepr
+
+            is_valid = [True]
             r = eval(expr, __globals, __locals)
 
             e[DICT_KEY_EXPR] = expr
-            e[DICT_KEY_REPR] = safe_repr_limited(r)
+            e[DICT_KEY_REPR] = repr_ltd(r, repr_limit, is_valid)
+            e[DICT_KEY_IS_VALID] = is_valid[0]
             e[DICT_KEY_TYPE] = self.__parse_type(type(r))
             e[DICT_KEY_N_SUBNODES] = self.__calc_number_of_subnodes(r)
             
             if fExpand and (e[DICT_KEY_N_SUBNODES] > 0):
                 fForceNames = (expr in ['globals()', 'locals()']) or (RPDB_EXEC_INFO in expr)
-                e[DICT_KEY_SUBNODES] = self.__calc_subnodes(expr, r, fForceNames, fFilter)
+                e[DICT_KEY_SUBNODES] = self.__calc_subnodes(expr, r, fForceNames, fFilter, repr_limit)
                 e[DICT_KEY_N_SUBNODES] = len(e[DICT_KEY_SUBNODES])
                 
         except:
-            print_debug()
+            print_debug_exception()
             e[DICT_KEY_ERROR] = repr(sys.exc_info())
         
         lock.acquire()
@@ -6137,11 +7002,11 @@ class CDebuggerEngine(CDebuggerCore):
         lock.release()    
 
         
-    def get_namespace(self, nl, fFilter, frame_index, fException):
+    def get_namespace(self, nl, fFilter, frame_index, fException, repr_limit):
         try:
             (_globals, _locals, x) = self.__get_locals_globals(frame_index, fException, fReadOnly = True)
         except:    
-            print_debug()
+            print_debug_exception()
             raise
 
         failed_expr_list = []
@@ -6153,10 +7018,11 @@ class CDebuggerEngine(CDebuggerCore):
             if self.is_child_of_failure(failed_expr_list, expr):
                 continue
 
-            args = (expr, fExpand, fFilter, frame_index, fException, _globals, _locals, lock, rl, index)
-            t = threading.Thread(target = self.calc_expr, args = args)
+            args = (expr, fExpand, fFilter, frame_index, fException, _globals, _locals, lock, rl, index, repr_limit)
+            t = CThread(name = 'calc_expr %s' % (expr, ), target = self.calc_expr, args = args)
             t.start()
-            t.join(1)
+            t.join(2)
+            t = None
             
             lock.acquire()
             if len(rl) == index:
@@ -6185,8 +7051,18 @@ class CDebuggerEngine(CDebuggerCore):
         e = ''
 
         try:
-            r = eval(expr, _globals, _locals)
-            v = safe_repr(r)
+            if '_rpdb2_pwd' in expr or '_rpdb2_args' in expr:
+                r = '...Removed-password-from-output...'
+            
+            else:
+                r = eval(expr, _globals, _locals)
+
+            v = repr_ltd(r, MAX_EVALUATE_LENGTH)
+            
+            if len(v) > MAX_EVALUATE_LENGTH:
+                v += '... *** %s ***' % STR_MAX_EVALUATE_LENGTH_WARNING 
+                w = STR_MAX_EVALUATE_LENGTH_WARNING
+
         except:
             exc_info = sys.exc_info()
             e = "%s, %s" % (str(exc_info[0]), str(exc_info[1]))
@@ -6210,8 +7086,16 @@ class CDebuggerEngine(CDebuggerCore):
         w = ''
         e = ''
 
-        try:    
-            exec suite in _globals, _locals
+        try:
+            if '_RPDB2_FindRepr' in suite and not '_RPDB2_FindRepr' in _original_locals_copy:
+                _locals['_RPDB2_FindRepr'] = _RPDB2_FindRepr
+
+            try:
+                exec suite in _globals, _locals
+            finally:
+                if '_RPDB2_FindRepr' in suite and not '_RPDB2_FindRepr' in _original_locals_copy:
+                    del _locals['_RPDB2_FindRepr']
+
         except:    
             exc_info = sys.exc_info()
             e = "%s, %s" % (str(exc_info[0]), str(exc_info[1]))
@@ -6255,13 +7139,21 @@ class CDebuggerEngine(CDebuggerCore):
         Notify the client and terminate this proccess.
         """
 
-        thread.start_new_thread(_atexit, (True, ))
+        CThread(name = '_atexit', target = _atexit, args = (True, )).start()
 
 
     def set_trap_unhandled_exceptions(self, ftrap):
         self.m_ftrap = ftrap
 
         event = CEventTrap(ftrap)
+        self.m_event_dispatcher.fire_event(event)
+
+
+    def set_fork_mode(self, ffork_into_child, ffork_auto):
+        self.m_ffork_into_child = ffork_into_child
+        self.m_ffork_auto = ffork_auto
+
+        event = CEventForkMode(ffork_into_child, ffork_auto)
         self.m_event_dispatcher.fire_event(event)
 
 
@@ -6277,13 +7169,11 @@ class CWorkQueue:
     Worker threads pool mechanism for RPC server.    
     """
     
-    def __init__(self, size = N_WORK_QUEUE_THREADS, ftrace = True):
+    def __init__(self, size = N_WORK_QUEUE_THREADS):
         self.m_lock = threading.Condition()
         self.m_work_items = []
         self.m_f_shutdown = False
 
-        self.m_ftrace = ftrace
-        
         self.m_size = size
         self.m_n_threads = 0
         self.m_n_available = 0
@@ -6292,7 +7182,7 @@ class CWorkQueue:
         
 
     def __create_thread(self): 
-        t = threading.Thread(target = self.__worker_target)
+        t = CThread(name = '__worker_target', target = self.__worker_target, shutdown = self.shutdown)
         #t.setDaemon(True)
         t.start()
 
@@ -6301,7 +7191,12 @@ class CWorkQueue:
         """
         Signal worker threads to exit, and wait until they do.
         """
-        
+       
+        if self.m_f_shutdown:
+            return
+
+        print_debug('Shutting down worker queue...')
+
         self.m_lock.acquire()
         self.m_f_shutdown = True
         self.m_lock.notifyAll()
@@ -6311,12 +7206,10 @@ class CWorkQueue:
             
         self.m_lock.release()
 
+        print_debug('Shutting down worker queue, done.')
+
 
     def __worker_target(self): 
-        if not self.m_ftrace:
-            sys.settrace(None)
-            sys.setprofile(None)
-
         try:
             self.m_lock.acquire()
             
@@ -6353,7 +7246,7 @@ class CWorkQueue:
                 try:
                     target(*args)
                 except:
-                    print_debug()
+                    print_debug_exception()
 
                 self.m_lock.acquire()
                 self.m_n_available += 1
@@ -6397,7 +7290,7 @@ class CUnTracedThreadingMixIn(SocketServer.ThreadingMixIn):
     """
     
     def init_work_queue(self):
-        self.m_work_queue = CWorkQueue(ftrace = False)
+        self.m_work_queue = CWorkQueue()
     
     def shutdown_work_queue(self):
         self.m_work_queue.shutdown()
@@ -6447,12 +7340,21 @@ class CXMLRPCServer(CUnTracedThreadingMixIn, SimpleXMLRPCServer.SimpleXMLRPCServ
             response = xmlrpclib.dumps(
                 xmlrpclib.Fault(1, "%s:%s" % (sys.exc_type, sys.exc_value))
                 )
-            print_debug()
+            print_debug_exception()
 
         return response
 
     if sys.version_info[:2] <= (2, 3):
         _marshaled_dispatch = __marshaled_dispatch
+
+
+    def handle_error(self, request, client_address):
+        print_debug("handle_error() in pid %d" % _getpid())
+
+        if g_ignore_broken_pipe + 5 > time.time():
+            return
+
+        return SimpleXMLRPCServer.SimpleXMLRPCServer.handle_error(self, request, client_address)
 
 
 
@@ -6499,7 +7401,7 @@ class CPwdServerProxy:
                 #
                 # Decrypt response.
                 #
-                ((max_index, _r, _e), fe)= self.m_crypto.undo_crypto(r, fVerifyIndex = False)
+                ((max_index, _r, _e), id, fe)= self.m_crypto.undo_crypto(r, fVerifyIndex = False)
                 
                 if _e is not None:
                     raise _e
@@ -6534,11 +7436,12 @@ class CPwdServerProxy:
                     raise AuthenticationFailure
                     
                 else:
-                    print_debug()
+                    print_debug_exception()
                     assert False 
 
             except xmlrpclib.ProtocolError:
-                print_debug()
+                print_debug("Caught ProtocolError for %s" % name)
+                #print_debug_exception()
                 raise CConnectionException
                 
             return _r
@@ -6549,15 +7452,15 @@ class CPwdServerProxy:
 
 
     
-class CIOServer(threading.Thread):
+class CIOServer:
     """
     Base class for debuggee server.
     """
     
-    def __init__(self, pwd, fAllowUnencrypted, fAllowRemote, rid):
-        threading.Thread.__init__(self)
+    def __init__(self, _rpdb2_pwd, fAllowUnencrypted, fAllowRemote, rid):
+        self.m_thread = None
 
-        self.m_crypto = CCrypto(pwd, fAllowUnencrypted, rid)
+        self.m_crypto = CCrypto(_rpdb2_pwd, fAllowUnencrypted, rid)
         
         self.m_fAllowRemote = fAllowRemote
         self.m_rid = rid
@@ -6566,29 +7469,44 @@ class CIOServer(threading.Thread):
         self.m_stop = False
         self.m_server = None
         
-        #self.setDaemon(True)
-
 
     def shutdown(self):
         self.stop()
         
     
+    def start(self):
+        self.m_thread = CThread(name = 'ioserver', target = self.run, shutdown = self.shutdown)
+        self.m_thread.setDaemon(True)
+        self.m_thread.start()
+
+
+    def jumpstart(self):
+        self.m_stop = False
+        self.start()
+
+
     def stop(self):
         if self.m_stop:
             return
-            
+        
+        print_debug('Stopping IO server... (pid = %d)' % _getpid())
+
         self.m_stop = True
 
-        while self.isAlive():
+        while self.m_thread.isAlive():
             try:
                 proxy = CPwdServerProxy(self.m_crypto, calcURL(LOOPBACK, self.m_port), CLocalTimeoutTransport())
                 proxy.null()
             except (socket.error, CException):
                 pass
             
-            self.join(0.5)
+            self.m_thread.join(0.5)
+
+        self.m_thread = None
 
         self.m_server.shutdown_work_queue()
+
+        print_debug('Stopping IO server, done.')
 
         
     def export_null(self):
@@ -6596,14 +7514,8 @@ class CIOServer(threading.Thread):
 
 
     def run(self):
-        #
-        # Turn tracing off. We don't want debugger threads traced.
-        #
-
-        sys.settrace(None)
-        sys.setprofile(None)
-        
-        (self.m_port, self.m_server) = self.__StartXMLRPCServer()
+        if self.m_server == None:
+            (self.m_port, self.m_server) = self.__StartXMLRPCServer()
 
         self.m_server.init_work_queue()
         self.m_server.register_function(self.dispatcher_method)        
@@ -6628,9 +7540,9 @@ class CIOServer(threading.Thread):
             #
             # Decrypt parameters.
             #
-            ((name, _params, target_rid), fEncryption) = self.m_crypto.undo_crypto(_params)
+            ((name, _params, target_rid), client_id, fEncryption) = self.m_crypto.undo_crypto(_params)
         except AuthenticationBadIndex, e:
-            #print_debug()
+            #print_debug_exception()
 
             #
             # Notify the caller on the expected index.
@@ -6656,11 +7568,16 @@ class CIOServer(threading.Thread):
         try:
             if (target_rid != 0) and (target_rid != self.m_rid):
                 raise NotAttached
-                
+            
+            #
+            # Record that client id is still attached. 
+            #
+            self.record_client_heartbeat(client_id, name, _params)
+
             r = func(*_params)
 
         except Exception, _e:
-            print_debug()
+            print_debug_exception()
             e = _e            
 
         #
@@ -6677,7 +7594,7 @@ class CIOServer(threading.Thread):
         Looks for an available tcp port to listen on.
         """
         
-        host = [LOCALHOST, ""][self.m_fAllowRemote]
+        host = [LOOPBACK, ""][self.m_fAllowRemote]
         port = SERVER_PORT_RANGE_START
 
         while True:
@@ -6686,7 +7603,7 @@ class CIOServer(threading.Thread):
                 return (port, server)
                 
             except socket.error, e:
-                if not GetSocketError(e) in [ERROR_SOCKET_ADDRESS_IN_USE_WIN, ERROR_SOCKET_ADDRESS_IN_USE_UNIX, ERROR_SOCKET_ADDRESS_IN_USE_MAC]:
+                if GetSocketError(e) != errno.EADDRINUSE:
                     raise
                     
                 if port >= SERVER_PORT_RANGE_START + SERVER_PORT_RANGE_LENGTH - 1:
@@ -6694,6 +7611,10 @@ class CIOServer(threading.Thread):
 
                 port += 1
                 continue
+
+
+    def record_client_heartbeat(self, id, name, params):
+        pass
 
 
 
@@ -6718,11 +7639,11 @@ class CDebuggeeServer(CIOServer):
     The debuggee XML RPC server class.
     """
     
-    def __init__(self, filename, debugger, pwd, fAllowUnencrypted, fAllowRemote, rid = None):
+    def __init__(self, filename, debugger, _rpdb2_pwd, fAllowUnencrypted, fAllowRemote, rid = None):
         if rid is None:
             rid = generate_rid()
             
-        CIOServer.__init__(self, pwd, fAllowUnencrypted, fAllowRemote, rid)
+        CIOServer.__init__(self, _rpdb2_pwd, fAllowUnencrypted, fAllowRemote, rid)
         
         self.m_filename = filename
         self.m_pid = _getpid()
@@ -6735,6 +7656,13 @@ class CDebuggeeServer(CIOServer):
         CIOServer.shutdown(self)
 
         
+    def record_client_heartbeat(self, id, name, params):
+        finit = (name == 'request_break')
+        fdetach = (name == 'request_go' and True in params)
+
+        self.m_debugger.record_client_heartbeat(id, finit, fdetach)
+
+
     def export_server_info(self):
         age = time.time() - self.m_time
         state = self.m_debugger.get_state()
@@ -6784,7 +7712,7 @@ class CDebuggeeServer(CIOServer):
         return 0
 
 
-    def export_request_go(self):
+    def export_request_go(self, fdetach = False):
         self.m_debugger.request_go()
         return 0
 
@@ -6839,8 +7767,8 @@ class CDebuggeeServer(CIOServer):
         return 0
 
 
-    def export_get_namespace(self, nl, fFilter, frame_index, fException):
-        r = self.m_debugger.get_namespace(nl, fFilter, frame_index, fException)
+    def export_get_namespace(self, nl, fFilter, frame_index, fException, repr_limit):
+        r = self.m_debugger.get_namespace(nl, fFilter, frame_index, fException, repr_limit)
         return r
 
         
@@ -6861,6 +7789,11 @@ class CDebuggeeServer(CIOServer):
 
     def export_set_trap_unhandled_exceptions(self, ftrap):
         self.m_debugger.set_trap_unhandled_exceptions(ftrap)
+        return 0
+
+
+    def export_set_fork_mode(self, ffork_into_child, ffork_auto):
+        self.m_debugger.set_fork_mode(ffork_into_child, ffork_auto)
         return 0
 
 
@@ -6888,11 +7821,11 @@ class CTimeoutHTTPConnection(httplib.HTTPConnection):
                 self.sock = socket.socket(af, socktype, proto)
                 self.sock.settimeout(self._rpdb2_timeout)
                 if self.debuglevel > 0:
-                    print >> sys.__stderr__, "connect: (%s, %s)" % (self.host, self.port)
+                    print_debug("connect: (%s, %s)" % (self.host, self.port))
                 self.sock.connect(sa)
             except socket.error, msg:
                 if self.debuglevel > 0:
-                    print >> sys.__stderr__, 'connect fail:', (self.host, self.port)
+                    print_debug('connect fail: ' + repr((self.host, self.port)))
                 if self.sock:
                     self.sock.close()
                 self.sock = None
@@ -6959,8 +7892,8 @@ class CSession:
     Basic class that communicates with the debuggee server.
     """
     
-    def __init__(self, host, port, pwd, fAllowUnencrypted, rid):
-        self.m_crypto = CCrypto(pwd, fAllowUnencrypted, rid)
+    def __init__(self, host, port, _rpdb2_pwd, fAllowUnencrypted, rid):
+        self.m_crypto = CCrypto(_rpdb2_pwd, fAllowUnencrypted, rid)
 
         self.m_host = host
         self.m_port = port
@@ -6969,6 +7902,7 @@ class CSession:
         self.m_exc_info = None
 
         self.m_fShutDown = False
+        self.m_fRestart = False
 
 
     def get_encryption(self):
@@ -6977,6 +7911,37 @@ class CSession:
         
     def getServerInfo(self):
         return self.m_server_info
+
+
+    def pause(self):
+        self.m_fRestart = True
+
+
+    def restart(self, sleep = 0, timeout = 10):
+        self.m_fRestart = True
+
+        time.sleep(sleep)
+
+        t0 = time.time()
+
+        try:
+            try:
+                while time.time() < t0 + timeout:
+                    try:
+                        self.Connect()
+                        return
+
+                    except socket.error:
+                        continue
+
+                raise CConnectionException
+
+            except:
+                self.m_fShutDown = True
+                raise
+
+        finally:
+            self.m_fRestart = False
 
 
     def shut_down(self):
@@ -6989,9 +7954,12 @@ class CSession:
         With this object you can invoke methods on the server.
         """
         
+        while self.m_fRestart:
+            time.sleep(0.1)
+
         if self.m_fShutDown:
             raise NotAttached
-            
+        
         return self.m_proxy
 
 
@@ -7010,10 +7978,14 @@ class CSession:
 
 
     def Connect(self):
-        server = CPwdServerProxy(self.m_crypto, calcURL(self.m_host, self.m_port), CTimeoutTransport())
+        host = self.m_host
+        if host.lower() == LOCALHOST:
+            host = LOOPBACK
+        
+        server = CPwdServerProxy(self.m_crypto, calcURL(host, self.m_port), CTimeoutTransport())
         server_info = server.server_info()
 
-        self.m_proxy = CPwdServerProxy(self.m_crypto, calcURL(self.m_host, self.m_port), target_rid = server_info.m_rid)
+        self.m_proxy = CPwdServerProxy(self.m_crypto, calcURL(host, self.m_port), target_rid = server_info.m_rid)
         self.m_server_info = server_info
 
                 
@@ -7029,14 +8001,14 @@ class CServerList:
         self.m_errors = {}
 
 
-    def calcList(self, pwd, rid):
+    def calcList(self, _rpdb2_pwd, rid):
         sil = []
         sessions = []
         self.m_errors = {}
 
         port = SERVER_PORT_RANGE_START
         while port < SERVER_PORT_RANGE_START + SERVER_PORT_RANGE_LENGTH:
-            s = CSession(self.m_host, port, pwd, fAllowUnencrypted = True, rid = rid)
+            s = CSession(self.m_host, port, _rpdb2_pwd, fAllowUnencrypted = True, rid = rid)
             t = s.ConnectAsync()
             sessions.append((s, t))
             port += 1
@@ -7084,8 +8056,8 @@ class CServerList:
 
 
 class CSessionManagerInternal:
-    def __init__(self, pwd, fAllowUnencrypted, fAllowRemote, host):
-        self.m_pwd = [pwd, None][pwd in [None, '']]
+    def __init__(self, _rpdb2_pwd, fAllowUnencrypted, fAllowRemote, host):
+        self.m_rpdb2_pwd = [_rpdb2_pwd, None][_rpdb2_pwd in [None, '']]
         self.m_fAllowUnencrypted = fAllowUnencrypted
         self.m_fAllowRemote = fAllowRemote
         self.m_rid = generate_rid()
@@ -7123,9 +8095,16 @@ class CSessionManagerInternal:
 
         event_type_dict = {CEventExit: {}}
         self.register_callback(self.on_event_exit, event_type_dict, fSingleUse = False)
+
+        event_type_dict = {CEventPsycoWarning: {}}
+        self.register_callback(self.on_event_psyco, event_type_dict, fSingleUse = False)
         
         event_type_dict = {CEventTrap: {}}
         self.m_event_dispatcher_proxy.register_callback(self.on_event_trap, event_type_dict, fSingleUse = False)
+        self.m_event_dispatcher.register_chain_override(event_type_dict)
+
+        event_type_dict = {CEventForkMode: {}}
+        self.m_event_dispatcher_proxy.register_callback(self.on_event_fork_mode, event_type_dict, fSingleUse = False)
         self.m_event_dispatcher.register_chain_override(event_type_dict)
 
         self.m_printer = self.__nul_printer
@@ -7134,6 +8113,9 @@ class CSessionManagerInternal:
         self.m_last_fchdir = None
 
         self.m_ftrap = True
+
+        self.m_ffork_into_child = False
+        self.m_ffork_auto = False
         
     
     def __del__(self):
@@ -7162,13 +8144,13 @@ class CSessionManagerInternal:
         try:
             for i in range(0,STARTUP_RETRIES):
                 try:
-                    self.m_server_list_object.calcList(self.m_pwd, self.m_rid)
+                    self.m_server_list_object.calcList(self.m_rpdb2_pwd, self.m_rid)
                     return self.m_server_list_object.findServers(rid)[0]
                 except UnknownServer:
                     time.sleep(STARTUP_TIMEOUT)
                     continue
                     
-            self.m_server_list_object.calcList(self.m_pwd, self.m_rid)
+            self.m_server_list_object.calcList(self.m_rpdb2_pwd, self.m_rid)
             return self.m_server_list_object.findServers(rid)[0]
 
         finally:
@@ -7187,7 +8169,7 @@ class CSessionManagerInternal:
             self.m_printer(STR_SPAWN_UNSUPPORTED)
             raise SpawnUnsupported
             
-        if self.m_pwd is None:
+        if self.m_rpdb2_pwd is None:
             self.set_random_password()
             
         if command_line == '':
@@ -7207,7 +8189,7 @@ class CSessionManagerInternal:
 
         rid = generate_rid()
 
-        create_pwd_file(rid, self.m_pwd)
+        create_pwd_file(rid, self.m_rpdb2_pwd)
         
         self.m_state_manager.set_state(STATE_SPAWNING)
 
@@ -7297,7 +8279,7 @@ class CSessionManagerInternal:
         e = ['', ' --encrypt'][not self.m_fAllowUnencrypted]
         r = ['', ' --remote'][self.m_fAllowRemote]
         c = ['', ' --chdir'][fchdir]
-        p = ['', ' --pwd="%s"' % (self.m_pwd, )][os.name == 'nt']
+        p = ['', ' --pwd="%s"' % (self.m_rpdb2_pwd, )][os.name == 'nt']
         
         debugger = os.path.abspath(__file__)
         if debugger[-1:] == 'c':
@@ -7312,13 +8294,15 @@ class CSessionManagerInternal:
             python_exec = python_exec[:-5] + '.exe'
 
         if name == POSIX:
+            shell = CalcUserShell()
             terminal_command = CalcTerminalCommand()
+
             if terminal_command == GNOME_DEFAULT_TERM:
-                command = osSpawn[GNOME_DEFAULT_TERM] % (python_exec, options)
+                command = osSpawn[GNOME_DEFAULT_TERM] % {'shell': shell, 'exec': python_exec, 'options': options}
             else:    
-                command = osSpawn[name] % (terminal_command, python_exec, options)
+                command = osSpawn[name] % {'term': terminal_command, 'shell': shell, 'exec': python_exec, 'options': options}
         else:    
-            command = osSpawn[name] % (python_exec, options)
+            command = osSpawn[name] % {'exec': python_exec, 'options': options}
 
         if name == DARWIN:
             s = 'cd "%s" ; %s' % (os.getcwdu(), command)
@@ -7336,7 +8320,7 @@ class CSessionManagerInternal:
         if key == '':
             raise BadArgument
 
-        if self.m_pwd is None:
+        if self.m_rpdb2_pwd is None:
             self.m_printer(STR_PASSWORD_MUST_BE_SET)
             raise UnsetPassword
         
@@ -7349,7 +8333,7 @@ class CSessionManagerInternal:
         self.m_state_manager.set_state(STATE_ATTACHING)
 
         try:
-            self.m_server_list_object.calcList(self.m_pwd, self.m_rid)                
+            self.m_server_list_object.calcList(self.m_rpdb2_pwd, self.m_rid)                
             servers = self.m_server_list_object.findServers(key)
             server = servers[0] 
 
@@ -7372,7 +8356,7 @@ class CSessionManagerInternal:
             raise
             
         except:
-            print_debug()
+            print_debug_exception()
             assert False
 
 
@@ -7402,7 +8386,7 @@ class CSessionManagerInternal:
     def __attach(self, server):
         self.__verify_unattached()
 
-        session = CSession(self.m_host, server.m_port, self.m_pwd, self.m_fAllowUnencrypted, self.m_rid)
+        session = CSession(self.m_host, server.m_port, self.m_rpdb2_pwd, self.m_fAllowUnencrypted, self.m_rid)
         session.Connect()
 
         if (session.getServerInfo().m_pid != server.m_pid) or (session.getServerInfo().m_filename != server.m_filename):
@@ -7413,12 +8397,14 @@ class CSessionManagerInternal:
         self.m_server_info = self.get_server_info()
 
         self.getSession().getProxy().set_trap_unhandled_exceptions(self.m_ftrap)
+        self.getSession().getProxy().set_fork_mode(self.m_ffork_into_child, self.m_ffork_auto)
+
         self.request_break()
         self.refresh(True)
         
         self.__start_event_monitor()
 
-        self.enable_breakpoint([], fAll = True)
+        #self.enable_breakpoint([], fAll = True)
 
         
     def __verify_unattached(self):
@@ -7464,9 +8450,21 @@ class CSessionManagerInternal:
                 t = ControlRate(t, IDLE_MAX_RATE)
                 if self.m_fStop:
                     return
-                    
+                
                 (n, sel) = self.getSession().getProxy().wait_for_event(PING_TIMEOUT, self.m_remote_event_index)
                 
+                if True in [isinstance(e, CEventForkSwitch) for e in sel]:
+                    print_debug('Received fork switch event.')
+                    
+                    self.getSession().pause()
+                    threading.Thread(target = self.restart_session_job).start()
+                                
+                if True in [isinstance(e, CEventExecSwitch) for e in sel]:
+                    print_debug('Received exec switch event.')
+                    
+                    self.getSession().pause()
+                    threading.Thread(target = self.restart_session_job, args = (True, )).start()
+                    
                 if True in [isinstance(e, CEventExit) for e in sel]:
                     self.getSession().shut_down()
                     self.m_fStop = True
@@ -7479,8 +8477,10 @@ class CSessionManagerInternal:
                 nfailures = 0
                 
             except CConnectionException:
-                self.report_exception(*sys.exc_info())
-                threading.Thread(target = self.detach_job).start()
+                if not self.m_fStop:
+                    self.report_exception(*sys.exc_info())
+                    threading.Thread(target = self.detach_job).start()
+
                 return
                 
             except socket.error:
@@ -7488,16 +8488,41 @@ class CSessionManagerInternal:
                     nfailures += 1
                     continue
                     
-                self.report_exception(*sys.exc_info())
-                threading.Thread(target = self.detach_job).start()
+                if not self.m_fStop:
+                    self.report_exception(*sys.exc_info())
+                    threading.Thread(target = self.detach_job).start()
+                
                 return
+
+
+    def on_event_psyco(self, event):
+        self.m_printer(STR_PSYCO_WARNING)
 
 
     def on_event_exit(self, event):
         self.m_printer(STR_DEBUGGEE_TERMINATED)        
         threading.Thread(target = self.detach_job).start()
 
-    
+   
+    def restart_session_job(self, fSendExitOnFailure = False):
+        try:
+            self.getSession().restart(sleep = 3)
+            return
+
+        except:
+            pass
+
+        self.m_fStop = True
+
+        if fSendExitOnFailure:
+            e = CEventExit()
+            self.m_event_dispatcher_proxy.fire_event(e)
+            return
+
+        self.m_printer(STR_LOST_CONNECTION)
+        self.detach_job()
+
+
     def detach_job(self):
         try:
             self.detach()
@@ -7511,7 +8536,7 @@ class CSessionManagerInternal:
         try:
             self.save_breakpoints()
         except:
-            print_debug()
+            print_debug_exception()
             pass
 
         self.m_printer(STR_ATTEMPTING_TO_DETACH)
@@ -7521,11 +8546,11 @@ class CSessionManagerInternal:
         self.__stop_event_monitor()
 
         try:
-            self.disable_breakpoint([], fAll = True)
+            #self.disable_breakpoint([], fAll = True)
 
             try:
                 self.getSession().getProxy().set_trap_unhandled_exceptions(False)
-                self.request_go()
+                self.request_go(fdetach = True)
 
             except DebuggerNotBroken:
                 pass
@@ -7550,8 +8575,8 @@ class CSessionManagerInternal:
         self.getSession().getProxy().request_break()
 
     
-    def request_go(self):
-        self.getSession().getProxy().request_go()
+    def request_go(self, fdetach = False):
+        self.getSession().getProxy().request_go(fdetach)
 
     
     def request_go_breakpoint(self, filename, scope, lineno):
@@ -7616,11 +8641,11 @@ class CSessionManagerInternal:
         try:
             try:
                 bpl = self.get_breakpoints()
-                sbpl = cPickle.dumps(bpl)
+                sbpl = pickle.dumps(bpl)
                 file.write(sbpl)
 
             except:
-                print_debug()
+                print_debug_exception()
                 raise CException
 
         finally:
@@ -7641,11 +8666,11 @@ class CSessionManagerInternal:
         
         try:
             try:
-                bpl = cPickle.load(file)
+                bpl = pickle.load(file)
                 self.delete_breakpoint([], True)
 
             except:
-                print_debug()
+                print_debug_exception()
                 raise CException
 
             #
@@ -7658,7 +8683,7 @@ class CSessionManagerInternal:
                 try:
                     self.set_breakpoint(bp.m_filename, bp.m_scope_fqn, bp.m_scope_offset, bp.m_fEnabled, bp.m_expr)
                 except:
-                    print_debug()
+                    print_debug_exception()
                     ferror = True
 
             if ferror:
@@ -7673,7 +8698,7 @@ class CSessionManagerInternal:
         self.m_ftrap = event.m_ftrap
 
         if ffire:
-            event = CEventTrap(ftrap)
+            event = CEventTrap(event.m_ftrap)
             self.m_event_dispatcher.fire_event(event)
         
         
@@ -7692,6 +8717,40 @@ class CSessionManagerInternal:
     
     def get_trap_unhandled_exceptions(self):
         return self.m_ftrap
+
+
+    def on_event_fork_mode(self, event):
+        ffire = ((self.m_ffork_into_child , self.m_ffork_auto) != 
+            (event.m_ffork_into_child, event.m_ffork_auto))
+
+        self.m_ffork_into_child = event.m_ffork_into_child
+        self.m_ffork_auto = event.m_ffork_auto
+
+        if ffire:
+            event = CEventForkMode(self.m_ffork_into_child, self.m_ffork_auto)
+            self.m_event_dispatcher.fire_event(event)
+       
+
+    def set_fork_mode(self, ffork_into_child, ffork_auto):
+        self.m_ffork_into_child = ffork_into_child
+        self.m_ffork_auto = ffork_auto
+
+        if self.__is_attached():
+            try:
+                self.getSession().getProxy().set_fork_mode(
+                    self.m_ffork_into_child,
+                    self.m_ffork_auto
+                    )
+
+            except NotAttached:
+                pass
+
+        event = CEventForkMode(ffork_into_child, ffork_auto)
+        self.m_event_dispatcher.fire_event(event)
+
+    
+    def get_fork_mode(self):
+        return (self.m_ffork_into_child, self.m_ffork_auto)
     
 
     def get_stack(self, tid_list, fAll):    
@@ -7701,9 +8760,6 @@ class CSessionManagerInternal:
 
 
     def get_source_file(self, filename, lineno, nlines): 
-        #if (filename != '') and not IsPythonSourceFile(filename):
-        #    raise IOError
-            
         frame_index = self.get_frame_index()
         fAnalyzeMode = (self.m_state_manager.get_state() == STATE_ANALYZE) 
 
@@ -7729,11 +8785,11 @@ class CSessionManagerInternal:
         self.getSession().getProxy().set_thread(tid)
 
         
-    def get_namespace(self, nl, fFilter):
+    def get_namespace(self, nl, fFilter, repr_limit):
         frame_index = self.get_frame_index()
         fAnalyzeMode = (self.m_state_manager.get_state() == STATE_ANALYZE) 
 
-        r = self.getSession().getProxy().get_namespace(nl, fFilter, frame_index, fAnalyzeMode)
+        r = self.getSession().getProxy().get_namespace(nl, fFilter, frame_index, fAnalyzeMode, repr_limit)
         return r
 
 
@@ -7762,7 +8818,7 @@ class CSessionManagerInternal:
     def set_host(self, host):
         self.__verify_unattached()
         try:
-            socket.getaddrinfo(host, 0)
+            socket.getaddrinfo(host, 0, 0, socket.SOCK_STREAM)
 
         except socket.gaierror:
             if host.lower() != LOCALHOST:
@@ -7782,10 +8838,10 @@ class CSessionManagerInternal:
 
 
     def calc_server_list(self):
-        if self.m_pwd is None:
+        if self.m_rpdb2_pwd is None:
             raise UnsetPassword
         
-        server_list = self.m_server_list_object.calcList(self.m_pwd, self.m_rid)
+        server_list = self.m_server_list_object.calcList(self.m_rpdb2_pwd, self.m_rid)
         errors = self.m_server_list_object.get_errors()
         self.__report_server_errors(errors)
         
@@ -7905,13 +8961,13 @@ class CSessionManagerInternal:
         return self.m_state_manager.get_state()
 
 
-    def set_password(self, pwd):    
+    def set_password(self, _rpdb2_pwd):    
         try:
             self.m_state_manager.acquire()
 
             self.__verify_unattached()
             
-            self.m_pwd = pwd
+            self.m_rpdb2_pwd = _rpdb2_pwd
         finally:
             self.m_state_manager.release()
 
@@ -7922,7 +8978,7 @@ class CSessionManagerInternal:
 
             self.__verify_unattached()
             
-            self.m_pwd = generate_random_password()
+            self.m_rpdb2_pwd = generate_random_password()
             self.m_printer(STR_RANDOM_PASSWORD)        
 
         finally:
@@ -7930,7 +8986,7 @@ class CSessionManagerInternal:
 
             
     def get_password(self):
-        return self.m_pwd
+        return self.m_rpdb2_pwd
 
 
     def set_remote(self, fAllowRemote):
@@ -7954,7 +9010,7 @@ class CSessionManagerInternal:
         try:
             self.save_breakpoints()
         except:
-            print_debug()
+            print_debug_exception()
             pass
 
         self.m_printer(STR_ATTEMPTING_TO_STOP)
@@ -7973,7 +9029,7 @@ class CSessionManagerInternal:
             self.m_printer(STR_DETACH_SUCCEEDED)
 
 
-    
+
 class CConsoleInternal(cmd.Cmd, threading.Thread):
     def __init__(self, session_manager, stdin = None, stdout = None, fSplit = False):
         cmd.Cmd.__init__(self, stdin = stdin, stdout = stdout)
@@ -7999,12 +9055,17 @@ class CConsoleInternal(cmd.Cmd, threading.Thread):
         event_type_dict = {CEventTrap: {}}
         self.m_session_manager.register_callback(self.trap_handler, event_type_dict, fSingleUse = False)
 
+        event_type_dict = {CEventForkMode: {}}
+        self.m_session_manager.register_callback(self.fork_mode_handler, event_type_dict, fSingleUse = False)
+
         self.m_last_source_line = None
         self.m_last_nlines = DEFAULT_NUMBER_OF_LINES
         
         self.m_fAddPromptBeforeMsg = False
         self.m_eInLoop = threading.Event()
         self.cmdqueue.insert(0, '')
+
+        self.m_fdefault_std = (stdin == None)
 
 
     def set_filename(self, filename):
@@ -8048,7 +9109,7 @@ class CConsoleInternal(cmd.Cmd, threading.Thread):
             self.m_session_manager.report_exception(*sys.exc_info())
         except:
             self.m_session_manager.report_exception(*sys.exc_info())
-            print_debug(True)
+            print_debug_exception(True)
 
         return False
         
@@ -8135,6 +9196,13 @@ class CConsoleInternal(cmd.Cmd, threading.Thread):
         self.printer(STR_TRAP_MODE_SET % (str(event.m_ftrap), ))
 
         
+    def fork_mode_handler(self, event):
+        x = [FORK_PARENT, FORK_CHILD][event.m_ffork_into_child]
+        y = [FORK_MANUAL, FORK_AUTO][event.m_ffork_auto]
+
+        self.printer(STR_FORK_MODE_SET % (x, y))
+
+        
     def do_launch(self, arg):
         if arg == '':
             self.printer(STR_BAD_ARGUMENT)
@@ -8157,6 +9225,12 @@ class CConsoleInternal(cmd.Cmd, threading.Thread):
             self.printer(STR_BAD_ARGUMENT)            
         except IOError:
             self.printer(STR_FILE_NOT_FOUND % (arg, ))
+        except UnknownServer:
+            if os.name == POSIX and not g_fScreen:
+                self.printer(STR_DISPLAY_ERROR)
+
+            self.fPrintBroken = False
+            raise
         except:
             self.fPrintBroken = False
             raise
@@ -8738,7 +9812,7 @@ class CConsoleInternal(cmd.Cmd, threading.Thread):
             self.m_session_manager.report_exception(*sys.exc_info())
         except:
             self.m_session_manager.report_exception(*sys.exc_info())
-            print_debug(True)
+            print_debug_exception(True)
         
 
     def do_eval(self, arg):
@@ -8782,7 +9856,7 @@ class CConsoleInternal(cmd.Cmd, threading.Thread):
             self.m_session_manager.report_exception(*sys.exc_info())
         except:
             self.m_session_manager.report_exception(*sys.exc_info())
-            print_debug(True)
+            print_debug_exception(True)
         
 
     def do_exec(self, arg):
@@ -8848,7 +9922,7 @@ class CConsoleInternal(cmd.Cmd, threading.Thread):
 
     do_a = do_analyze
 
-    
+   
     def do_trap(self, arg):
         if arg == '':
             ftrap = self.m_session_manager.get_trap_unhandled_exceptions()
@@ -8865,20 +9939,45 @@ class CConsoleInternal(cmd.Cmd, threading.Thread):
 
         self.m_session_manager.set_trap_unhandled_exceptions(ftrap)
 
-    
+   
+    def do_fork(self, arg):
+        (ffork_into_child, ffork_auto) = self.m_session_manager.get_fork_mode()
+
+        if arg == '':
+            x = [FORK_PARENT, FORK_CHILD][ffork_into_child]
+            y = [FORK_MANUAL, FORK_AUTO][ffork_auto]
+
+            print >> self.stdout, STR_FORK_MODE % (x, y)
+            return 
+
+        arg = arg.lower()
+
+        if FORK_PARENT in arg:
+            ffork_into_child = False
+        elif FORK_CHILD in arg:
+            ffork_into_child = True
+
+        if FORK_AUTO in arg:
+            ffork_auto = True
+        elif FORK_MANUAL in arg:
+            ffork_auto = False
+
+        self.m_session_manager.set_fork_mode(ffork_into_child, ffork_auto)
+ 
+
     def do_password(self, arg):
         if arg == '':
-            pwd = self.m_session_manager.get_password()
-            if pwd is None:
+            _rpdb2_pwd = self.m_session_manager.get_password()
+            if _rpdb2_pwd is None:
                 print >> self.stdout, STR_PASSWORD_NOT_SET
             else:    
-                print >> self.stdout, STR_PASSWORD_SET % (pwd, )
+                print >> self.stdout, STR_PASSWORD_SET % (_rpdb2_pwd, )
             return
 
-        pwd = arg.strip('"\'')
+        _rpdb2_pwd = arg.strip('"\'')
         
-        self.m_session_manager.set_password(pwd)
-        print >> self.stdout, STR_PASSWORD_SET % (pwd, )
+        self.m_session_manager.set_password(_rpdb2_pwd)
+        print >> self.stdout, STR_PASSWORD_SET % (_rpdb2_pwd, )
 
             
     def do_remote(self, arg):
@@ -8918,7 +10017,7 @@ class CConsoleInternal(cmd.Cmd, threading.Thread):
                 self.m_session_manager.report_exception(*sys.exc_info())
             except:
                 self.m_session_manager.report_exception(*sys.exc_info())
-                print_debug(True)
+                print_debug_exception(True)
 
         print >> self.stdout, ''
 
@@ -8955,7 +10054,7 @@ Session Control:
 host        - Display or change host.
 attach      - Display scripts or attach to a script on host.
 detach      - Detach from script.
-launch      - Spawn a script and attach to it.
+launch      - Start a script and attach to it.
 restart     - Restart a script.
 stop        - Shutdown the debugged script.
 exit        - Exit from debugger.
@@ -8993,6 +10092,7 @@ eval        - Evaluate expression in the context of the current frame.
 exec        - Execute suite in the context of the current frame.
 analyze     - Toggle analyze last exception mode.
 trap        - Get or set "trap unhandled exceptions" mode.
+fork        - Get or set fork handling mode.
 
 License:
 ----------------
@@ -9091,6 +10191,33 @@ When set to True:
 Debuggee will pause on unhandled exceptions for inspection."""
 
 
+    def help_fork(self):
+        print >> self.stdout, """fork [parent | child] [manual | auto]
+
+Get or set fork handling mode.
+
+Without arguments returns the current mode.
+
+When 'parent' is specified the debugger will continue to debug the original
+parent process after a fork.
+
+When 'child' is specified the debugger will switch to debug the forked 
+child process after a fork.
+
+When 'manual' is specified the debugger will pause before doing a fork.
+
+When 'auto' is specified the debugger will go through the fork without 
+pausing and will make the forking decision based on the parent/child 
+setting.
+
+WARNING:
+On some Posix OS such as FreeBSD, Stepping into the child fork 
+can result in termination of the child process since the debugger
+uses threading for its operation and on these systems threading and 
+forking can conflict.
+"""
+
+
     def help_stop(self):
         print >> self.stdout, """stop
 
@@ -9100,7 +10227,7 @@ Shutdown the debugged script."""
     def help_launch(self):
         print >> self.stdout, """launch [-k] <script_name> [<script_args>]
 
-Spawn script <script_name> and attach to it.
+Start script <script_name> and attach to it.
 
 -k  Don't change the current working directory. By default the working
     directory of the launched script is set to its folder."""
@@ -9443,16 +10570,155 @@ Type 'help up' or 'help down' for more information on focused frames."""
     
 
 #
+# ---------------------------------------- Replacement Functions ------------------------------------
+#
+
+
+
+def __fork():
+    global g_forktid
+    g_forktid = setbreak()
+
+    #
+    # os.fork() has been called. 
+    #
+    # You can choose if you would like the debugger
+    # to continue with the parent or child fork with
+    # the 'fork' console command.
+    # 
+    # For example: 'fork child' or 'fork parent'
+    # Type: 'help fork' for more information.
+    #
+    # WARNING: 
+    # On some Posix OS such as FreeBSD, 
+    # Stepping into the child fork can result in 
+    # termination of the child process.
+    #
+    # *** RPDB2 SAYS: Read the entire comment! ***
+    #
+    return g_os_fork()
+
+
+
+g_os_fork = None
+
+if __name__ == 'rpdb2' and 'fork' in dir(os) and os.fork != __fork:
+    g_os_fork = os.fork
+    os.fork = __fork
+
+
+
+def __exit(n):
+    global g_fos_exit
+
+    if type(n) == int:
+        g_fos_exit = (setbreak() != None)
+
+    #
+    # os._exit(n) has been called.
+    #
+    # Stepping on from this point will result 
+    # in program termination.
+    #
+    return g_os_exit(n)
+
+
+
+g_os_exit = None
+
+if __name__ == 'rpdb2' and '_exit' in dir(os) and os._exit != __exit:
+    g_os_exit = os._exit
+    os._exit = __exit
+
+
+
+def __execv(path, args):
+    global g_exectid
+    
+    if os.path.isfile(path):
+        g_exectid = setbreak()
+
+    #
+    # os.execv() has been called. 
+    #
+    # Stepping on from this point will result 
+    # in termination of the debug session if
+    # the exec operation completes successfully.
+    #
+    return g_os_execv(path, args)
+
+
+
+g_os_execv = None
+
+if __name__ == 'rpdb2' and 'execv' in dir(os) and os.execv != __execv:
+    g_os_execv = os.execv
+    os.execv = __execv
+
+
+
+def __execve(path, args, env):
+    global g_exectid
+
+    if os.path.isfile(path):
+        g_exectid = setbreak()
+
+    #
+    # os.execve() has been called. 
+    #
+    # Stepping on from this point will result 
+    # in termination of the debug session if
+    # the exec operation completes successfully.
+    #
+    return g_os_execve(path, args, env)
+
+
+
+g_os_execve = None
+
+if __name__ == 'rpdb2' and 'execve' in dir(os) and os.execve != __execve:
+    g_os_execve = os.execve
+    os.execve = __execve
+
+
+
+def __function_wrapper(function, args, kwargs):
+    __settrace(depth = 1)
+
+    #
+    # Debuggee breaks (pauses) here
+    # on unhandled exceptions.
+    # Use analyze mode for post mortem.
+    # type 'help analyze' for more information.
+    #
+    return function(*args, **kwargs)
+
+
+
+def __start_new_thread(function, args, kwargs = {}):
+    return g_thread_start_new_thread(__function_wrapper, (function, args, kwargs))
+
+
+
+g_thread_start_new_thread = None
+
+if __name__ == 'rpdb2' and 'start_new_thread' in dir(thread) and thread.start_new_thread != __start_new_thread:
+    g_thread_start_new_thread = thread.start_new_thread
+    thread.start_new_thread = __start_new_thread
+
+
+
+#
 # ---------------------------------------- main ------------------------------------
 #
 
 
 
-def __settrace():
+def __settrace(depth = 2):
     if g_debugger is None:
         return
         
-    f = sys._getframe(2)
+    f = sys._getframe(depth)
     g_debugger.settrace(f, f_break_on_init = False)
 
     
@@ -9464,10 +10730,16 @@ def __setbreak():
     f = sys._getframe(2)
     g_debugger.setbreak(f)
 
+    return thread.get_ident()
+
     
 
-
 def _atexit(fabort = False):
+    if g_fignore_atexit:
+        return
+
+    print_debug("Entered _atexit() in pid %d" % _getpid())
+
     if g_debugger is None:
         return
 
@@ -9486,7 +10758,7 @@ def _atexit(fabort = False):
         
 
 
-def __start_embedded_debugger(pwd, fAllowUnencrypted, fAllowRemote, timeout, fDebug):
+def __start_embedded_debugger(_rpdb2_pwd, fAllowUnencrypted, fAllowRemote, timeout, fDebug):
     global g_server
     global g_debugger
     global g_fDebug
@@ -9521,7 +10793,7 @@ def __start_embedded_debugger(pwd, fAllowUnencrypted, fAllowRemote, timeout, fDe
         
         g_debugger = CDebuggerEngine(fembedded = True)
 
-        g_server = CDebuggeeServer(filename, g_debugger, pwd, fAllowUnencrypted, fAllowRemote)
+        g_server = CDebuggeeServer(filename, g_debugger, _rpdb2_pwd, fAllowUnencrypted, fAllowRemote)
         g_server.start()
 
         g_debugger.settrace(f, timeout = timeout)
@@ -9531,19 +10803,27 @@ def __start_embedded_debugger(pwd, fAllowUnencrypted, fAllowRemote, timeout, fDe
 
 
     
-def StartServer(args, fchdir, pwd, fAllowUnencrypted, fAllowRemote, rid): 
+def StartServer(args, fchdir, _rpdb2_pwd, fAllowUnencrypted, fAllowRemote, rid): 
     global g_server
     global g_debugger
+    global g_module_main
     
     try:
         ExpandedFilename = FindFile(args[0])
     except IOError:
         print 'File', args[0], ' not found.'
+        return
 
     #
-    # Insert script directory in front of file search path
+    # Replace the rpdb2.py directory with the script directory in 
+    # the search path
     #
-    sys.path.insert(0, os.path.dirname(ExpandedFilename))
+
+    spe = ExpandedFilename
+    if os.path.islink(ExpandedFilename):
+        spe = os.path.realpath(ExpandedFilename)
+
+    sys.path[0] = os.path.dirname(spe)
 
     if fchdir:   
         os.chdir(os.path.dirname(ExpandedFilename))
@@ -9554,27 +10834,39 @@ def StartServer(args, fchdir, pwd, fAllowUnencrypted, fAllowRemote, rid):
 
     g_debugger = CDebuggerEngine()
 
-    g_server = CDebuggeeServer(ExpandedFilename, g_debugger, pwd, fAllowUnencrypted, fAllowRemote, rid)
+    g_server = CDebuggeeServer(ExpandedFilename, g_debugger, _rpdb2_pwd, fAllowUnencrypted, fAllowRemote, rid)
     g_server.start()
 
-    g_debugger.m_bp_manager.set_temp_breakpoint(ExpandedFilename, '', 1, fhard = True)
-    g_debugger.settrace()
+    try:
+        g_debugger.m_bp_manager.set_temp_breakpoint(ExpandedFilename, '', 1, fhard = True)
+    except:
+        pass
 
+    f = sys._getframe(0)
+    g_debugger.settrace(f, f_break_on_init = False, builtins_hack = ExpandedFilename)
+
+    g_module_main = -1
     del sys.modules['__main__']
+
+    #
+    # An exception in this line occurs if
+    # there is a syntax error in the debugged script or if
+    # there was a problem loading the debugged script.
+    #
     imp.load_source('__main__', ExpandedFilename)    
         
 
 
-def StartClient(command_line, fAttach, fchdir, pwd, fAllowUnencrypted, fAllowRemote, host):
+def StartClient(command_line, fAttach, fchdir, _rpdb2_pwd, fAllowUnencrypted, fAllowRemote, host):
     if (not fAllowUnencrypted) and not is_encryption_supported():
         print STR_ENCRYPTION_SUPPORT_ERROR
         return 2
         
-    sm = CSessionManager(pwd, fAllowUnencrypted, fAllowRemote, host)
+    sm = CSessionManager(_rpdb2_pwd, fAllowUnencrypted, fAllowRemote, host)
     c = CConsole(sm)
     c.start()
 
-    time.sleep(0.5)
+    time.sleep(1.0)
 
     try:
         if fAttach:
@@ -9604,7 +10896,9 @@ def PrintUsage(fExtended = False):
     -p, --pwd       Password. This flag is available only on NT systems. 
                     On other systems the password will be queried interactively 
                     if it is needed.
-    -s, --screen    Use the Unix screen utility when spawning the debuggee.
+    -s, --screen    Use the Unix screen utility when starting the debuggee.
+                    Note that the debugger should be started as follows:
+                    screen rpdb2 -s [options] [<script-name> [<script-args>...]]
     -c, --chdir     Change the working directory to that of the launched 
                     script.
     --debug         Debug prints.
@@ -9624,7 +10918,7 @@ def main(StartClient_func = StartClient):
     create_rpdb_settings_folder()
 
     try:
-        options, args = getopt.getopt(
+        options, _rpdb2_args = getopt.getopt(
                             sys.argv[1:], 
                             'hdao:rtep:sc', 
                             ['help', 'debugee', 'debuggee', 'attach', 'host=', 'remote', 'plaintext', 'encrypt', 'pwd=', 'rid=', 'screen', 'chdir', 'debug']
@@ -9641,7 +10935,7 @@ def main(StartClient_func = StartClient):
     
     secret = None
     host = None
-    pwd = None
+    _rpdb2_pwd = None
     fchdir = False
     fAllowRemote = False
     fAllowUnencrypted = True
@@ -9665,19 +10959,23 @@ def main(StartClient_func = StartClient):
         if o in ['-e', '--encrypt']:
             fAllowUnencrypted = False
         if o in ['-p', '--pwd']:
-            pwd = a
+            _rpdb2_pwd = a
         if o in ['--rid']:
             secret = a
         if o in ['-s', '--screen']:
             g_fScreen = True
         if o in ['-c', '--chdir']:
             fchdir = True
+    
+    options = None
+    o = None
+    a = None
 
-    if (pwd is not None) and (os.name != 'nt'):
+    if (_rpdb2_pwd is not None) and (os.name != 'nt'):
         print STR_PASSWORD_NOT_SUPPORTED
         return 2
 
-    if fWrap and (len(args) == 0):
+    if fWrap and (len(_rpdb2_args) == 0):
         print "--debuggee option requires a script name with optional <script-arg> arguments"
         return 2
         
@@ -9685,11 +10983,11 @@ def main(StartClient_func = StartClient):
         print "--debuggee and --attach can not be used together."
         return 2
         
-    if fAttach and (len(args) == 0):
+    if fAttach and (len(_rpdb2_args) == 0):
         print "--attach option requires a script name to attach to."
         return 2
         
-    if fAttach and (len(args) > 1):
+    if fAttach and (len(_rpdb2_args) > 1):
         print "--attach option does not accept <script-arg> arguments."
         return 2
 
@@ -9704,8 +11002,8 @@ def main(StartClient_func = StartClient):
     if host is None:
         host = LOCALHOST    
 
-    fSpawn = (len(args) != 0) and (not fWrap) and (not fAttach)
-    fStart = (len(args) == 0)
+    fSpawn = (len(_rpdb2_args) != 0) and (not fWrap) and (not fAttach)
+    fStart = (len(_rpdb2_args) == 0)
     
     if fchdir and not (fWrap or fSpawn):
         print "-c can only be used when launching or starting a script from command line."
@@ -9715,33 +11013,33 @@ def main(StartClient_func = StartClient):
 
     if fAttach and (os.name == POSIX):
         try:
-            int(args[0])
+            int(_rpdb2_args[0])
 
-            pwd = read_pwd_file(args[0])
-            delete_pwd_file(args[0])
+            _rpdb2_pwd = read_pwd_file(_rpdb2_args[0])
+            delete_pwd_file(_rpdb2_args[0])
 
         except (ValueError, IOError):
             pass
             
     if (secret is not None) and (os.name == POSIX):
-        pwd = read_pwd_file(secret)
+        _rpdb2_pwd = read_pwd_file(secret)
         
-    if (fWrap or fAttach) and (pwd in [None, '']):
+    if (fWrap or fAttach) and (_rpdb2_pwd in [None, '']):
         print STR_PASSWORD_MUST_BE_SET
         
         while True:
-            _pwd = raw_input(STR_PASSWORD_INPUT)
-            pwd = _pwd.rstrip('\n')
-            if pwd != '':
+            _rpdb2_pwd = raw_input(STR_PASSWORD_INPUT)
+            _rpdb2_pwd = _rpdb2_pwd.rstrip('\n')
+            if _rpdb2_pwd != '':
                 break
 
         print STR_PASSWORD_CONFIRM       
                 
     if fWrap or fSpawn:
         try:
-            FindFile(args[0])
+            FindFile(_rpdb2_args[0])
         except IOError:
-            print STR_FILE_NOT_FOUND % (args[0], )
+            print STR_FILE_NOT_FOUND % (_rpdb2_args[0], )
             return 2
             
     if fWrap:
@@ -9749,27 +11047,27 @@ def main(StartClient_func = StartClient):
             print STR_ENCRYPTION_SUPPORT_ERROR
             return 2
 
-        StartServer(args, fchdir, pwd, fAllowUnencrypted, fAllowRemote, secret)
+        StartServer(_rpdb2_args, fchdir, _rpdb2_pwd, fAllowUnencrypted, fAllowRemote, secret)
         
     elif fAttach:
-        StartClient_func(args[0], fAttach, fchdir, pwd, fAllowUnencrypted, fAllowRemote, host)
+        StartClient_func(_rpdb2_args[0], fAttach, fchdir, _rpdb2_pwd, fAllowUnencrypted, fAllowRemote, host)
         
     elif fStart:
-        StartClient_func('', fAttach, fchdir, pwd, fAllowUnencrypted, fAllowRemote, host)
+        StartClient_func('', fAttach, fchdir, _rpdb2_pwd, fAllowUnencrypted, fAllowRemote, host)
         
     else:
-        if len(args) == 0:
-            _args = ''
+        if len(_rpdb2_args) == 0:
+            _rpdb2_args = ''
         else:
-            _args = '"' + string.join(args, '" "') + '"'
+            _rpdb2_args = '"' + '" "'.join(_rpdb2_args) + '"'
 
-        StartClient_func(_args, fAttach, fchdir, pwd, fAllowUnencrypted, fAllowRemote, host)
+        StartClient_func(_rpdb2_args, fAttach, fchdir, _rpdb2_pwd, fAllowUnencrypted, fAllowRemote, host)
    
     return 0
 
 
 
-if __name__=='__main__':
+if __name__ == '__main__':
     import rpdb2
 
     #
@@ -9780,14 +11078,13 @@ if __name__=='__main__':
     #
     ret = rpdb2.main()
 
-    SCRIPT_TERMINATED = True
-
     #
     # Debuggee breaks (pauses) here 
-    # before program termination.
+    # before program termination. 
     #
-    sys.exit(ret)
+    # You can step to debug any exit handlers.
+    #
+    rpdb2.setbreak()
 
 
-    
 

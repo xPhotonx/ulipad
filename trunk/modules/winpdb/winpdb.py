@@ -280,21 +280,38 @@ import sys
 
 WXVER = "2.6"
 
-STR_WXPYTHON_ERROR = """wxPython was not found.
+STR_WXPYTHON_ERROR_TITLE = 'Winpdb Error'
+STR_WXPYTHON_ERROR_MSG = """wxPython was not found.
 wxPython 2.6 or higher is required to run the winpdb GUI.
 You can get more information on wxPython in http://www.wxpython.org/
-To use the debugger without a GUI, run rpdb2.py or _rpdb2.py"""
+To use the debugger without a GUI, run rpdb2."""
+
+STR_X_ERROR_MSG = """It was not possible to start Winpdb. 
+A possible reason is that the X server (Windowing system) is not started.
+Start the X server or try to use rpdb2 instead of winpdb."""
 
 
-'''
-if 'wx' not in sys.modules:
+
+if 'wx' not in sys.modules and 'wxPython' not in sys.modules:
     try:
         import wxversion   
         wxversion.ensureMinimal(WXVER)
     except ImportError:
-        print STR_WXPYTHON_ERROR
+        print >> sys.__stderr__, STR_WXPYTHON_ERROR_MSG
+        
+        try:
+            import Tkinter
+            import tkMessageBox
+
+            Tkinter.Tk().wm_withdraw()
+            tkMessageBox.showerror(STR_WXPYTHON_ERROR_TITLE, STR_WXPYTHON_ERROR_MSG)
+
+        except:
+            pass
+
         sys.exit(1)
-'''
+
+
 
 import wx
 
@@ -368,7 +385,7 @@ MSG_WARNING_TITLE = "Warning"
 MSG_WARNING_TEMPLATE = "%s\n\nClick 'Cancel' to ignore this warning in the future."
 MSG_ERROR_TITLE = "Error"
 MSG_ERROR_FILE_NOT_FOUND = "File not found."
-MSG_ERROR_FILE_NOT_PYTHON = "Only Python files that end with '.py' are accepted."
+MSG_ERROR_FILE_NOT_PYTHON = "'%s' does not seem to be a Python source file. Only Python files are accepted."
 
 STR_FILE_LOAD_ERROR = "Failed to load source file '%s' from debuggee."
 STR_FILE_LOAD_ERROR2 = """Failed to load source file '%s' from debuggee.
@@ -417,9 +434,9 @@ TLC_HEADER_NAME = "Name"
 TLC_HEADER_REPR = "Repr"
 TLC_HEADER_TYPE = "Type"
 
-WINPDB_TITLE = "Winpdb 1.1.2"
-WINPDB_VERSION = "WINPDB_1_1_2"
-VERSION = (1, 1, 2, 0, '')
+WINPDB_TITLE = "Winpdb 1.2.0"
+WINPDB_VERSION = "WINPDB_1_2_0"
+VERSION = (1, 2, 0, 0, '')
 
 WINPDB_SIZE = "winpdb_size"
 WINPDB_MAXIMIZE = "winpdb_maximize"
@@ -489,6 +506,7 @@ ML_HELP = "&Help"
 ML_WEBSITE = "&Website"
 ML_SUPPORT = "&Support"
 ML_DOCS = "&Online Docs"
+ML_EXT_DOCS = "&External Docs"
 ML_UPDATES = "&Check for Updates"
 ML_LICENSE = "&License"
 ML_ABOUT = "&About"
@@ -500,7 +518,7 @@ TB_NEXT = "Next"
 TB_RETURN = "Return"
 TB_GOTO = "Run to cursor"
 TB_TOGGLE_BP = "Toggle breakpoint"
-TB_FILTER = "Filter modules, classes, and functions from the global and local namespaces"
+TB_FILTER = "Filter out __methods__ from objects and classes in the namespace viewer"
 TB_EXCEPTION = "Toggle 'analyze exception' mode"
 TB_TRAP = "Toggle 'trap unhandled exceptions' mode"
 
@@ -524,6 +542,7 @@ OPEN_TIP = "Open source file in the source viewer."
 WEBSITE_TIP = "Open the Winpdb homepage."
 SUPPORT_TIP = "Open the Winpdb support web page."
 DOCS_TIP = "Open the Winpdb online documentation web page."
+EXT_DOCS_TIP = "Open the Winpdb external documentation web page."
 UPDATES_TIP = "Check for updates in the Winpdb website."
 TOGGLE_TIP = "Toggle breakpoint at cursor location."
 DISABLE_TIP = "Disable all breakpoints."
@@ -550,6 +569,11 @@ BASE64_UNLOCKED = "iVBORw0KGgoAAAANSUhEUgAAABcAAAAVCAYAAACt4nWrAAAACXBIWXMAAAsTA
 BASE64_FILTER = "iVBORw0KGgoAAAANSUhEUgAAABcAAAAVCAYAAACt4nWrAAAACXBIWXMAAAsTAAALEwEAmpwYAAAAZElEQVR42u3UsQlAIQwE0Is4kvtv4Ez5hY2KmDN8xCLXiATeWQSByO3IdNc/vTxP9ZCvtZ2l2C9vvrpgYXCqwIJ3+LaAgS18WcDCDD4UnMAAkJj1ko5hYRZ3J3D3tqz+HEHkyXxoxx+Czcym0QAAAABJRU5ErkJggg=="
 BASE64_EXCEPTION = "iVBORw0KGgoAAAANSUhEUgAAABcAAAAVCAYAAACt4nWrAAAACXBIWXMAAAsTAAALEwEAmpwYAAABZklEQVR42u2UsWrCQBzGv+RKRaMgXmzPXbqESBbXUskTqIODm4/hU7j4BA4+hEhKQVyFEJDiXtsqpjWgWDQdLFdbLiTSli5+U+6f//3ug/v+B5wkkBSlSdP6/vea45jSj+C6bvmEEDCWQzKZ4nXPW2I6fcB2u4Vtl6Sj4bp+66tqFpTSwMPn8zlms2fY9o2QIwc5DgMDAKUUqpqFrlu+6P+ZqEgI4WBZBmq1JEwzjkRCguNs0G6/wnV3/IDFYo5IzjWt7zOW4+tyWUGloqDTWaLVeoFhxNBopL7sYSwnvHSh88PLM804AGAwWEP+sFIonAf2h8IPlcnsid3uJa8pihwp56Fw192BUoJ6/RGbzXFDJLTgeUv+bVkrAECxGAMhAGMEzWY6sD8054Zx5+fzVzwt1aqCUimOdFrGePyG4XCNXm/F+yeTe4xG11Ik+D7nF6E5/xykJ+Gk/umE/s/b8huv4klCvQMz8oLsLpAhfwAAAABJRU5ErkJggg=="
 BASE64_TRAP = "iVBORw0KGgoAAAANSUhEUgAAABcAAAAVCAYAAACt4nWrAAAACXBIWXMAAAsTAAALEwEAmpwYAAAA\nB3RJTUUH1wMWBzIMELT6ewAAAixJREFUeNrNlVtIkwEUx39z35zOteU252X6hbNpEeZW5oUyejC7\naEEIERhRPVTMhx6rh3rLqCB8iaSHejGiqF588QJFD3bZg4HQCsNLuE2deNk3v29urtV7N9RvQef1\nnPPjcPif/4F/GFrVBEdOFUm7jmRU+jmVoY7c1EIw7zCajNTvsuuGl3DVa8TalkNFEGUylBZ4B1fK\nPVRdg6mmbAqXTzi6P6Rl50fZ7HlPb1uuJWSOxMyCicon/dGDg3+q16wW3FBEvcHG5XoX04qE/vmA\neXmUyAXVanFS3crG0JmLl9Dt8GAaHWOLaIw/TQZNcj4Oayk1FnBbJT7NrwlewLH2JeabHZZpf2UV\nzlIRo82OYTzBAckQPzT3fWHviDSzTyZel0WDlODz+KrgG6g7KRNs0RCRY7JUkJTILRaxlXuw2woJ\nGc34ZQVhbjah6OKuzkUG3q568gSB4eraxsBU8OuLPamKNxOTS8VlrnjBVjeZgS8MPbxH5sQwvjJl\nZ9dHfP51n4uYxblGJw9edXCj5xYDrW5e70I83ld936lKLdnk7naIC+e9pwjPjlA2NsiiEsx53IPc\nr0otetyub0TPxldi7wJhtgfCzNgi3HmmrPhUOUdzzc1KHY67AoXXBUydwOm19P91LTo2eVMs12vQ\nhCD1Mkm4Ly1erCf/iBZrr0DRbT21rrSZvIC4X4u1W0dJuxrOL66YxTYRojVgfOQyN3el9TUJ5DXo\nMTv53+MHY3Sxa+ko45EAAAAASUVORK5CYII=\n"
+BASE64_FORK = "iVBORw0KGgoAAAANSUhEUgAAABcAAAAVBAMAAABfzGiYAAAAD1BMVEWZAACsqJn///8BAQEAAIBm\nb8BsAAAAAXRSTlMAQObYZgAAAAFiS0dEAIgFHUgAAAAJcEhZcwAACxMAAAsTAQCanBgAAAAHdElN\nRQfXBwQRJRb/bmGBAAAAT0lEQVQY02NgIA4wCoIAjKMEBIoMDlg4ysa4ZJSMjY0VWVyQZFhcXFyQ\nZViQ9UA4ysZGCA6KDEiPi4sDC5JpKMpYQGbDXe3igOQXFnweBQD3YA+4tU+1lQAAAABJRU5ErkJg\ngg==\n"
+
+BASE64_ICON_16 = 'iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAABmJLR0QA/wD/AP+gvaeTAAAACXBI\nWXMAAAsTAAALEwEAmpwYAAAAB3RJTUUH1wceCwAVoIFxgQAAAqdJREFUOMuFkltIFFEYx/9zdnN3\nci+E2Wq7uWp4rcBbSQaBRCClUg/lUz0URYTRi1FPgWBIBT1UZpAPERSRmERkN6UI8yExtdhYUTeV\ndbNdXW8zszPn7Mz04CXcNP8vh3O+8/+d7/vOx2FRN560WwRFPRdRWKWsRF2irIQEMdIeGhu49+Fh\n/TjWEAcAdY/eZzFVb5MUli4pDJJMsbzKNBz2D53ofXbzDQAtFmC4/rjdqkT1Tklh6X+NDJJCIckM\nERrlidlauZE3vwuPeQOxACIq6nlJYWlLZlFmEBUKUWaQKIOqagBHrFb3rqsA+H8AksIqRZlCVBhE\nmS6/POn3waBRCMFRmAwqUpOM+5/fyq96ebskYSVAps6VdTPMB0ZwuigJTWdLUXesGG65D/tSgnZX\nAqkuy6OeroacMgBkMQMaXmgWw9xMeCYiK+rO7hdIE8IYbG3FBq8H6b39KLAMQaeMGJnk2J3BNd+5\nmLoXAGcUxEiHHEW+qFBEhPkQH282lY94eb2lBQcIwReOQ6HPh2xhFgFzHIEOGAksh/eYr10Ayo3T\nAd9d3eY8I1PVruoghc5wNCfRCo/HgwCACQAHzQR8igGIclsAHQCwLZGUuBzx2w0/ez/N2VNyvUbe\nVgHo3NG075KtIM7G+oMwUx3gCZJqkmHP5GExw7rcPA6Gr8NaB7e0zyo9XmzZmnG5sbTNne+medBU\nTIeisG0ywmTiVp3CoupfR2Ij/ETLjksOu1aLdTQ+pf92VXkPkZjzSPegfl/VyNR6gKcfhTYAvlgA\nKq78CPYMq6dUjYusZX7bQ7tqGv0NAGYNq11oejU56HRYOjfbDJlWniQTbmFoAmE9+OC10HyyfrQW\nQB8AjftPlhwAS3aqLbMkl88Y8FP6+dv0KAAfgBks/ucfwdhZh0OZfFUAAAAASUVORK5CYII=\n'
+BASE64_ICON_32 = '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\nTxVPItzU3gAAAABJRU5ErkJggg==\n'
+BASE64_ICON_64 = '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\n'
 
 SB_LINE = "Line"
 SB_COL = "Col"
@@ -603,12 +627,14 @@ ABOUT_HTML_SUFFIX = """
 """
 
 WEBSITE_URL = "http://www.digitalpeers.com/pythondebugger/"
-SUPPORT_URL = "http://www.digitalpeers.com/pythondebugger/support.htm"
-DOCS_URL = "http://www.digitalpeers.com/pythondebugger/docs.htm"
-UPDATES_URL = "http://www.digitalpeers.com/pythondebugger/download.htm"
+SUPPORT_URL = "http://www.digitalpeers.com/pythondebugger/?page_id=4"
+DOCS_URL = "http://www.digitalpeers.com/pythondebugger/?page_id=5"
+EXT_DOCS_URL = "http://www.digitalpeers.com/pythondebugger/?page_id=17"
+UPDATES_URL = "http://www.digitalpeers.com/pythondebugger/?page_id=3"
 
 STR_ERROR_INTERFACE_COMPATIBILITY = "The rpdb2 module which was found by Winpdb is of unexpected version (version expected: %s, version found: %s). Please upgrade to the latest versions of winpdb.py and rpdb2.py."
-STR_NAMESPACE_DEADLOCK = 'Data Not Available'
+STR_NAMESPACE_DEADLOCK = 'Data Retrieval Timeout'
+STR_NAMESPACE_LOADING = 'Loading...'
 
 BAD_FILE_WARNING_TIMEOUT_SEC = 10.0
 POSITION_TIMEOUT = 2.0
@@ -616,6 +642,18 @@ POSITION_TIMEOUT = 2.0
 
 
 g_ignored_warnings = {'': True}
+
+
+
+def open_new(url):
+    if sys.version.startswith('2.5.') and 'ubuntu' in sys.version:
+        w = webbrowser.get()
+        if 'firefox' in w.name:
+            cmd = '%s -new-window "%s"' % (w.name, url)
+            os.popen(cmd)
+            return
+
+    webbrowser.open_new(url) 
 
 
 
@@ -999,7 +1037,7 @@ class CJobs:
             exc_info = sys.exc_info()
 
             if callback == None:
-                rpdb2.print_debug()
+                rpdb2.print_debug_exception()
 
         if callback is not None:
             wx.CallAfter(callback, r, exc_info)
@@ -1052,7 +1090,7 @@ class CAsyncSessionManagerCall:
             self.m_session_manager.report_exception(*sys.exc_info())
         except:
             self.m_session_manager.report_exception(*sys.exc_info())
-            rpdb2.print_debug(True)
+            rpdb2.print_debug_exception(True)
 
     
     def __call__(self, *args):
@@ -1112,6 +1150,28 @@ class CWinpdbWindow(wx.Frame, CMainWindow):
         if hasattr(self, 'SetLayoutDirection'):
             self.SetLayoutDirection(1)
         
+        image = image_from_base64(BASE64_ICON_16)
+        bitmap = wx.BitmapFromImage(image)
+        icon16 = wx.EmptyIcon()
+        icon16.CopyFromBitmap(bitmap)
+
+        image = image_from_base64(BASE64_ICON_32)
+        bitmap = wx.BitmapFromImage(image)
+        icon32 = wx.EmptyIcon()
+        icon32.CopyFromBitmap(bitmap)
+
+        image = image_from_base64(BASE64_ICON_64)
+        bitmap = wx.BitmapFromImage(image)
+        icon64 = wx.EmptyIcon()
+        icon64.CopyFromBitmap(bitmap)
+
+        ibundle = wx.IconBundle()
+        ibundle.AddIcon(icon16)
+        ibundle.AddIcon(icon32)
+        ibundle.AddIcon(icon64)
+
+        self.SetIcons(ibundle)
+
         self.Maximize(settings[WINPDB_MAXIMIZE])
         
         self.m_session_manager = session_manager
@@ -1159,21 +1219,22 @@ class CWinpdbWindow(wx.Frame, CMainWindow):
             "/4/" + ML_HELP +   "/0/" + ML_WEBSITE: {COMMAND: self.do_website, TOOLTIP: WEBSITE_TIP}, 
             "/4/" + ML_HELP +   "/1/" + ML_SUPPORT: {COMMAND: self.do_support, TOOLTIP: SUPPORT_TIP}, 
             "/4/" + ML_HELP +   "/2/" + ML_DOCS: {COMMAND: self.do_docs, TOOLTIP: DOCS_TIP}, 
-            "/4/" + ML_HELP +   "/3/" + ML_UPDATES: {COMMAND: self.do_updates, TOOLTIP: UPDATES_TIP}, 
-            "/4/" + ML_HELP +   "/4/" + ML_ABOUT: {COMMAND: self.do_about}, 
-            "/4/" + ML_HELP +   "/5/" + ML_LICENSE: {COMMAND: self.do_license}
+            "/4/" + ML_HELP +   "/3/" + ML_EXT_DOCS: {COMMAND: self.do_ext_docs, TOOLTIP: EXT_DOCS_TIP}, 
+            "/4/" + ML_HELP +   "/4/" + ML_UPDATES: {COMMAND: self.do_updates, TOOLTIP: UPDATES_TIP}, 
+            "/4/" + ML_HELP +   "/5/" + ML_ABOUT: {COMMAND: self.do_about}, 
+            "/4/" + ML_HELP +   "/6/" + ML_LICENSE: {COMMAND: self.do_license}
         }
         
         self.init_menubar(menu_resource)
         
         toolbar_resource = [
-            {LABEL: TB_GO,      DATA: BASE64_GO,    COMMAND: self.do_go},
             {LABEL: TB_BREAK,   DATA: BASE64_BREAK, COMMAND: self.do_break},
+            {LABEL: TB_GO,      DATA: BASE64_GO,    COMMAND: self.do_go},
             {LABEL: ML_SEPARATOR},
-            {LABEL: TB_STEP,    DATA: BASE64_STEP,  COMMAND: self.do_step},
             {LABEL: TB_NEXT,    DATA: BASE64_NEXT,  COMMAND: self.do_next},
-            {LABEL: TB_RETURN,  DATA: BASE64_RETURN, COMMAND: self.do_return},
+            {LABEL: TB_STEP,    DATA: BASE64_STEP,  COMMAND: self.do_step},
             {LABEL: TB_GOTO,    DATA: BASE64_GOTO,  COMMAND: self.do_goto},
+            {LABEL: TB_RETURN,  DATA: BASE64_RETURN, COMMAND: self.do_return},
             {LABEL: ML_SEPARATOR},
             {LABEL: TB_TOGGLE_BP, DATA: BASE64_TOGGLE_BP,  COMMAND: self.toggle_breakpoint},
             {LABEL: ML_SEPARATOR},
@@ -1186,7 +1247,7 @@ class CWinpdbWindow(wx.Frame, CMainWindow):
 
         ftrap = self.m_session_manager.get_trap_unhandled_exceptions()
         self.set_toggle(TB_TRAP, ftrap)
-        
+       
         statusbar_resource = [
             {WIDTH: -2},
             {WIDTH: -1, FORMAT: SB_STATE + ": %(" + SB_STATE + ")s", KEYS: [SB_STATE]},
@@ -1196,31 +1257,33 @@ class CWinpdbWindow(wx.Frame, CMainWindow):
 
         self.init_statusbar(statusbar_resource)
 
-        self.m_splitterv = wx.SplitterWindow(self, -1, style = wx.SP_LIVE_UPDATE | wx.SP_3D)
+        self.m_splitterv = wx.SplitterWindow(self, -1, style = wx.SP_LIVE_UPDATE | wx.SP_NOBORDER)
         self.m_splitterv.SetMinimumPaneSize(100)
         self.m_splitterv.SetSashGravity(0.5)
         
-        self.m_splitterh1 = wx.SplitterWindow(self.m_splitterv, -1, style = wx.SP_LIVE_UPDATE | wx.SP_3D)
+        self.m_splitterh1 = wx.SplitterWindow(self.m_splitterv, -1, style = wx.SP_LIVE_UPDATE | wx.SP_NOBORDER)
         self.m_splitterh1.SetMinimumPaneSize(70)
         self.m_splitterh1.SetSashGravity(0.67)
 
-        self.m_splitterh2 = wx.SplitterWindow(self.m_splitterh1, -1, style = wx.SP_LIVE_UPDATE | wx.SP_3D)
+        self.m_splitterh2 = wx.SplitterWindow(self.m_splitterh1, -1, style = wx.SP_LIVE_UPDATE | wx.SP_NOBORDER)
         self.m_splitterh2.SetMinimumPaneSize(70)
         self.m_splitterh2.SetSashGravity(0.5)
         
-        self.m_namespace_viewer = CNamespaceViewer(self.m_splitterh2, style = wx.STATIC_BORDER, session_manager = self.m_session_manager)
+        self.m_namespace_viewer = CNamespaceViewer(self.m_splitterh2, style = wx.NO_BORDER, session_manager = self.m_session_manager)
+        self.m_namespace_viewer.set_filter(True)
+        self.set_toggle(TB_FILTER, True)
 
-        self.m_threads_viewer = CThreadsViewer(self.m_splitterh2, style = wx.STATIC_BORDER, select_command = self.OnThreadSelected)
+        self.m_threads_viewer = CThreadsViewer(self.m_splitterh2, style = wx.NO_BORDER, select_command = self.OnThreadSelected)
 
-        self.m_stack_viewer = CStackViewer(self.m_splitterh1, style = wx.STATIC_BORDER, select_command = self.OnFrameSelected)
+        self.m_stack_viewer = CStackViewer(self.m_splitterh1, style = wx.NO_BORDER, select_command = self.OnFrameSelected)
 
-        self.m_splitterh3 = wx.SplitterWindow(self.m_splitterv, -1, style = wx.SP_LIVE_UPDATE | wx.SP_3D)
+        self.m_splitterh3 = wx.SplitterWindow(self.m_splitterv, -1, style = wx.SP_LIVE_UPDATE | wx.SP_NOBORDER)
         self.m_splitterh3.SetMinimumPaneSize(100)
         self.m_splitterh3.SetSashGravity(1.0)
         
-        self.m_code_viewer = CCodeViewer(self.m_splitterh3, style = wx.STATIC_BORDER | wx.TAB_TRAVERSAL, session_manager = self.m_session_manager, source_manager = self.m_source_manager, notify_filename = self.do_notify_filename)        
+        self.m_code_viewer = CCodeViewer(self.m_splitterh3, style = wx.NO_BORDER | wx.TAB_TRAVERSAL, session_manager = self.m_session_manager, source_manager = self.m_source_manager, notify_filename = self.do_notify_filename)        
 
-        self.m_console = CConsole(self.m_splitterh3, style = wx.STATIC_BORDER | wx.TAB_TRAVERSAL, session_manager = self.m_session_manager, exit_command = self.do_exit)
+        self.m_console = CConsole(self.m_splitterh3, style = wx.NO_BORDER | wx.TAB_TRAVERSAL, session_manager = self.m_session_manager, exit_command = self.do_exit)
         
         self.m_splitterh2.SplitHorizontally(self.m_namespace_viewer, self.m_threads_viewer)
         self.m_splitterh1.SplitHorizontally(self.m_splitterh2, self.m_stack_viewer)
@@ -1250,6 +1313,9 @@ class CWinpdbWindow(wx.Frame, CMainWindow):
 
         event_type_dict = {rpdb2.CEventUnhandledException: {}}
         self.m_session_manager.register_callback(self.update_unhandled_exception, event_type_dict, fSingleUse = False)
+
+        event_type_dict = {rpdb2.CEventPsycoWarning: {}}
+        self.m_session_manager.register_callback(self.update_psyco_warning, event_type_dict, fSingleUse = False)
 
         event_type_dict = {rpdb2.CEventThreadBroken: {}}
         self.m_session_manager.register_callback(self.update_thread_broken, event_type_dict, fSingleUse = False)
@@ -1458,6 +1524,16 @@ class CWinpdbWindow(wx.Frame, CMainWindow):
             return
 
         self.m_async_sm.set_analyze(True)
+
+
+    def update_psyco_warning(self, event):
+        wx.CallAfter(self.notify_psyco_warning)
+
+
+    def notify_psyco_warning(self):
+        dlg = wx.MessageDialog(self, rpdb2.STR_PSYCO_WARNING, MSG_WARNING_TITLE, wx.OK | wx.ICON_WARNING)
+        dlg.ShowModal()
+        dlg.Destroy()
         
     
     def do_filter(self, event):
@@ -1623,19 +1699,23 @@ class CWinpdbWindow(wx.Frame, CMainWindow):
 
 
     def do_website(self, event):
-        self.job_post(webbrowser.open_new, (WEBSITE_URL, ))
+        self.job_post(open_new, (WEBSITE_URL, ))
 
 
     def do_support(self, event):
-        self.job_post(webbrowser.open_new, (SUPPORT_URL, ))
+        self.job_post(open_new, (SUPPORT_URL, ))
 
 
     def do_docs(self, event):
-        self.job_post(webbrowser.open_new, (DOCS_URL, ))
+        self.job_post(open_new, (DOCS_URL, ))
+
+
+    def do_ext_docs(self, event):
+        self.job_post(open_new, (EXT_DOCS_URL, ))
 
 
     def do_updates(self, event):
-        self.job_post(webbrowser.open_new, (UPDATES_URL, ))
+        self.job_post(open_new, (UPDATES_URL, ))
 
 
     def do_license(self, event):
@@ -1716,15 +1796,15 @@ class CWinpdbWindow(wx.Frame, CMainWindow):
 
         
     def do_disable(self, event):
-        self.m_async_sm.disable_breakpoint([], fAll = True)
+        self.m_async_sm.disable_breakpoint([], True)
 
         
     def do_enable(self, event):
-        self.m_async_sm.enable_breakpoint([], fAll = True)
+        self.m_async_sm.enable_breakpoint([], True)
 
         
     def do_clear(self, event):
-        self.m_async_sm.delete_breakpoint([], fAll = True)
+        self.m_async_sm.delete_breakpoint([], True)
 
         
     def do_load(self, event):
@@ -1747,7 +1827,7 @@ class CWinpdbWindow(wx.Frame, CMainWindow):
 
         
     def do_save(self, event):
-        self.m_async_sm.with_callback(self.callback_save).load_breakpoints()
+        self.m_async_sm.with_callback(self.callback_save).save_breakpoints()
 
 
     def callback_save(self, r, exc_info):
@@ -2067,7 +2147,13 @@ class CSourceManager:
             u = _source.decode(se, 'ignore')
             source = u.encode(de, 'ignore')
             _time = 0
-            
+        
+        elif t == rpdb2.NotPythonSource and fComplain:
+            dlg = wx.MessageDialog(None, MSG_ERROR_FILE_NOT_PYTHON % (filename, ), MSG_WARNING_TITLE, wx.OK | wx.ICON_WARNING)
+            dlg.ShowModal()
+            dlg.Destroy()
+            return
+
         elif t in (IOError, socket.error, rpdb2.CConnectionException):
             if fComplain:
                 dlg = wx.MessageDialog(None, STR_FILE_LOAD_ERROR % (filename, ), MSG_WARNING_TITLE, wx.OK | wx.ICON_WARNING)
@@ -2733,11 +2819,16 @@ class CNamespacePanel(wx.Panel, CJobs):
         
     def OnItemActivated(self, event):
         item = event.GetItem()
-        expr = self.m_tree.GetPyData(item)
-        if expr == STR_NAMESPACE_DEADLOCK:
+        (expr, is_valid) = self.m_tree.GetPyData(item)
+        if expr in [STR_NAMESPACE_LOADING, STR_NAMESPACE_DEADLOCK, rpdb2.STR_MAX_NAMESPACE_WARNING_TITLE]:
             return
 
-        expr_dialog = CExpressionDialog(self)
+        if is_valid:
+            default_value = self.m_tree.GetItemText(item, 2)[1:]
+        else:
+            default_value = ''
+
+        expr_dialog = CExpressionDialog(self, default_value)
         pos = self.GetPositionTuple()
         expr_dialog.SetPosition((pos[0] + 50, pos[1] + 50))
         r = expr_dialog.ShowModal()
@@ -2745,11 +2836,10 @@ class CNamespacePanel(wx.Panel, CJobs):
             expr_dialog.Destroy()
             return
 
-        expr = expr_dialog.get_expression()
+        _expr = expr_dialog.get_expression()
         expr_dialog.Destroy()
 
-        _expr = self.m_tree.GetPyData(item)
-        _suite = "%s = %s" % (_expr, expr)
+        _suite = "%s = %s" % (expr, _expr)
         
         self.m_async_sm.with_callback(self.callback_execute).execute(_suite)
 
@@ -2796,9 +2886,9 @@ class CNamespacePanel(wx.Panel, CJobs):
             return n 
 
         child = self.get_children(item)[0]
-        expr = self.m_tree.GetPyData(child)
+        (expr, is_valid) = self.m_tree.GetPyData(child)
 
-        if expr == STR_NAMESPACE_DEADLOCK:
+        if expr in [STR_NAMESPACE_LOADING, STR_NAMESPACE_DEADLOCK]:
             return 0
 
         return 1
@@ -2814,7 +2904,7 @@ class CNamespacePanel(wx.Panel, CJobs):
         if self.GetChildrenCount(item) > 0:
             return
         
-        expr = self.m_tree.GetPyData(item)
+        (expr, is_valid) = self.m_tree.GetPyData(item)
 
         l = [e for e in _map if e.get(rpdb2.DICT_KEY_EXPR, None) == expr]
         if l == []:
@@ -2838,16 +2928,12 @@ class CNamespacePanel(wx.Panel, CJobs):
         #
 
         snl = _r[rpdb2.DICT_KEY_SUBNODES] 
-
-        sorted_snl = [(r[rpdb2.DICT_KEY_NAME], r) for r in snl]
-        if _r[rpdb2.DICT_KEY_TYPE] != 'list':
-            sorted_snl.sort()
-        
-        for (key_name, r) in sorted_snl:
-            child = self.m_tree.AppendItem(item, key_name)
+       
+        for r in snl:
+            child = self.m_tree.AppendItem(item, r[rpdb2.DICT_KEY_NAME])
             self.m_tree.SetItemText(child, ' ' + r[rpdb2.DICT_KEY_REPR], 2)
             self.m_tree.SetItemText(child, ' ' + r[rpdb2.DICT_KEY_TYPE], 1)
-            self.m_tree.SetItemPyData(child, r[rpdb2.DICT_KEY_EXPR])
+            self.m_tree.SetItemPyData(child, (r[rpdb2.DICT_KEY_EXPR], r[rpdb2.DICT_KEY_IS_VALID]))
             self.m_tree.SetItemHasChildren(child, (r[rpdb2.DICT_KEY_N_SUBNODES] > 0))
 
         self.m_tree.Expand(item)
@@ -2862,10 +2948,17 @@ class CNamespacePanel(wx.Panel, CJobs):
         
         if self.GetChildrenCount(item) > 0:
             event.Skip()
+            self.m_tree.Refresh();
             return
             
         self.m_tree.DeleteChildren(item)
-        expr = self.m_tree.GetPyData(item)
+        
+        child = self.m_tree.AppendItem(item, STR_NAMESPACE_LOADING)
+        self.m_tree.SetItemText(child, ' ' + STR_NAMESPACE_LOADING, 2)
+        self.m_tree.SetItemText(child, ' ' + STR_NAMESPACE_LOADING, 1)
+        self.m_tree.SetItemPyData(child, (STR_NAMESPACE_LOADING, False))
+
+        (expr, is_valid) = self.m_tree.GetPyData(item)
 
         f = lambda r, exc_info: self.callback_ns(r, exc_info, expr)        
         self.m_async_sm.with_callback(f).get_namespace([(expr, True)], self.m_fFilter)
@@ -2879,22 +2972,26 @@ class CNamespacePanel(wx.Panel, CJobs):
         item = self.find_item(expr)
         if item == None:
             return
-            
+        
+        self.m_tree.DeleteChildren(item)
+    
         if t != None or r is None or len(r) == 0:
             child = self.m_tree.AppendItem(item, STR_NAMESPACE_DEADLOCK)
             self.m_tree.SetItemText(child, ' ' + STR_NAMESPACE_DEADLOCK, 2)
             self.m_tree.SetItemText(child, ' ' + STR_NAMESPACE_DEADLOCK, 1)
-            self.m_tree.SetItemPyData(child, STR_NAMESPACE_DEADLOCK)
+            self.m_tree.SetItemPyData(child, (STR_NAMESPACE_DEADLOCK, False))
             self.m_tree.Expand(item)
             return
             
-        self.expand_item(item, r, False, True)               
+        self.expand_item(item, r, False, True)  
+
+        self.m_tree.Refresh()
         
 
     def find_item(self, expr):
         item = self.m_tree.GetRootItem()
         while item:
-            expr2 = self.m_tree.GetPyData(item)
+            (expr2, is_valid) = self.m_tree.GetPyData(item)
             if expr2 == expr:
                 return item               
                 
@@ -2925,7 +3022,7 @@ class CNamespacePanel(wx.Panel, CJobs):
 
         while len(s) > 0:
             item = s.pop(0)
-            expr = self.m_tree.GetPyData(item)
+            (expr, is_valid) = self.m_tree.GetPyData(item)
             fExpand = self.m_tree.IsExpanded(item) and self.GetChildrenCount(item) > 0
             if not fExpand:
                 continue
@@ -2977,7 +3074,7 @@ class CNamespacePanel(wx.Panel, CJobs):
                 wx.CallAfter(self.m_tree.DeleteAllItems)
                 
             except:
-                rpdb2.print_debug()
+                rpdb2.print_debug_exception()
 
             self.m_lock.acquire()
             self.m_n_workers -= 1
@@ -2988,7 +3085,7 @@ class CNamespacePanel(wx.Panel, CJobs):
         self.m_tree.DeleteAllItems()
 
         root = self.m_tree.AddRoot('root')
-        self.m_tree.SetItemPyData(root, self.get_root_expr())
+        self.m_tree.SetItemPyData(root, (self.get_root_expr(), False))
         self.m_tree.SetItemHasChildren(root, True)
 
         s = [root]
@@ -3420,7 +3517,7 @@ class CAttachDialog(wx.Dialog, CJobs):
 
         elif t != None:
             self.m_session_manager.report_exception(t, v, tb)
-            rpdb2.print_debug(True)
+            rpdb2.print_debug_exception(True)
             return
 
         self.m_async_sm.with_callback(self.update_body).calc_server_list()
@@ -3431,7 +3528,7 @@ class CAttachDialog(wx.Dialog, CJobs):
 
         if t != None:
             self.m_session_manager.report_exception(t, v, tb)
-            rpdb2.print_debug(True)
+            rpdb2.print_debug_exception(True)
             return
 
         (self.m_server_list, self.m_errors) = r
@@ -3494,7 +3591,7 @@ class CAttachDialog(wx.Dialog, CJobs):
         
 
 class CExpressionDialog(wx.Dialog):
-    def __init__(self, parent):
+    def __init__(self, parent, default_value):
         wx.Dialog.__init__(self, parent, -1, DLG_EXPR_TITLE)
         
         sizerv = wx.BoxSizer(wx.VERTICAL)
@@ -3507,7 +3604,7 @@ class CExpressionDialog(wx.Dialog):
 
         label = wx.StaticText(self, -1, LABEL_EXPR)
         sizerh.Add(label, 0, wx.ALIGN_CENTRE | wx.ALL, 5)
-        self.m_entry_expr = wx.TextCtrl(self, size = (200, -1))
+        self.m_entry_expr = wx.TextCtrl(self, value = default_value, size = (200, -1))
         self.m_entry_expr.SetFocus()
         self.Bind(wx.EVT_TEXT, self.OnText, self.m_entry_expr)
         sizerh.Add(self.m_entry_expr, 0, wx.ALIGN_CENTRE | wx.ALL, 5)
@@ -3622,7 +3719,7 @@ class COpenDialog(wx.Dialog):
         sizerv.Add(btnsizer, 0, wx.ALIGN_RIGHT | wx.ALL, 5)
         
         self.m_ok = wx.Button(self, wx.ID_OK)
-        self.Bind(wx.EVT_BUTTON, self.do_ok, self.m_ok)
+        self.m_ok.Disable()
         self.m_ok.SetDefault()
         btnsizer.AddButton(self.m_ok)
 
@@ -3663,28 +3760,6 @@ class COpenDialog(wx.Dialog):
         self.m_entry.SetValue(abs_path)
 
 
-    def do_validate(self):
-        filename = self.m_entry.GetValue()
-        if filename[:1] + filename[-1:] in ['""', "''"]:
-            filename = filename[1:-1]
-
-        if not rpdb2.IsPythonSourceFile(filename):
-            dlg = wx.MessageDialog(self, MSG_ERROR_FILE_NOT_PYTHON, MSG_ERROR_TITLE, wx.OK | wx.ICON_ERROR)
-            dlg.ShowModal()
-            dlg.Destroy()
-            return False
-
-        return True
-
-
-    def do_ok(self, event):
-        f = self.do_validate()
-        if not f:
-            return
-
-        event.Skip()
-
-        
     def get_file_name(self):
         return self.m_entry.GetValue()
 
@@ -3805,14 +3880,24 @@ class CLaunchDialog(wx.Dialog):
 
 def StartClient(command_line, fAttach, fchdir, pwd, fAllowUnencrypted, fRemote, host):
     sm = rpdb2.CSessionManager(pwd, fAllowUnencrypted, fRemote, host)
-    app = CWinpdbApp(sm, fchdir, command_line, fAttach, fAllowUnencrypted)
+
+    try:
+        app = CWinpdbApp(sm, fchdir, command_line, fAttach, fAllowUnencrypted)
+
+    except SystemError:
+        if os.name == rpdb2.POSIX:
+            print >> sys.__stderr__, STR_X_ERROR_MSG
+            sys.exit(1)
+
+        raise
+        
     app.MainLoop()
 
 
 
 def main():
-    if rpdb2.get_version() != "RPDB_2_1_2":
-        print STR_ERROR_INTERFACE_COMPATIBILITY % ("RPDB_2_1_2", rpdb2.get_version())
+    if rpdb2.get_version() != "RPDB_2_2_0":
+        print STR_ERROR_INTERFACE_COMPATIBILITY % ("RPDB_2_2_0", rpdb2.get_version())
         return
         
     return rpdb2.main(StartClient)
