@@ -1,4 +1,7 @@
 ﻿$Rev: 2129 $
+[2007/08/08]
+                    Fix document NewEdit->UliPad
+                    
 [2007/08/07]
 mRecentFile.py      增加Alt+R给最近打开文件菜单
 

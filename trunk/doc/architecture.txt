@@ -1,11 +1,10 @@
 ======================
- NewEditµÄÌåÏµ½á¹¹Éè¼Æ
+ UliPadµÄÌåÏµ½á¹¹Éè¼Æ
 ======================
 
 :×÷Õß: limodou
 :ÁªÏµ: limodou@gmail.com
-:°æ±¾: $Id: architecture.txt 42 2005-09-28 05:19:21Z limodou $
-:Ö÷Ò³: http://wiki.woodpecker.org.cn/moin/NewEdit
+:Ö÷Ò³: http://code.google.com/p/ulipad/
 :BLOG: http://www.donews.net/limodou
 :°æÈ¨: GPL
 
@@ -17,7 +16,7 @@
 
 ±àÐ´Ä¿µÄ
 ~~~~~~~~
-NewEdit ÖÐÊ¹ÓÃÁË´óÁ¿µÄ Mixins ¼¼Êõ£¬Òò´Ë±¾ÎÄµµµÄ´óÁ¿Æª·ùÊÇÀ´½²½â Mixins ¼¼Êõ¡£Í¬Ê±¶ÔÕûÌåÈí¼þ¹¦ÄÜÉè¼Æ
+UliPad ÖÐÊ¹ÓÃÁË´óÁ¿µÄ Mixins ¼¼Êõ£¬Òò´Ë±¾ÎÄµµµÄ´óÁ¿Æª·ùÊÇÀ´½²½â Mixins ¼¼Êõ¡£Í¬Ê±¶ÔÕûÌåÈí¼þ¹¦ÄÜÉè¼Æ
 ºÍ½á¹¹£¬ÒÔ¼°Ò»Ð©¼¼Êõ¹Ø¼üµã½øÐÐÁË½²½â¡£
 
 ÏîÄ¿ÐèÇó
@@ -43,14 +42,14 @@ Mixins¿ª·¢¿ò¼Ü£¬ÔÚ¹¦ÄÜÉÏÒªÇóÊµÏÖ»ù±¾±à¼­¹¤¾ßµÄÈ«²¿¹¦ÄÜ£¬Í¬Ê±»¹ÒªÕë¶Ô Python ÓïÑÔ
 
 Èí¼þ¿ª·¢ÊÇÒ»¼þºÜÍ´¿àµÄÊÂÇé£¬´óÁ¿ÐÂµÄÐèÇóÓëÏÖÓÐÈí¼þ½á¹¹Ö®¼äµÄ³åÍ»ÊÇÔì³ÉÈí¼þÄÑÒÔÎ¬»¤µÄÒ»¸öÖ÷ÒªÔ­Òò¡£ºÜ
 ¶àÈí¼þÔÚ¸Õ¿ªÊ¼Ê±¿ÉÄÜ½á¹¹ºÜºÃ£¬±ãÓÚÀ©³ä£¬µ«Ëæ×ÅÈí¼þ¹¦ÄÜµÄ·á¸»£¬´úÂëµÄÔö¼Ó£¬¿ÉÄÜ»áÔì³É½á¹¹Ò²±äµÃ²»ÔÙÊÊÓ¦
-ÐÂÐèÇóµÄ·¢Õ¹¡£¶ÔÓÚ±à¼­Æ÷Èí¼þÀ´Ëµ£¬ÕâÑùµÄÎÊÌâ¸üÎªÃ÷ÏÔ¡£ÄÇÃ´NewEdit¾ÍÊÇÏëÔÚÈçºÎ¹¹ÔìÒ»ÖÖÁé»îµÄ½á¹¹·½Ãæ½ø
-ÐÐµÄÒ»ÖÖÓÐÒæµØÌ½Ë÷£¬Í¬Ê±Ëü»á·¢Õ¹³ÉÎªÒ»¸ö×¨Òµ¡¢ÎÈ¶¨µØ±à¼­Æ÷Èí¼þ¡£Òò´Ë£¬NewEditµÄÉè¼ÆºËÐÄ¾ÍÊÇ£¬ÈçºÎ¹¹ÔìÒ»
+ÐÂÐèÇóµÄ·¢Õ¹¡£¶ÔÓÚ±à¼­Æ÷Èí¼þÀ´Ëµ£¬ÕâÑùµÄÎÊÌâ¸üÎªÃ÷ÏÔ¡£ÄÇÃ´UliPad¾ÍÊÇÏëÔÚÈçºÎ¹¹ÔìÒ»ÖÖÁé»îµÄ½á¹¹·½Ãæ½ø
+ÐÐµÄÒ»ÖÖÓÐÒæµØÌ½Ë÷£¬Í¬Ê±Ëü»á·¢Õ¹³ÉÎªÒ»¸ö×¨Òµ¡¢ÎÈ¶¨µØ±à¼­Æ÷Èí¼þ¡£Òò´Ë£¬UliPadµÄÉè¼ÆºËÐÄ¾ÍÊÇ£¬ÈçºÎ¹¹ÔìÒ»
 ÖÖÁé»îµÄ¼Ü¹¹£¬Ê¹µÃÐÂ¹¦ÄÜµÄÔö¼Ó¸üÎª·½±ãºÍÒ×ÓÚÎ¬»¤¡£
 
-NewEditÊ¹ÓÃµÄÈí¼þ»ù´¡ÊÇPython+wxPython¡£Òò´Ë£¬NewEdit¿ÉÒÔ³ä·ÖµØÏíÊÜPythonµÄ¶¯Ì¬ÌØÐÔËù´øÀ´µÄºÃ´¦£¬Í¬
+UliPadÊ¹ÓÃµÄÈí¼þ»ù´¡ÊÇPython+wxPython¡£Òò´Ë£¬UliPad¿ÉÒÔ³ä·ÖµØÏíÊÜPythonµÄ¶¯Ì¬ÌØÐÔËù´øÀ´µÄºÃ´¦£¬Í¬
 Ê±ÓÉÓÚÊ¹ÓÃÁËwxPython£¬»¹¿ÉÒÔÊµÏÖ¿çÆ½Ì¨µÄÔËÐÐ¡£
 
-ÕâÑù£¬NewEditµÄÉè¼ÆË¼Ïë¾ÍÊÇ³ä·ÖÀûÓÃPythonÓïÑÔµÄ¶¯Ì¬ÌØÐÔ£¬¹¹ÔìÒ×ÓÚÀ©³ä¶øÓÖÁé»îµÄÈí¼þÌåÏµ¡£¾ßÌåµÄÊµÏÖ¼¼Êõ
+ÕâÑù£¬UliPadµÄÉè¼ÆË¼Ïë¾ÍÊÇ³ä·ÖÀûÓÃPythonÓïÑÔµÄ¶¯Ì¬ÌØÐÔ£¬¹¹ÔìÒ×ÓÚÀ©³ä¶øÓÖÁé»îµÄÈí¼þÌåÏµ¡£¾ßÌåµÄÊµÏÖ¼¼Êõ
 ¾ÍÊÇÈ«²¿²ÉÓÃMixinºÍPluginµÄÉè¼ÆÓë¿ª·¢·½·¨£¬¸üÎªÍ¨Ë×µØËµ·¨¾ÍÊÇ·Ö²¼Ê½Àà±à³Ì¼¼Êõ£¬»òÏÁÒåµØÀí½âÎª²å¼þ±à³Ì
 (µ«·Ö²¼Ê½Àà±à³ÌÓë²å¼þ±à³ÌÊÇ²»Í¬µÄ£¬·Ö²¼Àà±à³Ì°üÀ¨MixinºÍPlugin£¬¶ø²å¼þ±à³ÌÒ»°ãÖ»°üÀ¨Plugin£¬Òò´Ë²å¼þ±à³Ì
 µÄ¹¦ÄÜÀ©Õ¹ÊÇÓÐ¾ÖÏÞµÄ)¡£ÓÐÊ±ÎªÁË¼òµ¥£¬ÎÒ»á½Ð·Ö²¼Àà±à³ÌÎªMixin£¬¾ßÌåµ½¼¼ÊõÏ¸½ÚÊ±£¬»áÏ¸·ÖMixinºÍPlugin¡£
@@ -333,7 +332,7 @@ MixinµÄ´¦Àí¹ý³Ì
 
    ÒòÎªÔÚPythonÖÐ£¬Àà±¾ÉíÒ²ÊÇÒ»¸ö¶ÔÏó¡£Èç¹ûÒªÊ¹ÓÃ±ØÐëÒªÏÈ½«Æäµ¼Èë¡£µ«ÕâÑù¾Í²»Ò×½«ÏµÍ³Éè¼ÆµÃ±È½ÏËÉñîºÏ£¬²¢ÇÒÐÞ¸Ä²»·½±ã¡£
 
-NewEditÖÐµÄ¾ßÌåÊµÏÖ
+UliPadÖÐµÄ¾ßÌåÊµÏÖ
 -------------------
 
 Ä¿Â¼½á¹¹
@@ -343,7 +342,7 @@ NewEditÖÐµÄ¾ßÌåÊµÏÖ
 
     src\
      |
-     |---- NewEdit.py             ÆôÓÃ³ÌÐò
+     |---- UliPad.py             ÆôÓÃ³ÌÐò
      |
      |---- doc\                   ÎÄµµÄ¿Â¼
      |
@@ -359,19 +358,19 @@ NewEditÖÐµÄ¾ßÌåÊµÏÖ
      |
      |---- images\                Í¼Æ¬Ä¿Â¼
     
-ÔÚNewEditÓë²å¼þÓÐ¹ØµÄÄÚÈÝ¾ÍÊÇmixinsÄ¿Â¼£¬pluginsÄ¿Â¼(²»ÊÇ±ØÐè)£¬modules/MixinÄ£¿é£¬NewEdit.py¡£ÆäÖÐNewEdit.pyÎªÆô¶¯½Å±¾£¬ÓÃÓÚ´¦Àí
+ÔÚUliPadÓë²å¼þÓÐ¹ØµÄÄÚÈÝ¾ÍÊÇmixinsÄ¿Â¼£¬pluginsÄ¿Â¼(²»ÊÇ±ØÐè)£¬modules/MixinÄ£¿é£¬UliPad.py¡£ÆäÖÐUliPad.pyÎªÆô¶¯½Å±¾£¬ÓÃÓÚ´¦Àí
 ÃüÁîÐÐ²ÎÊý£¬Ò»Ð©»·¾³µÄÉè¶¨£¬µ¼ÈëMixinºÍPlugin²¿¼þ£¬´´½¨Ó¦ÓÃÊµÀý¡£
 
 MixinÆô¶¯ËµÃ÷
 ~~~~~~~~~~~~~
 
-ÏÂÃæÊÇ´ÓNewEdit.pyÖÐÈ¡³öµÄÒ»¸ö´úÂëÆ¬¶Î£¬ËüÍê³ÉMixinµÄ³õÊ¼»¯£¬¼°Éú³ÉÕû¸öÓ¦ÓÃ¡£
+ÏÂÃæÊÇ´ÓUliPad.pyÖÐÈ¡³öµÄÒ»¸ö´úÂëÆ¬¶Î£¬ËüÍê³ÉMixinµÄ³õÊ¼»¯£¬¼°Éú³ÉÕû¸öÓ¦ÓÃ¡£
 
 ¡¡::
 
     from modules import Mixin
 
-    class NewEditApp(wx.App, Mixin.Mixin):
+    class UliPadApp(wx.App, Mixin.Mixin):
     
         __mixinname__ = 'app'
     
@@ -389,11 +388,11 @@ MixinÆô¶¯ËµÃ÷
 
     import mixins
 
-    app = NewEditApp(0)
+    app = UliPadApp(0)
     
     app.MainLoop()
 
-NewEditApp¾ÍÊÇÓ¦ÓÃ²ÛÀà£¬ËüµÄ__mixinname__Îª'app'¡£ÔÚËüµÄOnInitÖÐ¶¨ÒåÁËÒ»¸öµ÷ÓÃµã£¬self.execplugin('init', self, files)¡£ËüÊÇÒ»¸ö
+UliPadApp¾ÍÊÇÓ¦ÓÃ²ÛÀà£¬ËüµÄ__mixinname__Îª'app'¡£ÔÚËüµÄOnInitÖÐ¶¨ÒåÁËÒ»¸öµ÷ÓÃµã£¬self.execplugin('init', self, files)¡£ËüÊÇÒ»¸ö
 ÓÐ·µ»ØÖµµÄµ÷ÓÃµã£¬µ±·µ»ØÕæ£¬³ÌÐò¼ÌÐøÔËÐÐ£¬µ±·µ»Ø¼Ù£¬³ÌÐòÍË³ö¡£ÔÚÕâ¸öµ÷ÓÃµãÖÐ£¬Ëü´«ÈëÁËÁ½¸ö²ÎÊý£¬Ò»¸öÊÇ×ÔÉí£¬Ò»¸öÊÇÃüÁîÐÐÖÐÒª´ò¿ªµÄÎÄ¼þ
 ÃûÁÐ±í¡£
 
@@ -402,7 +401,7 @@ import mixins ÊÇµ¼ÈëmixinsÄ¿Â¼ÏÂËùÓÐµÄMixin²¿¼þ¡£ÔÚmixinsÄ¿Â¼±»×éÖ¯Îª°üµÄÐÎÊ½£¬¼
 importÖÐµÄÄ£¿éÎÄ¼þ×Ô¶¯Éú³ÉÁËÒ»¸öImport.pyÎÄ¼þ¡£ÕâÑù¾ÍÖ»µ¼ÈëÕâÒ»¸öImportÄ£¿é¾Í¿ÉÒÔÁË¡£Èç¹ûÐÞ¸ÄÁË×¢ÊÍÖÐµÄimportÐÐ£¬ÖØÐÂÖ´ÐÐ½Å±¾ÔÙÖØÐÂÉú³É
 Import.py¾Í¿ÉÒÔÁË¡£
 
-´ÓÉÏÃæÎÒÃÇ¿ÉÒÔ¿´³ö£¬ÕâÀïÃæ¸ù±¾Ã»ÓÐÒ»ÐÐ´úÂëÊÇ´´½¨ÁËNewEditµÄÖ÷´°¿Ú¡¢²Ëµ¥¡¢¹¤¾ßÌõµÄ£¬ÄÇÃ´ÃØÃÜ¾ÍÈ«ÔÚÕâ¸öself.execplugin()ÉÏÁË¡£
+´ÓÉÏÃæÎÒÃÇ¿ÉÒÔ¿´³ö£¬ÕâÀïÃæ¸ù±¾Ã»ÓÐÒ»ÐÐ´úÂëÊÇ´´½¨ÁËUliPadµÄÖ÷´°¿Ú¡¢²Ëµ¥¡¢¹¤¾ßÌõµÄ£¬ÄÇÃ´ÃØÃÜ¾ÍÈ«ÔÚÕâ¸öself.execplugin()ÉÏÁË¡£
 
 ÎÒÃÇÏÈ¿´Ò»¿´ÀÏ°æ±¾µÄ__init__.py°É::
 
@@ -418,13 +417,13 @@ Import.py¾Í¿ÉÒÔÁË¡£
     import mIcon
     ...
 
-ÕâÊÇNewEdit 1.0·¢²¼Ê±µÄ__init__.pyÖÐµÄÄÚÈÝ(ÆäÊµ»¹ÓÐ±ä»¯µÄ£¬µ«²»ÔÙÌáÁË)¡£
+ÕâÊÇUliPad 1.0·¢²¼Ê±µÄ__init__.pyÖÐµÄÄÚÈÝ(ÆäÊµ»¹ÓÐ±ä»¯µÄ£¬µ«²»ÔÙÌáÁË)¡£
 
-¾ÍÊÇÕâÐ©importÓï¾ä×îºóÉú³ÉÁËÄã¿´µ½µÄNewEdit¡£Ã¿Ò»¸öimport»áÍê³ÉÒ»²¿·Ö¹¦ÄÜ¡£Èç¹ûÄãÈ¥µôÄ³¸öimport£¬»á¼õÉÙÒ»Ð©¹¦ÄÜ£¬µ«Ò»°ã²»»áÓ°ÏìÆäËüµÄ¹¦
+¾ÍÊÇÕâÐ©importÓï¾ä×îºóÉú³ÉÁËÄã¿´µ½µÄUliPad¡£Ã¿Ò»¸öimport»áÍê³ÉÒ»²¿·Ö¹¦ÄÜ¡£Èç¹ûÄãÈ¥µôÄ³¸öimport£¬»á¼õÉÙÒ»Ð©¹¦ÄÜ£¬µ«Ò»°ã²»»áÓ°ÏìÆäËüµÄ¹¦
 ÄÜ¡£Òò´Ë£¬Ê¹ÓÃMixinÄã¿ÉÒÔ×ÔÒÑ¶¯Ì¬ÁË¾ö¶¨ÒªÄÄÐ©¹¦ÄÜ£¬²»ÒªÄÄÐ©¹¦ÄÜ¡£·Ç³£·½±ã¡£ÎªÊ²Ã´ÕâÑùÊÇ¿ÉÒÔµÄÄØ£¿ÒòÎª¹¦ÄÜ´úÂë¶¼ÊÇ²¿·ÖÏà¹Ø£¬¶ø²»ÊÇÈ«²¿Ïà¹Ø£¬
 Òò´ËÎÒÃÇ¾Í¿ÉÒÔ°ÑÏà¹ØµÄ¹¦ÄÜÊµÏÖ¼¯ÖÐµ½Ò»Æð£¬²¢ÇÒÍ¨¹ýMixinµÄ·½·¨À´²¹³äÐÂµÄ¹¦ÄÜ£¬Í¬Ê±Æðµ½·Ö¸î¹¦ÄÜ´úÂëµÄ×÷ÓÃ¡£ÕâÑùÎÒÃÇ¿ÉÒÔÈÝÒ×µØÖªµÀÒ»¸ö¹¦ÄÜµÄ
 ÊµÏÖ£¬ÐèÒªÉæ¼°ÄÄÐ©Àà£¬ÐèÒªÔÚÀàµÄÄÄÐ©µØ·½¼ÓÈëÐÂµÄ·½·¨¡¢ÊôÐÔ¡¢µ÷ÓÃµã¡£Í¬Ê±ÕâÐ©¹¦ÄÜµÄ¼ÓÈë£¬ÓÖ¾¡¿ÉÄÜµØ¼õÉÙ¶ÔÏÖÓÐµÄÆäËü¹¦ÄÜµÄÓ°Ïì¡£Õâ¾ÍÊÇMixin
-µÄÒ»¸öÖ÷Òª·½±ãÖ®´¦¡£ÉÏÃæÍ·5ÐÐimportÓï¾ä¾ÍÊÇNewEdit±ØÐëµÄ¡£ÈÃÎÒÃÇ¿´Ò»¿´mMainFrameÖÐµÄÄÚÈÝ°É::
+µÄÒ»¸öÖ÷Òª·½±ãÖ®´¦¡£ÉÏÃæÍ·5ÐÐimportÓï¾ä¾ÍÊÇUliPad±ØÐëµÄ¡£ÈÃÎÒÃÇ¿´Ò»¿´mMainFrameÖÐµÄÄÚÈÝ°É::
 
     from modules import Mixin
     import wx
@@ -446,17 +445,17 @@ Import.py¾Í¿ÉÒÔÁË¡£
             return True, False
     Mixin.setPlugin('app', 'init', init)
 
-ÔÚÇ°Ãæ£¬ÎÒÃÇÔÚNewEditAppÕâ¸ö²ÛÀàÖÐ¶¨ÒåÁËÒ»¸öinitµÄµ÷ÓÃµã¡£ÄÇÃ´ÔÚmMainFrame.pyÖÐÎÒÃÇÕë¶ÔÕâ¸öµ÷ÓÃµã´´½¨ÁËÒ»¸öPlugin²¿¼þ¡£ÔÚÕâ¸ö²¿¼þÖÐ£¬
-ÎÒÃÇµ¼ÈëÁËMainFrame£¬´Ó¶øÕæÕýµØÉú³ÉÁËNewEditµÄÖ÷´°Ìå¶ÔÏó¡£Í¬Ê±ÔÚMainFrameÖÐ»¹¶¨ÒåÁËµ÷ÓÃµã£¬ÔÚÕâ¸öµ÷ÓÃµãÖÐ£¬ÎÒÃÇÊ¹ÓÃNotebookÀàÊµÏÖÁË
-NewEditµÄ¶àÎÄµµ±à¼­µÄ»ù´¡¡£ÕâÑù£¬NewEdit¾ÍÒ»²½²½µØÉú³ÉÁË¡£
+ÔÚÇ°Ãæ£¬ÎÒÃÇÔÚUliPadAppÕâ¸ö²ÛÀàÖÐ¶¨ÒåÁËÒ»¸öinitµÄµ÷ÓÃµã¡£ÄÇÃ´ÔÚmMainFrame.pyÖÐÎÒÃÇÕë¶ÔÕâ¸öµ÷ÓÃµã´´½¨ÁËÒ»¸öPlugin²¿¼þ¡£ÔÚÕâ¸ö²¿¼þÖÐ£¬
+ÎÒÃÇµ¼ÈëÁËMainFrame£¬´Ó¶øÕæÕýµØÉú³ÉÁËUliPadµÄÖ÷´°Ìå¶ÔÏó¡£Í¬Ê±ÔÚMainFrameÖÐ»¹¶¨ÒåÁËµ÷ÓÃµã£¬ÔÚÕâ¸öµ÷ÓÃµãÖÐ£¬ÎÒÃÇÊ¹ÓÃNotebookÀàÊµÏÖÁË
+UliPadµÄ¶àÎÄµµ±à¼­µÄ»ù´¡¡£ÕâÑù£¬UliPad¾ÍÒ»²½²½µØÉú³ÉÁË¡£
 
-Àí½âNewEdit£¬Ê×ÏÈÒªÀí½âMixinºÍPluginµÄ»úÖÆÒÔ¼°Éú³É·½·¨¡£ÔÙÓÐ¾ÍÊÇÁË½âNewEditÖÐµÄ¸÷ÖÖ²ÛÀà£¬ÓÐÄÄÐ©µ÷ÓÃµã£¬ÕâÐ©²ÛÀàÊÇÈçºÎ¹ØÁªµÄ£¬Ò²¾ÍÊÇÊì
+Àí½âUliPad£¬Ê×ÏÈÒªÀí½âMixinºÍPluginµÄ»úÖÆÒÔ¼°Éú³É·½·¨¡£ÔÙÓÐ¾ÍÊÇÁË½âUliPadÖÐµÄ¸÷ÖÖ²ÛÀà£¬ÓÐÄÄÐ©µ÷ÓÃµã£¬ÕâÐ©²ÛÀàÊÇÈçºÎ¹ØÁªµÄ£¬Ò²¾ÍÊÇÊì
 Ï¤¸÷ÖÖ¹¦ÄÜÀ©Õ¹µãµÄ×÷ÓÃ¡¢Î»ÖÃ£¬´Ó¶ø¿ÉÒÔÊµÏÖÄã×ÔÒÑµÄMixin²¿¼þ¡£
 
 ÁË½â¸÷ÖÖ²ÛÀà
 ~~~~~~~~~~~~
 
-ÔÚÃ¿´ÎÔËÐÐNewEdit¶¼»áÔÚNewEditµÄÄ¿Â¼ÏÂÉú³ÉÒ»¸ödebug.txtµÄÎÄ¼þ£¬ËüÊÇÒ»Ð©¸¨ÖúÐÅÏ¢£¬°üÀ¨ÁËËùÓÐMixinºÍPlugin²¿¼þµÄÐÅÏ¢£¬°´²ÛÀàÃû½øÐÐ·ÖÀà£¬
+ÔÚÃ¿´ÎÔËÐÐUliPad¶¼»áÔÚUliPadµÄÄ¿Â¼ÏÂÉú³ÉÒ»¸ödebug.txtµÄÎÄ¼þ£¬ËüÊÇÒ»Ð©¸¨ÖúÐÅÏ¢£¬°üÀ¨ÁËËùÓÐMixinºÍPlugin²¿¼þµÄÐÅÏ¢£¬°´²ÛÀàÃû½øÐÐ·ÖÀà£¬
 ÕâÊÇÒ»¸öÊ¾Àý::
 
     [ INFO] -- 	name=messagewindow

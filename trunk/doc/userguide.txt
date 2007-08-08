@@ -4,7 +4,7 @@
 
 :作者: limodou
 :联系: limodou@gmail.com
-:主页: http://wiki.woodpecker.org.cn/moin/UliPad
+:主页: http://code.google.com/p/ulipad/
 :BLOG: http://www.donews.net/limodou
 :版权: GPL
 
@@ -50,7 +50,7 @@ MAC为MAC格式。文档使用的编码。
 可以运行在Windows和Linux环境下。
 需安装Python 2.3以上版本，wxPython 2.4.2.4 Unicode版本
 将源码包解压放到一个目录下即可。
-强烈建议使用 python 2.4+ wxPython 2.6+版本。
+强烈建议使用 python 2.4+ wxPython 2.8+版本。
 
 Windows安装包
 ~~~~~~~~~~~~~

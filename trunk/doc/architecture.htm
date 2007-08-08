@@ -4,7 +4,7 @@
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
 <meta name="generator" content="Docutils 0.4: http://docutils.sourceforge.net/" />
-<title>NewEdit的体系结构设计</title>
+<title>UliPad的体系结构设计</title>
 <style type="text/css">
 
 /*
@@ -290,8 +290,8 @@ ul.auto-toc {
 </style>
 </head>
 <body>
-<div class="document" id="newedit">
-<h1 class="title">NewEdit的体系结构设计</h1>
+<div class="document" id="ulipad">
+<h1 class="title">UliPad的体系结构设计</h1>
 <table class="docinfo" frame="void" rules="none">
 <col class="docinfo-name" />
 <col class="docinfo-content" />
@@ -300,9 +300,7 @@ ul.auto-toc {
 </tr>
 <tr class="field"><th class="docinfo-name">联系:</th><td class="field-body"><a class="reference" href="mailto:limodou&#64;gmail.com">limodou&#64;gmail.com</a></td>
 </tr>
-<tr class="field"><th class="docinfo-name">版本:</th><td class="field-body">architecture.txt 42 2005-09-28 05:19:21Z limodou</td>
-</tr>
-<tr class="field"><th class="docinfo-name">主页:</th><td class="field-body"><a class="reference" href="http://wiki.woodpecker.org.cn/moin/NewEdit">http://wiki.woodpecker.org.cn/moin/NewEdit</a></td>
+<tr class="field"><th class="docinfo-name">主页:</th><td class="field-body"><a class="reference" href="http://code.google.com/p/ulipad/">http://code.google.com/p/ulipad/</a></td>
 </tr>
 <tr class="field"><th class="docinfo-name">BLOG:</th><td class="field-body"><a class="reference" href="http://www.donews.net/limodou">http://www.donews.net/limodou</a></td>
 </tr>
@@ -334,7 +332,7 @@ ul.auto-toc {
 <li><a class="reference" href="#id11" id="id30" name="id30">3.6&nbsp;&nbsp;&nbsp;几点说明</a></li>
 </ul>
 </li>
-<li><a class="reference" href="#id12" id="id31" name="id31">4&nbsp;&nbsp;&nbsp;NewEdit中的具体实现</a><ul class="auto-toc">
+<li><a class="reference" href="#id12" id="id31" name="id31">4&nbsp;&nbsp;&nbsp;UliPad中的具体实现</a><ul class="auto-toc">
 <li><a class="reference" href="#id13" id="id32" name="id32">4.1&nbsp;&nbsp;&nbsp;目录结构</a></li>
 <li><a class="reference" href="#id14" id="id33" name="id33">4.2&nbsp;&nbsp;&nbsp;Mixin启动说明</a></li>
 <li><a class="reference" href="#id15" id="id34" name="id34">4.3&nbsp;&nbsp;&nbsp;了解各种槽类</a></li>
@@ -347,7 +345,7 @@ ul.auto-toc {
 <h1><a class="toc-backref" href="#id18" id="id2" name="id2">1&nbsp;&nbsp;&nbsp;引言</a></h1>
 <div class="section">
 <h2><a class="toc-backref" href="#id19" id="id3" name="id3">1.1&nbsp;&nbsp;&nbsp;编写目的</a></h2>
-<p>NewEdit 中使用了大量的 Mixins 技术，因此本文档的大量篇幅是来讲解 Mixins 技术。同时对整体软件功能设计
+<p>UliPad 中使用了大量的 Mixins 技术，因此本文档的大量篇幅是来讲解 Mixins 技术。同时对整体软件功能设计
 和结构，以及一些技术关键点进行了讲解。</p>
 </div>
 </div>
@@ -373,12 +371,12 @@ Mixins开发框架，在功能上要求实现基本编辑工具的全部功能�
 <h2><a class="toc-backref" href="#id23" id="id7" name="id7">3.1&nbsp;&nbsp;&nbsp;概述</a></h2>
 <p>软件开发是一件很痛苦的事情，大量新的需求与现有软件结构之间的冲突是造成软件难以维护的一个主要原因。很
 多软件在刚开始时可能结构很好，便于扩充，但随着软件功能的丰富，代码的增加，可能会造成结构也变得不再适应
-新需求的发展。对于编辑器软件来说，这样的问题更为明显。那么NewEdit就是想在如何构造一种灵活的结构方面进
-行的一种有益地探索，同时它会发展成为一个专业、稳定地编辑器软件。因此，NewEdit的设计核心就是，如何构造一
+新需求的发展。对于编辑器软件来说，这样的问题更为明显。那么UliPad就是想在如何构造一种灵活的结构方面进
+行的一种有益地探索，同时它会发展成为一个专业、稳定地编辑器软件。因此，UliPad的设计核心就是，如何构造一
 种灵活的架构，使得新功能的增加更为方便和易于维护。</p>
-<p>NewEdit使用的软件基础是Python+wxPython。因此，NewEdit可以充分地享受Python的动态特性所带来的好处，同
+<p>UliPad使用的软件基础是Python+wxPython。因此，UliPad可以充分地享受Python的动态特性所带来的好处，同
 时由于使用了wxPython，还可以实现跨平台的运行。</p>
-<p>这样，NewEdit的设计思想就是充分利用Python语言的动态特性，构造易于扩充而又灵活的软件体系。具体的实现技术
+<p>这样，UliPad的设计思想就是充分利用Python语言的动态特性，构造易于扩充而又灵活的软件体系。具体的实现技术
 就是全部采用Mixin和Plugin的设计与开发方法，更为通俗地说法就是分布式类编程技术，或狭义地理解为插件编程
 (但分布式类编程与插件编程是不同的，分布类编程包括Mixin和Plugin，而插件编程一般只包括Plugin，因此插件编程
 的功能扩展是有局限的)。有时为了简单，我会叫分布类编程为Mixin，具体到技术细节时，会细分Mixin和Plugin。</p>
@@ -646,14 +644,14 @@ setPlugin方法。那么这些方法会将传入的属性、方法收集到Mixin
 </div>
 </div>
 <div class="section">
-<h1><a class="toc-backref" href="#id31" id="id12" name="id12">4&nbsp;&nbsp;&nbsp;NewEdit中的具体实现</a></h1>
+<h1><a class="toc-backref" href="#id31" id="id12" name="id12">4&nbsp;&nbsp;&nbsp;UliPad中的具体实现</a></h1>
 <div class="section">
 <h2><a class="toc-backref" href="#id32" id="id13" name="id13">4.1&nbsp;&nbsp;&nbsp;目录结构</a></h2>
 <p>其本目录为:</p>
 <pre class="literal-block">
 src\
  |
- |---- NewEdit.py             启用程序
+ |---- UliPad.py             启用程序
  |
  |---- doc\                   文档目录
  |
@@ -669,17 +667,17 @@ src\
  |
  |---- images\                图片目录
 </pre>
-<p>在NewEdit与插件有关的内容就是mixins目录，plugins目录(不是必需)，modules/Mixin模块，NewEdit.py。其中NewEdit.py为启动脚本，用于处理
+<p>在UliPad与插件有关的内容就是mixins目录，plugins目录(不是必需)，modules/Mixin模块，UliPad.py。其中UliPad.py为启动脚本，用于处理
 命令行参数，一些环境的设定，导入Mixin和Plugin部件，创建应用实例。</p>
 </div>
 <div class="section">
 <h2><a class="toc-backref" href="#id33" id="id14" name="id14">4.2&nbsp;&nbsp;&nbsp;Mixin启动说明</a></h2>
-<p>下面是从NewEdit.py中取出的一个代码片段，它完成Mixin的初始化，及生成整个应用。</p>
+<p>下面是从UliPad.py中取出的一个代码片段，它完成Mixin的初始化，及生成整个应用。</p>
 <p>　:</p>
 <pre class="literal-block">
 from modules import Mixin
 
-class NewEditApp(wx.App, Mixin.Mixin):
+class UliPadApp(wx.App, Mixin.Mixin):
 
     __mixinname__ = 'app'
 
@@ -697,18 +695,18 @@ class NewEditApp(wx.App, Mixin.Mixin):
 
 import mixins
 
-app = NewEditApp(0)
+app = UliPadApp(0)
 
 app.MainLoop()
 </pre>
-<p>NewEditApp就是应用槽类，它的__mixinname__为'app'。在它的OnInit中定义了一个调用点，self.execplugin('init', self, files)。它是一个
+<p>UliPadApp就是应用槽类，它的__mixinname__为'app'。在它的OnInit中定义了一个调用点，self.execplugin('init', self, files)。它是一个
 有返回值的调用点，当返回真，程序继续运行，当返回假，程序退出。在这个调用点中，它传入了两个参数，一个是自身，一个是命令行中要打开的文件
 名列表。</p>
 <p>import mixins 是导入mixins目录下所有的Mixin部件。在mixins目录被组织为包的形式，即它有一个__init__.py，它的内容就是导入所有的Mixin部件。
 仅些而已。但现在，所有的导入均已被注释，只剩下一个import Import.py而已。这是为了减少导入文件的个数，我通过一个脚本自动将所有带注释的
 import中的模块文件自动生成了一个Import.py文件。这样就只导入这一个Import模块就可以了。如果修改了注释中的import行，重新执行脚本再重新生成
 Import.py就可以了。</p>
-<p>从上面我们可以看出，这里面根本没有一行代码是创建了NewEdit的主窗口、菜单、工具条的，那么秘密就全在这个self.execplugin()上了。</p>
+<p>从上面我们可以看出，这里面根本没有一行代码是创建了UliPad的主窗口、菜单、工具条的，那么秘密就全在这个self.execplugin()上了。</p>
 <p>我们先看一看老版本的__init__.py吧:</p>
 <pre class="literal-block">
 import mPreference
@@ -723,12 +721,12 @@ import mToolbar
 import mIcon
 ...
 </pre>
-<p>这是NewEdit 1.0发布时的__init__.py中的内容(其实还有变化的，但不再提了)。</p>
-<p>就是这些import语句最后生成了你看到的NewEdit。每一个import会完成一部分功能。如果你去掉某个import，会减少一些功能，但一般不会影响其它的功
+<p>这是UliPad 1.0发布时的__init__.py中的内容(其实还有变化的，但不再提了)。</p>
+<p>就是这些import语句最后生成了你看到的UliPad。每一个import会完成一部分功能。如果你去掉某个import，会减少一些功能，但一般不会影响其它的功
 能。因此，使用Mixin你可以自已动态了决定要哪些功能，不要哪些功能。非常方便。为什么这样是可以的呢？因为功能代码都是部分相关，而不是全部相关，
 因此我们就可以把相关的功能实现集中到一起，并且通过Mixin的方法来补充新的功能，同时起到分割功能代码的作用。这样我们可以容易地知道一个功能的
 实现，需要涉及哪些类，需要在类的哪些地方加入新的方法、属性、调用点。同时这些功能的加入，又尽可能地减少对现有的其它功能的影响。这就是Mixin
-的一个主要方便之处。上面头5行import语句就是NewEdit必须的。让我们看一看mMainFrame中的内容吧:</p>
+的一个主要方便之处。上面头5行import语句就是UliPad必须的。让我们看一看mMainFrame中的内容吧:</p>
 <pre class="literal-block">
 from modules import Mixin
 import wx
@@ -750,15 +748,15 @@ def init(app, filenames):
         return True, False
 Mixin.setPlugin('app', 'init', init)
 </pre>
-<p>在前面，我们在NewEditApp这个槽类中定义了一个init的调用点。那么在mMainFrame.py中我们针对这个调用点创建了一个Plugin部件。在这个部件中，
-我们导入了MainFrame，从而真正地生成了NewEdit的主窗体对象。同时在MainFrame中还定义了调用点，在这个调用点中，我们使用Notebook类实现了
-NewEdit的多文档编辑的基础。这样，NewEdit就一步步地生成了。</p>
-<p>理解NewEdit，首先要理解Mixin和Plugin的机制以及生成方法。再有就是了解NewEdit中的各种槽类，有哪些调用点，这些槽类是如何关联的，也就是熟
+<p>在前面，我们在UliPadApp这个槽类中定义了一个init的调用点。那么在mMainFrame.py中我们针对这个调用点创建了一个Plugin部件。在这个部件中，
+我们导入了MainFrame，从而真正地生成了UliPad的主窗体对象。同时在MainFrame中还定义了调用点，在这个调用点中，我们使用Notebook类实现了
+UliPad的多文档编辑的基础。这样，UliPad就一步步地生成了。</p>
+<p>理解UliPad，首先要理解Mixin和Plugin的机制以及生成方法。再有就是了解UliPad中的各种槽类，有哪些调用点，这些槽类是如何关联的，也就是熟
 悉各种功能扩展点的作用、位置，从而可以实现你自已的Mixin部件。</p>
 </div>
 <div class="section">
 <h2><a class="toc-backref" href="#id34" id="id15" name="id15">4.3&nbsp;&nbsp;&nbsp;了解各种槽类</a></h2>
-<p>在每次运行NewEdit都会在NewEdit的目录下生成一个debug.txt的文件，它是一些辅助信息，包括了所有Mixin和Plugin部件的信息，按槽类名进行分类，
+<p>在每次运行UliPad都会在UliPad的目录下生成一个debug.txt的文件，它是一些辅助信息，包括了所有Mixin和Plugin部件的信息，按槽类名进行分类，
 这是一个示例:</p>
 <pre class="literal-block">
 [ INFO] --  name=messagewindow
