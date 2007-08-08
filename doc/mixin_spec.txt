@@ -7,7 +7,7 @@
 目的
 ----
 
-用于描述 NewEdit 的 Mixin 编写规范。
+用于描述 UliPad 的 Mixin 编写规范。
 
 文件
 ----

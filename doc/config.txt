@@ -4,7 +4,7 @@
 
 :Author: limodou
 :Contact: limodou@gmail.com
-:Homepage: http://wiki.woodpecker.org.cn/moin/UliPad
+:Homepage: http://code.google.com/p/ulipad/
 :BLOG: http://www.donews.net/limodou
 :Copyright: GPL
 

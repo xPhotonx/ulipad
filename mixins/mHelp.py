@@ -28,7 +28,7 @@ from modules import common
 from modules.HyperLinksCtrl import HyperLinkCtrl, EVT_HYPERLINK_LEFT
 from modules import Globals
 
-homepage = 'http://wiki.woodpecker.org.cn/moin/UliPad'
+homepage = 'http://code.google.com/p/ulipad/'
 blog = 'http://www.donews.net/limodou'
 email = 'limodou@gmail.com'
 author = 'limodou'
