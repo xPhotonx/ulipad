@@ -5072,7 +5072,7 @@ if wx.Platform == '__WXMSW__':
                 path = os.path.normpath(common.uni_work_file('%s.pyw' % f))
                 execute = sys.executable.replace('python.exe', 'pythonw.exe')
                 command = '"%s" "%s" "%%L"' % (execute, path)
-            _winreg.SetValue(key, 'shell\\UliPad\\command', _winreg.REG_SZ, command)
+            _winreg.SetValue(key, 'shell\\UliPad\\command', _winreg.REG_SZ, common.encode_string(command, common.defaultfilesystemencoding))
             common.note(tr('Successful!'))
         except:
             error.traceback()
