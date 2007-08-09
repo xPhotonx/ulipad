@@ -1,4 +1,4 @@
-﻿$Rev: 2129 $
+﻿$Rev$
 [2007/08/09]
 mRegister.py        Fix register to explore bug
 
