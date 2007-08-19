@@ -7,40 +7,40 @@ Current lastest version is 3.7
 
 New Features and Changes:
 
-# Add PEP8 sytle checking
-# Enhance calltip showing
-# Add a new option in Preference, which is used for when you toggle comment lines(Ctrl+/ or Ctrl+\) if it'll popup a comment dialog. You can find it in Preference->Document->Show comment character dialog when adding comment.
-# Saving auto todo window status
-# Changing shortcut of quote dialog from Ctrl+Q to Ctrl+'
-# Changing the number of recent files to 20
-# Changing shortcut Ctrl+Alt+L to Alt+Z, Ctrl+Alt+B to Alt+X
-# Saving the status of Message window word wrap
-# Saving the snippets window position
-# The results of find in files can only show the filenames and you can copy them to clipboard
-# Add Spanish language translation and Traditional Chinese language translation
-# Using ZestyParser Module to parse the source code syntax
-# Improving input assistant functionality
-# Adding config.txt documentation
-# When saving files, automatically adding accordingly filename suffix
-# Adding mixin reload mechanism, it will be very useful when developing
-# Adding folder sort functionality when adding new folder to directory browser window
-# Adding template in input assistant, and you can press TAB key to jump to the next field. The template just like: ${1:something}.
-# Adding LUA syntax support
-# Adding mako(template module) support plugin
-# Adding batch filenames rename plugin
-# Enable ftp window be openned left or bottom pane according to the openning position
-# Adding Alt+R shortcut for open recently files
-# Merging new 1.20 version winpdb to ulipad
+ # Add PEP8 sytle checking
+ # Enhance calltip showing
+ # Add a new option in Preference, which is used for when you toggle comment lines(Ctrl+/ or Ctrl+\) if it'll popup a comment dialog. You can find it in Preference->Document->Show comment character dialog when adding comment.
+ # Saving auto todo window status
+ # Changing shortcut of quote dialog from Ctrl+Q to Ctrl+'
+ # Changing the number of recent files to 20
+ # Changing shortcut Ctrl+Alt+L to Alt+Z, Ctrl+Alt+B to Alt+X
+ # Saving the status of Message window word wrap
+ # Saving the snippets window position
+ # The results of find in files can only show the filenames and you can copy them to clipboard
+ # Add Spanish language translation and Traditional Chinese language translation
+ # Using ZestyParser Module to parse the source code syntax
+ # Improving input assistant functionality
+ # Adding config.txt documentation
+ # When saving files, automatically adding accordingly filename suffix
+ # Adding mixin reload mechanism, it will be very useful when developing
+ # Adding folder sort functionality when adding new folder to directory browser window
+ # Adding template in input assistant, and you can press TAB key to jump to the next field. The template just like: ${1:something}.
+ # Adding LUA syntax support
+ # Adding mako(template module) support plugin
+ # Adding batch filenames rename plugin
+ # Enable ftp window be openned left or bottom pane according to the openning position
+ # Adding Alt+R shortcut for open recently files
+ # Merging new 1.20 version winpdb to ulipad
 
 
 Bug fix:
 
-# Fix ctag support bug
-# Fix default style bug
-# Fix the wrong cursor jumping after undo operating
-# Fix xml lexer type bug
-# Fix copying bug when the text block has no indent
-# Fix openning multi-view bug from menu items
-# Fix the input focus losing bug when openning bottom pane or double-click on directory browser entries
-# Fix user can open multi find dialogs bug
-# Fix register functionality in windows
+ # Fix ctag support bug
+ # Fix default style bug
+ # Fix the wrong cursor jumping after undo operating
+ # Fix xml lexer type bug
+ # Fix copying bug when the text block has no indent
+ # Fix openning multi-view bug from menu items
+ # Fix the input focus losing bug when openning bottom pane or double-click on directory browser entries
+ # Fix user can open multi find dialogs bug
+ # Fix register functionality in windows
