@@ -1,0 +1,199 @@
+===========================
+ Config.ini Description
+===========================
+
+:Author: limodou
+:Contact: limodou@gmail.com
+:Homepage: http://code.google.com/p/ulipad/
+:BLOG: http://www.donews.net/limodou
+:Copyright: GPL
+
+UliPad supports many customized works, but many of them don't has a visual or GUI
+operation interface. So here is detail description about it.
+
+As default, config.ini will not be created, untill you change some settings of 
+UliPad. So if you want to change the option in config.ini, and there is no such
+a file, you can create this file manually in UliPad installed folder or its conf
+folder, that's the same. I always create it in UliPad installed folder, because you
+can easily find it.
+
+Debug mode
+-------------
+
+When you installed UliPad, it'll not create debug information. But the debug.txt
+will created automatically, just it's empty. And if you turn on the debug option,
+many things in UliPad will be output into debug.txt, for example: menu items infos,
+shortcuts infos, plugin & mixin infos, etc. So How to turn on it::
+
+    [default]
+    debug = 1
+
+So if the `debug` is `1`, the debug infos will output to debug.txt. If the `debug`
+is `0`, then the there will no debug infos.
+
+Change the shortcuts of menu item
+-----------------------------------
+
+UliPad enable you change the shortcuts of menu items. But the work has some hard
+work now. So how to define them in config.ini? There are two section used in 
+config.ini. `main_hotkey` is aimed for mainframe shortcus. And `editor_hotkey` is
+aimed for only editor shortcuts. For example::
+
+    [main_hotkey]
+    IDM_FILE_SAVEAS=F12
+
+So you can see the key if menu item's ID, and the value is key name. Key name could
+be: F1, A, Ctrl, Shift, Alt, etc. And you can use `+` to combine control key and
+normal key, for example: Ctrl+A.
+
+And how to find the menu item ID. 
+
+#. Open mixins/Import.py source file, and serach menu items definition, for example::
+
+    (100, 'IDM_FILE_NEW', tr('New') + '\tCtrl+N', wx.ITEM_NORMAL, 
+        'OnFileNew', tr('Creates a new document')),
+    (105, 'IDM_FILE_NEWMORE', tr('New') + '...', wx.ITEM_NORMAL, 
+        None, tr('Creates a new document')),
+    (110, 'IDM_FILE_OPEN', tr('Open') + '\tCtrl+O', wx.ITEM_NORMAL, 
+        'OnFileOpen', tr('Opens an existing document')),
+
+   So you can find `IDM_FILE_NEW` is the menu time ID. 
+
+#. Enable debug mode, and you can serch::
+
+    [ INFO] -- [makemenu] makeaccelerator...
+    [ INFO] -- 	IDM_FILE_NEWMORE_NULL []
+    [ INFO] -- 	IDM_FILE_NEW [Ctrl+N]
+    [ INFO] -- 	IDM_FILE_NEWMORE []
+    [ INFO] -- 	IDM_FILE_OPEN [Ctrl+O]
+    [ INFO] -- 	IDM_FILE_REOPEN [Ctrl+Shift+O]
+    [ INFO] -- 	IDM_FILE_RECENTFILES []
+
+   So you can see the IDs and its shortcuts. If an ID has no shortcuts definition, the
+   list following it is `[]`.
+
+Change default font of Editor, Message Window, Shell Window
+--------------------------------------------------------------
+
+If you don't like the default font of editor, message window, shell window, you can change
+them::
+
+    [default]
+    editor_font = "fontname"
+    editor_fontsize = 10
+    message_font = "fontname"
+    message_fontsize = 10
+    shell_font = "fontname"
+    shell_fontsize = 10
+
+And you can also change the caret line background color::
+
+    [default]
+    message_caretlineback = #FF0000
+
+Here the color is represented as `#XXXXXX`. I think you can also use `red`, `green`, etc.
+
+Change the file icons of Directory Browser
+-------------------------------------------
+
+UliPad can recognize some files type, and show different icons to these files. And if you don't 
+like these icons and want to add some new file icons, you can change them in config.ini. For now,
+UliPad supports: .txt, .ini, .html, .py, .pyw, .xml, .bat, .htm.
+
+::
+
+    [fileimages]
+    .pyw = file_py.gif
+    .c = item.gif
+    .ini = file_txt.gif
+    .py = file_py.gif
+    .txt = file_txt.gif
+    .html = file_html.gif
+    .xml = file_xml.gif
+    .bat = file_txt.gif
+    .htm = file_html.gif
+
+If you want to change them, first you should add new image file in $(UliPad)/images folder, the 
+image file format could be .gif or .png. Then add like above, the key is suffix of the filename,
+and the value is the icon filename.
+
+Ignore files in Directory Browser
+------------------------------------
+
+UliPad can ignore some file types, you can change them::
+
+    [ignore]
+    matches = .*,*.pyc,*.bak,*.ico,*.m3u,
+
+Above is default. And it'll be available in global.
+
+Change TODO pattern
+-------------------------
+
+UliPad supports TODO. For some source files, there some predefined pattern, they are regular
+expression, for example::
+
+    python/ruby/perl:
+
+    ^\s*#\s*[tT][oO][dD][oO]\s+(.*?)$
+
+Examples::
+
+    #TODO TEST              Valid
+       # todo TEST          Valid
+    print aaa #todo test    Invalid
+
+c/c++/java::
+
+    ^\s*//\s*[tT][oO][dD][oO]\s+(.*?)$
+    ^\s*/\*\s*[tT][oO][dD][oO]\s+(.*?)$
+
+Examples::
+
+    //todo TEST     Valid
+      /* todo TEST  Valid
+    printf() //todo Invalid
+
+And if there is a file type, that UliPad doesn't support it yet, you can define them::
+
+    [todo_pattern]
+    ruby = "^\s*#\s*[tT][oO][dD][oO]\s+(.*?)$"
+
+If the todo format is multipule, you should define them as a `list` format -- you should delimit
+them with ',', and the each pattern should be quoted with double quoter(`"`), for example::
+
+    c = "^\s*//\s*[tT][oO][dD][oO]\s+(.*?)$","^\s*/\*\s*[tT][oO][dD][oO]\s+(.*?)$"
+    
+Note, the key is not the file suffix, but the language lexer name. And for now, UliPad support,
+asp, c, css, djangotmp, fortran, html, java, js, perl, php, python, rst, ruby, text, xml.
+
+Note, for djangotmp, you should install djangoproj plugin. And for fortran, you should install
+fortran plugin. for ruby, you should install ruby plugin.
+
+Change comment chars
+----------------------
+
+You can change the comment chars in UliPad. These chars can be used in Comment and Uncomment 
+menu. Or press `Ctrl+/` to comment text and press `Ctrl+\\` to uncomment text. 
+
+::
+
+    [comment_chars]
+    c = //
+    python = #
+    default = #
+
+Note, the key is not the file suffix, but the language lexer name. But `default` is not a language
+name, just a default value. 
+
+Change lanague
+-----------------
+
+UliPad support i18n, and when you change the lanague, it'll save the selection in config.ini.
+So you can change it::
+
+    [language]
+    default = 
+    
+If default is empty, then UliPad will aotomatically detect language. If the i18n has some problem,
+you can set it `en` to use English language. 

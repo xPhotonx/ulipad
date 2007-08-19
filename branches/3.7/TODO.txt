@@ -1,0 +1,10 @@
+* add a checkbox, "Whole Words" to Find in Files(Dick) Use regex to do this thing
+* search in message window
+
+
+* Documents in English
+* Debugger(Me)
+* Controls toolbox (like snippets but visual)(Mario)
+* GUI Dessigner(Mario)
+* Class designer (like in VS2005)(Mario)
+* UML (import /export)(Mario)
