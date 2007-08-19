@@ -1,0 +1,127 @@
+======================
+ Plugin Introduction
+======================
+
+:Author: limodou
+:Email: limodou@gmail.com
+:Homepage: http://code.google.com/p/ulipad/
+:BLOG: http://www.donews.net/limodou
+:Copyleft: GPL
+
+.. contents:: Content
+.. sectnum::
+
+Introduction
+---------------
+
+BlogEdit(Deprecated)
+~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+Can be used to write blog, and communicate with server via xml-rpc. So need the
+server supports blogapi and metawebblogapi. But I don't test it so much.
+
+wxPythonDocument(Chnage yourself)
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+Show wxPython document. But you should change the source code to specify the 
+correct location of the wxPython document.
+
+You should chnage the source code your self.
+
+PythonDoc(Chnage yourself)
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+Show python document. But you may need to change the source code to specify the 
+correct location of the python document.
+
+You should chnage the source code your self.
+
+closeother(Available, seldom use)
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+Close others documents except current one. It'll add a menu item in File menu,
+and Notebook context menu.
+
+djangoproj(Available)
+~~~~~~~~~~~~~~~~~~~~~~
+
+Django developing support. 
+
+docbook(Available, seldom use)
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+Can be used for writing docbook document.
+
+dosprompt(Available, Window platform)
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+Open dos window in bottom pane.
+
+fortran(Available, seldom use)
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+Add fortran language syntax highlight support.
+
+jQuery(Available, seldom use)
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+jQuery support.
+
+outline(Under development)
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+Like leo.
+
+pairprog(Available)
+~~~~~~~~~~~~~~~~~~~~~
+
+You can use it on collaborate programming.
+
+pymusic(Available)
+~~~~~~~~~~~~~~~~~~~~
+
+Play mp3 music.
+
+pytts(Available, window platform)
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+Read current document or selected text via TTS.
+
+rssreader(Deprecated)
+~~~~~~~~~~~~~~~~~~~~~~~~
+
+A test rss reader plugin.
+
+ruby(Available)
+~~~~~~~~~~~~~~~~~
+
+Ruby support. 
+
+ruler(Available)
+~~~~~~~~~~~~~~~~~~~
+
+Add ruler for document.
+
+showerror(Available)
+~~~~~~~~~~~~~~~~~~~~~~~
+
+Add some menu items related with error.txt and debug.txt of UliPad.
+
+spellcheck(Available)
+~~~~~~~~~~~~~~~~~~~~~~~~~
+
+Spell check for current document.
+
+winpdb(Available)
+~~~~~~~~~~~~~~~~~~~~
+
+Add winpdb support. You can use it to debug your program.
+
+wizard(Available)
+~~~~~~~~~~~~~~~~~~~
+
+Wizard framework. 
+
+`[Return]`_
+
+.. _`[Return]`: index.htm
