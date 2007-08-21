@@ -21,4 +21,4 @@
 #
 #   $Id: Version.py 1885 2007-02-01 06:42:54Z limodou $
 
-version = '3.7'
+version = '3.8'

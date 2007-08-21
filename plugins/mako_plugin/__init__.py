@@ -24,3 +24,18 @@
 from modules import Mixin
 import wx
 import dirbrowser_ext
+import MakoTMPLexer
+
+def add_lexer(lexer):
+    lexer.extend([
+        (MakoTMPLexer.MakoTmpLexer.metaname, tr('Mako Template|*.mko'),
+            wx.stc.STC_LEX_CONTAINER, 'makotmp.stx', MakoTMPLexer.MakoTmpLexer),
+    ])
+Mixin.setPlugin('lexerfactory', 'add_lexer', add_lexer)
+
+def add_new_files(new_files):
+    new_files.extend([
+        ('Mako Template', MakoTMPLexer.MakoTmpLexer.metaname),
+    ])
+Mixin.setPlugin('mainframe', 'add_new_files', add_new_files)
+
