@@ -25,6 +25,7 @@ import LexerBase
 from modules.ZestyParser import *
 import re
 import types
+from modules.common import pout
 
 class CustomLexer(LexerBase.LexerBase):
     metaname = 'newcustom'
@@ -168,7 +169,7 @@ class CustomLexer(LexerBase.LexerBase):
             
             
     def set_style(self, win, start, end, style):
-#        print '>>>>>', start, end, style, win.GetTextRange(start, end)
+        pout('set_style >>>>>', start, end, style, win.GetTextRange(start, end))
         win.StartStyling(start, 0xff)
         win.SetStyling(end - start, style)
         

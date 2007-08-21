@@ -1,4 +1,8 @@
 ﻿$Rev$
+[2007/08/21]
+mako_plugin         Add mako template syntax highlight support
+
+-------------------------------------- 3.7 -----------------------------
 [2007/08/19]
                     Ready to release new version
                     

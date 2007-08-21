@@ -338,3 +338,11 @@ def remove_acp_highlight(ini, suffix, acps, highlight):
             ini.acp[suffix] = s
     if highlight:
         del ini.highlight[suffix]
+
+def pout(head, *args):
+    from Debug import debug
+    if debug.is_debug():
+        print head,
+        for i in args:
+            print i,
+        print

@@ -2,7 +2,7 @@ import sys
 import re
 import inspect
 import wx.py.introspect as intro
-from modules.Debug import debug
+from modules.common import pout
 from mixins.InputAssistant import StopException
 
 try:
@@ -11,15 +11,7 @@ except:
     from sets import Set as set
 
 INDENT = ' '*4
-def pout(head, *args):
-    if debug.is_debug():
-        print head,
-        for i in args:
-            print i,
-        print
-
 getattributes = intro.getAttributeNames
-
 namespace = {}
 
 def get_calltip(win, word, syncvar):
