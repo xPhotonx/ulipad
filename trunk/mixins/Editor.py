@@ -512,6 +512,7 @@ class TextEditor(wx.stc.StyledTextCtrl, Mixin.Mixin, DocumentBase.DocumentBase):
 #           ('Ctrl+C', wx.stc.STC_CMD_COPY),
 #       wxSTC_CMD_CUT Cut the selection to the clipboard
 #           ('Ctrl+X', wx.stc.STC_CMD_CUT),
+           ('Shift+Del', wx.stc.STC_CMD_CUT),
 #       wxSTC_CMD_DELETEBACK Delete the selection or if no selection, the character before the caret
             ('Back', wx.stc.STC_CMD_DELETEBACK),
 #       wxSTC_CMD_DELETEBACKNOTLINE Delete the selection or if no selection, the character before the caret. Will not delete the character before at the start of a line.
@@ -572,6 +573,7 @@ class TextEditor(wx.stc.StyledTextCtrl, Mixin.Mixin, DocumentBase.DocumentBase):
             ('Pgup', wx.stc.STC_CMD_PAGEUP),
 #       wxSTC_CMD_PAGEUPEXTEND Move caret one page up extending selection to new caret position
             ('Shift+Pgup', wx.stc.STC_CMD_PAGEUPEXTEND),
+            ('Shift+Ins', wx.stc.STC_CMD_PASTE),
 #       wxSTC_CMD_REDO Redoes the next action on the undo history
 #           ('Ctrl+Y', wx.stc.STC_CMD_REDO),
 #       wxSTC_CMD_SELECTALL Select all the text in the document
