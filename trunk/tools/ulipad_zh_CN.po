@@ -1,6 +1,6 @@
 msgid ""
 msgstr ""
-"PO-Revision-Date: 2007-08-22 10:27+0800\n"
+"PO-Revision-Date: 2007-08-22 21:29+0800\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Project-Id-Version: UliPad 3.3\n"
 "Generated-By: pygettext.py 1.5\n"
@@ -76,14 +76,14 @@ msgid "Create File"
 msgstr "创建文件"
 
 #: ..\mixins\DirBrowser.py:53
-#: ..\mixins\Import.py:4821
+#: ..\mixins\Import.py:4853
 #: ..\mixins\mFtp.py:99
 msgid "Rename"
 msgstr "重命名"
 
 #: ..\mixins\DirBrowser.py:54
 #: ..\mixins\FtpClass.py:458
-#: ..\mixins\Import.py:4820
+#: ..\mixins\Import.py:4852
 #: ..\mixins\ShareWindow.py:39
 #: ..\mixins\mFtp.py:98
 msgid "Delete"
@@ -92,7 +92,7 @@ msgstr "删除"
 #: ..\mixins\DirBrowser.py:55
 #: ..\mixins\FtpClass.py:111
 #: ..\mixins\HtmlPage.py:146
-#: ..\mixins\Import.py:4823
+#: ..\mixins\Import.py:4855
 #: ..\mixins\mFtp.py:101
 msgid "Refresh"
 msgstr "刷新"
@@ -129,7 +129,7 @@ msgstr "清除最近访问目录"
 #: ..\mixins\Import.py:3520
 #: ..\mixins\Import.py:4043
 #: ..\mixins\Import.py:4071
-#: ..\mixins\Import.py:6081
+#: ..\mixins\Import.py:6113
 #: ..\mixins\mFileNew.py:65
 #: ..\mixins\mScript.py:43
 #: ..\mixins\mScript.py:71
@@ -174,12 +174,12 @@ msgstr "你想要删除 %s 吗？"
 
 #: ..\mixins\DirBrowser.py:514
 #: ..\mixins\Import.py:3324
-#: ..\mixins\Import.py:5000
-#: ..\mixins\Import.py:5004
-#: ..\mixins\Import.py:5005
-#: ..\mixins\Import.py:5015
-#: ..\mixins\Import.py:5034
-#: ..\mixins\Import.py:5337
+#: ..\mixins\Import.py:5032
+#: ..\mixins\Import.py:5036
+#: ..\mixins\Import.py:5037
+#: ..\mixins\Import.py:5047
+#: ..\mixins\Import.py:5066
+#: ..\mixins\Import.py:5369
 #: ..\mixins\ShareWindow.py:285
 #: ..\mixins\mConvert.py:264
 #: ..\mixins\mRun.py:54
@@ -219,23 +219,23 @@ msgstr ""
 "此特性只在Window平台实现了。\n"
 "如果你知道如何在Linux上实现请告诉我。"
 
-#: ..\mixins\DirBrowser.py:785
+#: ..\mixins\DirBrowser.py:784
 msgid "Change the filename:"
 msgstr "修改文件名："
 
-#: ..\mixins\DirBrowser.py:785
+#: ..\mixins\DirBrowser.py:784
 msgid "Save File"
 msgstr "保存文件"
 
-#: ..\mixins\DirBrowser.py:794
+#: ..\mixins\DirBrowser.py:793
 msgid "Source file or directory can not be the same as destination file or directory"
 msgstr "源文件或目录不同与目标文件或目录相同"
 
-#: ..\mixins\DirBrowser.py:805
+#: ..\mixins\DirBrowser.py:804
 msgid "Copy %(filename)s to %(dst)s failed!"
 msgstr "拷贝 %(filename)s 到 %(dst)s 失败！"
 
-#: ..\mixins\DirBrowser.py:812
+#: ..\mixins\DirBrowser.py:811
 msgid "Move %(filename)s to %(dst)s failed!"
 msgstr "移动 %(filename)s 到 %(dst)s 失败！"
 
@@ -368,8 +368,9 @@ msgstr "不能打开剪粘板"
 #: ..\mixins\FindInFiles.py:381
 #: ..\mixins\Import.py:3549
 #: ..\mixins\Import.py:3559
-#: ..\mixins\Import.py:5084
-#: ..\mixins\Import.py:5095
+#: ..\mixins\Import.py:5116
+#: ..\mixins\Import.py:5127
+#: ..\mixins\Print.py:236
 #: ..\mixins\mRegister.py:60
 #: ..\mixins\mRegister.py:71
 #: ..\mixins\mScript.py:100
@@ -682,7 +683,7 @@ msgstr "参数..."
 #: ..\mixins\Import.py:117
 #: ..\mixins\Import.py:118
 #: ..\mixins\Import.py:792
-#: ..\mixins\Import.py:6062
+#: ..\mixins\Import.py:6094
 #: ..\mixins\mEditorCtrl.py:34
 #: ..\mixins\mEditorCtrl.py:35
 #: ..\mixins\mFileNew.py:33
@@ -700,7 +701,7 @@ msgstr "新建"
 #: ..\mixins\Import.py:119
 #: ..\mixins\Import.py:185
 #: ..\mixins\Import.py:2498
-#: ..\mixins\Import.py:4817
+#: ..\mixins\Import.py:4849
 #: ..\mixins\mEditorCtrl.py:36
 #: ..\mixins\mEditorCtrl.py:102
 #: ..\mixins\mFtp.py:95
@@ -860,8 +861,8 @@ msgstr "另存为..."
 #: ..\mixins\Import.py:3774
 #: ..\mixins\Import.py:3775
 #: ..\mixins\Import.py:4455
-#: ..\mixins\Import.py:5311
-#: ..\mixins\Import.py:6318
+#: ..\mixins\Import.py:5343
+#: ..\mixins\Import.py:6350
 #: ..\mixins\mAutoBak.py:31
 #: ..\mixins\mAutoCheck.py:32
 #: ..\mixins\mAutoCheck.py:33
@@ -1103,7 +1104,7 @@ msgid "Set selection end"
 msgstr "设置选择结束位置"
 
 #: ..\mixins\Import.py:792
-#: ..\mixins\Import.py:6062
+#: ..\mixins\Import.py:6094
 #: ..\mixins\mFileNew.py:33
 #: ..\mixins\mToolbar.py:48
 msgid "new"
@@ -1259,15 +1260,15 @@ msgstr "替换"
 #: ..\mixins\Import.py:4213
 #: ..\mixins\Import.py:4394
 #: ..\mixins\Import.py:4395
-#: ..\mixins\Import.py:4653
-#: ..\mixins\Import.py:5593
-#: ..\mixins\Import.py:5710
-#: ..\mixins\Import.py:5711
-#: ..\mixins\Import.py:6188
-#: ..\mixins\Import.py:6189
-#: ..\mixins\Import.py:6190
-#: ..\mixins\Import.py:6191
-#: ..\mixins\Import.py:6440
+#: ..\mixins\Import.py:4685
+#: ..\mixins\Import.py:5625
+#: ..\mixins\Import.py:5742
+#: ..\mixins\Import.py:5743
+#: ..\mixins\Import.py:6220
+#: ..\mixins\Import.py:6221
+#: ..\mixins\Import.py:6222
+#: ..\mixins\Import.py:6223
+#: ..\mixins\Import.py:6472
 #: ..\mixins\mDirBrowser.py:106
 #: ..\mixins\mDirBrowser.py:107
 #: ..\mixins\mDuplicate.py:38
@@ -2600,20 +2601,30 @@ msgstr "语法高亮参数设置。"
 msgid "Setup document syntax highlight"
 msgstr "设置文档语法高亮"
 
-#: ..\mixins\Import.py:4488
-#: ..\mixins\mPrint.py:34
+#: ..\mixins\Import.py:4487
+#: ..\mixins\mPrint.py:33
 msgid "Print"
 msgstr "打印"
 
-#: ..\mixins\Import.py:4492
-#: ..\mixins\mPrint.py:38
+#: ..\mixins\Import.py:4491
+#: ..\mixins\mPrint.py:37
 msgid "Page Setup..."
 msgstr "页面设置..."
 
-#: ..\mixins\Import.py:4492
-#: ..\mixins\mPrint.py:38
+#: ..\mixins\Import.py:4491
+#: ..\mixins\mPrint.py:37
 msgid "Set page layout and options."
 msgstr "设置页面布局和选项。"
+
+#: ..\mixins\Import.py:4492
+#: ..\mixins\mPrint.py:38
+msgid "Print Line Number"
+msgstr "打印行号"
+
+#: ..\mixins\Import.py:4492
+#: ..\mixins\mPrint.py:38
+msgid "Print line number."
+msgstr "打印行号。"
 
 #: ..\mixins\Import.py:4493
 #: ..\mixins\mPrint.py:40
@@ -2667,179 +2678,179 @@ msgstr "打印Html文档。"
 msgid "print"
 msgstr "打印"
 
-#: ..\mixins\Import.py:4565
+#: ..\mixins\Import.py:4597
 #: ..\mixins\mPlugins.py:33
 msgid "Plugins Manager..."
 msgstr "插件管理..."
 
-#: ..\mixins\Import.py:4608
+#: ..\mixins\Import.py:4640
 #: ..\mixins\mPythonContextIndent.py:44
 msgid "Use context sensitive indent"
 msgstr "使用上下文敏感缩进"
 
-#: ..\mixins\Import.py:4653
+#: ..\mixins\Import.py:4685
 #: ..\mixins\mPythonContextIndent.py:90
 msgid "Auto indent when pasting text block"
 msgstr "粘贴文本块时自动缩近"
 
-#: ..\mixins\Import.py:4756
-#: ..\mixins\Import.py:4774
-#: ..\mixins\Import.py:4897
+#: ..\mixins\Import.py:4788
+#: ..\mixins\Import.py:4806
+#: ..\mixins\Import.py:4929
 #: ..\mixins\mFtp.py:34
 #: ..\mixins\mFtp.py:52
 #: ..\mixins\mFtp.py:176
 msgid "Opens ftp window."
 msgstr "打开Ftp窗口"
 
-#: ..\mixins\Import.py:4756
-#: ..\mixins\Import.py:4774
+#: ..\mixins\Import.py:4788
+#: ..\mixins\Import.py:4806
 #: ..\mixins\mFtp.py:34
 #: ..\mixins\mFtp.py:52
 msgid "Open Ftp Window"
 msgstr "打开Ftp窗口"
 
-#: ..\mixins\Import.py:4817
+#: ..\mixins\Import.py:4849
 #: ..\mixins\mFtp.py:95
 msgid "Open an file or directory."
 msgstr "打开文件或目录。"
 
-#: ..\mixins\Import.py:4818
+#: ..\mixins\Import.py:4850
 #: ..\mixins\mFtp.py:96
 msgid "Create an new file."
 msgstr "创建一个新文件。"
 
-#: ..\mixins\Import.py:4818
+#: ..\mixins\Import.py:4850
 #: ..\mixins\mFtp.py:96
 msgid "New File"
 msgstr "新建文件"
 
-#: ..\mixins\Import.py:4819
+#: ..\mixins\Import.py:4851
 #: ..\mixins\mFtp.py:97
 msgid "Create an new directory."
 msgstr "创建一个新目录。"
 
-#: ..\mixins\Import.py:4819
+#: ..\mixins\Import.py:4851
 #: ..\mixins\mFtp.py:97
 msgid "New Directory"
 msgstr "新建目录"
 
-#: ..\mixins\Import.py:4820
+#: ..\mixins\Import.py:4852
 #: ..\mixins\mFtp.py:98
 msgid "Delete selected file or directory."
 msgstr "删除选中的文件或目录。"
 
-#: ..\mixins\Import.py:4821
+#: ..\mixins\Import.py:4853
 #: ..\mixins\mFtp.py:99
 msgid "Rename selected file or directory."
 msgstr "重命名选中文件或目录。"
 
-#: ..\mixins\Import.py:4823
+#: ..\mixins\Import.py:4855
 #: ..\mixins\mFtp.py:101
 msgid "Refresh current directory."
 msgstr "刷新当前目录。"
 
-#: ..\mixins\Import.py:4825
+#: ..\mixins\Import.py:4857
 #: ..\mixins\mFtp.py:103
 msgid "Upload"
 msgstr "上传"
 
-#: ..\mixins\Import.py:4825
+#: ..\mixins\Import.py:4857
 #: ..\mixins\mFtp.py:103
 msgid "Upload files."
 msgstr "上传文件。"
 
-#: ..\mixins\Import.py:4826
+#: ..\mixins\Import.py:4858
 #: ..\mixins\mFtp.py:104
 msgid "Download"
 msgstr "下载"
 
-#: ..\mixins\Import.py:4826
+#: ..\mixins\Import.py:4858
 #: ..\mixins\mFtp.py:104
 msgid "Download files."
 msgstr "下载文件。"
 
-#: ..\mixins\Import.py:4897
+#: ..\mixins\Import.py:4929
 #: ..\mixins\mFtp.py:176
 msgid "open ftp window"
 msgstr "打开Ftp窗口"
 
-#: ..\mixins\Import.py:4926
+#: ..\mixins\Import.py:4958
 #: ..\mixins\mWindow.py:30
 msgid "Window"
 msgstr "窗口"
 
-#: ..\mixins\Import.py:4930
-#: ..\mixins\Import.py:4985
+#: ..\mixins\Import.py:4962
+#: ..\mixins\Import.py:5017
 #: ..\mixins\mWindow.py:34
 #: ..\mixins\mWindow.py:90
 msgid "Left Window"
 msgstr "左侧窗口"
 
-#: ..\mixins\Import.py:4930
-#: ..\mixins\Import.py:4985
+#: ..\mixins\Import.py:4962
+#: ..\mixins\Import.py:5017
 #: ..\mixins\mWindow.py:34
 #: ..\mixins\mWindow.py:90
 msgid "Shows or hides the left Window"
 msgstr "显示或隐藏左侧窗口"
 
-#: ..\mixins\Import.py:4931
-#: ..\mixins\Import.py:4986
+#: ..\mixins\Import.py:4963
+#: ..\mixins\Import.py:5018
 #: ..\mixins\mWindow.py:35
 #: ..\mixins\mWindow.py:91
 msgid "Bottom Window"
 msgstr "底部窗口"
 
-#: ..\mixins\Import.py:4931
-#: ..\mixins\Import.py:4986
+#: ..\mixins\Import.py:4963
+#: ..\mixins\Import.py:5018
 #: ..\mixins\mWindow.py:35
 #: ..\mixins\mWindow.py:91
 msgid "Shows or hides the bottom Window"
 msgstr "显示或隐藏底部窗口"
 
-#: ..\mixins\Import.py:4933
-#: ..\mixins\Import.py:5021
+#: ..\mixins\Import.py:4965
+#: ..\mixins\Import.py:5053
 #: ..\mixins\mWindow.py:37
 #: ..\mixins\mWindow.py:126
 msgid "Open Shell Window"
 msgstr "打开Shell窗口"
 
-#: ..\mixins\Import.py:4933
-#: ..\mixins\Import.py:5021
+#: ..\mixins\Import.py:4965
+#: ..\mixins\Import.py:5053
 #: ..\mixins\mWindow.py:37
 #: ..\mixins\mWindow.py:126
 msgid "Opens shell window."
 msgstr "打开Shell窗口。"
 
-#: ..\mixins\Import.py:4934
-#: ..\mixins\Import.py:5022
+#: ..\mixins\Import.py:4966
+#: ..\mixins\Import.py:5054
 #: ..\mixins\mWindow.py:38
 #: ..\mixins\mWindow.py:127
 msgid "Open Message Window"
 msgstr "打开消息窗口"
 
-#: ..\mixins\Import.py:4934
-#: ..\mixins\Import.py:5022
+#: ..\mixins\Import.py:4966
+#: ..\mixins\Import.py:5054
 #: ..\mixins\mWindow.py:38
 #: ..\mixins\mWindow.py:127
 msgid "Opens message window."
 msgstr "打开消息窗口。"
 
-#: ..\mixins\Import.py:4939
+#: ..\mixins\Import.py:4971
 #: ..\mixins\mWindow.py:43
 msgid "Clear Shell Window"
 msgstr "清除Shell窗口"
 
-#: ..\mixins\Import.py:4939
+#: ..\mixins\Import.py:4971
 #: ..\mixins\mWindow.py:43
 msgid "Clears content of shell window."
 msgstr "清除Shell窗口的内容。"
 
-#: ..\mixins\Import.py:4991
-#: ..\mixins\Import.py:4995
-#: ..\mixins\Import.py:4996
-#: ..\mixins\Import.py:5010
-#: ..\mixins\Import.py:5029
-#: ..\mixins\Import.py:5038
+#: ..\mixins\Import.py:5023
+#: ..\mixins\Import.py:5027
+#: ..\mixins\Import.py:5028
+#: ..\mixins\Import.py:5042
+#: ..\mixins\Import.py:5061
+#: ..\mixins\Import.py:5070
 #: ..\mixins\mWindow.py:96
 #: ..\mixins\mWindow.py:100
 #: ..\mixins\mWindow.py:101
@@ -2849,261 +2860,261 @@ msgstr "清除Shell窗口的内容。"
 msgid "Shell"
 msgstr "Shell"
 
-#: ..\mixins\Import.py:5063
+#: ..\mixins\Import.py:5095
 #: ..\mixins\mRegister.py:39
 msgid "Register to Explore"
 msgstr "注册到资源管理器"
 
-#: ..\mixins\Import.py:5063
+#: ..\mixins\Import.py:5095
 #: ..\mixins\mRegister.py:39
 msgid "Registers to explore context menu."
 msgstr "注册到资源管理器上下文菜单。"
 
-#: ..\mixins\Import.py:5064
+#: ..\mixins\Import.py:5096
 #: ..\mixins\mRegister.py:40
 msgid "Unregister from Explore"
 msgstr "从资源管理器取消注册"
 
-#: ..\mixins\Import.py:5064
+#: ..\mixins\Import.py:5096
 #: ..\mixins\mRegister.py:40
 msgid "Unregisters from explore context menu."
 msgstr "从资源管理器上下文菜单反注册。"
 
-#: ..\mixins\Import.py:5081
-#: ..\mixins\Import.py:5092
+#: ..\mixins\Import.py:5113
+#: ..\mixins\Import.py:5124
 #: ..\mixins\mRegister.py:57
 #: ..\mixins\mRegister.py:68
 msgid "Successful!"
 msgstr "成功！"
 
-#: ..\mixins\Import.py:5084
+#: ..\mixins\Import.py:5116
 #: ..\mixins\mRegister.py:60
 msgid "Register to explore context menu failed!"
 msgstr "注册资源管理器上下文菜单失败！"
 
-#: ..\mixins\Import.py:5095
+#: ..\mixins\Import.py:5127
 #: ..\mixins\mRegister.py:71
 msgid "Unregister from explore context menu failed!"
 msgstr "从资源管理器上下文菜单反注册失败！"
 
-#: ..\mixins\Import.py:5110
-#: ..\mixins\Import.py:5129
+#: ..\mixins\Import.py:5142
+#: ..\mixins\Import.py:5161
 #: ..\mixins\mConvert.py:32
 #: ..\mixins\mConvert.py:51
 msgid "Convert"
 msgstr "转换"
 
-#: ..\mixins\Import.py:5114
-#: ..\mixins\Import.py:5133
+#: ..\mixins\Import.py:5146
+#: ..\mixins\Import.py:5165
 #: ..\mixins\mConvert.py:36
 #: ..\mixins\mConvert.py:55
 msgid "Output In Html Window"
 msgstr "在Html窗口中输出"
 
-#: ..\mixins\Import.py:5114
-#: ..\mixins\Import.py:5133
+#: ..\mixins\Import.py:5146
+#: ..\mixins\Import.py:5165
 #: ..\mixins\mConvert.py:36
 #: ..\mixins\mConvert.py:55
 msgid "Outputs converted text in html window."
 msgstr "在Html窗口中输出转换后的文本。"
 
-#: ..\mixins\Import.py:5115
-#: ..\mixins\Import.py:5134
+#: ..\mixins\Import.py:5147
+#: ..\mixins\Import.py:5166
 #: ..\mixins\mConvert.py:37
 #: ..\mixins\mConvert.py:56
 msgid "Output In Message Window"
 msgstr "在消息窗口中输出"
 
-#: ..\mixins\Import.py:5115
-#: ..\mixins\Import.py:5134
+#: ..\mixins\Import.py:5147
+#: ..\mixins\Import.py:5166
 #: ..\mixins\mConvert.py:37
 #: ..\mixins\mConvert.py:56
 msgid "Outputs converted text in message window."
 msgstr "在消息窗口中输出转换后的文本。"
 
-#: ..\mixins\Import.py:5116
-#: ..\mixins\Import.py:5135
+#: ..\mixins\Import.py:5148
+#: ..\mixins\Import.py:5167
 #: ..\mixins\mConvert.py:38
 #: ..\mixins\mConvert.py:57
 msgid "Replace Selected Text"
 msgstr "替换选中文本"
 
-#: ..\mixins\Import.py:5116
-#: ..\mixins\Import.py:5135
+#: ..\mixins\Import.py:5148
+#: ..\mixins\Import.py:5167
 #: ..\mixins\mConvert.py:38
 #: ..\mixins\mConvert.py:57
 msgid "Replaces selected text with converted text."
 msgstr "用转换后的文本替换选中的文本。"
 
-#: ..\mixins\Import.py:5118
-#: ..\mixins\Import.py:5137
+#: ..\mixins\Import.py:5150
+#: ..\mixins\Import.py:5169
 #: ..\mixins\mConvert.py:40
 #: ..\mixins\mConvert.py:59
 msgid "Output Directly In Html Window"
 msgstr "直接输出到HTML窗口"
 
-#: ..\mixins\Import.py:5118
-#: ..\mixins\Import.py:5137
+#: ..\mixins\Import.py:5150
+#: ..\mixins\Import.py:5169
 #: ..\mixins\mConvert.py:40
 #: ..\mixins\mConvert.py:59
 msgid "Outputs directly the text in html window."
 msgstr "直接输出文本到HTML窗口。"
 
-#: ..\mixins\Import.py:5119
-#: ..\mixins\Import.py:5138
+#: ..\mixins\Import.py:5151
+#: ..\mixins\Import.py:5170
 #: ..\mixins\mConvert.py:41
 #: ..\mixins\mConvert.py:60
 msgid "Converts reStructuredText source to Html."
 msgstr "转换reStructuredText源码为Html。"
 
-#: ..\mixins\Import.py:5119
-#: ..\mixins\Import.py:5138
+#: ..\mixins\Import.py:5151
+#: ..\mixins\Import.py:5170
 #: ..\mixins\mConvert.py:41
 #: ..\mixins\mConvert.py:60
 msgid "reSt to Html"
 msgstr "reSt转Html"
 
-#: ..\mixins\Import.py:5120
-#: ..\mixins\Import.py:5139
+#: ..\mixins\Import.py:5152
+#: ..\mixins\Import.py:5171
 #: ..\mixins\mConvert.py:42
 #: ..\mixins\mConvert.py:61
 msgid "Converts python source to Html."
 msgstr "转换Python源码为HTML。"
 
-#: ..\mixins\Import.py:5120
-#: ..\mixins\Import.py:5139
+#: ..\mixins\Import.py:5152
+#: ..\mixins\Import.py:5171
 #: ..\mixins\mConvert.py:42
 #: ..\mixins\mConvert.py:61
 msgid "Py to Html"
 msgstr "Py转Html"
 
-#: ..\mixins\Import.py:5121
-#: ..\mixins\Import.py:5140
+#: ..\mixins\Import.py:5153
+#: ..\mixins\Import.py:5172
 #: ..\mixins\mConvert.py:43
 #: ..\mixins\mConvert.py:62
 msgid "Converts textile source to Html."
 msgstr "转换Textile源码为Html。"
 
-#: ..\mixins\Import.py:5121
-#: ..\mixins\Import.py:5140
+#: ..\mixins\Import.py:5153
+#: ..\mixins\Import.py:5172
 #: ..\mixins\mConvert.py:43
 #: ..\mixins\mConvert.py:62
 msgid "Textile to Html"
 msgstr "Textile转Html"
 
-#: ..\mixins\Import.py:5188
+#: ..\mixins\Import.py:5220
 #: ..\mixins\mConvert.py:110
 msgid "You should install textile module first!"
 msgstr "你应该首先安装textile模块！"
 
-#: ..\mixins\Import.py:5311
+#: ..\mixins\Import.py:5343
 #: ..\mixins\mConvert.py:238
 msgid "Choose where converted text is to be output:"
 msgstr "选择转换后的文本被输出在哪里："
 
-#: ..\mixins\Import.py:5311
+#: ..\mixins\Import.py:5343
 #: ..\mixins\mConvert.py:238
 msgid "In html window"
 msgstr "输出到Html窗口"
 
-#: ..\mixins\Import.py:5311
+#: ..\mixins\Import.py:5343
 #: ..\mixins\mConvert.py:238
 msgid "In message window"
 msgstr "输出到消息窗口"
 
-#: ..\mixins\Import.py:5311
+#: ..\mixins\Import.py:5343
 #: ..\mixins\mConvert.py:238
 msgid "Replace selected text"
 msgstr "替换选中文本"
 
-#: ..\mixins\Import.py:5334
+#: ..\mixins\Import.py:5366
 #: ..\mixins\mConvert.py:261
 msgid "Html Convertion"
 msgstr "Html转换"
 
-#: ..\mixins\Import.py:5371
-#: ..\mixins\Import.py:5415
+#: ..\mixins\Import.py:5403
+#: ..\mixins\Import.py:5447
 #: ..\mixins\mHtmlFileType.py:49
 #: ..\mixins\mHtmlFileType.py:94
 msgid "View Html Content in Left Pane"
 msgstr "在左边栏查看Html内容"
 
-#: ..\mixins\Import.py:5371
-#: ..\mixins\Import.py:5415
+#: ..\mixins\Import.py:5403
+#: ..\mixins\Import.py:5447
 #: ..\mixins\mHtmlFileType.py:49
 #: ..\mixins\mHtmlFileType.py:94
 msgid "Views html content in left pane."
 msgstr "在左边栏中查看html内容。"
 
-#: ..\mixins\Import.py:5372
-#: ..\mixins\Import.py:5416
+#: ..\mixins\Import.py:5404
+#: ..\mixins\Import.py:5448
 #: ..\mixins\mHtmlFileType.py:50
 #: ..\mixins\mHtmlFileType.py:95
 msgid "View Html Content in Bottom Pane"
 msgstr "在底边栏查看Html内容"
 
-#: ..\mixins\Import.py:5372
-#: ..\mixins\Import.py:5416
+#: ..\mixins\Import.py:5404
+#: ..\mixins\Import.py:5448
 #: ..\mixins\mHtmlFileType.py:50
 #: ..\mixins\mHtmlFileType.py:95
 msgid "Views html content in bottom pane."
 msgstr "在底边栏中查看html内容。"
 
-#: ..\mixins\Import.py:5518
-#: ..\mixins\Import.py:5527
+#: ..\mixins\Import.py:5550
+#: ..\mixins\Import.py:5559
 #: ..\mixins\mModuleFile.py:34
 #: ..\mixins\mModuleFile.py:43
 msgid "Open Module File"
 msgstr "打开模块文件"
 
-#: ..\mixins\Import.py:5518
-#: ..\mixins\Import.py:5527
+#: ..\mixins\Import.py:5550
+#: ..\mixins\Import.py:5559
 #: ..\mixins\mModuleFile.py:34
 #: ..\mixins\mModuleFile.py:43
 msgid "Open current word as Python module file"
 msgstr "打开当前单词作为Python的模块文件"
 
-#: ..\mixins\Import.py:5593
+#: ..\mixins\Import.py:5625
 #: ..\mixins\mSplashWin.py:30
 msgid "Show splash window on startup"
 msgstr "在启动时显示启动画面"
 
-#: ..\mixins\Import.py:5624
+#: ..\mixins\Import.py:5656
 #: ..\mixins\mModuleInfo.py:30
 msgid "Extended Modules Info"
 msgstr "扩展模块信息"
 
-#: ..\mixins\Import.py:5624
+#: ..\mixins\Import.py:5656
 #: ..\mixins\mModuleInfo.py:30
 msgid "Extended modules infomation"
 msgstr "扩展模块信息"
 
-#: ..\mixins\Import.py:5649
-#: ..\mixins\Import.py:5656
-#: ..\mixins\Import.py:5664
+#: ..\mixins\Import.py:5681
+#: ..\mixins\Import.py:5688
+#: ..\mixins\Import.py:5696
 #: ..\mixins\mDirBrowser.py:35
 #: ..\mixins\mDirBrowser.py:42
 #: ..\mixins\mDirBrowser.py:50
 msgid "Opens directory browser window."
 msgstr "打开目录浏览窗口。"
 
-#: ..\mixins\Import.py:5649
+#: ..\mixins\Import.py:5681
 #: ..\mixins\mDirBrowser.py:35
 msgid "directory browser"
 msgstr "打开目录浏览"
 
-#: ..\mixins\Import.py:5656
-#: ..\mixins\Import.py:5664
+#: ..\mixins\Import.py:5688
+#: ..\mixins\Import.py:5696
 #: ..\mixins\mDirBrowser.py:42
 #: ..\mixins\mDirBrowser.py:50
 msgid "Open Directory Browser"
 msgstr "打开目录浏览"
 
-#: ..\mixins\Import.py:5677
-#: ..\mixins\Import.py:5682
-#: ..\mixins\Import.py:5688
-#: ..\mixins\Import.py:5693
-#: ..\mixins\Import.py:5698
+#: ..\mixins\Import.py:5709
+#: ..\mixins\Import.py:5714
+#: ..\mixins\Import.py:5720
+#: ..\mixins\Import.py:5725
+#: ..\mixins\Import.py:5730
 #: ..\mixins\mDirBrowser.py:63
 #: ..\mixins\mDirBrowser.py:78
 #: ..\mixins\mDirBrowser.py:84
@@ -3112,22 +3123,22 @@ msgstr "打开目录浏览"
 msgid "Dir Browser"
 msgstr "目录浏览"
 
-#: ..\mixins\Import.py:5710
+#: ..\mixins\Import.py:5742
 #: ..\mixins\mDirBrowser.py:106
 msgid "Max number of recent browse directories:"
 msgstr "最近浏览目录的最大个数："
 
-#: ..\mixins\Import.py:5711
+#: ..\mixins\Import.py:5743
 #: ..\mixins\mDirBrowser.py:107
 msgid "Open last directory browser upon startup"
 msgstr "在启动时打开上次目录浏览"
 
-#: ..\mixins\Import.py:5850
-#: ..\mixins\Import.py:5851
-#: ..\mixins\Import.py:5852
-#: ..\mixins\Import.py:5853
-#: ..\mixins\Import.py:5854
-#: ..\mixins\Import.py:5855
+#: ..\mixins\Import.py:5882
+#: ..\mixins\Import.py:5883
+#: ..\mixins\Import.py:5884
+#: ..\mixins\Import.py:5885
+#: ..\mixins\Import.py:5886
+#: ..\mixins\Import.py:5887
 #: ..\mixins\mInputAssistant.py:144
 #: ..\mixins\mInputAssistant.py:145
 #: ..\mixins\mInputAssistant.py:146
@@ -3137,84 +3148,84 @@ msgstr "在启动时打开上次目录浏览"
 msgid "Input Assistant"
 msgstr "输入助手"
 
-#: ..\mixins\Import.py:5850
+#: ..\mixins\Import.py:5882
 #: ..\mixins\mInputAssistant.py:144
 msgid "Enable input assistant"
 msgstr "允许输入助手"
 
-#: ..\mixins\Import.py:5851
+#: ..\mixins\Import.py:5883
 #: ..\mixins\mInputAssistant.py:145
 msgid "Enable calltip"
 msgstr "允许函数提示"
 
-#: ..\mixins\Import.py:5852
+#: ..\mixins\Import.py:5884
 #: ..\mixins\mInputAssistant.py:146
 msgid "Enable auto completion"
 msgstr "允许自动完成"
 
-#: ..\mixins\Import.py:5853
+#: ..\mixins\Import.py:5885
 #: ..\mixins\mInputAssistant.py:147
 msgid "Enable auto prompt identifiers"
 msgstr "允许自动标识符提示"
 
-#: ..\mixins\Import.py:5854
+#: ..\mixins\Import.py:5886
 #: ..\mixins\mInputAssistant.py:148
 msgid "Enable full identifiers search"
 msgstr "允许全部标识符搜索"
 
-#: ..\mixins\Import.py:5855
+#: ..\mixins\Import.py:5887
 #: ..\mixins\mInputAssistant.py:149
 msgid "Enable function parameter autocomplete"
 msgstr "允许函数参数自动完成"
 
-#: ..\mixins\Import.py:5877
+#: ..\mixins\Import.py:5909
 #: ..\mixins\mInputAssistant.py:171
 msgid "Deault acp files:"
 msgstr "缺省的 acp 文件："
 
-#: ..\mixins\Import.py:5878
+#: ..\mixins\Import.py:5910
 #: ..\mixins\mInputAssistant.py:172
 msgid "Available acp files:"
 msgstr "可用的 acp 文件："
 
-#: ..\mixins\Import.py:5881
+#: ..\mixins\Import.py:5913
 #: ..\mixins\mInputAssistant.py:175
 msgid "Acp Selector"
 msgstr "Acp选择器"
 
-#: ..\mixins\Import.py:5925
-#: ..\mixins\Import.py:5939
+#: ..\mixins\Import.py:5957
+#: ..\mixins\Import.py:5971
 #: ..\mixins\mInputAssistant.py:219
 #: ..\mixins\mInputAssistant.py:233
 msgid "Apply Auto-complete Files"
 msgstr "应用自动完成文件"
 
-#: ..\mixins\Import.py:5925
-#: ..\mixins\Import.py:5939
+#: ..\mixins\Import.py:5957
+#: ..\mixins\Import.py:5971
 #: ..\mixins\mInputAssistant.py:219
 #: ..\mixins\mInputAssistant.py:233
 msgid "Apply auto-complete files to current document."
 msgstr "应用自动完成文件到当前的文档。"
 
-#: ..\mixins\Import.py:6128
-#: ..\mixins\Import.py:6136
+#: ..\mixins\Import.py:6160
+#: ..\mixins\Import.py:6168
 #: ..\mixins\mShare.py:31
 #: ..\mixins\mShare.py:39
 msgid "Open Share Resource Window"
 msgstr "打开共享资源窗口"
 
-#: ..\mixins\Import.py:6128
-#: ..\mixins\Import.py:6136
+#: ..\mixins\Import.py:6160
+#: ..\mixins\Import.py:6168
 #: ..\mixins\mShare.py:31
 #: ..\mixins\mShare.py:39
 msgid "Opens share resource window."
 msgstr "打开共享资源窗口。"
 
-#: ..\mixins\Import.py:6151
-#: ..\mixins\Import.py:6155
-#: ..\mixins\Import.py:6160
-#: ..\mixins\Import.py:6165
-#: ..\mixins\Import.py:6169
+#: ..\mixins\Import.py:6183
+#: ..\mixins\Import.py:6187
+#: ..\mixins\Import.py:6192
+#: ..\mixins\Import.py:6197
+#: ..\mixins\Import.py:6201
 #: ..\mixins\mShare.py:64
 #: ..\mixins\mShare.py:68
 #: ..\mixins\mShare.py:73
@@ -3223,243 +3234,243 @@ msgstr "打开共享资源窗口。"
 msgid "Share Resource"
 msgstr "共享资源"
 
-#: ..\mixins\Import.py:6188
+#: ..\mixins\Import.py:6220
 #: ..\mixins\mProxy.py:35
 msgid "Use proxy"
 msgstr "使用代理服务器"
 
-#: ..\mixins\Import.py:6189
+#: ..\mixins\Import.py:6221
 #: ..\mixins\mProxy.py:36
 msgid "Proxy URL:"
 msgstr "代理服务器URL："
 
-#: ..\mixins\Import.py:6190
+#: ..\mixins\Import.py:6222
 #: ..\mixins\mProxy.py:37
 msgid "Proxy User:"
 msgstr "代理服务器用户名："
 
-#: ..\mixins\Import.py:6191
+#: ..\mixins\Import.py:6223
 #: ..\mixins\mProxy.py:38
 msgid "Proxy Password:"
 msgstr "代理服务器口令："
 
-#: ..\mixins\Import.py:6216
-#: ..\mixins\Import.py:6228
+#: ..\mixins\Import.py:6248
+#: ..\mixins\Import.py:6260
 #: ..\mixins\mPad.py:41
 #: ..\mixins\mPad.py:53
 msgid "Easy Memo"
 msgstr "简单贴"
 
-#: ..\mixins\Import.py:6216
-#: ..\mixins\Import.py:6240
+#: ..\mixins\Import.py:6248
+#: ..\mixins\Import.py:6272
 #: ..\mixins\mPad.py:41
 #: ..\mixins\mPad.py:65
 msgid "Show Easy Memo windows, and you can write down everything what you want."
 msgstr "显示简单贴窗口，你可以写下任意想要的东西。"
 
-#: ..\mixins\Import.py:6240
+#: ..\mixins\Import.py:6272
 #: ..\mixins\mPad.py:65
 msgid "easy memo"
 msgstr "简单贴"
 
-#: ..\mixins\Import.py:6294
-#: ..\mixins\Import.py:6302
+#: ..\mixins\Import.py:6326
+#: ..\mixins\Import.py:6334
 #: ..\mixins\mTodoWindow.py:30
 #: ..\mixins\mTodoWindow.py:38
 msgid "Open TODO Window"
 msgstr "打开TODO窗口"
 
-#: ..\mixins\Import.py:6294
+#: ..\mixins\Import.py:6326
 #: ..\mixins\mTodoWindow.py:30
 msgid "Open the TODO window."
 msgstr "打开TODO窗口。"
 
-#: ..\mixins\Import.py:6302
+#: ..\mixins\Import.py:6334
 #: ..\mixins\mTodoWindow.py:38
 msgid "Opens the TODO window."
 msgstr "打开TODO窗口。"
 
-#: ..\mixins\Import.py:6318
+#: ..\mixins\Import.py:6350
 #: ..\mixins\mTodoWindow.py:54
 msgid "Auto show TODO window when opening file containing a TODO"
 msgstr "当打开一个包含TODO的文件时自动显示TODO窗口"
 
-#: ..\mixins\Import.py:6322
+#: ..\mixins\Import.py:6354
 #: ..\mixins\mTodoWindow.py:58
 msgid "TODO"
 msgstr ""
 
-#: ..\mixins\Import.py:6414
+#: ..\mixins\Import.py:6446
 #: ..\mixins\mMessageWindow.py:34
 msgid "Goto error line"
 msgstr "跳转到出错行"
 
-#: ..\mixins\Import.py:6414
+#: ..\mixins\Import.py:6446
 #: ..\mixins\mMessageWindow.py:34
 msgid "Goto the line that occurs the error."
 msgstr "跳转到发生错误的行。"
 
-#: ..\mixins\Import.py:6440
+#: ..\mixins\Import.py:6472
 #: ..\mixins\mMessageWindow.py:60
 msgid "Auto clear message window content when running program"
 msgstr "在运行程序时自动清除消息窗口"
 
-#: ..\mixins\Import.py:6448
+#: ..\mixins\Import.py:6480
 #: ..\mixins\mMessageWindow.py:68
 msgid "Clear Message Window"
 msgstr "清除消息窗口"
 
-#: ..\mixins\Import.py:6448
+#: ..\mixins\Import.py:6480
 #: ..\mixins\mMessageWindow.py:68
 msgid "Clears content of message window."
 msgstr "清除消息窗口的内容。"
 
-#: ..\mixins\Import.py:6481
-#: ..\mixins\Import.py:6673
+#: ..\mixins\Import.py:6513
+#: ..\mixins\Import.py:6705
 #: ..\mixins\mColumnMode.py:15
 #: ..\mixins\mColumnMode.py:207
 msgid "Column Mode"
 msgstr "列模式"
 
-#: ..\mixins\Import.py:6481
-#: ..\mixins\Import.py:6673
+#: ..\mixins\Import.py:6513
+#: ..\mixins\Import.py:6705
 #: ..\mixins\mColumnMode.py:15
 #: ..\mixins\mColumnMode.py:207
 msgid "Mark Column Mode Region"
 msgstr "标记列模式区域"
 
-#: ..\mixins\Import.py:6715
+#: ..\mixins\Import.py:6747
 #: ..\mixins\mCommands.py:35
 msgid "Commands Searching"
 msgstr "命令搜索"
 
-#: ..\mixins\Import.py:6719
+#: ..\mixins\Import.py:6751
 #: ..\mixins\mCommands.py:39
 msgid "Searching..."
 msgstr "搜索..."
 
-#: ..\mixins\Import.py:6719
+#: ..\mixins\Import.py:6751
 #: ..\mixins\mCommands.py:39
 msgid "Searchs commands."
 msgstr "搜索命令。"
 
-#: ..\mixins\Import.py:6720
+#: ..\mixins\Import.py:6752
 #: ..\mixins\mCommands.py:40
 msgid "Switch Impact Mode"
 msgstr "切换简洁模式"
 
-#: ..\mixins\Import.py:6720
+#: ..\mixins\Import.py:6752
 #: ..\mixins\mCommands.py:40
 msgid "Switches commands searching impact mode."
 msgstr "切换命令搜索的简洁模式。"
 
-#: ..\mixins\Import.py:6756
+#: ..\mixins\Import.py:6788
 #: ..\mixins\mCommands.py:76
 msgid "Search Commands"
 msgstr "搜索命令"
 
-#: ..\mixins\Import.py:6775
-#: ..\mixins\Import.py:6776
+#: ..\mixins\Import.py:6807
+#: ..\mixins\Import.py:6808
 #: ..\mixins\mCommands.py:95
 #: ..\mixins\mCommands.py:96
 msgid "Commands"
 msgstr "命令"
 
-#: ..\mixins\Import.py:6775
+#: ..\mixins\Import.py:6807
 #: ..\mixins\mCommands.py:95
 msgid "Enable commands search impact mode"
 msgstr "允许命令搜索的简洁模式"
 
-#: ..\mixins\Import.py:6776
+#: ..\mixins\Import.py:6808
 #: ..\mixins\mCommands.py:96
 msgid "Auto close commands search window after executing a command"
 msgstr "执行一条命令后自动关闭命令搜索窗口"
 
-#: ..\mixins\Import.py:6823
-#: ..\mixins\Import.py:6868
+#: ..\mixins\Import.py:6855
+#: ..\mixins\Import.py:6900
 #: ..\mixins\mMultiView.py:31
 #: ..\mixins\mMultiView.py:76
 msgid "Open Multi View Window"
 msgstr "打开多视图窗口"
 
-#: ..\mixins\Import.py:6823
-#: ..\mixins\Import.py:6868
+#: ..\mixins\Import.py:6855
+#: ..\mixins\Import.py:6900
 #: ..\mixins\mMultiView.py:31
 #: ..\mixins\mMultiView.py:76
 msgid "Opens multi view window."
 msgstr "打开多视图窗口。"
 
-#: ..\mixins\Import.py:6891
+#: ..\mixins\Import.py:6923
 #: ..\mixins\mMultiView.py:99
 msgid "Open View in Left Pane"
 msgstr "在左边栏打开视图"
 
-#: ..\mixins\Import.py:6891
+#: ..\mixins\Import.py:6923
 #: ..\mixins\mMultiView.py:99
 msgid "Opens view of current document in left pane."
 msgstr "在左边栏打开当前文档的视图。"
 
-#: ..\mixins\Import.py:6892
+#: ..\mixins\Import.py:6924
 #: ..\mixins\mMultiView.py:100
 msgid "Open View in Bottom Pane"
 msgstr "在底边栏打开视图"
 
-#: ..\mixins\Import.py:6892
+#: ..\mixins\Import.py:6924
 #: ..\mixins\mMultiView.py:100
 msgid "Opens view of current document in bottom pane."
 msgstr "在底边栏打开当前文档的视图。"
 
-#: ..\mixins\Import.py:6961
-#: ..\mixins\Import.py:7017
+#: ..\mixins\Import.py:6993
+#: ..\mixins\Import.py:7049
 #: ..\mixins\mRestFileType.py:48
 #: ..\mixins\mRestFileType.py:105
 msgid "View Html Result in Left Pane"
 msgstr "在左边栏查看Html结果"
 
-#: ..\mixins\Import.py:6961
-#: ..\mixins\Import.py:7017
+#: ..\mixins\Import.py:6993
+#: ..\mixins\Import.py:7049
 #: ..\mixins\mRestFileType.py:48
 #: ..\mixins\mRestFileType.py:105
 msgid "Views html result in left pane."
 msgstr "在左边栏查看Html结果"
 
-#: ..\mixins\Import.py:6962
-#: ..\mixins\Import.py:7018
+#: ..\mixins\Import.py:6994
+#: ..\mixins\Import.py:7050
 #: ..\mixins\mRestFileType.py:49
 #: ..\mixins\mRestFileType.py:106
 msgid "View Html Result in Bottom Pane"
 msgstr "在底边栏查看Html结果"
 
-#: ..\mixins\Import.py:6962
-#: ..\mixins\Import.py:7018
+#: ..\mixins\Import.py:6994
+#: ..\mixins\Import.py:7050
 #: ..\mixins\mRestFileType.py:49
 #: ..\mixins\mRestFileType.py:106
 msgid "Views html result in bottom pane."
 msgstr "在底边栏查看Html结果"
 
-#: ..\mixins\Import.py:7049
+#: ..\mixins\Import.py:7081
 #: ..\mixins\mRestFileType.py:137
 msgid "Stop auto updated"
 msgstr "停止自动更新"
 
-#: ..\mixins\Import.py:7109
-#: ..\mixins\Import.py:7117
+#: ..\mixins\Import.py:7141
+#: ..\mixins\Import.py:7149
 #: ..\mixins\mCTags.py:34
 #: ..\mixins\mCTags.py:42
 msgid "Jump to the definition"
 msgstr "跳转到定义处"
 
-#: ..\mixins\Import.py:7109
-#: ..\mixins\Import.py:7117
+#: ..\mixins\Import.py:7141
+#: ..\mixins\Import.py:7149
 #: ..\mixins\mCTags.py:34
 #: ..\mixins\mCTags.py:42
 msgid "Jumps to definition."
 msgstr "跳转到定义处。"
 
-#: ..\mixins\Import.py:7231
-#: ..\mixins\Import.py:7273
-#: ..\mixins\Import.py:7277
-#: ..\mixins\Import.py:7278
+#: ..\mixins\Import.py:7263
+#: ..\mixins\Import.py:7305
+#: ..\mixins\Import.py:7309
+#: ..\mixins\Import.py:7310
 #: ..\mixins\SyntaxCheck.py:54
 #: ..\mixins\mSyntaxCheck.py:29
 #: ..\mixins\mSyntaxCheck.py:72
@@ -3468,139 +3479,139 @@ msgstr "跳转到定义处。"
 msgid "Syntax Check"
 msgstr "语法检查"
 
-#: ..\mixins\Import.py:7232
-#: ..\mixins\Import.py:7243
+#: ..\mixins\Import.py:7264
+#: ..\mixins\Import.py:7275
 #: ..\mixins\mSyntaxCheck.py:30
 #: ..\mixins\mSyntaxCheck.py:42
 msgid "Check python source code syntax."
 msgstr "检查Python源码语法。"
 
-#: ..\mixins\Import.py:7243
+#: ..\mixins\Import.py:7275
 #: ..\mixins\mSyntaxCheck.py:42
 msgid "check"
 msgstr "检查"
 
-#: ..\mixins\Import.py:7261
-#: ..\mixins\Import.py:7262
+#: ..\mixins\Import.py:7293
+#: ..\mixins\Import.py:7294
 #: ..\mixins\mSyntaxCheck.py:60
 #: ..\mixins\mSyntaxCheck.py:61
 msgid "Python"
 msgstr ""
 
-#: ..\mixins\Import.py:7261
+#: ..\mixins\Import.py:7293
 #: ..\mixins\mSyntaxCheck.py:60
 msgid "Auto check syntax when saving"
 msgstr "当保存时自动语法检查"
 
-#: ..\mixins\Import.py:7262
+#: ..\mixins\Import.py:7294
 #: ..\mixins\SyntaxCheck.py:82
 #: ..\mixins\mSyntaxCheck.py:61
 msgid "Auto PEP8 style check with syntax check"
 msgstr "在语法检查时自动进行PEP8风格检查"
 
-#: ..\mixins\Import.py:7313
+#: ..\mixins\Import.py:7345
 #: ..\mixins\mEPyDoc.py:32
 msgid "Create Comment for Function"
 msgstr "创建函数注释"
 
-#: ..\mixins\Import.py:7380
+#: ..\mixins\Import.py:7412
 #: ..\mixins\mPersonalInfo.py:32
 msgid "Personal"
 msgstr "个人"
 
-#: ..\mixins\Import.py:7380
+#: ..\mixins\Import.py:7412
 #: ..\mixins\mPersonalInfo.py:32
 msgid "Username"
 msgstr "用户名"
 
-#: ..\mixins\Import.py:7391
+#: ..\mixins\Import.py:7423
 #: ..\mixins\mRegex.py:27
 msgid "Regex"
 msgstr ""
 
-#: ..\mixins\Import.py:7404
+#: ..\mixins\Import.py:7436
 #: ..\mixins\mRegex.py:40
 msgid "Live Regular Expression"
 msgstr "动态正则表达式"
 
-#: ..\mixins\Import.py:7404
+#: ..\mixins\Import.py:7436
 #: ..\mixins\mRegex.py:40
 msgid "Live regular expression searching."
 msgstr "动态正则表达式搜索。"
 
-#: ..\mixins\Import.py:7429
+#: ..\mixins\Import.py:7461
 #: ..\mixins\mSmartNav.py:35
 msgid "Smart Navigation"
 msgstr "智能导航"
 
-#: ..\mixins\Import.py:7433
+#: ..\mixins\Import.py:7465
 #: ..\mixins\mSmartNav.py:39
 msgid "Goto Previous File"
 msgstr "跳转到上一个文件"
 
-#: ..\mixins\Import.py:7433
+#: ..\mixins\Import.py:7465
 #: ..\mixins\mSmartNav.py:39
 msgid "Goto previous file."
 msgstr "跳转到上一个文件。"
 
-#: ..\mixins\Import.py:7434
+#: ..\mixins\Import.py:7466
 #: ..\mixins\mSmartNav.py:40
 msgid "Goto Next File"
 msgstr "跳转到下一个文件"
 
-#: ..\mixins\Import.py:7434
+#: ..\mixins\Import.py:7466
 #: ..\mixins\mSmartNav.py:40
 msgid "Goto next file."
 msgstr "跳转到下一个文件。"
 
-#: ..\mixins\Import.py:7435
+#: ..\mixins\Import.py:7467
 #: ..\mixins\mSmartNav.py:41
 msgid "Clear buffered files."
 msgstr "清除缓冲的文件。"
 
-#: ..\mixins\Import.py:7435
+#: ..\mixins\Import.py:7467
 #: ..\mixins\mSmartNav.py:41
 msgid "Clear files"
 msgstr "清除文件"
 
-#: ..\mixins\Import.py:7589
+#: ..\mixins\Import.py:7621
 #: ..\mixins\mReloadMixins.py:17
 msgid "Auto reload Mixins"
 msgstr "自动重载Mixins"
 
-#: ..\mixins\Import.py:7593
+#: ..\mixins\Import.py:7625
 #: ..\mixins\mReloadMixins.py:21
 msgid "Select Mixin names to reload."
 msgstr "选择要重载的Mixins名字。"
 
-#: ..\mixins\Import.py:7593
+#: ..\mixins\Import.py:7625
 #: ..\mixins\mReloadMixins.py:21
 msgid "Select Mixins name to reload"
 msgstr "选择要重载的Mixins名字"
 
-#: ..\mixins\Import.py:7594
+#: ..\mixins\Import.py:7626
 #: ..\mixins\mReloadMixins.py:22
 msgid "Enable reload Mixins"
 msgstr "允许重载Mixins"
 
-#: ..\mixins\Import.py:7594
+#: ..\mixins\Import.py:7626
 #: ..\mixins\mReloadMixins.py:22
 msgid "Switches to Mixins reload mode."
 msgstr "切换为Mixins重载模式。"
 
-#: ..\mixins\Import.py:7680
-#: ..\mixins\Import.py:7691
+#: ..\mixins\Import.py:7712
+#: ..\mixins\Import.py:7723
 #: ..\mixins\mDebug.py:31
 #: ..\mixins\mDebug.py:43
 msgid "Debug the current program in WinPdb."
 msgstr "用WinPdb调试当前程序。"
 
-#: ..\mixins\Import.py:7680
+#: ..\mixins\Import.py:7712
 #: ..\mixins\mDebug.py:31
 msgid "Debug in WinPdb"
 msgstr "用WinPdb调试"
 
-#: ..\mixins\Import.py:7691
+#: ..\mixins\Import.py:7723
 #: ..\mixins\mDebug.py:43
 msgid "debug"
 msgstr "调试"
@@ -3710,35 +3721,35 @@ msgstr "选择Python解释器："
 msgid "ReDirect input and output"
 msgstr "重定向输入和输出"
 
-#: ..\mixins\LexerBase.py:142
+#: ..\mixins\LexerBase.py:125
 msgid "Style default"
 msgstr "缺省样式"
 
-#: ..\mixins\LexerBase.py:143
+#: ..\mixins\LexerBase.py:126
 msgid "Caret fore colour"
 msgstr "光标前景色"
 
-#: ..\mixins\LexerBase.py:144
+#: ..\mixins\LexerBase.py:127
 msgid "CaretLine back colour"
 msgstr "光标行背景色"
 
-#: ..\mixins\LexerBase.py:145
+#: ..\mixins\LexerBase.py:128
 msgid "Selection back colour"
 msgstr "选择块背景色"
 
-#: ..\mixins\LexerBase.py:146
+#: ..\mixins\LexerBase.py:129
 msgid "Line numbers"
 msgstr "行号"
 
-#: ..\mixins\LexerBase.py:147
+#: ..\mixins\LexerBase.py:130
 msgid "Control characters"
 msgstr "控制字符"
 
-#: ..\mixins\LexerBase.py:148
+#: ..\mixins\LexerBase.py:131
 msgid "Matched braces"
 msgstr "匹配的括号"
 
-#: ..\mixins\LexerBase.py:149
+#: ..\mixins\LexerBase.py:132
 msgid "Unmatched brace"
 msgstr "未匹配括号"
 
@@ -3821,6 +3832,30 @@ msgstr "如果你修改了插件选择，你需要重新启动。"
 #: ..\mixins\PrefDialog.py:36
 msgid "Preference..."
 msgstr "参数..."
+
+#: ..\mixins\Print.py:190
+msgid "Page %d of %d"
+msgstr "第 %d 页 共 %d 页"
+
+#: ..\mixins\Print.py:236
+msgid "Unable to create PrintPreview!"
+msgstr "不能创建打印预览！"
+
+#: ..\mixins\Print.py:239
+msgid "Print Preview - %s"
+msgstr "打印预览 - %s"
+
+#: ..\mixins\Print.py:252
+msgid ""
+"There was a problem printing.\n"
+"Perhaps your current printer is not set correctly?"
+msgstr ""
+"打印时出现问题。\n"
+"当前打印机可能设置有问题？"
+
+#: ..\mixins\Print.py:254
+msgid "Printing Error"
+msgstr "打印出错"
 
 #: ..\mixins\RegexWindow.py:50
 msgid "Create"

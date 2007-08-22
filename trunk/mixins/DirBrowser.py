@@ -746,7 +746,6 @@ class DirBrowser(wx.Panel, Mixin.Mixin):
         if not self.is_ok(item): return
         filename = self.get_node_filename(item)
         dir = common.getCurrentDir(filename)
-
         import FindInFiles
 
         dlg = FindInFiles.FindInFiles(self.mainframe, self.pref, dir)

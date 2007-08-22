@@ -3,6 +3,7 @@
 Editor.py           Add Shift+Delete => Cut, Shift+Insert => Paste
 mPyRun.py           Add new option in preference, [Python]->Automatically save modified file when running python program, if it's checked, it'll automatically save the modified file.
 common.py LexerBase.py Fix print bug
+mPrint.py Print.py  Fix print bug, add print line number functionality
 
 [2007/08/21]
 mako_plugin         Add mako template syntax highlight support

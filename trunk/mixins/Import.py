@@ -4478,7 +4478,6 @@ Mixin.setMixin('mainframe', 'OnDocumentSyntaxPreference', OnDocumentSyntaxPrefer
 __doc__ = 'print'
 
 import wx
-import os
 from modules import Mixin
 
 def add_mainframe_menu(menulist):
@@ -4490,6 +4489,7 @@ def add_mainframe_menu(menulist):
         ('IDM_FILE_PRINT_MENU',
         [
             (100, 'wx.ID_PRINT_SETUP', tr('Page Setup...'), wx.ITEM_NORMAL, 'OnFilePageSetup', tr('Set page layout and options.')),
+            (105, 'IDM_FILE_PRINT_LINENUMBER', tr('Print Line Number'), wx.ITEM_CHECK, 'OnFilePrintLineNumber', tr('Print line number.')),
             (120, 'wx.ID_PREVIEW', tr('Print Preview...'), wx.ITEM_NORMAL, 'OnFilePrintPreview', tr('Displays the document on the screen as it would appear printed.')),
             (130, 'wx.ID_PRINT', tr('Print...'), wx.ITEM_NORMAL, 'OnFilePrint', tr('Prints a document.')),
             (140, 'IDM_FILE_HTML', tr('Html File'), wx.ITEM_NORMAL, '', None),
@@ -4513,15 +4513,47 @@ def add_tool_list(toollist, toolbaritems):
     })
 Mixin.setPlugin('mainframe', 'add_tool_list', add_tool_list)
 
+def pref_init(pref):
+    pref.print_line_number = True
+Mixin.setPlugin('preference', 'init', pref_init)
+
 def mainframe_init(win):
     win.printer = None
 Mixin.setPlugin('mainframe', 'init', mainframe_init)
 
-def get_printer(win):
-    if not win.printer:
+def afterinit(win):
+    wx.EVT_UPDATE_UI(win, win.IDM_FILE_PRINT_LINENUMBER, win.OnUpdateUI)
+Mixin.setPlugin('mainframe', 'afterinit', afterinit)
+
+def on_mainframe_updateui(win, event):
+    eid = event.GetId()
+    if hasattr(win, 'document') and win.document:
+        if eid == win.IDM_FILE_PRINT_LINENUMBER:
+            event.Check(win.pref.print_line_number)
+Mixin.setPlugin('mainframe', 'on_update_ui', on_mainframe_updateui)
+
+last_printer_type = None
+def get_printer(win, t=None):
+    global last_printer_type
+    if win.printer:
+        if t != last_printer_type:
+            win.printer.Destroy()
+        else:
+            return win.printer
+    if not t:
+        from Print import SimpleDocPrinter
+        win.printer = SimpleDocPrinter(win)
+    elif t == 'html':
         from Print import MyPrinter
         win.printer = MyPrinter(win)
+    last_printer_type = t
+
     return win.printer
+
+def OnFilePrintLineNumber(win, event):
+    win.pref.print_line_number = not win.pref.print_line_number
+    win.pref.save()
+Mixin.setMixin('mainframe', 'OnFilePrintLineNumber', OnFilePrintLineNumber)
 
 def OnFilePageSetup(win, event):
     if get_printer(win):
@@ -4530,23 +4562,23 @@ Mixin.setMixin('mainframe', 'OnFilePageSetup', OnFilePageSetup)
 
 def OnFilePrint(win, event):
     if get_printer(win):
-        win.printer.PrintText(win.printer.convertText(win.document.GetText()), os.path.dirname(win.document.filename))
+        win.printer.PrintText(win.document.GetText(), win.document.filename)
 Mixin.setMixin('mainframe', 'OnFilePrint', OnFilePrint)
 
 def OnFilePrintPreview(win, event):
     if get_printer(win):
-        win.printer.PreviewText(win.printer.convertText(win.document.GetText()), os.path.dirname(win.document.filename))
+        win.printer.PrintPreview(win.document.GetText(), win.document.filename)
 Mixin.setMixin('mainframe', 'OnFilePrintPreview', OnFilePrintPreview)
 
 
 def OnFileHtmlPreview(win, event):
-    if get_printer(win):
-        win.printer.PreviewText(win.document.GetText(), os.path.dirname(win.document.filename))
+    if get_printer(win, 'html'):
+        win.printer.PreviewText(win.document.GetText(), win.document.filename)
 Mixin.setMixin('mainframe', 'OnFileHtmlPreview', OnFileHtmlPreview)
 
 def OnFileHtmlPrint(win, event):
-    if get_printer(win):
-        win.printer.PrintText(win.document.GetText(), os.path.dirname(win.document.filename))
+    if get_printer(win, 'html'):
+        win.printer.PrintText(win.document.GetText(), win.document.filename)
 Mixin.setMixin('mainframe', 'OnFileHtmlPrint', OnFileHtmlPrint)
 
 
