@@ -346,3 +346,20 @@ def pout(head, *args):
         for i in args:
             print i,
         print
+
+if wx.Platform == '__WXMSW__':
+    faces = { 'times': 'Times New Roman',
+              'mono' : 'Courier New',
+              'helv' : 'Arial',
+              'other': 'Comic Sans MS',
+              'size' : 11,
+              'lnsize' : 10,
+             }
+else:
+    faces = { 'times': 'Times',
+              'mono' : 'Courier 10 Pitch',
+              'helv' : 'Helvetica',
+              'other': 'new century schoolbook',
+              'size' : 12,
+              'lnsize' : 10,
+             }
