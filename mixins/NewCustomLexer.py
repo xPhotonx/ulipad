@@ -169,7 +169,7 @@ class CustomLexer(LexerBase.LexerBase):
             
             
     def set_style(self, win, start, end, style):
-        pout('set_style >>>>>', start, end, style, win.GetTextRange(start, end))
+#        pout('set_style >>>>>', start, end, style, win.GetTextRange(start, end))
         win.StartStyling(start, 0xff)
         win.SetStyling(end - start, style)
         
