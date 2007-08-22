@@ -30,23 +30,6 @@ from modules import common
 from modules import Mixin
 from modules import dict4ini
 
-if wx.Platform == '__WXMSW__':
-    faces = { 'times': 'Times New Roman',
-              'mono' : 'Courier New',
-              'helv' : 'Arial',
-              'other': 'Comic Sans MS',
-              'size' : 11,
-              'lnsize' : 10,
-             }
-else:
-    faces = { 'times': 'Times',
-              'mono' : 'Courier 10 Pitch',
-              'helv' : 'Helvetica',
-              'other': 'new century schoolbook',
-              'size' : 12,
-              'lnsize' : 10,
-             }
-
 class LexerBase(Mixin.Mixin):
     __mixinname__ = 'lexerbase'
 
@@ -125,13 +108,13 @@ class LexerBase(Mixin.Mixin):
 #        font = wx.SystemSettings_GetFont(wx.SYS_DEFAULT_GUI_FONT)
 #        font = wx.Font(10, wx.TELETYPE, wx.NORMAL, wx.NORMAL, True)
 #        fontname = x.default.get('editor_font', font.GetFaceName())
-        fontname = x.default.get('editor_font', faces['mono'])
-        fontsize = x.default.get('editor_fontsize', faces['size'])
-        linesize = x.default.get('editor_linesize', faces['lnsize'])
+        fontname = x.default.get('editor_font', common.faces['mono'])
+        fontsize = x.default.get('editor_fontsize', common.faces['size'])
+        linesize = x.default.get('editor_linesize', common.faces['lnsize'])
 
         if isinstance(fontname, str):
             fontname = unicode(fontname, 'utf-8')
-        faces.update({
+        common.faces.update({
             'mono':fontname,
             'size':fontsize,
             'lnsize':linesize,
@@ -139,11 +122,11 @@ class LexerBase(Mixin.Mixin):
 
         self.font = wx.Font(fontsize, wx.TELETYPE, wx.NORMAL, wx.NORMAL, face=fontname)
         
-        self.addSyntaxItem('default',       tr('Style default'),            wx.stc.STC_STYLE_DEFAULT,       self.STC_STYLE_DEFAULT % faces)
+        self.addSyntaxItem('default',       tr('Style default'),            wx.stc.STC_STYLE_DEFAULT,       self.STC_STYLE_DEFAULT % common.faces)
         self.addSyntaxItem('-caretfore',    tr('Caret fore colour'),        0,  "fore:#FF0000")
         self.addSyntaxItem('-caretback',    tr('CaretLine back colour'),    0,  "back:#EEEEEE")
         self.addSyntaxItem('-selback',      tr('Selection back colour'),    0,  "back:#000080")
-        self.addSyntaxItem('linenumber',    tr('Line numbers'),             wx.stc.STC_STYLE_LINENUMBER,    self.STC_STYLE_LINENUMBER % faces)
+        self.addSyntaxItem('linenumber',    tr('Line numbers'),             wx.stc.STC_STYLE_LINENUMBER,    self.STC_STYLE_LINENUMBER % common.faces)
         self.addSyntaxItem('controlchar',   tr('Control characters'),       wx.stc.STC_STYLE_CONTROLCHAR,   self.STC_STYLE_CONTROLCHAR)
         self.addSyntaxItem('bracelight',    tr('Matched braces'),           wx.stc.STC_STYLE_BRACELIGHT,    self.STC_STYLE_BRACELIGHT)
         self.addSyntaxItem('bracebad',      tr('Unmatched brace'),          wx.stc.STC_STYLE_BRACEBAD,      self.STC_STYLE_BRACEBAD)
