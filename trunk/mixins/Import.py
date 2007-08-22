@@ -3880,6 +3880,7 @@ def pref_init(pref):
     pref.python_interpreter = [('default', cmd)]
     pref.default_interpreter = 'default'
     pref.python_show_args = False
+    pref.python_save_before_run = False
 Mixin.setPlugin('preference', 'init', pref_init)
 
 def OnSetInterpreter(win, event):
@@ -3892,6 +3893,7 @@ def add_pref(preflist):
     preflist.extend([
         ('Python', 150, 'button', 'python_interpreter', tr('Setup python interpreter'), 'OnSetInterpreter'),
         ('Python', 155, 'check', 'python_show_args', tr('Show arguments dialog when running python program'), None),
+        ('Python', 156, 'check', 'python_save_before_run', tr('Automatically save modified file when running python program'), None),
     ])
 Mixin.setPlugin('preference', 'add_pref', add_pref)
 
@@ -3919,13 +3921,16 @@ def OnPythonRun(win, event):
         return
 
     if win.document.isModified() or win.document.filename == '':
-        d = wx.MessageDialog(win, tr("The file has not been saved, and it would not be run.\nWould you like to save the file?"), tr("Run"), wx.YES_NO | wx.ICON_QUESTION)
-        answer = d.ShowModal()
-        d.Destroy()
-        if (answer == wx.ID_YES):
+        if win.pref.python_save_before_run:
             win.OnFileSave(event)
         else:
-            return
+            d = wx.MessageDialog(win, tr("The file has not been saved, and it would not be run.\nWould you like to save the file?"), tr("Run"), wx.YES_NO | wx.ICON_QUESTION)
+            answer = d.ShowModal()
+            d.Destroy()
+            if answer == wx.ID_YES:
+                win.OnFileSave(event)
+            else:
+                return
 
     if win.pref.python_show_args:
         if not get_python_args(win):

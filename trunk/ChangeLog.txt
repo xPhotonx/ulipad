@@ -1,6 +1,8 @@
 ﻿$Rev$
 [2007/08/22]
 Editor.py           Add Shift+Delete => Cut, Shift+Insert => Paste
+mPyRun.py           Add new option in preference, [Python]->Automatically save modified file when running python program, if it's checked, it'll automatically save the modified file.
+
 [2007/08/21]
 mako_plugin         Add mako template syntax highlight support
 
