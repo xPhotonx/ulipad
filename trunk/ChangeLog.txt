@@ -6,6 +6,7 @@ UliPad.py           Now you can set pythonpath option in config.ini/[default],
                     
 mDebug.py packages  Move winpdb package from modules to packages, fix setup
                     file bug and change the winpdb invoke
+Print.py            Fix print margin
                     
 [2007/08/22]
 Editor.py           Add Shift+Delete => Cut, Shift+Insert => Paste

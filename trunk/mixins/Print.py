@@ -99,7 +99,7 @@ class TextDocPrintout(wx.Printout):
         dc.SetFont(font)
         self.lineHeight = dc.GetCharHeight()
         self.linesPerPage = int(self.pageHeight/self.lineHeight)
-        self.colsPerPage = int((self.x2 - self.x1 -2 *self.logUnitsMM)/dc.GetCharWidth())
+        self.colsPerPage = int((self.x2 - self.x1)/dc.GetCharWidth())
 
     def OnPreparePrinting(self):
         # calculate the number of pages
