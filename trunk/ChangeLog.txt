@@ -1,4 +1,9 @@
 ﻿$Rev$
+[2007/08/23]
+UliPad.py           Now you can set pythonpath option in config.ini/[default], 
+                    and ulipad will insert it into the sys.path. pythonpath can 
+                    be a string or a string list of directory.
+                    
 [2007/08/22]
 Editor.py           Add Shift+Delete => Cut, Shift+Insert => Paste
 mPyRun.py           Add new option in preference, [Python]->Automatically save modified file when running python program, if it's checked, it'll automatically save the modified file.

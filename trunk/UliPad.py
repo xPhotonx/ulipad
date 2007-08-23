@@ -42,6 +42,7 @@ confpath = os.path.join(workpath, 'conf')
 sys.path.insert(0, workpath)
 sys.path.insert(0, os.path.join(workpath, 'modules'))
 sys.path.insert(0, os.path.join(workpath, 'plugins'))
+sys.path.insert(0, os.path.join(workpath, 'packages'))
 curpath = os.getcwd()
 os.chdir(workpath)
 Globals.workpath = workpath
@@ -49,6 +50,16 @@ Globals.confpath = confpath
 
 ini = dict4ini.DictIni(os.path.join(workpath, 'config.ini'))
 debugflag = ini.default.get('debug', False)
+
+#add pythonpath settings
+if ini.default.has_key('pythonpath'):
+    pythonpath = ini.default.pythonpath
+    if isinstance(pythonpath, list):
+        sys.path = pythonpath + sys.path
+    elif isinstance(pythonpath, (str, unicode)):
+        sys.path.insert(0, pythonpath)
+    else:
+        print 'The pythonpath should be a string list or a string.'
 
 common.print_time('begin...', DEBUG)
 
@@ -160,7 +171,7 @@ class App(Mixin.Mixin):
     def processCommandLineArguments(self):
         #process command line
         try:
-            opts, args = getopt.getopt(sys.argv[1:], "e:vunsfm", [])
+            opts, args = getopt.getopt(sys.argv[1:], "e:vuhnsfm", [])
         except getopt.GetoptError:
             self.Usage()
             sys.exit(2)
@@ -177,7 +188,7 @@ class App(Mixin.Mixin):
             elif o == '-v':     #version
                 self.Version()
                 sys.exit()
-            elif o == '-u':     #usage
+            elif o == '-u' or o == '-h':     #usage
                 self.Usage()
                 sys.exit()
             elif o == '-n':     #no dde
