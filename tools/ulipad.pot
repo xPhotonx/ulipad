@@ -5,7 +5,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
-"POT-Creation-Date: Wed Aug 22 21:28:51 2007\n"
+"POT-Creation-Date: Thu Aug 23 14:18:26 2007\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -15,7 +15,7 @@ msgstr ""
 "Generated-By: pygettext.py 1.5\n"
 
 
-#: ../UliPad.py:147
+#: ../UliPad.py:158
 msgid "There is something wrong as importing plugins."
 msgstr ""
 
@@ -1845,7 +1845,8 @@ msgstr ""
 msgid "Stop current python program."
 msgstr ""
 
-#: ..\mixins\Import.py:3920 ..\mixins\mPyRun.py:74
+#: ..\mixins\Import.py:3920 ..\mixins\Import.py:7731 ..\mixins\mDebug.py:51
+#: ..\mixins\mPyRun.py:74
 msgid ""
 "You didn't setup python interpreter, \n"
 "please setup it first in Preference dialog"
@@ -2744,6 +2745,10 @@ msgstr ""
 
 #: ..\mixins\Import.py:7723 ..\mixins\mDebug.py:43
 msgid "debug"
+msgstr ""
+
+#: ..\mixins\Import.py:7736 ..\mixins\mDebug.py:56
+msgid "You should install wxPython package to run the Debugger."
 msgstr ""
 
 #: ..\mixins\InputAssistant.py:459

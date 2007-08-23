@@ -7705,7 +7705,7 @@ Mixin.setPlugin('preference', 'init', pref_init)
 from modules import Mixin
 import wx
 import os
-import sys
+from modules import common
 
 menulist = [('IDM_PYTHON', #parent menu id
                 [
@@ -7725,10 +7725,18 @@ toolbaritems = {
 Mixin.setMixin('pythonfiletype', 'toolbaritems', toolbaritems)
 
 def OnPythonDebug(win, event):
-    i_main, i_ext = os.path.splitext(sys.executable)
-    if i_main.endswith('w'):
-        i_main = i_main[:-1]
-    cmd = os.path.normcase('%s %s/modules/winpdb/_winpdb.py -t -c "%s"' % (i_main, win.app.workpath, win.document.filename))
+    interpreters = dict(win.pref.python_interpreter)
+    interpreter = interpreters[win.pref.default_interpreter]
+    if not interpreter:
+        common.showerror(win, tr("You didn't setup python interpreter, \nplease setup it first in Preference dialog"))
+        return
+    try:
+        import wx
+    except:
+        common.showerror(win, tr("You should install wxPython package to run the Debugger."))
+        return
+
+    cmd = os.path.normcase('%s %s/packages/winpdb/_winpdb.py -t -c "%s"' % (interpreter, win.app.workpath, win.document.filename))
     wx.Execute(cmd)
 Mixin.setMixin('mainframe', 'OnPythonDebug', OnPythonDebug)
 
