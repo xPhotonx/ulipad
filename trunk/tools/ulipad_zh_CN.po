@@ -1,6 +1,6 @@
 msgid ""
 msgstr ""
-"PO-Revision-Date: 2007-08-22 21:29+0800\n"
+"PO-Revision-Date: 2007-08-23 14:21+0800\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Project-Id-Version: UliPad 3.3\n"
 "Generated-By: pygettext.py 1.5\n"
@@ -10,7 +10,7 @@ msgstr ""
 "Content-Type: text/plain; charset=utf-8\n"
 "MIME-Version: 1.0\n"
 
-#: ../UliPad.py:147
+#: ../UliPad.py:158
 msgid "There is something wrong as importing plugins."
 msgstr "在导入插件时有错误"
 
@@ -2414,6 +2414,8 @@ msgid "Stop current python program."
 msgstr "停止当前的Python程序"
 
 #: ..\mixins\Import.py:3920
+#: ..\mixins\Import.py:7731
+#: ..\mixins\mDebug.py:51
 #: ..\mixins\mPyRun.py:74
 msgid ""
 "You didn't setup python interpreter, \n"
@@ -3615,6 +3617,11 @@ msgstr "用WinPdb调试"
 #: ..\mixins\mDebug.py:43
 msgid "debug"
 msgstr "调试"
+
+#: ..\mixins\Import.py:7736
+#: ..\mixins\mDebug.py:56
+msgid "You should install wxPython package to run the Debugger."
+msgstr "你应该安装wxPython包来运行调试器。"
 
 #: ..\mixins\InputAssistant.py:459
 msgid "(Press ESC to close)"

@@ -57,7 +57,6 @@ ulipad_wx = dict(
 
 zipfile = r"lib\sharedlib.zip"
 
-import os
 from distutils.file_util import copy_file
 from distutils.dir_util import mkpath
 
@@ -245,7 +244,6 @@ class build_installer(py2exe):
 
 ################################################################
 
-import glob
 import shutil
 def my_copytree(src, dst):
     """Recursively copy a directory tree using copy2().
@@ -269,7 +267,8 @@ def my_copytree(src, dst):
 #            error.traceback()
             raise
 
-dirs = ['acp', 'plugins', 'wizard', 'scripts']
+dirs = ['acp', 'plugins', 'wizard', 'scripts', 'lang', 
+    'doc', 'packages', 'images', 'tools', 'conf', 'resources']
 for d in dirs:
     my_copytree(d, 'dist')
     
@@ -291,14 +290,7 @@ setup(
                 }
         ],
         data_files = [
-                ('images', glob.glob('images/*gif') + glob.glob('images/*jpg') + glob.glob('images/*png')),
-                ('resources', glob.glob('resources/*.xrc')),
-                ('lang', glob.glob('lang/*.*')),
-                ('lang/zh_CN', glob.glob('lang/zh_CN/*.*')),
                 ('', ['ulipad.ico', 'COPYLEFT.txt', 'INFO.txt', 'UliPad.exe.manifest']),
-                ('tools', glob.glob('tools/*.*')),
-                ('doc', glob.glob('doc/*.htm')+glob.glob('doc/*.jpg')+glob.glob('doc/*.css')),
-        ('conf', glob.glob('conf/*.*')),
         ],
     # use out build_installer class as extended py2exe build command
     cmdclass = {"py2exe": build_installer},

@@ -6,6 +6,17 @@
 # and the new source project is in http://code.google.com/p/dict4ini/
 #
 # Updates:
+# 0.9.2.4-----------------------
+#   2007/08/23
+#     Fix the end string is \" bug
+# 0.9.2.3-----------------------
+#   2007/08/08
+#     Fix sub section bug, for secretSection argument, dict4ini will encrypt all
+#     subsections of a secretSection, for example, secretSection=['a', 'c'], then
+#     all subsections of 'a' and 'c' will be encrypted.
+# 0.9.2.2-----------------------
+#   2007/07/08
+#     Add missing __init__.py file.
 # 0.9.2.1-----------------------
 #   2007/07/09 thanks to Mayowa Akinyemi
 #     Add the ability to protect specific sections.
@@ -349,7 +360,7 @@ class DictIni(DictNode):
             except Exception, err:
                 import traceback
                 traceback.print_exc()
-                print 'Error in [line %d]%s:' % (lineno, line)
+                print 'Error in [line %d]: %s' % (lineno, line)
                 print line
         if isinstance(inifile, (str, unicode)):
             f.close()
@@ -378,9 +389,14 @@ class DictIni(DictNode):
             if t[i] == '"': #string quote
                 buf.append(t[i])
                 i += 1
-                while t[i] != '"' or (t[i] == '"' and t[i-1] == '\\'):
-                    buf.append(t[i])
-                    i += 1
+                while t[i] != '"':
+                    if t[i] == '\\':
+                        buf.append(t[i])
+                        buf.append(t[i+1])
+                        i += 2
+                    else:
+                        buf.append(t[i])
+                        i += 1
                 buf.append(t[i])
                 i += 1
             elif t[i] == ',':
@@ -421,7 +437,10 @@ class DictIni(DictNode):
     
     def protect_value(self, value, mode=0, section=None):
         if self._secretSections is not None and section is not None:
-            if section not in self._secretSections:
+            for s in self._secretSections:
+                if section.startswith(s):
+                    break
+            else:
                 return value
             
         if mode == 0:
@@ -446,8 +465,8 @@ class DictIni(DictNode):
             current_section = section[0]
         else:
             current_section = section
-            
-        return self.protect_value(uni_prt(a, encoding), section=current_section)
+        
+        return self.protect_value(uni_prt(a, encoding), section=self._section_delimeter.join(section))
     
     
 unescapechars = {'"':'"', 't':'\t', 'r':'\r', 'n':'\n', '\\':'\\', 'a':'\a', 'f':'\f', 
@@ -524,12 +543,12 @@ if __name__ == '__main__':
     d['s'].a = 1
     d['m/m'] = 'testing'
     d['p'] = r'\?'
-    d.t.m.p = '3'
+    d.t.m.p = 'd:\\'
     print d
     d.save()
 
     d = DictIni('t.ini', format="%s:%s", secretKey='mayowa')
-    print d.p
+    print d.p, d.t.m.p
 
     d = DictIni('t2.ini', format="%s:%s", hideData=True)
     d.a.a = 'mama'
@@ -548,7 +567,7 @@ if __name__ == '__main__':
     print d.c.a, d.c.b
 
     # secret sections test
-    d = DictIni('t3.ini', format="%s:%s", hideData=True, secretSections=['a', 'c'])
+    d = DictIni('t3.ini', format="%s:%s", hideData=True, secretSections=['a', 'c/c'])
     d.a.a = 'mama'
     d.a.b = 'lubs me!'
 
@@ -558,10 +577,12 @@ if __name__ == '__main__':
     d.c.a = 'dada'
     d.c.b = 'lubs me too!'
     d.c.c.a = 'far out!'
+    d.c.c.b.a = 'ppppp'
 
     d.save()
 
-    d = DictIni('t3.ini', format="%s:%s", hideData=True, secretSections=['a', 'c'])
+    d = DictIni('t3.ini', format="%s:%s", hideData=True, secretSections=['a', 'c/c'])
     print d.a.a, d.a.b
     print d.b.a, d.b.b
     print d.c.a, d.c.b
+    print d.c.c.b.a
