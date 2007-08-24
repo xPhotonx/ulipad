@@ -510,7 +510,7 @@ class TextEditor(wx.stc.StyledTextCtrl, Mixin.Mixin, DocumentBase.DocumentBase):
             ('Del', wx.stc.STC_CMD_CLEAR),
 #       wxSTC_CMD_COPY Copy the selection to the clipboard
            ('Ctrl+C', wx.stc.STC_CMD_COPY),
-           ('Ctrl+Insert', wx.stc.STC_CMD_COPY),
+           ('Ctrl+Ins', wx.stc.STC_CMD_COPY),
 #       wxSTC_CMD_CUT Cut the selection to the clipboard
            ('Ctrl+X', wx.stc.STC_CMD_CUT),
            ('Shift+Del', wx.stc.STC_CMD_CUT),
