@@ -5852,6 +5852,10 @@ def on_key_down(win, event):
         if win.snippet and win.snippet.snip_mode:
             win.snippet.nextField(win.GetCurrentPos())
             return True
+    if key == wx.WXK_ESCAPE:
+        if win.snippet and win.snippet.snip_mode:
+            win.snippet.cancel()
+            return True
     if key in (ord('C'), ord('V'), ord('X')) and event.ControlDown() and not event.AltDown() and not event.ShiftDown():
         event.Skip()
         return True

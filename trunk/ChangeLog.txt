@@ -3,6 +3,10 @@
 Editor.py           Add Ctrl+Insret => Copy, and add Ctrl+C, Ctrl+X, Ctrl+Y to
                     Editor.py I don't if it'll fix the problem in linux
 mView.py            Change long line indicator default is true.
+InputAssistant.py SnipMixin.py mInputAssistant.py
+                    Fix snippet template indent bug(when using tab mode, the '\t'
+                    in template will be replaced with spaces). And you can press
+                    ESC to cancel current snippet.
                     
 [2007/08/23]
 UliPad.py           Now you can set pythonpath option in config.ini/[default], 

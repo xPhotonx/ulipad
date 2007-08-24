@@ -871,7 +871,7 @@ class InputAssistant(Mixin.Mixin):
             elif t == r'!<':
                 win.execute_key('Shift+TAB')
             elif t == '\t':
-                win.AddText(win.GetTabWidth()*' ')
+                win.AddText(win.getIndentChar())
             else:
                 win.AddText(t)
         end = win.GetCurrentPos()
