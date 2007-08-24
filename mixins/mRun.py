@@ -21,6 +21,7 @@
 #
 #   $Id: mRun.py 1858 2007-01-25 14:15:57Z limodou $
 
+import os
 import wx
 import locale
 import types
@@ -47,8 +48,13 @@ def message_init(win):
     win.writeposition = 0
 Mixin.setPlugin('messagewindow', 'init', message_init)
 
-def RunCommand(win, command, redirect=True, hide=False):
+def RunCommand(win, command, redirect=True, hide=False, input_decorator=None):
     """replace $file = current document filename"""
+    global input_appendtext
+    if input_decorator:
+        input_appendtext = input_decorator(appendtext)
+    else:
+        input_appendtext = appendtext
     if redirect:
         win.createMessageWindow()
         win.panel.showPage(tr('Message'))
@@ -88,13 +94,13 @@ def OnIdle(win, event):
         if win.inputstream:
             if win.inputstream.CanRead():
                 text = win.inputstream.read()
-                appendtext(win, text)
+                input_appendtext(win, text)
                 win.writeposition = win.GetLength()
                 win.editpoint = win.GetLength()
         if win.errorstream:
             if win.errorstream.CanRead():
                 text = win.errorstream.read()
-                appendtext(win, text)
+                input_appendtext(win, text)
                 win.writeposition = win.GetLength()
                 win.editpoint = win.GetLength()
 Mixin.setMixin('messagewindow', 'OnIdle', OnIdle)
@@ -116,7 +122,7 @@ def OnKeyDown(win, event):
 
             if isinstance(text, types.UnicodeType):
                 text = text.encode(locale.getdefaultlocale()[1])
-            win.outputstream.write(text + '\n')
+            win.outputstream.write(text + os.linesep)
             win.GotoPos(win.GetLength())
         if keycode == wx.WXK_UP:
             l = len(win.CommandArray)
@@ -165,10 +171,10 @@ Mixin.setMixin('messagewindow', 'OnKeyUp', OnKeyUp)
 def OnProcessEnded(win, event):
     if win.messagewindow.inputstream.CanRead():
         text = win.messagewindow.inputstream.read()
-        appendtext(win.messagewindow, text)
+        input_appendtext(win.messagewindow, text)
     if win.messagewindow.errorstream.CanRead():
         text = win.messagewindow.errorstream.read()
-        appendtext(win.messagewindow, text)
+        input_appendtext(win.messagewindow, text)
 
     if win.messagewindow.process:
         win.messagewindow.process.Destroy()
@@ -189,6 +195,7 @@ def appendtext(win, text):
     win.AddText(text)
     win.GotoPos(win.GetLength())
     win.EmptyUndoBuffer()
+input_appendtext = appendtext
 
 def RunCheck(win, event):
     if (win.GetCurrentPos() < win.editpoint) or (win.pid == -1):

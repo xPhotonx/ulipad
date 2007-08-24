@@ -53,7 +53,7 @@ class MyTextEntry(wx.Dialog):
 
 class MyFileEntry(wx.Dialog):
     def __init__(self, parent, title, message, defaultvalue):
-        wx.Dialog.__init__(self, parent, -1, style = wx.DEFAULT_DIALOG_STYLE, title = title)
+        wx.Dialog.__init__(self, parent, -1, style = wx.DEFAULT_DIALOG_STYLE, title = title, size=(300, -1))
 
         box = wx.BoxSizer(wx.VERTICAL)
         stext = wx.StaticText(self, -1, label=message)
@@ -78,7 +78,7 @@ class MyFileEntry(wx.Dialog):
 
         self.SetSizer(box)
         self.SetAutoLayout(True)
-        box.Fit(self)
+#        box.Fit(self)
 
         self.value = defaultvalue
 

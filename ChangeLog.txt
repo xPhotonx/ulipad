@@ -7,6 +7,8 @@ InputAssistant.py SnipMixin.py mInputAssistant.py
                     Fix snippet template indent bug(when using tab mode, the '\t'
                     in template will be replaced with spaces). And you can press
                     ESC to cancel current snippet.
+SvnSupport.py mVersionControl.py mRun.py Entry.py
+                    Add simple SVN support, and also many things need to finish.
                     
 [2007/08/23]
 UliPad.py           Now you can set pythonpath option in config.ini/[default], 
