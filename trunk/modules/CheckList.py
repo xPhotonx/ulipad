@@ -114,18 +114,21 @@ class CheckListMixin:
         self.values = {}
         for flag, v in getdata():
             self.addline(v, flag)
-                
-    def addline(self, data, flag=False):
+          
+    def insertline(self, index, data, flag=False):
         if flag != -1:
-            index = self.InsertImageStringItem(sys.maxint, data[0], int(flag))
+            index = self.InsertImageStringItem(index, data[0], int(flag))
         else:
-            index = self.InsertStringItem(sys.maxint, data[0])
+            index = self.InsertStringItem(index, data[0])
         self._id += 1
         self.values[self._id] = int(flag)
         self.SetItemData(index, self._id)
         for i, t in enumerate(data[1:]):
             self.SetStringItem(index, i+1, t)
         return index
+        
+    def addline(self, data, flag=False):
+        return self.insertline(sys.maxint, data, flag)
     
     def delline(self, index):
         _id = self.GetItemData(index)

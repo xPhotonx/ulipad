@@ -3291,6 +3291,7 @@ def on_get_tool_tip(win, event):
 
 #-----------------------  mRun.py ------------------
 
+import os
 import wx
 import locale
 import types
@@ -3317,8 +3318,13 @@ def message_init(win):
     win.writeposition = 0
 Mixin.setPlugin('messagewindow', 'init', message_init)
 
-def RunCommand(win, command, redirect=True, hide=False):
+def RunCommand(win, command, redirect=True, hide=False, input_decorator=None):
     """replace $file = current document filename"""
+    global input_appendtext
+    if input_decorator:
+        input_appendtext = input_decorator(appendtext)
+    else:
+        input_appendtext = appendtext
     if redirect:
         win.createMessageWindow()
         win.panel.showPage(tr('Message'))
@@ -3358,13 +3364,13 @@ def OnIdle(win, event):
         if win.inputstream:
             if win.inputstream.CanRead():
                 text = win.inputstream.read()
-                appendtext(win, text)
+                input_appendtext(win, text)
                 win.writeposition = win.GetLength()
                 win.editpoint = win.GetLength()
         if win.errorstream:
             if win.errorstream.CanRead():
                 text = win.errorstream.read()
-                appendtext(win, text)
+                input_appendtext(win, text)
                 win.writeposition = win.GetLength()
                 win.editpoint = win.GetLength()
 Mixin.setMixin('messagewindow', 'OnIdle', OnIdle)
@@ -3386,7 +3392,7 @@ def OnKeyDown(win, event):
 
             if isinstance(text, types.UnicodeType):
                 text = text.encode(locale.getdefaultlocale()[1])
-            win.outputstream.write(text + '\n')
+            win.outputstream.write(text + os.linesep)
             win.GotoPos(win.GetLength())
         if keycode == wx.WXK_UP:
             l = len(win.CommandArray)
@@ -3435,10 +3441,10 @@ Mixin.setMixin('messagewindow', 'OnKeyUp', OnKeyUp)
 def OnProcessEnded(win, event):
     if win.messagewindow.inputstream.CanRead():
         text = win.messagewindow.inputstream.read()
-        appendtext(win.messagewindow, text)
+        input_appendtext(win.messagewindow, text)
     if win.messagewindow.errorstream.CanRead():
         text = win.messagewindow.errorstream.read()
-        appendtext(win.messagewindow, text)
+        input_appendtext(win.messagewindow, text)
 
     if win.messagewindow.process:
         win.messagewindow.process.Destroy()
@@ -3458,6 +3464,7 @@ def appendtext(win, text):
     win.AddText(text)
     win.GotoPos(win.GetLength())
     win.EmptyUndoBuffer()
+input_appendtext = appendtext
 
 def RunCheck(win, event):
     if (win.GetCurrentPos() < win.editpoint) or (win.pid == -1):
@@ -7743,6 +7750,84 @@ def OnPythonDebug(win, event):
     cmd = os.path.normcase('%s %s/packages/winpdb/_winpdb.py -t -c "%s"' % (interpreter, win.app.workpath, win.document.filename))
     wx.Execute(cmd)
 Mixin.setMixin('mainframe', 'OnPythonDebug', OnPythonDebug)
+
+
+
+#-----------------------  mVersionControl.py ------------------
+
+import wx
+from modules import Mixin
+
+def pref_init(pref):
+    pref.version_control_instance = 0
+    pref.version_control_exe = ''
+    pref.version_control_export_path = ''
+    pref.version_control_checkout_path = ''
+Mixin.setPlugin('preference', 'init', pref_init)
+
+def add_pref(preflist):
+    preflist.extend([
+        (tr('Version'), 100, 'choice', 'version_control_instance', tr('Select one supported version control protocal'), ['Subversion']),
+        (tr('Version'), 110, 'text', 'version_control_exe', tr('Select version control software'), None)
+    ])
+Mixin.setPlugin('preference', 'add_pref', add_pref)
+
+def other_popup_menu(dirwin, projectname, menus):
+    item = dirwin.tree.GetSelection()
+    if not item.IsOk(): return
+    menus.extend([ (None,
+        [
+            (93, 'IDPM_VC_UPDATE', tr('Version Control: Update'), wx.ITEM_NORMAL, 'OnVC_DoCommand', ''),
+            (94, 'IDPM_VC_CHECKOUT', tr('Version Control: Checkout'), wx.ITEM_NORMAL, 'OnVC_DoCommand', ''),
+            (95, 'IDPM_VC_COMMIT', tr('Version Control: Commit'), wx.ITEM_NORMAL, 'OnVC_DoCommand', ''),
+            (96, 'IDPM_VC_COMMANDS', tr('Version Control: Commands'), wx.ITEM_NORMAL, '', ''),
+            (97, '', '-', wx.ITEM_SEPARATOR, None, ''),
+        ]),
+        ('IDPM_VC_COMMANDS',
+        [
+            (100, 'IDPM_VC_COMMANDS_LIST', tr('List'), wx.ITEM_NORMAL, 'OnVC_DoCommand', ''),
+            (110, 'IDPM_VC_COMMANDS_SHOWLOG', tr('Show log'), wx.ITEM_NORMAL, 'OnVC_DoCommand', ''),
+            (120, 'IDPM_VC_COMMANDS_STATUS', tr('Status'), wx.ITEM_NORMAL, 'OnVC_DoCommand', ''),
+            (130, 'IDPM_VC_COMMANDS_DIFF', tr('Diff'), wx.ITEM_NORMAL, 'OnVC_DoCommand', ''),
+            (145, '', '-', wx.ITEM_SEPARATOR, None, ''),
+            (150, 'IDPM_VC_COMMANDS_ADD', tr('Add'), wx.ITEM_NORMAL, 'OnVC_DoCommand', ''),
+            (160, 'IDPM_VC_COMMANDS_RENAME', tr('Rename'), wx.ITEM_NORMAL, 'OnVC_DoCommand', ''),
+            (170, 'IDPM_VC_COMMANDS_DELETE', tr('Delete'), wx.ITEM_NORMAL, 'OnVC_DoCommand', ''),
+            (180, 'IDPM_VC_COMMANDS_REVERSE', tr('Revert'), wx.ITEM_NORMAL, 'OnVC_DoCommand', ''),
+            (190, '', '-', wx.ITEM_SEPARATOR, None, ''),
+            (200, 'IDPM_VC_COMMANDS_EXPORT', tr('Export'), wx.ITEM_NORMAL, 'OnVC_DoCommand', ''),
+
+        ]),
+    ])
+Mixin.setPlugin('dirbrowser', 'other_popup_menu', other_popup_menu)
+
+def OnVC_DoCommand(win, event):
+    mapping = {
+        'IDPM_VC_CHECKOUT':'checkout',
+        'IDPM_VC_COMMIT':'commit',
+        'IDPM_VC_UPDATE':'update',
+        'IDPM_VC_COMMANDS_LIST':'list',
+        'IDPM_VC_COMMANDS_STATUS':'status',
+        'IDPM_VC_COMMANDS_SHOWLOG':'log',
+        'IDPM_VC_COMMANDS_ADD':'add',
+        'IDPM_VC_COMMANDS_RENAME':'rename',
+        'IDPM_VC_COMMANDS_DELETE':'delete',
+        'IDPM_VC_COMMANDS_REVERSE':'revert',
+        'IDPM_VC_COMMANDS_DIFF':'diff',
+        'IDPM_VC_COMMANDS_EXPORT':'export',
+    }
+    item = win.tree.GetSelection()
+    if item.IsOk():
+        path = win.get_node_filename(item)
+    else:
+        path = ''
+    if win.mainframe.pref.version_control_instance == 0: #svn
+        import SvnSupport as vc
+    _id = event.GetId()
+    for id, cmd in mapping.items():
+        if _id == getattr(win, id, None):
+            vc.do(win, cmd, path)
+Mixin.setMixin('dirbrowser', 'OnVC_DoCommand', OnVC_DoCommand)
 
 
 
