@@ -315,6 +315,14 @@ class SnipMixin(object):
             self.editor.EndUndoAction()
         self.oldpos = pos
     
+    def cancel(self):
+        self.editor.MarkerDeleteHandle( self.snippet.end_marker )
+        if len(self.snippet_stack)>0 :
+            self.snippet = self.snippet_stack.pop()
+            self.snippet.index -= 1
+        else :
+            self.resetSnippet()
+        
     def resetSnippet(self):
         self.snip_mode = False
         self.snippet = None
