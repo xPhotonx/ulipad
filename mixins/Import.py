@@ -1258,7 +1258,7 @@ def pref_init(pref):
     pref.edge_column_width = 80
     pref.startup_show_tabs = False
     pref.startup_show_indent_guide = False
-    pref.startup_show_longline = False
+    pref.startup_show_longline = True
     pref.startup_show_linenumber = True
 Mixin.setPlugin('preference', 'init', pref_init)
 
