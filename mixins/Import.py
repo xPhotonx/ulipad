@@ -1029,8 +1029,10 @@ def on_modified(win, event):
     type = event.GetModificationType()
     for flag in (wx.stc.STC_MOD_INSERTTEXT, wx.stc.STC_MOD_DELETETEXT):
         if flag & type:
-            win.pref.smart_nav_last_position = win.getFilename(), win.save_state()
-            win.pref.save()
+            def f():
+                win.pref.smart_nav_last_position = win.getFilename(), win.save_state()
+                win.pref.save()
+            wx.CallAfter(f)
             return
 Mixin.setPlugin('editor', 'on_modified', on_modified)
 
