@@ -7764,75 +7764,9 @@ import wx
 from modules import Mixin
 
 def pref_init(pref):
-    pref.version_control_instance = 0
-    pref.version_control_exe = ''
     pref.version_control_export_path = ''
     pref.version_control_checkout_path = ''
 Mixin.setPlugin('preference', 'init', pref_init)
-
-def add_pref(preflist):
-    preflist.extend([
-        (tr('Version'), 100, 'choice', 'version_control_instance', tr('Select one supported version control protocal'), ['Subversion']),
-        (tr('Version'), 110, 'text', 'version_control_exe', tr('Select version control software'), None)
-    ])
-Mixin.setPlugin('preference', 'add_pref', add_pref)
-
-def other_popup_menu(dirwin, projectname, menus):
-    item = dirwin.tree.GetSelection()
-    if not item.IsOk(): return
-    menus.extend([ (None,
-        [
-            (93, 'IDPM_VC_UPDATE', tr('Version Control: Update'), wx.ITEM_NORMAL, 'OnVC_DoCommand', ''),
-            (94, 'IDPM_VC_CHECKOUT', tr('Version Control: Checkout'), wx.ITEM_NORMAL, 'OnVC_DoCommand', ''),
-            (95, 'IDPM_VC_COMMIT', tr('Version Control: Commit'), wx.ITEM_NORMAL, 'OnVC_DoCommand', ''),
-            (96, 'IDPM_VC_COMMANDS', tr('Version Control: Commands'), wx.ITEM_NORMAL, '', ''),
-            (97, '', '-', wx.ITEM_SEPARATOR, None, ''),
-        ]),
-        ('IDPM_VC_COMMANDS',
-        [
-            (100, 'IDPM_VC_COMMANDS_LIST', tr('List'), wx.ITEM_NORMAL, 'OnVC_DoCommand', ''),
-            (110, 'IDPM_VC_COMMANDS_SHOWLOG', tr('Show log'), wx.ITEM_NORMAL, 'OnVC_DoCommand', ''),
-            (120, 'IDPM_VC_COMMANDS_STATUS', tr('Status'), wx.ITEM_NORMAL, 'OnVC_DoCommand', ''),
-            (130, 'IDPM_VC_COMMANDS_DIFF', tr('Diff'), wx.ITEM_NORMAL, 'OnVC_DoCommand', ''),
-            (145, '', '-', wx.ITEM_SEPARATOR, None, ''),
-            (150, 'IDPM_VC_COMMANDS_ADD', tr('Add'), wx.ITEM_NORMAL, 'OnVC_DoCommand', ''),
-            (160, 'IDPM_VC_COMMANDS_RENAME', tr('Rename'), wx.ITEM_NORMAL, 'OnVC_DoCommand', ''),
-            (170, 'IDPM_VC_COMMANDS_DELETE', tr('Delete'), wx.ITEM_NORMAL, 'OnVC_DoCommand', ''),
-            (180, 'IDPM_VC_COMMANDS_REVERSE', tr('Revert'), wx.ITEM_NORMAL, 'OnVC_DoCommand', ''),
-            (190, '', '-', wx.ITEM_SEPARATOR, None, ''),
-            (200, 'IDPM_VC_COMMANDS_EXPORT', tr('Export'), wx.ITEM_NORMAL, 'OnVC_DoCommand', ''),
-
-        ]),
-    ])
-Mixin.setPlugin('dirbrowser', 'other_popup_menu', other_popup_menu)
-
-def OnVC_DoCommand(win, event):
-    mapping = {
-        'IDPM_VC_CHECKOUT':'checkout',
-        'IDPM_VC_COMMIT':'commit',
-        'IDPM_VC_UPDATE':'update',
-        'IDPM_VC_COMMANDS_LIST':'list',
-        'IDPM_VC_COMMANDS_STATUS':'status',
-        'IDPM_VC_COMMANDS_SHOWLOG':'log',
-        'IDPM_VC_COMMANDS_ADD':'add',
-        'IDPM_VC_COMMANDS_RENAME':'rename',
-        'IDPM_VC_COMMANDS_DELETE':'delete',
-        'IDPM_VC_COMMANDS_REVERSE':'revert',
-        'IDPM_VC_COMMANDS_DIFF':'diff',
-        'IDPM_VC_COMMANDS_EXPORT':'export',
-    }
-    item = win.tree.GetSelection()
-    if item.IsOk():
-        path = win.get_node_filename(item)
-    else:
-        path = ''
-    if win.mainframe.pref.version_control_instance == 0: #svn
-        import SvnSupport as vc
-    _id = event.GetId()
-    for id, cmd in mapping.items():
-        if _id == getattr(win, id, None):
-            vc.do(win, cmd, path)
-Mixin.setMixin('dirbrowser', 'OnVC_DoCommand', OnVC_DoCommand)
 
 
 

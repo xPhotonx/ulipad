@@ -56,7 +56,7 @@ class DirBrowser(wx.Panel, Mixin.Mixin):
             (140, 'IDPM_ADDFILE', tr('Create File'), wx.ITEM_NORMAL, 'OnAddFile', ''),
             (150, 'IDPM_RENAME', tr('Rename'), wx.ITEM_NORMAL, 'OnRename', ''),
             (160, 'IDPM_DELETE', tr('Delete')+'\tDel', wx.ITEM_NORMAL, 'OnDelete', ''),
-            (170, 'IDPM_REFRESH', tr('Refresh'), wx.ITEM_NORMAL, 'OnRefresh', ''),
+            (170, 'IDPM_REFRESH', tr('&Refresh'), wx.ITEM_NORMAL, 'OnRefresh', ''),
             (180, '', '-', wx.ITEM_SEPARATOR, None, ''),
             (190, 'IDPM_IGNORETHIS', tr('Ignore This'), wx.ITEM_NORMAL, 'OnIgnoreThis', ''),
             (200, 'IDPM_IGNORETHISTYPE', tr('Ignore This Type'), wx.ITEM_NORMAL, 'OnIgnoreThisType', ''),
@@ -603,6 +603,9 @@ class DirBrowser(wx.Panel, Mixin.Mixin):
         cur_item = item
         if self.isFile(cur_item):
             item = self.tree.GetItemParent(cur_item)
+        else:
+            if self.tree.GetChildrenCount(cur_item) == 0 and not self.tree.IsExpanded(cur_item):
+                return
         path = common.getCurrentDir(self.get_node_filename(item))
         dirs, files = self.get_files(path)
         node, cookie = self.tree.GetFirstChild(item)
@@ -677,6 +680,8 @@ class DirBrowser(wx.Panel, Mixin.Mixin):
             if not self.fileimageindex.has_key(image):
                 obj = common.getpngimage(os.path.join(self.mainframe.userpath, 'images', image))
                 self.fileimageindex[image] = self.dirbrowserimagelist.Add(obj)
+        
+        self.callplugin('deal_image_list', self.dirbrowserimagelist, 3+len(self.fileimageindex))
 
     def OnIgnoreThis(self, event):
         item = self.tree.GetSelection()
