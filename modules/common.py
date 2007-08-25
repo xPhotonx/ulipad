@@ -363,3 +363,18 @@ else:
               'size' : 12,
               'lnsize' : 10,
              }
+
+def merge_bitmaps(image1, image2):
+    #prepare blank bitmap
+    bmp = wx.EmptyBitmap(16, 16)
+    mem_dc = wx.MemoryDC()
+    mem_dc.SelectObject(bmp)
+    brush = wx.Brush('white', wx.SOLID)
+    mem_dc.SetBackground(brush)
+    mem_dc.Clear()
+    
+    #copy first bitmap
+    mem_dc.DrawBitmap(common.getpngimage(image1), 0, 0, True)
+    mem_dc.DrawBitmap(common.getpngimage(image2), 0, 0, True)
+    
+    return bmp
