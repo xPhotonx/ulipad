@@ -3,6 +3,7 @@
 DirBrowser.py SvnSupport.py mRun.py
                     Add refreshing current folder functionality after the svn 
                     command finished
+mSearch.py          Fix Ctrl+B bug. The position is not the right, it's less 1.
                     
 [2007/08/24]
 Editor.py           Add Ctrl+Insret => Copy, and add Ctrl+C, Ctrl+X, Ctrl+Y to
