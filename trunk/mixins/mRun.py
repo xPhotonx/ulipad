@@ -20,14 +20,17 @@
 #   Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 #
 #   $Id: mRun.py 1858 2007-01-25 14:15:57Z limodou $
+#
+#   update
+#   2008/08/25
+#       * Add callback support, when the process is terminated, the callback
+#         will be invoked
 
 import os
 import wx
 import locale
 import types
 from modules import Mixin
-from modules import common
-
 
 def message_init(win):
     wx.EVT_IDLE(win, win.OnIdle)
@@ -46,9 +49,11 @@ def message_init(win):
 
     win.editpoint = 0
     win.writeposition = 0
+    win.callback = None
 Mixin.setPlugin('messagewindow', 'init', message_init)
 
-def RunCommand(win, command, redirect=True, hide=False, input_decorator=None):
+def RunCommand(win, command, redirect=True, hide=False, input_decorator=None,
+        callback=None):
     """replace $file = current document filename"""
     global input_appendtext
     if input_decorator:
@@ -60,6 +65,7 @@ def RunCommand(win, command, redirect=True, hide=False, input_decorator=None):
         win.panel.showPage(tr('Message'))
         win.callplugin('start_run', win, win.messagewindow)
         win.messagewindow.SetReadOnly(0)
+        win.messagewindow.callback = callback
         appendtext(win.messagewindow, '> ' + command + '\n')
         
         win.messagewindow.editpoint = 0
@@ -185,6 +191,8 @@ def OnProcessEnded(win, event):
         win.messagewindow.errorstream = None
         win.messagewindow.pid = -1
         win.SetStatusText(tr("Finished! "), 0)
+        if win.messagewindow.callback:
+            wx.CallAfter(win.messagewindow.callback)
 #        common.note(tr("Finished!"))
 Mixin.setMixin('mainframe', 'OnProcessEnded', OnProcessEnded)
 

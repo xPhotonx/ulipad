@@ -20,6 +20,10 @@
 #   Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 #
 #   $Id: DirBrowser.py 2129 2007-07-19 09:37:15Z limodou $
+#
+#   Update
+#   2008/08/25
+#       * improve refresh algorithm
 
 import wx
 import os
@@ -179,7 +183,7 @@ class DirBrowser(wx.Panel, Mixin.Mixin):
                 event.Enable(False)
         elif eid in [self.IDPM_ADDFILE, self.IDPM_ADDPATH]:
             event.Enable(self.is_ok(item))
-        elif eid in [self.IDPM_REFRESH, self.IDPM_COMMANDLINE]:
+        elif eid in [self.IDPM_COMMANDLINE]:
             filename = self.get_node_filename(item)
             if os.path.isdir(filename):
                 event.Enable(True)
@@ -267,7 +271,7 @@ class DirBrowser(wx.Panel, Mixin.Mixin):
         self.callplugin('after_addpath', self)
         self.tree.Thaw()
 
-    def addpathnodes(self, path, node):
+    def get_files(self, path):
         try:
             files = os.listdir(path)
         except:
@@ -279,15 +283,19 @@ class DirBrowser(wx.Panel, Mixin.Mixin):
         files = []
         for x, dir in r:
             if dir:
-                dirs.append((x, dir))
+                dirs.append(x)
             else:
-                files.append((x, dir))
+                files.append(x)
         dirs.sort(lambda x, y: cmp(x[0].lower(), y[0].lower()))
         files.sort(lambda x, y: cmp(x[0].lower(), y[0].lower()))
-        for x, dirflag in dirs:
+        return dirs, files
+    
+    def addpathnodes(self, path, node):
+        dirs, files = self.get_files(path)
+        for x in dirs:
             obj = self.addnode(node, path, x, self.close_image, self.open_image, self.getid())
             self.tree.SetItemHasChildren(obj, True)
-        for x, dirflag in files:
+        for x in files:
             item_index = self.get_file_image(x)
             self.addnode(node, path, x, item_index, None, self.getid())
         wx.CallAfter(self.tree.Expand, node)
@@ -297,6 +305,48 @@ class DirBrowser(wx.Panel, Mixin.Mixin):
         project_names = common.getCurrentPathProjectName(path)
         self.callplugin('project_begin', self, project_names, path)
 
+    def insert_filename_node(self, parent, path, filename, is_file=True):
+        node, cookie = self.tree.GetFirstChild(parent)
+        flag = False
+        while self.is_ok(node):
+            if is_file:
+                if self.isFile(node):
+                    text = self.tree.GetItemText(node).lower()
+                    if text == filename.lower():
+                        break
+                    elif text > filename.lower():
+                        item_index = self.get_file_image(filename)
+                        self.insertnode(parent, node, path, filename, item_index, None, self.getid())
+                        flag = True
+                        break
+                else:
+                    break
+            else:
+                if self.isFile(node):
+                    break
+                text = self.tree.GetItemText(node).lower()
+                if text == filename.lower():
+                    break
+                elif text > filename.lower():
+                    obj = self.insertnode(parent, node, path, filename, self.close_image, self.open_image, self.getid())
+                    self.tree.SetItemHasChildren(obj, True)
+                    flag = True
+                    break
+                
+            node, cookie = self.tree.GetNextChild(node, cookie)
+        
+        if not flag:
+            if is_file:
+                item_index = self.get_file_image(filename)
+                self.addnode(parent, path, filename, item_index, None, self.getid())
+            else:
+                if self.is_ok(node):
+                    obj = self.insertnode(parent, node, path, filename, self.close_image, self.open_image, self.getid())
+                    self.tree.SetItemHasChildren(obj, True)
+                else:
+                    obj = self.addnode(node, path, filename, self.close_image, self.open_image, self.getid())
+                    self.tree.SetItemHasChildren(obj, True)
+        
     def get_file_image(self, filename):
         fname, ext = os.path.splitext(filename)
         if self.fileimages.has_key(ext):
@@ -325,6 +375,15 @@ class DirBrowser(wx.Panel, Mixin.Mixin):
             self.tree.SetItemImage(obj, imageexpand, wx.TreeItemIcon_Expanded)
         return obj
             
+    def insertnode(self, parent, previous, path, name, imagenormal, imageexpand=None, data=None):
+        obj = self.tree.InsertItem(parent, previous, name)
+        self.nodes[data] = (path, name, obj)
+        self.tree.SetPyData(obj, data)
+        self.tree.SetItemImage(obj, imagenormal, wx.TreeItemIcon_Normal)
+        if imageexpand:
+            self.tree.SetItemImage(obj, imageexpand, wx.TreeItemIcon_Expanded)
+        return obj
+
     def addnode(self, parent, path, name, imagenormal, imageexpand=None, data=None):
         obj = self.tree.AppendItem(parent, name)
         self.nodes[data] = (path, name, obj)
@@ -535,12 +594,42 @@ class DirBrowser(wx.Panel, Mixin.Mixin):
             self.tree.SetItemImage(parent, self.close_image, wx.TreeItemIcon_Normal)
         dlg.Destroy()
 
-    def OnRefresh(self, event):
+    def OnRefresh(self, event=None):
         item = self.tree.GetSelection()
         if not self.is_ok(item): return
-        path = self.get_node_filename(item)
-        self.tree.DeleteChildren(item)
-        self.addpathnodes(path, item)
+        self.refresh(item)
+        
+    def refresh(self, item):
+        cur_item = item
+        if self.isFile(cur_item):
+            item = self.tree.GetItemParent(cur_item)
+        path = common.getCurrentDir(self.get_node_filename(item))
+        dirs, files = self.get_files(path)
+        node, cookie = self.tree.GetFirstChild(item)
+        while self.is_ok(node):
+            filename = self.tree.GetItemText(node)
+            if self.isFile(node):
+                if filename in files:
+                    files.remove(filename)
+                else:
+                    self.tree.Delete(node)
+            else:
+                if filename in dirs:
+                    dirs.remove(filename)
+                    if self.tree.GetChildrenCount(node) > 0:
+                        self.refresh(node)
+                else:
+                    self.tree.Delete(node)
+            node, cookie = self.tree.GetNextChild(item, cookie)
+            
+        #add rest dirs and files
+        for filename in dirs:
+            self.insert_filename_node(cur_item, path, filename, False)
+        for filename in files:
+            self.insert_filename_node(cur_item, path, filename, True)
+        
+        wx.CallAfter(self.tree.Expand, item)
+        wx.CallAfter(self.tree.SelectItem, cur_item)
 
     def OnRename(self, event):
         item = self.tree.GetSelection()
@@ -845,7 +934,6 @@ class DirBrowser(wx.Panel, Mixin.Mixin):
         self.tree.DeleteAllItems()
         self.tree.Thaw()
         
-
 def my_copytree(src, dst):
     """Recursively copy a directory tree using copy2().
 

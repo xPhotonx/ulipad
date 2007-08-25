@@ -1,4 +1,9 @@
 ﻿$Rev$
+[2007/08/25]
+DirBrowser.py SvnSupport.py mRun.py
+                    Add refreshing current folder functionality after the svn 
+                    command finished
+                    
 [2007/08/24]
 Editor.py           Add Ctrl+Insret => Copy, and add Ctrl+C, Ctrl+X, Ctrl+Y to
                     Editor.py I don't if it'll fix the problem in linux
