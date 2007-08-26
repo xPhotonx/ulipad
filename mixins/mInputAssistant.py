@@ -121,7 +121,7 @@ def on_key_down(win, event):
             
             win.snippet.nextField(win.GetCurrentPos())
             return True
-    if key == wx.WXK_ESCAPE:
+    if key == ord('Q') and event.AltDown() and not event.ControlDown() and not event.ShiftDown():
         if win.snippet and win.snippet.snip_mode:
             win.snippet.cancel()
             return True
