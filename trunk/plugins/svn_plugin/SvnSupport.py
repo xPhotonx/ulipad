@@ -36,26 +36,37 @@ from modules import Casing
 
 #commands definition
 ################################################################
-commands = {
-    'update': 'update',
-    'checkout':'checkout',
-    'commit':'commit',
-    'list':'list',
-    'log':'log',
-    'add':'add',
-    'rename':'rename',
-    'delete':'delete',
-    'revert':'revert',
-    'diff':'diff',
-    'export':'export',
-    'status':'status',
+status = {
+    '?': tr('non-versioned'),
+    'M': tr('modified'),
+    'A': tr('added'),
+    'D': tr('deleted'),
+    ' ': tr('normal'),
+    '!': tr('missing'),
+    'I': tr('ignored'),
+    'C': tr('conflict'),
 }
 
 #export functions
 ################################################################
 def do(dirwin, command, *args):
+    commands = {
+        'update': ('update', dirwin.OnRefresh),
+        'checkout':('checkout', None),
+        'commit':('commit', dirwin.OnRefresh),
+        'list':('list', None),
+        'log':('log', None),
+        'add':('add', dirwin.OnRefresh),
+        'rename':('rename', dirwin.OnRefresh),
+        'delete':('delete', dirwin.OnRefresh),
+        'revert':('revert', dirwin.OnRefresh),
+        'diff':('diff', None),
+        'export':('export', None),
+        'status':('status', dirwin.OnRefresh),
+    }
+
     m = dirwin.mainframe
-    vc_exe = m.pref.version_control_exe
+    vc_exe = m.pref.svn_exe
     if not vc_exe:
         common.showerror(dirwin, tr('You should set the version control settings\nfirst in Preference Dialog.'))
         return
@@ -64,6 +75,8 @@ def do(dirwin, command, *args):
         common.showerror(dirwin, tr('Unsupported command [%s]') % command)
         return
     
+    #when the commands are finished, it should automatically refresh
+    callback = None
     if command == 'export':
         path = get_path(dirwin.pref.version_control_export_path)
         dirwin.pref.version_control_export_path = path
@@ -85,6 +98,11 @@ def do(dirwin, command, *args):
         args = args + (force, export_path)
     elif command == 'checkout':
         args = check_dialog(dirwin)
+        if args:
+            args, path = args
+            def f():
+                dirwin.addpath(os.path.normcase(path))
+            callback = f
     elif command == 'commit':
         args = commit_dialog(dirwin, args[0])
         if not args: return
@@ -94,8 +112,12 @@ def do(dirwin, command, *args):
         newname = rename_dialog(dirwin, args[0])
         args = [args[0], newname]
     if not args: return
-    cmd = u'"%s" %s %s' % (vc_exe, commands.get(command), u' '.join(args))
-    run_command(cmd, dirwin.OnRefresh)
+
+    command_name, call_func = commands.get(command)
+    if callback:
+        call_func = callback
+    cmd = u'"%s" %s %s' % (vc_exe, command_name, u' '.join(args))
+    run_command(cmd, call_func)
 
 #common functions
 ################################################################
@@ -106,7 +128,7 @@ def convert_text(text):
     if re_string.search(text):
         text = unicode(re.sub(re_string,do_sub, text), 'utf-8')
     else:
-        text = common.decode_string(text, common.defaultfilesystemencoding)
+        text = common.decode_string(text)
     return text
     
 def svn_input_decorator(func):
@@ -128,6 +150,20 @@ def pipe_command(cmd, callback):
     d = Casing.Casing(_run, cmd)
     d.start_thread()
   
+def get_entries(path):
+    cmd = '"%s" status -Nv %s' % (Globals.mainframe.pref.svn_exe, path)
+    o = os.popen(cmd)
+    text = convert_text(o.read())
+    entries = {}
+    for line in text.splitlines():
+        f = line[0]
+        line = line.strip()
+        filename = line.split()[-1]
+        if filename in ('.', '..'):
+            continue
+        entries[os.path.basename(filename)] = f
+    return entries
+
 #dialogs
 ################################################################
 def get_path(path=''):
@@ -167,7 +203,7 @@ def check_dialog(dirwin):
             r = ''
         args = [r, values['url'], values['dir']]
         dlg.Destroy()
-        return args
+        return args, values['dir']
     dlg.Destroy()
     
 def commit_dialog(dirwin, path):
@@ -197,8 +233,8 @@ class CommitDialog(wx.Dialog):
         self.text = wx.TextCtrl(self, -1, '', style=wx.TE_MULTILINE)
         box.Add(self.text, 1, wx.EXPAND|wx.ALL, 5)
         self.filenames = CheckList.CheckList(self, columns=[
-                (tr("File"), 410, 'left'),
-                (tr("Extension"), 80, 'left'),
+                (tr("File"), 390, 'left'),
+                (tr("Extension"), 70, 'left'),
                 (tr("Status"), 100, 'left'),
                 ], style=wx.LC_REPORT | wx.SUNKEN_BORDER)
         
@@ -228,26 +264,20 @@ class CommitDialog(wx.Dialog):
             else:
                 add_files.append(filename)
         if add_files:
-            vc_exe = Globals.mainframe.pref.version_control_exe
+            vc_exe = Globals.mainframe.pref.svn_exe
             cmd_add = u'"%s" add %s' % (vc_exe, u' '.join(add_files))
             run_command(cmd_add)
         return ['-m "%s"' % self.text.GetValue()] + add_files + files
 
     def init(self):
         def _callback(text):
-            status = {
-                '?': tr('non-versioned'),
-                'M': tr('modified'),
-                'A': tr('added'),
-                'D': tr('deleted'),
-            }
             path = os.path.dirname(self.files)
             i = 0
             for line in text.splitlines():
                 wx.SafeYield()
                 line = line.strip()
                 if not line: continue
-                filename = common.decode_string(line[7:], common.defaultfilesystemencoding)
+                filename = line[7:]
                 ext = os.path.splitext(filename)[1]
                 if line[0] == '?':
                     if self.filetype == 'all':
@@ -257,7 +287,7 @@ class CommitDialog(wx.Dialog):
                     index = self.filenames.insertline(i, [filename[1+len(path):], ext, status.get(line[0], '')], True)
                     self.fileinfos[self.filenames.GetItemData(index)] = (filename, True)
                     i += 1
-        cmd = '"%s" status %s' % (self.parent.pref.version_control_exe, self.files)
+        cmd = '"%s" status %s' % (self.parent.pref.svn_exe, self.files)
         pipe_command(cmd, _callback)
         
 class RevertDialog(CommitDialog):

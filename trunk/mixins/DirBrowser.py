@@ -38,6 +38,9 @@ from modules import Globals
 class DirBrowser(wx.Panel, Mixin.Mixin):
 
     __mixinname__ = 'dirbrowser'
+    
+    FILE_NODE = 'file'
+    DIR_NODE = 'dir'
 
     popmenulist = [ (None,
         [
@@ -92,10 +95,10 @@ class DirBrowser(wx.Panel, Mixin.Mixin):
         self.sizer = wx.BoxSizer(wx.VERTICAL)
 
         imagelist = mainframe.dirbrowser_imagelist
-        self.dirbrowserimagelist = _imagel = wx.ImageList(16, 16)
-        self.close_image = _imagel.Add(common.getpngimage(imagelist['close']))
-        self.open_image = _imagel.Add(common.getpngimage(imagelist['open']))
-        self.item_image = _imagel.Add(common.getpngimage(imagelist['item']))
+        self.dirbrowserimagelist = wx.ImageList(16, 16)
+        self.close_image = self.add_image(common.getpngimage(imagelist['close']))
+        self.open_image = self.add_image(common.getpngimage(imagelist['open']))
+        self.item_image = self.add_image(common.getpngimage(imagelist['item']))
 
         self.deal_file_images()
 
@@ -268,7 +271,7 @@ class DirBrowser(wx.Panel, Mixin.Mixin):
             self.tree.SetItemHasChildren(node, True)
             if expand:
                 self.addpathnodes(path, node)
-        self.callplugin('after_addpath', self)
+            self.callplugin('after_addpath', self, node)
         self.tree.Thaw()
 
     def get_files(self, path):
@@ -293,11 +296,11 @@ class DirBrowser(wx.Panel, Mixin.Mixin):
     def addpathnodes(self, path, node):
         dirs, files = self.get_files(path)
         for x in dirs:
-            obj = self.addnode(node, path, x, self.close_image, self.open_image, self.getid())
+            obj = self.addnode(node, path, x, self.close_image, self.open_image, self.getid(), self.DIR_NODE)
             self.tree.SetItemHasChildren(obj, True)
         for x in files:
             item_index = self.get_file_image(x)
-            self.addnode(node, path, x, item_index, None, self.getid())
+            self.addnode(node, path, x, item_index, None, self.getid(), self.FILE_NODE)
         wx.CallAfter(self.tree.Expand, node)
         wx.CallAfter(self.tree.SelectItem, node)
 
@@ -316,7 +319,7 @@ class DirBrowser(wx.Panel, Mixin.Mixin):
                         break
                     elif text > filename.lower():
                         item_index = self.get_file_image(filename)
-                        self.insertnode(parent, node, path, filename, item_index, None, self.getid())
+                        self.insertnode(parent, node, path, filename, item_index, None, self.getid(), self.FILE_NODE)
                         flag = True
                         break
                 else:
@@ -328,7 +331,7 @@ class DirBrowser(wx.Panel, Mixin.Mixin):
                 if text == filename.lower():
                     break
                 elif text > filename.lower():
-                    obj = self.insertnode(parent, node, path, filename, self.close_image, self.open_image, self.getid())
+                    obj = self.insertnode(parent, node, path, filename, self.close_image, self.open_image, self.getid(), self.DIR_NODE)
                     self.tree.SetItemHasChildren(obj, True)
                     flag = True
                     break
@@ -338,13 +341,13 @@ class DirBrowser(wx.Panel, Mixin.Mixin):
         if not flag:
             if is_file:
                 item_index = self.get_file_image(filename)
-                self.addnode(parent, path, filename, item_index, None, self.getid())
+                self.addnode(parent, path, filename, item_index, None, self.getid(), self.FILE_NODE)
             else:
                 if self.is_ok(node):
-                    obj = self.insertnode(parent, node, path, filename, self.close_image, self.open_image, self.getid())
+                    obj = self.insertnode(parent, node, path, filename, self.close_image, self.open_image, self.getid(), self.FILE_NODE)
                     self.tree.SetItemHasChildren(obj, True)
                 else:
-                    obj = self.addnode(node, path, filename, self.close_image, self.open_image, self.getid())
+                    obj = self.addnode(node, path, filename, self.close_image, self.open_image, self.getid(), self.DIR_NODE)
                     self.tree.SetItemHasChildren(obj, True)
         
     def get_file_image(self, filename):
@@ -354,7 +357,12 @@ class DirBrowser(wx.Panel, Mixin.Mixin):
         else:
             return self.item_image
 
-    def add_first_level_node(self, parent, path, name, imagenormal, imageexpand=None, data=None):
+    def add_image(self, image):
+        index = self.dirbrowserimagelist.Add(image)
+        self.callplugin('add_image', self.dirbrowserimagelist, image, index)
+        return index
+    
+    def add_first_level_node(self, parent, path, name, imagenormal, imageexpand=None, _id=None):
         objs = self.getTopObjects()
         p = name.lower()
         path = ''
@@ -368,26 +376,26 @@ class DirBrowser(wx.Panel, Mixin.Mixin):
             obj = self.tree.InsertItemBefore(parent, pos, name) 
         else:
             obj = self.tree.AppendItem(parent, name)
-        self.nodes[data] = (path, name, obj)
-        self.tree.SetPyData(obj, data)
+        self.nodes[_id] = dict(path=path, name=name, obj=obj, nodetype=self.DIR_NODE)
+        self.tree.SetPyData(obj, _id)
         self.tree.SetItemImage(obj, imagenormal, wx.TreeItemIcon_Normal)
         if imageexpand:
             self.tree.SetItemImage(obj, imageexpand, wx.TreeItemIcon_Expanded)
         return obj
             
-    def insertnode(self, parent, previous, path, name, imagenormal, imageexpand=None, data=None):
+    def insertnode(self, parent, previous, path, name, imagenormal, imageexpand=None, _id=None, data='file'):
         obj = self.tree.InsertItem(parent, previous, name)
-        self.nodes[data] = (path, name, obj)
-        self.tree.SetPyData(obj, data)
+        self.nodes[_id] = dict(path=path, name=name, obj=obj, nodetype=data)
+        self.tree.SetPyData(obj, _id)
         self.tree.SetItemImage(obj, imagenormal, wx.TreeItemIcon_Normal)
         if imageexpand:
             self.tree.SetItemImage(obj, imageexpand, wx.TreeItemIcon_Expanded)
         return obj
 
-    def addnode(self, parent, path, name, imagenormal, imageexpand=None, data=None):
+    def addnode(self, parent, path, name, imagenormal, imageexpand=None, _id=None, data=''):
         obj = self.tree.AppendItem(parent, name)
-        self.nodes[data] = (path, name, obj)
-        self.tree.SetPyData(obj, data)
+        self.nodes[_id] = dict(path=path, name=name, obj=obj, nodetype=data)
+        self.tree.SetPyData(obj, _id)
         self.tree.SetItemImage(obj, imagenormal, wx.TreeItemIcon_Normal)
         if imageexpand:
             self.tree.SetItemImage(obj, imageexpand, wx.TreeItemIcon_Expanded)
@@ -419,8 +427,9 @@ class DirBrowser(wx.Panel, Mixin.Mixin):
     def OnChangeLabel(self, event):
         item = event.GetItem()
         if not self.is_ok(item): return
-        data = self.tree.GetPyData(item)
-        path, name, obj = self.nodes[data]
+        _id = self.tree.GetPyData(item)
+        data = self.nodes[_id]
+        path, name, obj, nodetype = data['path'], data['name'], data['obj'], data['nodetype']
         text = event.GetLabel()
         if text == '':
             event.Veto()
@@ -446,7 +455,7 @@ class DirBrowser(wx.Panel, Mixin.Mixin):
                     doc = d
                     if d is self.mainframe.editctrl.getCurDoc():
                         self.mainframe.editctrl.showTitle(d)
-            self.nodes[data] = path, text, obj
+            self.nodes[_id] = dict(path=path, name=text, obj=obj, nodetype=nodetype)
             if self.isFile(item):
                 item_index = self.get_file_image(text)
                 self.tree.SetItemImage(item, item_index, wx.TreeItemIcon_Normal)
@@ -478,6 +487,7 @@ class DirBrowser(wx.Panel, Mixin.Mixin):
         item = event.GetItem()
         if self.tree.GetChildrenCount(item) == 0: #need expand
             self.addpathnodes(self.get_node_filename(item), item)
+            self.callplugin('after_expanding', self, item)
         else:
             event.Skip()
 
@@ -536,7 +546,7 @@ class DirBrowser(wx.Panel, Mixin.Mixin):
             error.traceback()
             common.showerror(self, tr('Create directory %s error!') % os.path.join(filename, foldername))
             return
-        node = self.addnode(item, filename, foldername, self.close_image, self.open_image, self.getid())
+        node = self.addnode(item, filename, foldername, self.close_image, self.open_image, self.getid(), self.FILE_NODE)
         wx.CallAfter(self.tree.Expand, item)
         wx.CallAfter(self.tree.EditLabel, node)
 
@@ -548,7 +558,7 @@ class DirBrowser(wx.Panel, Mixin.Mixin):
             item = self.tree.GetItemParent(item)
             filename = self.get_node_filename(item)
         document = self.mainframe.editctrl.new()
-        node = self.addnode(item, filename, document.getShortFilename(), self.item_image, None, self.getid())
+        node = self.addnode(item, filename, document.getShortFilename(), self.item_image, None, self.getid(), self.DIR_NODE)
         try:
             filename = self.get_node_filename(node)
             file(filename, 'w')
@@ -599,7 +609,7 @@ class DirBrowser(wx.Panel, Mixin.Mixin):
         if not self.is_ok(item): return
         self.refresh(item)
         
-    def refresh(self, item):
+    def refresh(self, item, first=True):
         cur_item = item
         if self.isFile(cur_item):
             item = self.tree.GetItemParent(cur_item)
@@ -620,7 +630,7 @@ class DirBrowser(wx.Panel, Mixin.Mixin):
                 if filename in dirs:
                     dirs.remove(filename)
                     if self.tree.GetChildrenCount(node) > 0:
-                        self.refresh(node)
+                        self.refresh(node, False)
                 else:
                     self.tree.Delete(node)
             node, cookie = self.tree.GetNextChild(item, cookie)
@@ -631,8 +641,11 @@ class DirBrowser(wx.Panel, Mixin.Mixin):
         for filename in files:
             self.insert_filename_node(cur_item, path, filename, True)
         
-        wx.CallAfter(self.tree.Expand, item)
-        wx.CallAfter(self.tree.SelectItem, cur_item)
+        if first:
+            wx.CallAfter(self.tree.Expand, item)
+            wx.CallAfter(self.tree.SelectItem, cur_item)
+            
+            self.callplugin('after_refresh', self, item)
 
     def OnRename(self, event):
         item = self.tree.GetSelection()
@@ -653,9 +666,9 @@ class DirBrowser(wx.Panel, Mixin.Mixin):
         return parent == self.root
 
     def get_node_filename(self, item):
-        data = self.tree.GetPyData(item)
-        path, name, obj = self.nodes[data]
-        filename = os.path.join(path, name)
+        _id = self.tree.GetPyData(item)
+        data = self.nodes[_id]
+        filename = os.path.join(data['path'], data['name'])
         return filename
 
     def deal_file_images(self):
@@ -679,10 +692,8 @@ class DirBrowser(wx.Panel, Mixin.Mixin):
         for image in self.fileimages.values():
             if not self.fileimageindex.has_key(image):
                 obj = common.getpngimage(os.path.join(self.mainframe.userpath, 'images', image))
-                self.fileimageindex[image] = self.dirbrowserimagelist.Add(obj)
+                self.fileimageindex[image] = self.add_image(obj)
         
-        self.callplugin('deal_image_list', self.dirbrowserimagelist, 3+len(self.fileimageindex))
-
     def OnIgnoreThis(self, event):
         item = self.tree.GetSelection()
         if not self.is_ok(item): return
@@ -763,9 +774,8 @@ class DirBrowser(wx.Panel, Mixin.Mixin):
             os.startfile(self.get_node_filename(item))
 
     def isFile(self, item):
-        if not self.is_ok(item): return False
-        index = self.tree.GetItemImage(item)
-        return index != self.open_image and index != self.close_image
+        data = self.nodes[self.tree.GetPyData(item)]
+        return data['nodetype'] == self.FILE_NODE
 
     def OnAddUliPadWorkPath(self, event):
         from modules import Globals

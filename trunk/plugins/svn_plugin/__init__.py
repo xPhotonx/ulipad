@@ -72,7 +72,6 @@ def other_popup_menu(dirwin, projectname, menus):
                 (190, '', '-', wx.ITEM_SEPARATOR, None, ''),
                 (200, 'IDPM_VC_COMMANDS_EXPORT', tr('Export'), wx.ITEM_NORMAL, 'OnVC_DoCommand', ''),
                 (210, '', '-', wx.ITEM_SEPARATOR, None, ''),
-                (220, 'IDPM_VC_COMMANDS_SETTINGS', tr('Settings'), wx.ITEM_NORMAL, 'OnVC_Settings', ''),
             ]),
         ])
     else:
@@ -124,9 +123,85 @@ def OnVC_Settings(win, event):
     dlg.Destroy()
 Mixin.setMixin('dirbrowser', 'OnVC_Settings', OnVC_Settings)
 
+_image_ids = {}
+def add_image(imagelist, image, imgindex):
+    global _image_ids
+    from modules import common
+    m = [
+        ('M', common.getpngimage('images/TortoiseModified.gif')),
+        ('A', common.getpngimage('images/TortoiseAdded.gif')),
+        ('!', common.getpngimage('images/TortoiseConflict.gif')),
+        ('D', common.getpngimage('images/TortoiseDeleted.gif')),
+        (' ', common.getpngimage('images/TortoiseInSubVersion.gif')),
+    ]
+    
+    _image_ids[imgindex] = {}
+    for f, imgfile in m:
+        bmp = common.merge_bitmaps(image, imgfile)
+        index = imagelist.Add(bmp)
+        _image_ids[imgindex][f] = index
+Mixin.setPlugin('dirbrowser', 'add_image', add_image)
+
+def get_fix_imgindex(index, f):
+    return _image_ids[index].get(f, index)
+
+def set_image(tree, node, index, img_flag):
+    wx.CallAfter(tree.SetItemImage, node, index, img_flag) 
+    
+def after_addpath(dirwin, item):
+    from modules import common
+    import SvnSupport as vc
+    
+    def walk(dirwin, item):
+        if dirwin.isFile(item):
+            path = dirwin.get_node_filename(item)
+            entries = vc.get_entries(path)
+            filename = dirwin.tree.GetItemText(item)
+            f = entries.get(filename, '')
+            img_index = dirwin.get_file_image(filename)
+            new_img_index = get_fix_imgindex(img_index, f)
+            old_img_index = dirwin.tree.GetItemImage(item)
+            if new_img_index != old_img_index:
+                set_image(dirwin.tree, item, new_img_index, wx.TreeItemIcon_Normal)    
+            return
+        else:
+            if dirwin.tree.GetChildrenCount(item) == 0 and not dirwin.tree.IsExpanded(item):
+                return
+        path = common.getCurrentDir(dirwin.get_node_filename(item))
+        entries = vc.get_entries(path)
+        node, cookie = dirwin.tree.GetFirstChild(item)
+        while dirwin.is_ok(node):
+            filename = dirwin.tree.GetItemText(node)
+            f = entries.get(filename, '')
+            if dirwin.isFile(node):
+                img_index = dirwin.get_file_image(filename)
+                new_img_index = get_fix_imgindex(img_index, f)
+                old_img_index = dirwin.tree.GetItemImage(node)
+                if new_img_index != old_img_index:
+                    set_image(dirwin.tree, node, new_img_index, wx.TreeItemIcon_Normal)    
+            else:
+                img_index = (dirwin.close_image, dirwin.open_image)
+                new_img_index = (get_fix_imgindex(dirwin.close_image, f),
+                    get_fix_imgindex(dirwin.open_image, f))
+                old_img_index = dirwin.tree.GetItemImage(node)
+                if old_img_index not in new_img_index:
+                    set_image(dirwin.tree, node, new_img_index[1], wx.TreeItemIcon_Expanded)
+                    set_image(dirwin.tree, node, new_img_index[0], wx.TreeItemIcon_Normal)    
+                if dirwin.tree.GetChildrenCount(node) > 0:
+                    walk(dirwin, node)
+            node, cookie = dirwin.tree.GetNextChild(item, cookie)
+    
+    from modules import Casing
+    d = Casing.Casing(walk, dirwin, item)
+    d.start_thread()
+    
+Mixin.setPlugin('dirbrowser', 'after_expanding', after_addpath)
+Mixin.setPlugin('dirbrowser', 'after_refresh', after_addpath)
+
 #functions
 ########################################################
 
 def detect_svn(path):
+    print path, os.path.exists(os.path.join(path, '.svn'))
     if os.path.exists(os.path.join(path, '.svn')):
         return True
