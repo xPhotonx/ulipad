@@ -373,8 +373,10 @@ def merge_bitmaps(image1, image2):
     mem_dc.SetBackground(brush)
     mem_dc.Clear()
     
-    #copy first bitmap
-    mem_dc.DrawBitmap(common.getpngimage(image1), 0, 0, True)
-    mem_dc.DrawBitmap(common.getpngimage(image2), 0, 0, True)
+    mask = wx.Mask(image2, wx.WHITE)
+    image2.SetMask(mask)
+    
+    mem_dc.DrawBitmap(getpngimage(image1), 0, 0, True)
+    mem_dc.DrawBitmap(getpngimage(image2), 0, 0, True)
     
     return bmp

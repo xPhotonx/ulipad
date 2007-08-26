@@ -108,7 +108,7 @@ def add_pref(preflist):
     ])
 Mixin.setPlugin('preference', 'add_pref', add_pref)
 
-def after_addpath(dirbrowser):
+def after_addpath(dirbrowser, node):
     Globals.mainframe.pref.last_dir_paths = dirbrowser.getTopDirs()
     Globals.mainframe.pref.save()
 Mixin.setPlugin('dirbrowser', 'after_addpath', after_addpath)

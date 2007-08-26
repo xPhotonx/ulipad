@@ -7,7 +7,6 @@ import re
 import operator
 import wx.stc
 from modules import common
-from modules.Debug import error
 
 MARK_SNIPPET   = 4
 MARK_SNIPPET_COLOR = '#508559'
@@ -226,7 +225,7 @@ class SnipMixin(object):
         # 'messed up' (e.g. by undo/redo commands)
         if not tpl_text :
             common.warn(tr('Something went wrong with this snippet'))
-            self.cancel_current()
+            self.cancel()
             return
     
         # 1. Update the mirrors and transforms Fields

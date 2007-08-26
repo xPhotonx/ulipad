@@ -5756,7 +5756,7 @@ def add_pref(preflist):
     ])
 Mixin.setPlugin('preference', 'add_pref', add_pref)
 
-def after_addpath(dirbrowser):
+def after_addpath(dirbrowser, node):
     Globals.mainframe.pref.last_dir_paths = dirbrowser.getTopDirs()
     Globals.mainframe.pref.save()
 Mixin.setPlugin('dirbrowser', 'after_addpath', after_addpath)
@@ -5862,6 +5862,13 @@ def on_key_down(win, event):
     key = event.GetKeyCode()
     if key == wx.WXK_TAB and not event.ControlDown() and not event.AltDown() and not event.ShiftDown():
         if win.snippet and win.snippet.snip_mode:
+            if win.AutoCompActive():
+                win.AutoCompCancel()
+
+            win.calltip_stack.clear()
+            del win.function_parameter[:]
+            win.calltip.cancel()
+
             win.snippet.nextField(win.GetCurrentPos())
             return True
     if key == wx.WXK_ESCAPE:

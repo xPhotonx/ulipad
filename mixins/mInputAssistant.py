@@ -112,6 +112,13 @@ def on_key_down(win, event):
 #    if key == ord(']') and event.ControlDown() and not event.AltDown() and not event.ShiftDown():
     if key == wx.WXK_TAB and not event.ControlDown() and not event.AltDown() and not event.ShiftDown():
         if win.snippet and win.snippet.snip_mode:
+            if win.AutoCompActive():
+                win.AutoCompCancel()
+            
+            win.calltip_stack.clear()
+            del win.function_parameter[:]
+            win.calltip.cancel()
+            
             win.snippet.nextField(win.GetCurrentPos())
             return True
     if key == wx.WXK_ESCAPE:
