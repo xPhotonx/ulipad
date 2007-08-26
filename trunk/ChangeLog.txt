@@ -2,6 +2,8 @@
 [2007/08/26]
 DirBrowser.py svn_plugin
                     Improvement. Adding icon set used to indicate svn status
+                    Add saving file automatically update the svn icon status,
+                    update Chinese translation
                     
 [2007/08/25]
 DirBrowser.py SvnSupport.py mRun.py

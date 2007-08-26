@@ -48,7 +48,7 @@ def other_popup_menu(dirwin, projectname, menus):
         ]),
         ('IDPM_VC_COMMANDS',
         [
-            (900, 'IDPM_VC_COMMANDS_SETTINGS', tr('Settings'), wx.ITEM_NORMAL, 'OnVC_Settings', ''),
+            (900, 'IDPM_VC_COMMANDS_SETTINGS', tr('Settings...'), wx.ITEM_NORMAL, 'OnVC_Settings', ''),
         ]),
     ])
     
@@ -198,10 +198,44 @@ def after_addpath(dirwin, item):
 Mixin.setPlugin('dirbrowser', 'after_expanding', after_addpath)
 Mixin.setPlugin('dirbrowser', 'after_refresh', after_addpath)
 
+def aftersavefile(editor, filename):
+    from modules import Globals
+    m = Globals.mainframe
+    
+    #get dirbrowser instance
+    dirwin = m.panel.getPage(tr('Dir Browser'))
+    if not dirwin: return
+    
+    def get_node(tree, parent):
+        node, cookie = tree.GetFirstChild(parent)
+        while node.IsOk():
+            yield node
+            node, cookie = tree.GetNextChild(node, cookie)
+    
+    class StopException(Exception):pass
+    dir = os.path.dirname(filename)
+    def find(dirwin, parent, dir, filename):
+        for node in get_node(dirwin.tree, parent):
+            if dirwin.isFile(node):
+                if filename == dirwin.get_node_filename(node):
+                    after_addpath(dirwin, node)
+                    raise StopException
+            else:
+                if not dir.startswith(dirwin.get_node_filename(node)):
+                    continue
+                else:
+                    if dirwin.tree.IsExpanded(node):
+                        find(dirwin, node, dir, filename)
+                        
+    try:
+        find(dirwin, dirwin.root, dir, filename)
+    except StopException:
+        pass
+Mixin.setPlugin('editor', 'aftersavefile', aftersavefile)
+    
 #functions
 ########################################################
 
 def detect_svn(path):
-    print path, os.path.exists(os.path.join(path, '.svn'))
     if os.path.exists(os.path.join(path, '.svn')):
         return True
