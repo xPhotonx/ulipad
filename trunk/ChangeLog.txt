@@ -10,6 +10,10 @@ ShellWindow.py mRun.py
                     Improvement. Replace the popup menu, and add Copy Without Prompts 
                     menu item. And if the result cann't be convert to unicode, then
                     display the result as repr().
+mLexerFactory.py    Fix that when you change the file type, the icon in directory
+                    and dynamic menu don't change bug
+Debug.py            Add time stamp info in debug and error file
+mPyRun.py           Add doctest functionality
                     
 [2007/08/26]
 DirBrowser.py svn_plugin

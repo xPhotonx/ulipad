@@ -58,6 +58,7 @@ def add_pyftype_menu(menulist):
             (130, 'IDM_PYTHON_RUN', tr('Run')+u'\tF5', wx.ITEM_NORMAL, 'OnPythonRun', tr('Run python program')),
             (140, 'IDM_PYTHON_SETARGS', tr('Set Arguments...'), wx.ITEM_NORMAL, 'OnPythonSetArgs', tr('Set python program command line arugments')),
             (150, 'IDM_PYTHON_END', tr('Stop Program'), wx.ITEM_NORMAL, 'OnPythonEnd', tr('Stop current python program.')),
+            (155, 'IDM_PYTHON_DOCTEST', tr('Run Doctests'), wx.ITEM_NORMAL, 'OnPythonDoctests', tr('Run doctests in current document.')),
         ]),
     ])
 Mixin.setPlugin('pythonfiletype', 'add_menu', add_pyftype_menu)
@@ -67,14 +68,19 @@ def editor_init(win):
     win.redirect = True
 Mixin.setPlugin('editor', 'init', editor_init)
 
-def OnPythonRun(win, event):
+def _get_python_exe(win):
     interpreters = dict(win.pref.python_interpreter)
     interpreter = interpreters[win.pref.default_interpreter]
     if not interpreter:
         common.showerror(win, tr("You didn't setup python interpreter, \nplease setup it first in Preference dialog"))
         return
+    return interpreter
 
-    if win.document.isModified() or win.document.filename == '':
+def OnPythonRun(win, event):
+    interpreter = _get_python_exe(win)
+
+    doc = win.editctrl.getCurDoc()
+    if doc.isModified() or doc.filename == '':
         if win.pref.python_save_before_run:
             win.OnFileSave(event)
         else:
@@ -90,12 +96,12 @@ def OnPythonRun(win, event):
         if not get_python_args(win):
             return
         
-    args = win.document.args.replace('$path', os.path.dirname(win.document.filename))
-    args = args.replace('$file', win.document.filename)
-    ext = os.path.splitext(win.document.filename)[1].lower()
-    command = interpreter + ' -u "%s" %s' % (win.document.filename, args)
+    args = doc.args.replace('$path', os.path.dirname(doc.filename))
+    args = args.replace('$file', doc.filename)
+    ext = os.path.splitext(doc.filename)[1].lower()
+    command = interpreter + ' -u "%s" %s' % (doc.filename, args)
     #chanage current path to filename's dirname
-    path = os.path.dirname(win.document.filename)
+    path = os.path.dirname(doc.filename)
     os.chdir(common.encode_string(path))
 
     win.RunCommand(command, redirect=win.document.redirect)
@@ -128,6 +134,69 @@ def OnPythonEnd(win, event):
         win.messagewindow.process = None
     win.SetStatusText(tr("Stopped!"), 0)
 Mixin.setMixin('mainframe', 'OnPythonEnd', OnPythonEnd)
+
+def OnPythonDoctests(win, event):
+    from modules import Globals
+    from modules.Debug import error
+    
+    def appendtext(win, text):
+        win.SetReadOnly(0)
+        win.SetText('')
+        win.GotoPos(win.GetLength())
+        if not isinstance(text, unicode):
+            try:
+                text = unicode(text, common.defaultencoding)
+            except UnicodeDecodeError:
+                def f(x):
+                    if ord(x) > 127:
+                        return '\\x%x' % ord(x)
+                    else:
+                        return x
+                text = ''.join(map(f, text))
+        win.AddText(text)
+        win.GotoPos(win.GetLength())
+        win.EmptyUndoBuffer()
+        win.SetReadOnly(1)
+    
+    def pipe_command(cmd, callback):
+        from modules import Casing
+        
+        def _run(cmd):
+            try:
+                o = os.popen(cmd)
+                if callback:
+                    wx.CallAfter(callback, o.read())
+            except:
+                error.traceback()
+                
+        d = Casing.Casing(_run, cmd)
+        d.start_thread()
+    
+    def f(text):
+        try:
+            win.createMessageWindow()
+            win.panel.showPage(tr('Message'))
+            print text
+            appendtext(win.messagewindow, text)
+        except:
+            error.traceback()
+        
+    doc = win.editctrl.getCurDoc()
+    if doc.isModified() or doc.filename == '':
+        d = wx.MessageDialog(win, tr("The file has not been saved, and it would not be run.\nWould you like to save the file?"), tr("Run"), wx.YES_NO | wx.ICON_QUESTION)
+        answer = d.ShowModal()
+        d.Destroy()
+        if answer == wx.ID_YES:
+            win.OnFileSave(event)
+        else:
+            return
+    
+    path = os.path.normcase(os.path.join(Globals.workpath, 'packages/cmd_doctest.py'))
+    filename = Globals.mainframe.editctrl.getCurDoc().filename
+    interpreter = _get_python_exe(win)
+    cmd = '%s %s %s' % (interpreter, path, filename)
+    pipe_command(cmd, f)
+Mixin.setMixin('mainframe', 'OnPythonDoctests', OnPythonDoctests)
 
 def add_tool_list(toollist, toolbaritems):
     toollist.extend([

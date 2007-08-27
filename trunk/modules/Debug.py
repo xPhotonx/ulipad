@@ -20,15 +20,19 @@
 #   Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 #
 #   $Id: Debug.py 1730 2006-11-21 13:46:26Z limodou $
+#
+#   Update
+#   2007/08/27
+#       * add time info
 
 DEBUG = True
 import types
 import sys
 import traceback
-import time
 import os.path
 import common
 import Globals
+import datetime
 
 class Debug:
     def __init__(self, filename=os.path.abspath('debug.txt'), debug=None):
@@ -36,20 +40,23 @@ class Debug:
         self.reset(filename)
         self.debug = debug
 
+    def _time(self):
+        return datetime.datetime.now().isoformat()[11:-3]
+    
     def log(self, *args):
         self.output(*args)
 
     def info(self, *args):
-        self.output('[ INFO] -- ', *args)
+        self.output(self._time(), ' [ INFO] -- ', *args)
 
     def warn(self, *args):
-        self.output('[ WARN] -- ', *args)
+        self.output(self._time(), ' [ WARN] -- ', *args)
 
     def error(self, *args):
-        self.output('[ERROR] -- ', *args)
+        self.output(self._time(), ' [ERROR] -- ', *args)
 
     def debug(self, *args):
-        self.output('[DEBUG] -- ', *args)
+        self.output(self._time(), ' [DEBUG] -- ', *args)
 
     def traceback(self, tb=None):
         if tb:
@@ -59,9 +66,6 @@ class Debug:
         self.output('[Traceback]', ''.join(message))
         if debug and debug.is_debug() and Globals.mainframe and Globals.mainframe.IsShown():
             common.warn("There is some thing wrong as running the program")
-
-    def time(self, *args):
-        self.output('[%s] -- ' % time.ctime(time.time()), *args)
 
     def output(self, *args):
         if self.is_debug():
