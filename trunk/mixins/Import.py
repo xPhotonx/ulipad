@@ -4044,7 +4044,6 @@ def OnPythonDoctests(win, event):
         try:
             win.createMessageWindow()
             win.panel.showPage(tr('Message'))
-            print text
             appendtext(win.messagewindow, text)
         except:
             error.traceback()
@@ -4063,6 +4062,7 @@ def OnPythonDoctests(win, event):
     filename = Globals.mainframe.editctrl.getCurDoc().filename
     interpreter = _get_python_exe(win)
     cmd = '%s %s %s' % (interpreter, path, filename)
+    print cmd
     pipe_command(cmd, f)
 Mixin.setMixin('mainframe', 'OnPythonDoctests', OnPythonDoctests)
 

@@ -1,4 +1,5 @@
 import doctest
 import sys
 
-doctest.testfile(sys.argv[0], verbose=True)
+print sys.argv[1]
+doctest.testfile(sys.argv[1], report=True, verbose=True)
