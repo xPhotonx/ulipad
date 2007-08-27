@@ -25,12 +25,17 @@
 #   2008/08/25
 #       * Add callback support, when the process is terminated, the callback
 #         will be invoked
+#   2008/08/27
+#       * if the result cann't be convert to unicode, then display the result 
+#         as repr().
+
 
 import os
 import wx
 import locale
 import types
 from modules import Mixin
+from modules import common
 
 def message_init(win):
     wx.EVT_IDLE(win, win.OnIdle)
@@ -198,8 +203,16 @@ Mixin.setMixin('mainframe', 'OnProcessEnded', OnProcessEnded)
 
 def appendtext(win, text):
     win.GotoPos(win.GetLength())
-    if not isinstance(text, types.UnicodeType):
-        text = unicode(text, locale.getdefaultlocale()[1])
+    if not isinstance(text, unicode):
+        try:
+            text = unicode(text, common.defaultencoding)
+        except UnicodeDecodeError:
+            def f(x):
+                if ord(x) > 127:
+                    return '\\x%x' % ord(x)
+                else:
+                    return x
+            text = ''.join(map(f, text))
     win.AddText(text)
     win.GotoPos(win.GetLength())
     win.EmptyUndoBuffer()
