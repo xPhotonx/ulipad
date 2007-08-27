@@ -96,7 +96,7 @@ def add_mainframe_menu(menulist):
         ('IDM_VIEW', #parent menu id
         [
             (200, '-', '', wx.ITEM_SEPARATOR, '', ''),
-            (210, 'IDM_VIEW_RULER', tr('Show/Hide Ruler')+'\tAlt+R', wx.ITEM_CHECK, 'OnViewRuler', tr('Shows or hides ruler')),
+            (210, 'IDM_VIEW_RULER', tr('Show/Hide Ruler'), wx.ITEM_CHECK, 'OnViewRuler', tr('Shows or hides ruler')),
         ]),
     ])
 Mixin.setPlugin('mainframe', 'add_menu', add_mainframe_menu)

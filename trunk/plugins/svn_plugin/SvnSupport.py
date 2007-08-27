@@ -271,22 +271,30 @@ class CommitDialog(wx.Dialog):
 
     def init(self):
         def _callback(text):
-            path = os.path.dirname(self.files)
-            i = 0
-            for line in text.splitlines():
-                wx.SafeYield()
-                line = line.strip()
-                if not line: continue
-                filename = line[7:]
-                ext = os.path.splitext(filename)[1]
-                if line[0] == '?':
-                    if self.filetype == 'all':
-                        index = self.filenames.addline([filename[1+len(path):], ext, status.get(line[0], '')], False)
-                        self.fileinfos[self.filenames.GetItemData(index)] = (filename, False)
-                else:
-                    index = self.filenames.insertline(i, [filename[1+len(path):], ext, status.get(line[0], '')], True)
-                    self.fileinfos[self.filenames.GetItemData(index)] = (filename, True)
-                    i += 1
+            try:
+                self.filenames.Freeze()
+                path = os.path.dirname(self.files)
+                i = 0
+                for line in text.splitlines():
+                    wx.SafeYield()
+                    line = line.strip()
+                    if not line: continue
+                    filename = line[7:]
+                    ext = os.path.splitext(filename)[1]
+                    if line[0] == '?':
+                        if self.filetype == 'all':
+                            index = self.filenames.addline([filename[1+len(path):], ext, status.get(line[0], '')], False)
+                            item = self.filenames.GetItem(index)
+                            item.SetTextColour(wx.LIGHT_GREY)
+                            self.filenames.SetItem(item)
+                            self.fileinfos[self.filenames.GetItemData(index)] = (filename, False)
+                    else:
+                        index = self.filenames.insertline(i, [filename[1+len(path):], ext, status.get(line[0], '')], True)
+                        self.fileinfos[self.filenames.GetItemData(index)] = (filename, True)
+                        i += 1
+            finally:
+                self.filenames.Thaw()
+                
         cmd = '"%s" status %s' % (self.parent.pref.svn_exe, self.files)
         pipe_command(cmd, _callback)
         
