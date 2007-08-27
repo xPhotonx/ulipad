@@ -2,7 +2,7 @@
  Plugin Introduction
 ======================
 
-:Author: limodou
+:Author: limodou, Dick Moores
 :Email: limodou@gmail.com
 :Homepage: http://code.google.com/p/ulipad/
 :BLOG: http://www.donews.net/limodou
@@ -14,137 +14,123 @@
 Introduction
 ---------------
 
-BlogEdit(Deprecated)
+BlogEdit (Deprecated)
 ~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-Can be used to write blog, and communicate with server via xml-rpc. So need the
-server supports blogapi and metawebblogapi. But I don't test it so much.
+Can be used to write blogs, and communicate with a server via xml-rpc. 
+Requires that the server supports blogapi and metawebblogapi. This plugin 
+needs more testing.
 
-wxPythonDocument(Chnage yourself)
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+closeother
+~~~~~~~~~~~~~~~~
 
-Show wxPython document. But you should change the source code to specify the 
-correct location of the wxPython document.
+Close others documents except current one. Close all other documents 
+except the current one. Installation will add menu items to the File menu 
+and to the document tab context menu.
 
-You should chnage the source code your self.
+djangoproj
+~~~~~~~~~~~~
 
-PythonDoc(Chnage yourself)
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+Django<http://www.djangoproject.com/> support. Django is a web framework.
 
-Show python document. But you may need to change the source code to specify the 
-correct location of the python document.
+docbook
+~~~~~~~~~~~
 
-You should chnage the source code your self.
+Can be used for writing docbook documents.
 
-closeother(Available, seldom use)
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+dosprompt (Windows platform)
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-Close others documents except current one. It'll add a menu item in File menu,
-and document area tabs context menu.
+Open DOS window in bottom pane.
 
-djangoproj(Available)
-~~~~~~~~~~~~~~~~~~~~~~
-
-Django developing support. 
-
-docbook(Available, seldom use)
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-
-Can be used for writing docbook document.
-
-dosprompt(Available, Window platform)
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-
-Open dos window in bottom pane.
-
-fortran(Available, seldom use)
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+fortran
+~~~~~~~~~~~~
 
 Add fortran language syntax highlight support.
 
-jQuery(Available, seldom use)
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+jQuery
+~~~~~~~~~
 
 jQuery support.
 
-outline(Under development)
+outline (Under development)
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-Like leo.
+Like leo<http://webpages.charter.net/edreamleo/front.html>.
 
-pairprog(Available)
-~~~~~~~~~~~~~~~~~~~~~
+pairprog
+~~~~~~~~~~~~~
 
-You can use it on collaborate programming.
+You can use it on collaborative programming.
 
-pymusic(Available)
-~~~~~~~~~~~~~~~~~~~~
+pymusic
+~~~~~~~~~~~
 
 Play mp3 music.
 
-tts_plugin(Available, window platform)
+tts_plugin (Windows platform)
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-Read current document or selected text via TTS.
+Read current document or selected text via TTS<http://en.wikipedia.org/wiki/Speech_synthesis>.
 
-rssreader(Deprecated)
+rssreader (Deprecated)
 ~~~~~~~~~~~~~~~~~~~~~~~~
 
 A test rss reader plugin.
 
-ruby(Available)
-~~~~~~~~~~~~~~~~~
+ruby
+~~~~~~~~
 
 Ruby support. 
 
-ruler(Available)
-~~~~~~~~~~~~~~~~~~~
+ruler
+~~~~~~~
 
 Add ruler for document.
 
-showerror(Available)
-~~~~~~~~~~~~~~~~~~~~~~~
+showerror
+~~~~~~~~~~~~~
 
-Add some menu items related with error.txt and debug.txt of UliPad.
+Add some menu items related to error.txt and debug.txt of UliPad.
 
-spellcheck(Available)
-~~~~~~~~~~~~~~~~~~~~~~~~~
+spellcheck
+~~~~~~~~~~~~~~
 
 Spell check for current document.
 
-wizard(Available)
-~~~~~~~~~~~~~~~~~~~
+wizard
+~~~~~~~~~~
 
 Wizard framework. 
 
-mako_plugin(Available)
-~~~~~~~~~~~~~~~~~~~~~~~~~~~
+mako_plugin
+~~~~~~~~~~~~~~
 
-mako is a python template system. You can find it in http://www.makotemplates.org/.
+mako<http://www.makotemplates.org/> is a python template system. 
 This plugin can provide mako project name, and also support .mko file suffix.
 When you open a .mko file, this plugin also can support simple syntax highlight.
 And also support some input assistant, for example: key words prompt, etc.
 
-batchfilenames_plugin(Available)
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+batchfilenames_plugin
+~~~~~~~~~~~~~~~~~~~~~~~~
 
 This plugin can be used to rename batch filenames. It supports regular find and
 replace, simple template creation.
 
-svn_plugin(Available)
-~~~~~~~~~~~~~~~~~~~~~~~~~~
+svn_plugin
+~~~~~~~~~~~~~~~
 
-Subversion version control supports.
+Subversion version control support.
 
-emacskey(Available)
-~~~~~~~~~~~~~~~~~~~~~~~
+emacskey
+~~~~~~~~~~~
 
 Emacs keybinding.
 
-winpdb(No Available)
+winpdb (Discarded)
 ~~~~~~~~~~~~~~~~~~~~~~~~
 
-Has been merged into UliPad. So if you found this plugin displayed in plugin
+It has been merged into UliPad. So if you found this plugin displayed in plugin
 manager dialog, maybe you are using the old version or winpdb plugin folder is
 still exists in plugins folder. You should upgrade to the latest version, and
 check whether the plugins/winpdb is still exists, if it's existed, just remove
