@@ -4,6 +4,8 @@ doc                 Change the plugin.txt, fixed bug and added some missing plug
 svn_plugin CheckList.py
                     Add log history, select/deselect all, show unversioned files,
                     different color for different status, update Chinese translation
+                    Add no files notify if where is no files need to process in 
+                    'commit', 'revert' dialog
                     
 [2007/08/26]
 DirBrowser.py svn_plugin

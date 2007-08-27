@@ -330,6 +330,10 @@ class CommitDialog(wx.Dialog):
                             self.filelist.append((False, filename[length+1:], filename, line[0]))
                     else:
                         self.filelist.append((True, filename[length+1:], filename, line[0]))
+                if not self.filelist:
+                    common.showmessage(self, tr("No files need to process."))
+                    return
+                
                 self.load_data(self.filetype == 'all')
             finally:
                 self.filenames.Thaw()
