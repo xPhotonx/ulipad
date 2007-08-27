@@ -164,7 +164,12 @@ class ShellWindow(wx.py.shell.Shell, Mixin.Mixin):
             try:
                 text = unicode(text, common.defaultencoding)
             except UnicodeDecodeError:
-                text = repr(text)
+                def f(x):
+                    if ord(x) > 127:
+                        return '\\x%x' % ord(x)
+                    else:
+                        return x
+                text = ''.join(map(f, text))
         text = self.fixLineEndings(text)
         self.AddText(text)
         self.EnsureCaretVisible()
