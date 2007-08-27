@@ -18,6 +18,10 @@
 #   You should have received a copy of the GNU General Public License
 #   along with this program; if not, write to the Free Software
 #   Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+#
+#   Update
+#   2008/08/27
+#       * Fix the result of dir, openfile, savefile will be converted to '/'
 
 import wx
 from EasyList import EasyList
@@ -25,6 +29,7 @@ from wx.lib.intctrl import IntCtrl
 from EasyUtils import *
 from IElement import IElement
 from EasyGlobal import element_register
+import os
 
 class EasyIntElement(IElement):
     def __init__(self, parent, value, message='', externinfo=None, size=(-1, -1), enabledflag=None):
@@ -440,7 +445,7 @@ class EasyOpenFileElement(IElement):
         self.obj.SetValue(value)
 
     def getValue(self):
-        return self.obj.GetValue().replace('\\', '/')
+        return os.path.normcase(self.obj.GetValue())
 
     def getAlignFlag(self, flag):
         flag |= wx.EXPAND
@@ -475,7 +480,7 @@ class EasySaveFileElement(IElement):
         self.obj.SetValue(value)
 
     def getValue(self):
-        return self.obj.GetValue().replace('\\', '/')
+        return os.path.normcase(self.obj.GetValue())
 
     def getAlignFlag(self, flag):
         flag |= wx.EXPAND
@@ -510,7 +515,7 @@ class EasyDirElement(IElement):
         self.obj.SetValue(value)
 
     def getValue(self):
-        return self.obj.GetValue().replace('\\', '/')
+        return os.path.normcase(self.obj.GetValue())
 
     def getAlignFlag(self, flag):
         flag |= wx.EXPAND

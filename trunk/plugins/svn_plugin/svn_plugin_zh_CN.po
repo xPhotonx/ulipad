@@ -6,7 +6,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: ulipad\n"
 "POT-Creation-Date: Sun Aug 26 23:46:48 2007\n"
-"PO-Revision-Date: 2007-08-26 23:56+0800\n"
+"PO-Revision-Date: 2007-08-27 13:19+0800\n"
 "Last-Translator: limodou <limodou@gmail.com>\n"
 "Language-Team: limodou <limodou@gmail.com>\n"
 "MIME-Version: 1.0\n"
@@ -14,39 +14,39 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Generated-By: pygettext.py 1.5\n"
 
-#: ..\plugins\svn_plugin\SvnSupport.py:40
+#: ..\plugins\svn_plugin\SvnSupport.py:43
 msgid "non-versioned"
-msgstr "受控"
+msgstr "未受控"
 
-#: ..\plugins\svn_plugin\SvnSupport.py:41
+#: ..\plugins\svn_plugin\SvnSupport.py:44
 msgid "modified"
 msgstr "修改"
 
-#: ..\plugins\svn_plugin\SvnSupport.py:42
+#: ..\plugins\svn_plugin\SvnSupport.py:45
 msgid "added"
 msgstr "增加"
 
-#: ..\plugins\svn_plugin\SvnSupport.py:43
+#: ..\plugins\svn_plugin\SvnSupport.py:46
 msgid "deleted"
 msgstr "删除"
 
-#: ..\plugins\svn_plugin\SvnSupport.py:44
+#: ..\plugins\svn_plugin\SvnSupport.py:47
 msgid "normal"
 msgstr "正常"
 
-#: ..\plugins\svn_plugin\SvnSupport.py:45
+#: ..\plugins\svn_plugin\SvnSupport.py:48
 msgid "missing"
 msgstr "丢失"
 
-#: ..\plugins\svn_plugin\SvnSupport.py:46
+#: ..\plugins\svn_plugin\SvnSupport.py:49
 msgid "ignored"
 msgstr "忽略"
 
-#: ..\plugins\svn_plugin\SvnSupport.py:47
+#: ..\plugins\svn_plugin\SvnSupport.py:50
 msgid "conflict"
 msgstr "冲突"
 
-#: ..\plugins\svn_plugin\SvnSupport.py:71
+#: ..\plugins\svn_plugin\SvnSupport.py:74
 msgid ""
 "You should set the version control settings\n"
 "first in Preference Dialog."
@@ -54,140 +54,161 @@ msgstr ""
 "你应该首先在参数对话框\n"
 "中进行版本控制设置。"
 
-#: ..\plugins\svn_plugin\SvnSupport.py:75
+#: ..\plugins\svn_plugin\SvnSupport.py:78
 msgid "Unsupported command [%s]"
 msgstr "不支持的命令 [%s]"
 
-#: ..\plugins\svn_plugin\SvnSupport.py:88
+#: ..\plugins\svn_plugin\SvnSupport.py:91
 msgid "The directory is existed, do you want to overwrite it?"
 msgstr "目录已经存在，想要覆盖吗？"
 
-#: ..\plugins\svn_plugin\SvnSupport.py:89
-#: ..\plugins\svn_plugin\__init__.py:73
+#: ..\plugins\svn_plugin\SvnSupport.py:92
+#: ..\plugins\svn_plugin\__init__.py:74
 msgid "Export"
 msgstr "导出"
 
-#: ..\plugins\svn_plugin\SvnSupport.py:172
+#: ..\plugins\svn_plugin\SvnSupport.py:181
 msgid "Select directory:"
 msgstr "选择目录："
 
-#: ..\plugins\svn_plugin\SvnSupport.py:179
+#: ..\plugins\svn_plugin\SvnSupport.py:188
 msgid "New name"
 msgstr "新名字"
 
-#: ..\plugins\svn_plugin\SvnSupport.py:180
-#: ..\plugins\svn_plugin\__init__.py:69
+#: ..\plugins\svn_plugin\SvnSupport.py:189
+#: ..\plugins\svn_plugin\__init__.py:70
 msgid "Rename"
 msgstr "重命名"
 
-#: ..\plugins\svn_plugin\SvnSupport.py:189
+#: ..\plugins\svn_plugin\SvnSupport.py:198
 msgid "URL of repository:"
 msgstr "仓库的URL："
 
-#: ..\plugins\svn_plugin\SvnSupport.py:190
+#: ..\plugins\svn_plugin\SvnSupport.py:199
 msgid "Checkout Directory"
 msgstr "导出目录"
 
-#: ..\plugins\svn_plugin\SvnSupport.py:191
+#: ..\plugins\svn_plugin\SvnSupport.py:200
 msgid "Revision"
 msgstr "修改版"
 
-#: ..\plugins\svn_plugin\SvnSupport.py:194
+#: ..\plugins\svn_plugin\SvnSupport.py:203
 msgid "Checkout"
 msgstr "导出"
 
-#: ..\plugins\svn_plugin\SvnSupport.py:210
+#: ..\plugins\svn_plugin\SvnSupport.py:219
 msgid "Commit"
 msgstr "提交"
 
-#: ..\plugins\svn_plugin\SvnSupport.py:217
-#: ..\plugins\svn_plugin\__init__.py:71
+#: ..\plugins\svn_plugin\SvnSupport.py:226
+#: ..\plugins\svn_plugin\__init__.py:72
 msgid "Revert"
 msgstr "恢复"
 
-#: ..\plugins\svn_plugin\SvnSupport.py:232
+#: ..\plugins\svn_plugin\SvnSupport.py:245
 msgid "Message"
 msgstr "消息"
 
-#: ..\plugins\svn_plugin\SvnSupport.py:236
-#: ..\plugins\svn_plugin\SvnSupport.py:302
+#: ..\plugins\svn_plugin\SvnSupport.py:248
+msgid "Recent Messages"
+msgstr "最近消息"
+
+#: ..\plugins\svn_plugin\SvnSupport.py:258
+#: ..\plugins\svn_plugin\SvnSupport.py:418
 msgid "File"
 msgstr "文件"
 
-#: ..\plugins\svn_plugin\SvnSupport.py:237
+#: ..\plugins\svn_plugin\SvnSupport.py:259
 msgid "Extension"
 msgstr "扩展"
 
-#: ..\plugins\svn_plugin\SvnSupport.py:238
-#: ..\plugins\svn_plugin\SvnSupport.py:303
-#: ..\plugins\svn_plugin\__init__.py:65
+#: ..\plugins\svn_plugin\SvnSupport.py:260
+#: ..\plugins\svn_plugin\SvnSupport.py:419
+#: ..\plugins\svn_plugin\__init__.py:66
 msgid "Status"
 msgstr "状态"
 
-#: ..\plugins\svn_plugin\SvnSupport.py:243
-#: ..\plugins\svn_plugin\SvnSupport.py:308
+#: ..\plugins\svn_plugin\SvnSupport.py:267
+msgid "Show unversioned files"
+msgstr "显示未受控文件"
+
+#: ..\plugins\svn_plugin\SvnSupport.py:271
+#: ..\plugins\svn_plugin\SvnSupport.py:426
+msgid "Select / deselect All"
+msgstr "全部选中 / 不选中"
+
+#: ..\plugins\svn_plugin\SvnSupport.py:277
+#: ..\plugins\svn_plugin\SvnSupport.py:432
 msgid "OK"
 msgstr "确定"
 
-#: ..\plugins\svn_plugin\SvnSupport.py:246
-#: ..\plugins\svn_plugin\SvnSupport.py:311
+#: ..\plugins\svn_plugin\SvnSupport.py:280
+#: ..\plugins\svn_plugin\SvnSupport.py:435
 msgid "Cancel"
 msgstr "取消"
 
-#: ..\plugins\svn_plugin\__init__.py:34
+#: ..\plugins\svn_plugin\SvnSupport.py:386
+msgid "Log History"
+msgstr "日志历史"
+
+#: ..\plugins\svn_plugin\SvnSupport.py:386
+msgid "Select one log"
+msgstr "选择一条日志"
+
+#: ..\plugins\svn_plugin\__init__.py:35
 msgid "Version"
 msgstr "版本"
 
-#: ..\plugins\svn_plugin\__init__.py:34
-#: ..\plugins\svn_plugin\__init__.py:114
+#: ..\plugins\svn_plugin\__init__.py:35
+#: ..\plugins\svn_plugin\__init__.py:115
 msgid "Select location of subversion client"
 msgstr "选择Subversion客户端的位置"
 
-#: ..\plugins\svn_plugin\__init__.py:46
+#: ..\plugins\svn_plugin\__init__.py:47
 msgid "SVN Commands"
 msgstr "SVN 命令"
 
-#: ..\plugins\svn_plugin\__init__.py:51
+#: ..\plugins\svn_plugin\__init__.py:52
 msgid "Settings..."
 msgstr "设置..."
 
-#: ..\plugins\svn_plugin\__init__.py:58
+#: ..\plugins\svn_plugin\__init__.py:59
 msgid "SVN Update"
 msgstr "SVN 更新"
 
-#: ..\plugins\svn_plugin\__init__.py:59
+#: ..\plugins\svn_plugin\__init__.py:60
 msgid "SVN Commit"
 msgstr "SVN 提交"
 
-#: ..\plugins\svn_plugin\__init__.py:63
+#: ..\plugins\svn_plugin\__init__.py:64
 msgid "List"
 msgstr "列表"
 
-#: ..\plugins\svn_plugin\__init__.py:64
+#: ..\plugins\svn_plugin\__init__.py:65
 msgid "Show log"
 msgstr "显示日志"
 
-#: ..\plugins\svn_plugin\__init__.py:66
+#: ..\plugins\svn_plugin\__init__.py:67
 msgid "Diff"
 msgstr "比较"
 
-#: ..\plugins\svn_plugin\__init__.py:68
+#: ..\plugins\svn_plugin\__init__.py:69
 msgid "Add"
 msgstr "增加"
 
-#: ..\plugins\svn_plugin\__init__.py:70
+#: ..\plugins\svn_plugin\__init__.py:71
 msgid "Delete"
 msgstr "删除"
 
-#: ..\plugins\svn_plugin\__init__.py:80
+#: ..\plugins\svn_plugin\__init__.py:81
 msgid "SVN Checkout"
 msgstr "SVN 检出"
 
-#: ..\plugins\svn_plugin\__init__.py:117
+#: ..\plugins\svn_plugin\__init__.py:118
 msgid "SVN Settings"
 msgstr "SVN 设置"
 
-#: ..\plugins\svn_plugin\__init__.py:206
+#: ..\plugins\svn_plugin\__init__.py:208
 msgid "Dir Browser"
 msgstr ""
 

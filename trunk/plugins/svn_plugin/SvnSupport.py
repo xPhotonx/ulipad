@@ -26,6 +26,9 @@
 #         locale
 #       * When exporting, can test if the direction directory is already existed
 #       * Add refreshing current folder functionality after the svn command finished
+#   2008/08/27
+#       * Add show unversioned files checkbox
+#       * Add select / deselect all checkbox, support 3Dstates
 
 from modules import common
 import wx
@@ -138,8 +141,14 @@ def svn_input_decorator(func):
     return _func
     
 def run_command(cmd, callback=None):
-    wx.CallAfter(Globals.mainframe.RunCommand, cmd, redirect=True, hide=True, 
-        input_decorator=svn_input_decorator, callback=callback)
+    from modules.Debug import error
+    def f():
+        try:
+            Globals.mainframe.RunCommand(cmd, redirect=True, hide=True, 
+                input_decorator=svn_input_decorator, callback=callback)
+        except:
+            error.traceback()
+    wx.CallAfter(f)
         
 def pipe_command(cmd, callback):
     def _run(cmd):
@@ -228,10 +237,23 @@ class CommitDialog(wx.Dialog):
         self.parent = parent
         self.files = files
         self.fileinfos = {}
+        self.filelist = []
         box = wx.BoxSizer(wx.VERTICAL)
-        box.Add(wx.StaticText(self, -1, label=tr('Message')), 0, wx.ALIGN_LEFT|wx.ALL, 5)
+        
+        #add message label and recent messages button
+        box1 = wx.BoxSizer(wx.HORIZONTAL)
+        box1.Add(wx.StaticText(self, -1, label=tr('Message')), 0, wx.ALIGN_LEFT|wx.ALIGN_CENTER_VERTICAL)
+        box1.AddStretchSpacer()
+        self.ID_HISMSG = wx.NewId()
+        self.btnHisMsg = wx.Button(self, self.ID_HISMSG, tr("Recent Messages"))
+        box1.Add(self.btnHisMsg, 0, wx.ALIGN_RIGHT)
+        box.Add(box1, 0, wx.EXPAND|wx.LEFT|wx.TOP|wx.RIGHT, 5)
+        
+        #add message input box
         self.text = wx.TextCtrl(self, -1, '', style=wx.TE_MULTILINE)
         box.Add(self.text, 1, wx.EXPAND|wx.ALL, 5)
+
+        #add filenames list
         self.filenames = CheckList.CheckList(self, columns=[
                 (tr("File"), 390, 'left'),
                 (tr("Extension"), 70, 'left'),
@@ -239,13 +261,29 @@ class CommitDialog(wx.Dialog):
                 ], style=wx.LC_REPORT | wx.SUNKEN_BORDER)
         
         box.Add(self.filenames, 2, wx.ALL|wx.EXPAND, 5)
+        self.filenames.on_check = self.OnCheck
+        
+        #add selection switch checkbox
+        self.chkShowUnVertion = wx.CheckBox(self, -1, tr('Show unversioned files'))
+        if self.filetype == 'all':
+            self.chkShowUnVertion.SetValue(True)
+        box.Add(self.chkShowUnVertion, 0, wx.LEFT, 5)
+        self.chkSelect = wx.CheckBox(self, -1, tr('Select / deselect All'), 
+            style=wx.CHK_3STATE)
+        box.Add(self.chkSelect, 0, wx.LEFT, 5)
+        
+        #add ok and cancel buttons
         box2 = wx.BoxSizer(wx.HORIZONTAL)
         self.btnOK = wx.Button(self, wx.ID_OK, tr("OK"))
         self.btnOK.SetDefault()
         box2.Add(self.btnOK, 0, wx.ALIGN_RIGHT|wx.RIGHT, 5)
         btnCancel = wx.Button(self, wx.ID_CANCEL, tr("Cancel"))
         box2.Add(btnCancel, 0, wx.ALIGN_LEFT|wx.LEFT, 5)
-        box.Add(box2, 0, wx.ALIGN_CENTER|wx.BOTTOM, 5)
+        box.Add(box2, 0, wx.ALIGN_CENTER|wx.ALL, 5)
+
+        wx.EVT_BUTTON(self.btnHisMsg, self.ID_HISMSG, self.OnHisMsg)
+        wx.EVT_CHECKBOX(self.chkShowUnVertion, self.chkShowUnVertion.GetId(), self.OnShowUnVersion)
+        wx.EVT_CHECKBOX(self.chkSelect, self.chkSelect.GetId(), self.OnSelect)
 
         self.SetSizer(box)
         self.SetAutoLayout(True)
@@ -267,14 +305,20 @@ class CommitDialog(wx.Dialog):
             vc_exe = Globals.mainframe.pref.svn_exe
             cmd_add = u'"%s" add %s' % (vc_exe, u' '.join(add_files))
             run_command(cmd_add)
+            
+        #save log
+        Globals.pref.svn_log_history.insert(0, self.text.GetValue())
+        del Globals.pref.svn_log_history[30:]
+        Globals.pref.save()
         return ['-m "%s"' % self.text.GetValue()] + add_files + files
-
+    
     def init(self):
+        self.filelist = []
         def _callback(text):
             try:
                 self.filenames.Freeze()
                 path = os.path.dirname(self.files)
-                i = 0
+                length = len(path)
                 for line in text.splitlines():
                     wx.SafeYield()
                     line = line.strip()
@@ -283,28 +327,92 @@ class CommitDialog(wx.Dialog):
                     ext = os.path.splitext(filename)[1]
                     if line[0] == '?':
                         if self.filetype == 'all':
-                            index = self.filenames.addline([filename[1+len(path):], ext, status.get(line[0], '')], False)
-                            item = self.filenames.GetItem(index)
-                            item.SetTextColour(wx.LIGHT_GREY)
-                            self.filenames.SetItem(item)
-                            self.fileinfos[self.filenames.GetItemData(index)] = (filename, False)
+                            self.filelist.append((False, filename[length+1:], filename, line[0]))
                     else:
-                        index = self.filenames.insertline(i, [filename[1+len(path):], ext, status.get(line[0], '')], True)
-                        self.fileinfos[self.filenames.GetItemData(index)] = (filename, True)
-                        i += 1
+                        self.filelist.append((True, filename[length+1:], filename, line[0]))
+                self.load_data(self.filetype == 'all')
             finally:
                 self.filenames.Thaw()
                 
         cmd = '"%s" status %s' % (self.parent.pref.svn_exe, self.files)
         pipe_command(cmd, _callback)
         
+    def check_state(self):
+        count = {True:0, False:0}
+        for i in range(self.filenames.GetItemCount()):
+            count[self.filenames.getFlag(i)] += 1
+        if count[True] > 0 and count[False] > 0:
+            self.chkSelect.Set3StateValue(wx.CHK_UNDETERMINED)
+        elif count[True] > 0 and count[False] == 0:
+            self.chkSelect.Set3StateValue(wx.CHK_CHECKED)
+        else:
+            self.chkSelect.Set3StateValue(wx.CHK_UNCHECKED)
+        
+    def load_data(self, unversioned=True):
+        color = {
+            'A':'#007F05',
+            'M':wx.BLACK,
+            'D':wx.RED,
+        }
+        try:
+            self.filenames.Freeze()
+            self.filenames.DeleteAllItems()
+            self.fileinfos = {}
+            
+            i = 0
+            for flag, fname, filename, f in self.filelist:
+                wx.SafeYield()
+                ext = os.path.splitext(fname)[1]
+                if flag == False:
+                    if unversioned:
+                        index = self.filenames.addline([fname, ext, status.get(f, '')], False)
+                        item = self.filenames.GetItem(index)
+                        item.SetTextColour('#999999')
+                        self.filenames.SetItem(item)
+                        self.fileinfos[self.filenames.GetItemData(index)] = (filename, False)
+                else:
+                    index = self.filenames.insertline(i, [fname, ext, status.get(f, '')], True)
+                    item = self.filenames.GetItem(index)
+                    item.SetTextColour(color.get(f, wx.BLACK))
+                    self.filenames.SetItem(item)
+                    self.fileinfos[self.filenames.GetItemData(index)] = (filename, True)
+                    i += 1
+            self.check_state()
+        finally:
+            self.filenames.Thaw()
+        
+    def OnHisMsg(self, event):
+        dlg = wx.SingleChoiceDialog(
+                self, tr('Select one log'), tr('Log History'),
+                Globals.pref.svn_log_history, 
+                wx.CHOICEDLG_STYLE
+                )
+        
+        if dlg.ShowModal() == wx.ID_OK:
+            self.text.SetValue(dlg.GetStringSelection())
+        dlg.Destroy()
+        
+    def OnShowUnVersion(self, event):
+        wx.CallAfter(self.load_data, event.IsChecked())
+        
+    def OnSelect(self, event):
+        value = event.GetEventObject().Get3StateValue()
+        if value == wx.CHK_UNCHECKED:
+            self.filenames.selectAll(False)
+        elif value == wx.CHK_CHECKED:
+            self.filenames.selectAll(True)
+            
+    def OnCheck(self, index, f):
+        self.check_state()
+    
 class RevertDialog(CommitDialog):
-    filetype = 'm'
+    filetype = 'ignore'
     def __init__(self, parent, title, files):
         wx.Dialog.__init__(self, parent, -1, style = wx.DEFAULT_DIALOG_STYLE, title = title, size=(600, 300))
         self.parent = parent
         self.files = files
         self.fileinfos = {}
+        self.filelist = []
         box = wx.BoxSizer(wx.VERTICAL)
         self.filenames = CheckList.CheckList(self, columns=[
                 (tr("File"), 430, 'left'),
@@ -312,6 +420,14 @@ class RevertDialog(CommitDialog):
                 ], style=wx.LC_REPORT | wx.SUNKEN_BORDER)
         
         box.Add(self.filenames, 2, wx.ALL|wx.EXPAND, 5)
+        self.filenames.on_check = self.OnCheck
+        
+        #add selection switch checkbox
+        self.chkSelect = wx.CheckBox(self, -1, tr('Select / deselect All'), 
+            style=wx.CHK_3STATE)
+        box.Add(self.chkSelect, 0, wx.LEFT, 5)
+        
+        #add ok and cancel buttons
         box2 = wx.BoxSizer(wx.HORIZONTAL)
         self.btnOK = wx.Button(self, wx.ID_OK, tr("OK"))
         self.btnOK.SetDefault()
