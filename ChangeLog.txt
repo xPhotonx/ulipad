@@ -1,12 +1,17 @@
 ﻿$Rev$
 [2007/08/27]
 doc                 Change the plugin.txt, fixed bug and added some missing plugins description
-
+svn_plugin CheckList.py
+                    Add log history, select/deselect all, show unversioned files,
+                    different color for different status, update Chinese translation
+                    
 [2007/08/26]
 DirBrowser.py svn_plugin
                     Improvement. Adding icon set used to indicate svn status
                     Add saving file automatically update the svn icon status,
                     update Chinese translation
+                    
+mInputAssistant.py  Changing ESC to Alt+Q to cancel snip.
                     
 [2007/08/25]
 DirBrowser.py SvnSupport.py mRun.py
