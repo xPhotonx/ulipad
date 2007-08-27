@@ -6,6 +6,8 @@ svn_plugin CheckList.py
                     different color for different status, update Chinese translation
                     Add no files notify if where is no files need to process in 
                     'commit', 'revert' dialog
+ShellWindow.py      Improvement. Replace the popup menu, and add Copy Without Prompts 
+                    menu item.
                     
 [2007/08/26]
 DirBrowser.py svn_plugin
