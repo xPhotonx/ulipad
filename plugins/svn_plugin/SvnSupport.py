@@ -419,8 +419,9 @@ class RevertDialog(CommitDialog):
         self.filelist = []
         box = wx.BoxSizer(wx.VERTICAL)
         self.filenames = CheckList.CheckList(self, columns=[
-                (tr("File"), 430, 'left'),
-                (tr("Status"), 130, 'left'),
+                (tr("File"), 390, 'left'),
+                (tr("Extension"), 70, 'left'),
+                (tr("Status"), 100, 'left'),
                 ], style=wx.LC_REPORT | wx.SUNKEN_BORDER)
         
         box.Add(self.filenames, 2, wx.ALL|wx.EXPAND, 5)
@@ -442,6 +443,8 @@ class RevertDialog(CommitDialog):
     
         self.SetSizer(box)
         self.SetAutoLayout(True)
+        
+        wx.EVT_CHECKBOX(self.chkSelect, self.chkSelect.GetId(), self.OnSelect)
         
         wx.CallAfter(self.init)
 

@@ -70,6 +70,8 @@ def sortmenu(menulist):
     return m
 
 def removemenu(mlist, removemlist, sortedmenukey, win):
+#    debug.info('[makemenu] Removing dynamic menu...')
+#    makemenu.printmenu(removemlist)
     keys = sortedmenukey[:]
     while len(keys) > 0:
         key = keys[0]
@@ -90,6 +92,9 @@ def removemenu(mlist, removemlist, sortedmenukey, win):
                 del win.menuitems[idname]
 
 def insertmenu(mlist, insertmlist, sortedmenukey, win, accel=None, imagelist=None):
+#    debug.info('[makemenu] Inserting dynamic menu...')
+#    makemenu.printmenu(insertmlist)
+    
     keys = sortedmenukey[:]
     while len(keys) > 0:
         key = keys[0]

@@ -31,8 +31,12 @@ from modules import dict4ini
 from LexerFactory import LexerFactory
 
 def call_lexer(win, oldfilename, filename, language):
+    from modules import Globals
+    
 #    if oldfilename == filename and filename:
 #        return
+    lexer_obj = None
+    flag = False
     for lexer in win.mainframe.lexers.lexobjs:
         prjfile = common.getProjectFile(filename)
         ini = dict4ini.DictIni(prjfile)
@@ -41,20 +45,26 @@ def call_lexer(win, oldfilename, filename, language):
         
         if lexname and lexname == lexer.name:   #find acp option
             if not hasattr(win, 'lexer') or lexname != win.lexer.name:
-                lexer.colourize(win)
-                return
+                lexer_obj = lexer
+                flag = True
+                break
             
         if not lexname and (language and language == lexer.name or lexer.matchfile(filename)):
             if not hasattr(win, 'lexer') or lexer.name != win.lexer.name:
-                lexer.colourize(win)
-                return
+                lexer_obj = lexer
+                flag = True
+                break
             
     else:
 #        if filename:
 #            win.mainframe.lexers.getNamedLexer('text').colourize(win)
 #        else:
         if not hasattr(win, 'lexer'):
-            win.mainframe.lexers.getDefaultLexer().colourize(win)
+            lexer_obj = Globals.mainframe.lexers.getDefaultLexer()
+            flag = True
+    if flag:
+        lexer_obj.colourize(win)
+        wx.CallAfter(Globals.mainframe.editctrl.switch, win)
 Mixin.setPlugin('editor', 'call_lexer', call_lexer)
 Mixin.setPlugin('dirbrowser', 'call_lexer', call_lexer)
 
