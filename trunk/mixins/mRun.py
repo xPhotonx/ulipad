@@ -38,6 +38,7 @@ from modules import Mixin
 from modules import common
 
 def message_init(win):
+    
     wx.EVT_IDLE(win, win.OnIdle)
     wx.EVT_END_PROCESS(win.mainframe, -1, win.mainframe.OnProcessEnded)
     wx.EVT_KEY_DOWN(win, win.OnKeyDown)
@@ -57,10 +58,17 @@ def message_init(win):
     win.callback = None
 Mixin.setPlugin('messagewindow', 'init', message_init)
 
-def RunCommand(win, command, redirect=True, hide=False, input_decorator=None,
+#patameters:
+#   (redirect=True, hide=False, input_decorator=None, callback=None)
+def RunCommand(win, command, redirect=True, hide=False, input_decorator=None, 
         callback=None):
     """replace $file = current document filename"""
     global input_appendtext
+    
+    #test if there is already a running process
+    if hasattr(win, 'messagewindow') and win.messagewindow and win.messagewindow.process:
+        common.showmessage(win, tr("The last command has not finished, please try later."))
+        return
     if input_decorator:
         input_appendtext = input_decorator(appendtext)
     else:
