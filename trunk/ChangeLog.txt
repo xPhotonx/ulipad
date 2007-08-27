@@ -1,4 +1,7 @@
 ﻿$Rev$
+[2007/08/27]
+doc                 Change the plugin.txt, fixed bug and added some missing plugins description
+
 [2007/08/26]
 DirBrowser.py svn_plugin
                     Improvement. Adding icon set used to indicate svn status

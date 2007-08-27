@@ -40,7 +40,7 @@ closeother(Available, seldom use)
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 Close others documents except current one. It'll add a menu item in File menu,
-and Notebook context menu.
+and document area tabs context menu.
 
 djangoproj(Available)
 ~~~~~~~~~~~~~~~~~~~~~~
@@ -82,8 +82,8 @@ pymusic(Available)
 
 Play mp3 music.
 
-pytts(Available, window platform)
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+tts_plugin(Available, window platform)
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 Read current document or selected text via TTS.
 
@@ -112,15 +112,43 @@ spellcheck(Available)
 
 Spell check for current document.
 
-winpdb(Available)
-~~~~~~~~~~~~~~~~~~~~
-
-Add winpdb support. You can use it to debug your program.
-
 wizard(Available)
 ~~~~~~~~~~~~~~~~~~~
 
 Wizard framework. 
+
+mako_plugin(Available)
+~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+mako is a python template system. You can find it in http://www.makotemplates.org/.
+This plugin can provide mako project name, and also support .mko file suffix.
+When you open a .mko file, this plugin also can support simple syntax highlight.
+And also support some input assistant, for example: key words prompt, etc.
+
+batchfilenames_plugin(Available)
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+This plugin can be used to rename batch filenames. It supports regular find and
+replace, simple template creation.
+
+svn_plugin(Available)
+~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+Subversion version control supports.
+
+emacskey(Available)
+~~~~~~~~~~~~~~~~~~~~~~~
+
+Emacs keybinding.
+
+winpdb(No Available)
+~~~~~~~~~~~~~~~~~~~~~~~~
+
+Has been merged into UliPad. So if you found this plugin displayed in plugin
+manager dialog, maybe you are using the old version or winpdb plugin folder is
+still exists in plugins folder. You should upgrade to the latest version, and
+check whether the plugins/winpdb is still exists, if it's existed, just remove
+it.
 
 `[Return]`_
 
