@@ -22,16 +22,44 @@
 #
 #   $Id: ShellWindow.py 1500 2006-09-01 13:47:51Z limodou $
 
+import os
+import types
+import locale
 import wx.py
 from wx.py.interpreter import Interpreter
 from wx.py import dispatcher
-import types
-import locale
+from modules import Mixin
 from modules import common
 from modules import dict4ini
+from modules import makemenu
 
-class ShellWindow(wx.py.shell.Shell):
+
+class ShellWindow(wx.py.shell.Shell, Mixin.Mixin):
+    __mixinname__ = 'shellwindow'
+    
+    popmenulist = [(None, #parent menu id
+        [
+            (100, 'IDPM_UNDO', tr('Undo') + '\tCtrl+Z', wx.ITEM_NORMAL, 'OnPopupEdit', tr('Reverse previous editing operation')),
+            (110, 'IDPM_REDO', tr('Redo') + '\tCtrl+Y', wx.ITEM_NORMAL, 'OnPopupEdit', tr('Reverse previous undo operation')),
+            (120, '', '-', wx.ITEM_SEPARATOR, None, ''),
+            (130, 'IDPM_CUT', tr('Cut') + '\tCtrl+X', wx.ITEM_NORMAL, 'OnPopupEdit', tr('Deletes text from the shell window and moves it to the clipboard')),
+            (140, 'IDPM_COPY', tr('Copy') + '\tCtrl+C', wx.ITEM_NORMAL, 'OnPopupEdit', tr('Copies text from the shell window to the clipboard')),
+            (145, 'IDPM_COPY_CLEAR', tr('Copy Without Prompts'), wx.ITEM_NORMAL, 'OnPopupEdit', tr('Copies text without prompts from the shell window to the clipboard')),
+            (150, 'IDPM_PASTE', tr('Paste') + '\tCtrl+V', wx.ITEM_NORMAL, 'OnPopupEdit', tr('Pastes text from the clipboard into the shell window')),
+            (160, '', '-', wx.ITEM_SEPARATOR, None, ''),
+            (170, 'IDPM_SELECTALL', tr('Select All') + '\tCtrl+A', wx.ITEM_NORMAL, 'OnPopupEdit', tr('Selects all text.')),
+        ]),
+    ]
+    imagelist = {
+        'IDPM_UNDO':'images/undo.gif',
+        'IDPM_REDO':'images/redo.gif',
+        'IDPM_CUT':'images/cut.gif',
+        'IDPM_COPY':'images/copy.gif',
+        'IDPM_PASTE':'images/paste.gif',
+    }
+    
     def __init__(self, parent, mainframe):
+        self.initmixin()
 
         #add default font settings in config.ini
         inifile = common.getConfigPathFile('config.ini')
@@ -51,10 +79,74 @@ class ShellWindow(wx.py.shell.Shell):
         edit.FACES['size'] = fontsize
 
         wx.py.shell.Shell.__init__(self, parent, -1, InterpClass=NEInterpreter)
+
+        #disable popup
+        self.UsePopUp(0)
+        
+        for key in ShellWindow.imagelist.keys():
+            f = ShellWindow.imagelist[key]
+            ShellWindow.imagelist[key] = common.getpngimage(f)
+        
+        self.popmenu = makemenu.makepopmenu(self, ShellWindow.popmenulist, ShellWindow.imagelist)
+        
         self.parent = parent
         self.mainframe = mainframe
         wx.EVT_KILL_FOCUS(self, self.OnKillFocus)
         
+        wx.EVT_RIGHT_DOWN(self, self.OnPopUp)
+        
+        wx.EVT_UPDATE_UI(self, self.IDPM_UNDO, self.OnUpdateUI)
+        wx.EVT_UPDATE_UI(self, self.IDPM_REDO, self.OnUpdateUI)
+        wx.EVT_UPDATE_UI(self, self.IDPM_CUT, self.OnUpdateUI)
+        wx.EVT_UPDATE_UI(self, self.IDPM_COPY, self.OnUpdateUI)
+        wx.EVT_UPDATE_UI(self, self.IDPM_COPY_CLEAR, self.OnUpdateUI)
+        wx.EVT_UPDATE_UI(self, self.IDPM_PASTE, self.OnUpdateUI)
+
+    def OnPopUp(self, event):
+        other_menus = []
+        if self.popmenu:
+            self.popmenu.Destroy()
+            self.popmenu = None
+        self.callplugin('other_popup_menu', self, other_menus)
+        import copy
+        if other_menus:
+            pop_menus = copy.deepcopy(ShellWindow.popmenulist + other_menus)
+        else:
+            pop_menus = copy.deepcopy(ShellWindow.popmenulist)
+        self.popmenu = pop_menus = makemenu.makepopmenu(self, pop_menus, ShellWindow.imagelist)
+    
+        self.PopupMenu(self.popmenu, event.GetPosition())
+    
+    def OnPopupEdit(self, event):
+        eid = event.GetId()
+        if eid == self.IDPM_CUT:
+            self.Cut()
+        elif eid == self.IDPM_COPY:
+            self.Copy()
+        elif eid == self.IDPM_COPY_CLEAR:
+            super(ShellWindow, self).Copy()
+        elif eid == self.IDPM_PASTE:
+            self.Paste()
+        elif eid == self.IDPM_SELECTALL:
+            self.SelectAll()
+        elif eid == self.IDPM_UNDO:
+            self.Undo()
+        elif eid == self.IDPM_REDO:
+            self.Redo()
+    
+    def OnUpdateUI(self, event):
+        eid = event.GetId()
+        if eid == self.IDPM_CUT:
+            event.Enable(not self.GetReadOnly() and bool(self.GetSelectedText()))
+        elif eid in (self.IDPM_COPY, self.IDPM_COPY_CLEAR):
+            event.Enable(bool(self.GetSelectedText()))
+        elif eid == self.IDPM_PASTE:
+            event.Enable(not self.GetReadOnly() and bool(self.CanPaste()))
+        elif eid == self.IDPM_UNDO:
+            event.Enable(bool(self.CanUndo()))
+        elif eid == self.IDPM_REDO:
+            event.Enable(bool(self.CanRedo()))
+    
     def OnKillFocus(self, event):
         if self.AutoCompActive():
             self.AutoCompCancel()
@@ -68,12 +160,17 @@ class ShellWindow(wx.py.shell.Shell):
         """Display text in the shell.
 
         Replace line endings with OS-specific endings."""
-        if not isinstance(text, types.UnicodeType):
-            text = unicode(text, common.defaultencoding)
+        if not isinstance(text, unicode):
+            try:
+                text = unicode(text, common.defaultencoding)
+            except UnicodeDecodeError:
+                text = repr(text)
         text = self.fixLineEndings(text)
         self.AddText(text)
         self.EnsureCaretVisible()
-
+        
+    def Copy(self):
+        self.CopyWithPrompts()
 
 class NEInterpreter(Interpreter):
     def push(self, command):
@@ -93,7 +190,7 @@ class NEInterpreter(Interpreter):
             except IndexError: pass
         if not self.more: self.commandBuffer.append([])
         self.commandBuffer[-1].append(command)
-        source = '\n'.join(self.commandBuffer[-1])
+        source = os.linesep.join(self.commandBuffer[-1])
         more = self.more = self.runsource(source)
         dispatcher.send(signal='Interpreter.push', sender=self,
                         command=command, more=more, source=source)
