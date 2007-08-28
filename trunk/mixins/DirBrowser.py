@@ -558,7 +558,7 @@ class DirBrowser(wx.Panel, Mixin.Mixin):
             item = self.tree.GetItemParent(item)
             filename = self.get_node_filename(item)
         document = self.mainframe.editctrl.new()
-        node = self.addnode(item, filename, document.getShortFilename(), self.item_image, None, self.getid(), self.DIR_NODE)
+        node = self.addnode(item, filename, document.getShortFilename(), self.item_image, None, self.getid(), self.FILE_NODE)
         try:
             filename = self.get_node_filename(node)
             file(filename, 'w')

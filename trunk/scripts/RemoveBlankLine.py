@@ -1,3 +1,5 @@
+#name:Remove Blank Line
+
 def run(win):
     text = win.document.GetText()
     lines = text.splitlines()

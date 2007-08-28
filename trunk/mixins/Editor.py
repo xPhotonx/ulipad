@@ -131,7 +131,6 @@ class TextEditor(wx.stc.StyledTextCtrl, Mixin.Mixin, DocumentBase.DocumentBase):
         #@add_menu_image_list imagelist
         self.callplugin_once('add_menu_image_list', TextEditor.imagelist)
 
-#        self.popmenu = None
         self.popmenu = makemenu.makepopmenu(self, TextEditor.popmenulist, TextEditor.imagelist)
 
         wx.stc.EVT_STC_MODIFIED(self, self.GetId(), self.OnModified)
@@ -733,4 +732,18 @@ class TextEditor(wx.stc.StyledTextCtrl, Mixin.Mixin, DocumentBase.DocumentBase):
         
     def OnAutoCompletion(self, event):
         text = event.GetText()
-        self.callplugin('on_auto_completion', self, self.GetCurrentPos(), text)
+        self.callplugin('on_auto_completion', self, self.GetCurrentPos(), text)
+
+    def setLineNumberMargin(self, flag=True):
+        if not hasattr(self, 'mwidth'):
+            self.mwidth = 0
+        if flag:
+            lines = self.GetLineCount() #get # of lines, ensure text is loaded first!
+            mwidth = len(str(lines))
+            if self.mwidth < mwidth:
+                self.mwidth = mwidth
+                width = self.TextWidth(wx.stc.STC_STYLE_LINENUMBER, 'O'*(self.mwidth+1))
+                self.SetMarginType(1, wx.stc.STC_MARGIN_NUMBER )
+                self.SetMarginWidth(1, width)
+        else:
+            self.SetMarginWidth(1, 0)

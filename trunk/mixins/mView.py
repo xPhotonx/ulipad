@@ -35,7 +35,7 @@ def add_mainframe_menu(menulist):
             (110, 'IDM_VIEW_INDENTATION_GUIDES', tr('Indentation Guides'), wx.ITEM_CHECK, 'OnViewIndentationGuides', tr('Shows or hides indentation guides')),
             (120, 'IDM_VIEW_RIGHT_EDGE', tr('Right edge indicator'), wx.ITEM_CHECK, 'OnViewRightEdge', tr('Shows or hides right edge indicator')),
             (130, 'IDM_VIEW_LINE_NUMBER', tr('Line number'), wx.ITEM_CHECK, 'OnViewLineNumber', tr('Shows or hides line number')),
-#            (130, 'IDM_VIEW_ENDOFLINE_MARK', tr('End-of-line marker'), wx.ITEM_CHECK, 'OnViewEndOfLineMark', tr('Shows or hides end-of-line marker')),
+            (131, 'IDM_VIEW_ENDOFLINE_MARK', tr('End-of-line marker'), wx.ITEM_CHECK, 'OnViewEndOfLineMark', tr('Shows or hides end-of-line marker')),
         ]),
     ])
 Mixin.setPlugin('mainframe', 'add_menu', add_mainframe_menu)
@@ -45,7 +45,7 @@ def afterinit(win):
     wx.EVT_UPDATE_UI(win, win.IDM_VIEW_INDENTATION_GUIDES, win.OnUpdateUI)
     wx.EVT_UPDATE_UI(win, win.IDM_VIEW_RIGHT_EDGE, win.OnUpdateUI)
     wx.EVT_UPDATE_UI(win, win.IDM_VIEW_LINE_NUMBER, win.OnUpdateUI)
-#       wx.EVT_UPDATE_UI(win, win.IDM_VIEW_ENDOFLINE_MARK, win.OnUpdateUI)
+    wx.EVT_UPDATE_UI(win, win.IDM_VIEW_ENDOFLINE_MARK, win.OnUpdateUI)
 Mixin.setPlugin('mainframe', 'afterinit', afterinit)
 
 def editor_init(win):
@@ -54,7 +54,7 @@ def editor_init(win):
         win.SetEdgeMode(wx.stc.STC_EDGE_LINE)
     else:
         win.SetEdgeMode(wx.stc.STC_EDGE_NONE)
-#       win.SetEdgeColour(wx.Colour(200,200,200))
+        win.SetEdgeColour(wx.Colour(200,200,200))
 
     #long line width
     win.SetEdgeColumn(win.mainframe.pref.edge_column_width)
@@ -70,7 +70,6 @@ def editor_init(win):
     
     win.mwidth = 0     #max line number
     win.show_linenumber = win.mainframe.pref.startup_show_linenumber
-    setLineNumberMargin(win, win.show_linenumber)
 Mixin.setPlugin('editor', 'init', editor_init)
 
 def OnViewTab(win, event):
@@ -120,12 +119,12 @@ Mixin.setMixin('mainframe', 'OnViewRightEdge', OnViewRightEdge)
 
 def OnViewLineNumber(win, event):
     win.document.show_linenumber = not win.document.show_linenumber
-    setLineNumberMargin(win.document, win.document.show_linenumber)
+    win.document.setLineNumberMargin(win.document.show_linenumber)
 Mixin.setMixin('mainframe', 'OnViewLineNumber', OnViewLineNumber)
 
-#def OnViewEndOfLineMark(win, event):
-#       win.document.SetViewEOL(not win.document.GetViewEOL())
-#Mixin.setMixin('mainframe', 'OnViewEndOfLineMark', OnViewEndOfLineMark)
+def OnViewEndOfLineMark(win, event):
+    win.document.SetViewEOL(not win.document.GetViewEOL())
+Mixin.setMixin('mainframe', 'OnViewEndOfLineMark', OnViewEndOfLineMark)
 
 def on_mainframe_updateui(win, event):
     eid = event.GetId()
@@ -146,14 +145,14 @@ def on_mainframe_updateui(win, event):
                 event.Check(False)
             else:
                 event.Check(True)
-#               elif eid == win.IDM_VIEW_ENDOFLINE_MARK:
-#                       event.Check(win.document.GetViewEOL())
+        elif eid == win.IDM_VIEW_ENDOFLINE_MARK:
+            event.Check(win.document.GetViewEOL())
         elif eid == win.IDM_VIEW_LINE_NUMBER:
             event.Check(win.document.show_linenumber)
                 
     else:
-#               if eid in [win.IDM_VIEW_TAB, win.IDM_VIEW_INDENTATION_GUIDES, win.IDM_VIEW_RIGHT_EDGE, win.IDM_VIEW_ENDOFLINE_MARK]:
-        if eid in [win.IDM_VIEW_TAB, win.IDM_VIEW_INDENTATION_GUIDES, win.IDM_VIEW_RIGHT_EDGE]:
+        if eid in [win.IDM_VIEW_TAB, win.IDM_VIEW_INDENTATION_GUIDES, win.IDM_VIEW_RIGHT_EDGE, win.IDM_VIEW_ENDOFLINE_MARK]:
+#        if eid in [win.IDM_VIEW_TAB, win.IDM_VIEW_INDENTATION_GUIDES, win.IDM_VIEW_RIGHT_EDGE]:
             event.Enable(False)
 Mixin.setPlugin('mainframe', 'on_update_ui', on_mainframe_updateui)
 
@@ -170,24 +169,9 @@ def add_tool_list(toollist, toolbaritems):
 Mixin.setPlugin('mainframe', 'add_tool_list', add_tool_list)
 
 def on_modified(win, event):
-    _updatge_linenumber(win, win.show_linenumber)
+    win.setLineNumberMargin(win.show_linenumber)
 Mixin.setPlugin('editor', 'on_modified', on_modified)
 
-def _updatge_linenumber(win, flag, beginlines=None):
-    if flag:
-        lines = win.GetLineCount() #get # of lines, ensure text is loaded first!
-        mwidth = len(str(lines))
-        if beginlines is not None:
-            win.mwidth = beginlines
-        if win.mwidth < mwidth:
-            win.mwidth = mwidth
-            width = win.TextWidth(wx.stc.STC_STYLE_LINENUMBER, 'O'*(win.mwidth+1))
-            win.SetMarginType(1, wx.stc.STC_MARGIN_NUMBER )
-            win.SetMarginWidth(1, width)
-    
-def setLineNumberMargin(win, flag=True):
-    if flag:
-        _updatge_linenumber(win, flag, -1)
-    else:
-        win.SetMarginWidth(1, 0)
-
+def afteropenfile(win, filename):
+    win.setLineNumberMargin(win.show_linenumber)
+Mixin.setPlugin('editor', 'afteropenfile', afteropenfile)

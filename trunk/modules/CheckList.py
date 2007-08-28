@@ -126,6 +126,12 @@ class List(wx.ListView, listmix.ListCtrlAutoWidthMixin):
             for j in range(self.GetColumnCount()):
                 s.append(self.GetItem(i, j).GetText())
             yield tuple(s)
+            
+    def getline(self, index):
+        s = []
+        for j in range(self.GetColumnCount()):
+            s.append(self.GetItem(i, j).GetText())
+        return s
 
 class CheckListMixin:
     def __init__(self, check_image=None, uncheck_image=None):

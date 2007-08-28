@@ -26,6 +26,7 @@ __doc__ = 'run shell command'
 import wx
 from modules import Entry
 from modules import CheckList
+
 class ShellDialog(wx.Dialog):
     def __init__(self, parent, pref):
         wx.Dialog.__init__(self, parent, -1, tr('Shell Manage'), size=(600, 300))

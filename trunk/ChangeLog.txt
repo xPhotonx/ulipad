@@ -4,6 +4,9 @@ SvnSupport.py       Remove box.AddStretchSpacer invoke, replaced to StaticBoxSiz
 ShellDialog.py ScriptDialog.py Entry.py
                     Fix dialog bug
 mPyRun.py           Add copy and run in shell feature
+Editor.py mView.py  Fix line number margin width, and find back End-of-line Marker menu
+ScriptDialog.py     Script Manager can find menu name from the script content, you
+                    can define it as a comment line, format is: #\s*name:(.*)$
 
 [2007/08/27]
 doc                 Change the plugin.txt, fixed bug and added some missing plugins description
