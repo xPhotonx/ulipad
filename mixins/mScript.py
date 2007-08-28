@@ -81,16 +81,16 @@ def makescriptmenu(win, pref):
 def OnScriptItems(win, event):
     import wx.lib.dialogs
     import traceback
+    from modules import common
 
     eid = event.GetId()
     index = win.scriptmenu_ids.index(eid)
     filename = win.pref.scripts[index][1]
 
     try:
-        scripttext = open(filename, 'r').read()
+        scripttext = open(filename, 'rU').read()
     except:
-        dlg = wx.MessageDialog(win, tr("Can't open the file [%s]!") % filename, tr("Running Script"), wx.OK | wx.ICON_INFORMATION)
-        dlg.ShowModal()
+        common.showerror(win, tr("Can't open the file [%s]!") % filename)
         return
 
     try:

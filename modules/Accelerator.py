@@ -86,6 +86,28 @@ keylist = {
 'NUMLOCK'   :wx.WXK_NUMLOCK,
 }
 
+def create_key(keystr):
+    f = wx.ACCEL_NORMAL
+    ikey=0
+    for k in keystr.split('+'):
+        uk = k.strip().upper()
+        if uk == 'CTRL':
+            f |= wx.ACCEL_CTRL
+        elif uk == 'ALT':
+            f |= wx.ACCEL_ALT
+        elif uk == 'SHIFT':
+            f |= wx.ACCEL_SHIFT
+        elif keylist.has_key(uk):
+            ikey = keylist[uk]
+        elif len(uk) == 1:
+            ikey = ord(uk)
+        else:
+            debug.error("[accelerator] Error: Undefined char [%s]" % uk)
+    return f, ikey
+
+def get_keystring(fkey):
+    f, ikey = fkey
+    
 def initaccelerator(win, acceleratorlist):
     ikey = 0
 
@@ -96,22 +118,7 @@ def initaccelerator(win, acceleratorlist):
         if not keys:
             continue
         debug.info('%s\t%s' % (keys, idname))
-        f = wx.ACCEL_NORMAL
-        ikey=0
-        for k in keys.split('+'):
-            uk = k.upper()
-            if uk == 'CTRL':
-                f |= wx.ACCEL_CTRL
-            elif uk == 'ALT':
-                f |= wx.ACCEL_ALT
-            elif uk == 'SHIFT':
-                f |= wx.ACCEL_SHIFT
-            elif keylist.has_key(uk):
-                ikey = keylist[uk]
-            elif len(uk) == 1:
-                ikey = ord(uk)
-            else:
-                debug.error("[accelerator] Error: Undefined char [%s]" % uk)
+        f, ikey = create_key(keys)
         id = Id.makeid(win, idname)
         accelist.append((f, ikey, id))
 
@@ -124,20 +131,5 @@ def getkeycodes(acceleratorlist, klist):
         if not keys:
             continue
         
-        f = wx.ACCEL_NORMAL
-        ikey=0
-        for k in keys.split('+'):
-            uk = k.upper()
-            if uk == 'CTRL':
-                f |= wx.ACCEL_CTRL
-            elif uk == 'ALT':
-                f |= wx.ACCEL_ALT
-            elif uk == 'SHIFT':
-                f |= wx.ACCEL_SHIFT
-            elif keylist.has_key(uk):
-                ikey = keylist[uk]
-            elif len(uk) == 1:
-                ikey = ord(uk)
-            else:
-                debug.error("[accelerator] Error: Undefined char [%s]" % uk)
+        f, ikey = create_key(keys)
         klist[(f, ikey)] = (idname, func)

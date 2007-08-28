@@ -22,28 +22,24 @@
 #   $Id: ScriptDialog.py 1731 2006-11-22 03:35:50Z limodou $
 
 import wx
-from modules import makemenu
-import sys
 import os.path
 import wx.lib.dialogs
-import traceback
+from modules import CheckList
 
 class ScriptDialog(wx.Dialog):
     def __init__(self, parent, pref):
-        wx.Dialog.__init__(self, parent, -1, tr('Script Manage'), size=(500, 300))
+        wx.Dialog.__init__(self, parent, -1, tr('Script Manage'), size=(600, 300))
         self.parent = parent
         self.pref = pref
 
         box = wx.BoxSizer(wx.VERTICAL)
-        self.list = wx.ListCtrl(self, -1, style=wx.LC_REPORT | wx.LC_EDIT_LABELS | wx.SUNKEN_BORDER)
-        self.list.InsertColumn(0, tr("Description"))
-        self.list.InsertColumn(1, tr("Filename"))
-        self.list.SetColumnWidth(0, 150)
-        self.list.SetColumnWidth(1, 330)
+        self.list = CheckList.List(self, columns=[
+                (tr("Description"), 150, 'left'),
+                (tr("Filename"), 330, 'left'),
+                ], style=wx.LC_REPORT | wx.SUNKEN_BORDER | wx.LC_EDIT_LABELS)
+        
         for i, item in enumerate(pref.scripts):
-            description, filename = item
-            self.list.InsertStringItem(i, description)
-            self.list.SetStringItem(i, 1, filename)
+            self.list.addline(item)
 
         box.Add(self.list, 1, wx.EXPAND|wx.ALL, 5)
         box2 = wx.BoxSizer(wx.HORIZONTAL)
@@ -123,30 +119,62 @@ class ScriptDialog(wx.Dialog):
             item = self.list.GetNextItem(lastitem, wx.LIST_NEXT_ALL, wx.LIST_STATE_SELECTED)
 
     def OnAdd(self, event):
+        filename = ''
         dlg = wx.FileDialog(self, tr("Open Script"), self.pref.last_script_dir, "", tr("Python file (*.py)|*.py"), wx.OPEN|wx.HIDE_READONLY)
         if dlg.ShowModal() == wx.ID_OK:
             filename = dlg.GetPath()
-            i = self.list.GetItemCount()
-            self.list.InsertStringItem(i, 'Change the description')
-            self.list.SetStringItem(i, 1, filename)
-            self.pref.last_script_dir = os.path.dirname(filename)
-            self.pref.save()
-            self.list.EditLabel(i)
+        dlg.Destroy()
+        
+        if not filename: return
+    
+        def guess_name(text):
+            import re
+            import os
+            
+            r = re.compile('#\s*name:(.*)$', re.M)
+            b = r.search(text)
+            name = ''
+            if b:
+                name = b.group(1).strip()
+            if not name:
+                name = os.path.splitext(os.path.basename(filename))[0]
+            if not name:
+                name = 'Change the description'
+            return name
+                
+        from modules import common
+        from modules import unicodetext
+        from modules.Debug import error
+        
+        try:
+            s, encoding = unicodetext.unicodetext(file(filename).read())
+            name = guess_name(s)
+        except unicodetext.UnicodeError:
+            common.showerror(self, tr("Unicode convert error"))
+            error.traceback()
+            return
+        except:
+            common.showerror(self, tr("Can't open the file [%s]!") % filename)
+            error.traceback()
+            return
+        i = self.list.addline([name, filename])
+        self.pref.last_script_dir = os.path.dirname(filename)
+        self.pref.save()
+        self.list.EditLabel(i)
 
     def OnOK(self, event):
+        from modules import common
+        
         scripts = []
-        for i in range(self.list.GetItemCount()):
-            description, filename = self.getItemText(i)
+        for description, filename in self.list.GetValue():
             scripts.append((description, filename))
             if (description == '') or (description == 'Change the description'):
-                dlg = wx.MessageDialog(self, tr("The description must not be empty or ") + '"Change the description"' +
-                         tr('.\nPlease change them first!'), tr("Saving Script"), wx.OK | wx.ICON_INFORMATION)
-                dlg.ShowModal()
+                common.showerror(self, tr("The description must not be empty or ") + '"Change the description"' +
+                         tr('.\nPlease change them first!'))
                 return
-        else:
-            self.pref.scripts = scripts[:]
-            self.pref.save()
-            event.Skip()
+        self.pref.scripts = scripts[:]
+        self.pref.save()
+        event.Skip()
 
     def OnItemSelected(self, event):
         self.btnUp.Enable(True)

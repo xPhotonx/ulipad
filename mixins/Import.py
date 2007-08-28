@@ -1209,6 +1209,7 @@ def add_mainframe_menu(menulist):
             (110, 'IDM_VIEW_INDENTATION_GUIDES', tr('Indentation Guides'), wx.ITEM_CHECK, 'OnViewIndentationGuides', tr('Shows or hides indentation guides')),
             (120, 'IDM_VIEW_RIGHT_EDGE', tr('Right edge indicator'), wx.ITEM_CHECK, 'OnViewRightEdge', tr('Shows or hides right edge indicator')),
             (130, 'IDM_VIEW_LINE_NUMBER', tr('Line number'), wx.ITEM_CHECK, 'OnViewLineNumber', tr('Shows or hides line number')),
+            (131, 'IDM_VIEW_ENDOFLINE_MARK', tr('End-of-line marker'), wx.ITEM_CHECK, 'OnViewEndOfLineMark', tr('Shows or hides end-of-line marker')),
         ]),
     ])
 Mixin.setPlugin('mainframe', 'add_menu', add_mainframe_menu)
@@ -1218,6 +1219,7 @@ def afterinit(win):
     wx.EVT_UPDATE_UI(win, win.IDM_VIEW_INDENTATION_GUIDES, win.OnUpdateUI)
     wx.EVT_UPDATE_UI(win, win.IDM_VIEW_RIGHT_EDGE, win.OnUpdateUI)
     wx.EVT_UPDATE_UI(win, win.IDM_VIEW_LINE_NUMBER, win.OnUpdateUI)
+    wx.EVT_UPDATE_UI(win, win.IDM_VIEW_ENDOFLINE_MARK, win.OnUpdateUI)
 Mixin.setPlugin('mainframe', 'afterinit', afterinit)
 
 def editor_init(win):
@@ -1226,6 +1228,7 @@ def editor_init(win):
         win.SetEdgeMode(wx.stc.STC_EDGE_LINE)
     else:
         win.SetEdgeMode(wx.stc.STC_EDGE_NONE)
+        win.SetEdgeColour(wx.Colour(200,200,200))
 
     #long line width
     win.SetEdgeColumn(win.mainframe.pref.edge_column_width)
@@ -1241,7 +1244,6 @@ def editor_init(win):
 
     win.mwidth = 0     #max line number
     win.show_linenumber = win.mainframe.pref.startup_show_linenumber
-    setLineNumberMargin(win, win.show_linenumber)
 Mixin.setPlugin('editor', 'init', editor_init)
 
 def OnViewTab(win, event):
@@ -1291,9 +1293,12 @@ Mixin.setMixin('mainframe', 'OnViewRightEdge', OnViewRightEdge)
 
 def OnViewLineNumber(win, event):
     win.document.show_linenumber = not win.document.show_linenumber
-    setLineNumberMargin(win.document, win.document.show_linenumber)
+    win.document.setLineNumberMargin(win.document.show_linenumber)
 Mixin.setMixin('mainframe', 'OnViewLineNumber', OnViewLineNumber)
 
+def OnViewEndOfLineMark(win, event):
+    win.document.SetViewEOL(not win.document.GetViewEOL())
+Mixin.setMixin('mainframe', 'OnViewEndOfLineMark', OnViewEndOfLineMark)
 
 def on_mainframe_updateui(win, event):
     eid = event.GetId()
@@ -1314,11 +1319,13 @@ def on_mainframe_updateui(win, event):
                 event.Check(False)
             else:
                 event.Check(True)
+        elif eid == win.IDM_VIEW_ENDOFLINE_MARK:
+            event.Check(win.document.GetViewEOL())
         elif eid == win.IDM_VIEW_LINE_NUMBER:
             event.Check(win.document.show_linenumber)
 
     else:
-        if eid in [win.IDM_VIEW_TAB, win.IDM_VIEW_INDENTATION_GUIDES, win.IDM_VIEW_RIGHT_EDGE]:
+        if eid in [win.IDM_VIEW_TAB, win.IDM_VIEW_INDENTATION_GUIDES, win.IDM_VIEW_RIGHT_EDGE, win.IDM_VIEW_ENDOFLINE_MARK]:
             event.Enable(False)
 Mixin.setPlugin('mainframe', 'on_update_ui', on_mainframe_updateui)
 
@@ -1335,27 +1342,12 @@ def add_tool_list(toollist, toolbaritems):
 Mixin.setPlugin('mainframe', 'add_tool_list', add_tool_list)
 
 def on_modified(win, event):
-    _updatge_linenumber(win, win.show_linenumber)
+    win.setLineNumberMargin(win.show_linenumber)
 Mixin.setPlugin('editor', 'on_modified', on_modified)
 
-def _updatge_linenumber(win, flag, beginlines=None):
-    if flag:
-        lines = win.GetLineCount() #get # of lines, ensure text is loaded first!
-        mwidth = len(str(lines))
-        if beginlines is not None:
-            win.mwidth = beginlines
-        if win.mwidth < mwidth:
-            win.mwidth = mwidth
-            width = win.TextWidth(wx.stc.STC_STYLE_LINENUMBER, 'O'*(win.mwidth+1))
-            win.SetMarginType(1, wx.stc.STC_MARGIN_NUMBER )
-            win.SetMarginWidth(1, width)
-
-def setLineNumberMargin(win, flag=True):
-    if flag:
-        _updatge_linenumber(win, flag, -1)
-    else:
-        win.SetMarginWidth(1, 0)
-
+def afteropenfile(win, filename):
+    win.setLineNumberMargin(win.show_linenumber)
+Mixin.setPlugin('editor', 'afteropenfile', afteropenfile)
 
 
 
@@ -3558,16 +3550,16 @@ def makescriptmenu(win, pref):
 def OnScriptItems(win, event):
     import wx.lib.dialogs
     import traceback
+    from modules import common
 
     eid = event.GetId()
     index = win.scriptmenu_ids.index(eid)
     filename = win.pref.scripts[index][1]
 
     try:
-        scripttext = open(filename, 'r').read()
+        scripttext = open(filename, 'rU').read()
     except:
-        dlg = wx.MessageDialog(win, tr("Can't open the file [%s]!") % filename, tr("Running Script"), wx.OK | wx.ICON_INFORMATION)
-        dlg.ShowModal()
+        common.showerror(win, tr("Can't open the file [%s]!") % filename)
         return
 
     try:
@@ -4111,65 +4103,6 @@ def on_leave(mainframe, filename, languagename):
     ret = mainframe.Disconnect(mainframe.IDM_PYTHON_RUN, -1, wx.wxEVT_UPDATE_UI)
     ret = mainframe.Disconnect(mainframe.IDM_PYTHON_SETARGS, -1, wx.wxEVT_UPDATE_UI)
 Mixin.setPlugin('pythonfiletype', 'on_leave', on_leave)
-
-def add_editor_menu(popmenulist):
-    popmenulist.extend([ (None, #parent menu id
-        [
-            (5, 'IDPM_COPY_RUN', tr('&Run in Shell') + '\tCtrl+F5', wx.ITEM_NORMAL, 'OnEditorCopyRun', ''),
-        ]),
-    ])
-Mixin.setPlugin('editor', 'add_menu', add_editor_menu)
-
-def editor_init(win):
-    wx.EVT_UPDATE_UI(win, win.IDPM_COPY_RUN, win.OnUpdateUI)
-Mixin.setPlugin('editor', 'init', editor_init)
-
-def editor_updateui(win, event):
-    eid = event.GetId()
-    if eid == win.IDPM_COPY_RUN:
-        doc = win.editctrl.getCurDoc()
-        event.Enable(bool(doc.GetSelectedText()))
-Mixin.setPlugin('editor', 'on_update_ui', editor_updateui)
-
-def OnEditorCopyRun(win, event):
-    _copy_and_run(win)
-Mixin.setMixin('editor', 'OnEditorCopyRun', OnEditorCopyRun)
-
-def _copy_and_run(doc):
-    from modules import Globals
-
-    win = Globals.mainframe
-    text = doc.GetSelectedText()
-    if text:
-        win.createShellWindow()
-        win.panel.showPage(tr('Shell'))
-        shellwin = win.panel.getPage(tr('Shell'))
-        shellwin.Execute(text.rstrip())
-
-def OnEditCopyRun(win, event):
-    _copy_and_run(win.editctrl.getCurDoc())
-Mixin.setMixin('mainframe', 'OnEditCopyRun', OnEditCopyRun)
-
-def add_mainframe_menu(menulist):
-    menulist.extend([
-        ('IDM_EDIT',
-        [
-            (285, 'IDM_EDIT_COPY_RUN', tr('&Run in Shell') + '\tCtrl+F5', wx.ITEM_NORMAL, 'OnEditCopyRun', tr('Copy code to shell window and run it.')),
-        ]),
-    ])
-Mixin.setPlugin('mainframe', 'add_menu', add_mainframe_menu)
-
-def on_mainframe_updateui(win, event):
-    eid = event.GetId()
-    if eid == win.IDM_EDIT_COPY_RUN:
-        doc = win.editctrl.getCurDoc()
-        event.Enable(bool(doc.GetSelectedText()))
-Mixin.setPlugin('mainframe', 'on_update_ui', on_mainframe_updateui)
-
-def afterinit(win):
-    wx.EVT_UPDATE_UI(win, win.IDM_EDIT_COPY_RUN, win.OnUpdateUI)
-Mixin.setPlugin('mainframe', 'afterinit', afterinit)
-
 
 
 
@@ -7927,6 +7860,72 @@ def pref_init(pref):
     pref.version_control_export_path = ''
     pref.version_control_checkout_path = ''
 Mixin.setPlugin('preference', 'init', pref_init)
+
+
+
+#-----------------------  mShell.py ------------------
+
+import wx
+from modules import Mixin
+
+def add_editor_menu(popmenulist):
+    popmenulist.extend([ (None, #parent menu id
+        [
+            (5, 'IDPM_COPY_RUN', tr('&Run in Shell') + '\tCtrl+F5', wx.ITEM_NORMAL, 'OnEditorCopyRun', ''),
+        ]),
+    ])
+Mixin.setPlugin('editor', 'add_menu', add_editor_menu)
+
+def editor_init(win):
+    wx.EVT_UPDATE_UI(win, win.IDPM_COPY_RUN, win.OnUpdateUI)
+Mixin.setPlugin('editor', 'init', editor_init)
+
+def editor_updateui(win, event):
+    eid = event.GetId()
+    if eid == win.IDPM_COPY_RUN:
+        doc = win.editctrl.getCurDoc()
+        event.Enable(bool(doc.hasSelection()))
+Mixin.setPlugin('editor', 'on_update_ui', editor_updateui)
+
+def OnEditorCopyRun(win, event):
+    _copy_and_run(win)
+Mixin.setMixin('editor', 'OnEditorCopyRun', OnEditorCopyRun)
+
+def _copy_and_run(doc):
+    from modules import Globals
+
+    win = Globals.mainframe
+    text = doc.GetSelectedText()
+    if text:
+        win.createShellWindow()
+        win.panel.showPage(tr('Shell'))
+        shellwin = win.panel.getPage(tr('Shell'))
+        shellwin.Execute(text.rstrip())
+
+def OnEditCopyRun(win, event):
+    _copy_and_run(win.editctrl.getCurDoc())
+Mixin.setMixin('mainframe', 'OnEditCopyRun', OnEditCopyRun)
+
+def add_mainframe_menu(menulist):
+    menulist.extend([
+        ('IDM_EDIT',
+        [
+            (285, 'IDM_EDIT_COPY_RUN', tr('&Run in Shell') + '\tCtrl+F5', wx.ITEM_NORMAL, 'OnEditCopyRun', tr('Copy code to shell window and run it.')),
+        ]),
+    ])
+Mixin.setPlugin('mainframe', 'add_menu', add_mainframe_menu)
+
+def on_mainframe_updateui(win, event):
+    eid = event.GetId()
+    if eid == win.IDM_EDIT_COPY_RUN:
+        doc = win.editctrl.getCurDoc()
+        event.Enable(bool(doc.hasSelection()))
+Mixin.setPlugin('mainframe', 'on_update_ui', on_mainframe_updateui)
+
+def afterinit(win):
+    wx.EVT_UPDATE_UI(win, win.IDM_EDIT_COPY_RUN, win.OnUpdateUI)
+Mixin.setPlugin('mainframe', 'afterinit', afterinit)
+
 
 
 

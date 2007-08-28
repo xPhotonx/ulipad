@@ -145,5 +145,6 @@
 
 ## 3.8
 #import mVersionControl
+#import mShell
 
 import Import
