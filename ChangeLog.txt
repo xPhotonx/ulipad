@@ -3,6 +3,7 @@
 SvnSupport.py       Remove box.AddStretchSpacer invoke, replaced to StaticBoxSizer
 ShellDialog.py ScriptDialog.py Entry.py
                     Fix dialog bug
+mPyRun.py           Add copy and run in shell feature
 
 [2007/08/27]
 doc                 Change the plugin.txt, fixed bug and added some missing plugins description
