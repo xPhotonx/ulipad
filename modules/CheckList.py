@@ -105,13 +105,20 @@ class List(wx.ListView, listmix.ListCtrlAutoWidthMixin):
             for i, t in enumerate(v[1:]):
                 self.SetStringItem(index, i+1, t)
 
-    def addline(self, data):
+    def insertline(self, index, data):
+        index = self.InsertStringItem(index, data[0])
         self._id += 1
-        index = self.InsertStringItem(sys.maxint, data[0])
         self.SetItemData(index, self._id)
         for i, t in enumerate(data[1:]):
             self.SetStringItem(index, i+1, t)
         return index
+    
+    def addline(self, data):
+        return self.insertline(sys.maxint, data)
+    
+    def delline(self, index):
+        _id = self.GetItemData(index)
+        self.DeleteItem(index)
 
     def GetValue(self):
         for i in range(self.GetItemCount()):
