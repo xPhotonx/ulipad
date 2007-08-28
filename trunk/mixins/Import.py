@@ -3973,7 +3973,7 @@ def OnPythonRun(win, event):
     args = doc.args.replace('$path', os.path.dirname(doc.filename))
     args = args.replace('$file', doc.filename)
     ext = os.path.splitext(doc.filename)[1].lower()
-    command = interpreter + ' -u "%s" %s' % (doc.filename, args)
+    command = u'"%s" -u "%s" %s' % (interpreter, doc.filename, args)
     #chanage current path to filename's dirname
     path = os.path.dirname(doc.filename)
     os.chdir(common.encode_string(path))
@@ -4068,7 +4068,6 @@ def OnPythonDoctests(win, event):
     filename = Globals.mainframe.editctrl.getCurDoc().filename
     interpreter = _get_python_exe(win)
     cmd = '%s %s %s' % (interpreter, path, filename)
-    print cmd
     pipe_command(cmd, f)
 Mixin.setMixin('mainframe', 'OnPythonDoctests', OnPythonDoctests)
 
@@ -4112,6 +4111,65 @@ def on_leave(mainframe, filename, languagename):
     ret = mainframe.Disconnect(mainframe.IDM_PYTHON_RUN, -1, wx.wxEVT_UPDATE_UI)
     ret = mainframe.Disconnect(mainframe.IDM_PYTHON_SETARGS, -1, wx.wxEVT_UPDATE_UI)
 Mixin.setPlugin('pythonfiletype', 'on_leave', on_leave)
+
+def add_editor_menu(popmenulist):
+    popmenulist.extend([ (None, #parent menu id
+        [
+            (5, 'IDPM_COPY_RUN', tr('&Run in Shell') + '\tCtrl+F5', wx.ITEM_NORMAL, 'OnEditorCopyRun', ''),
+        ]),
+    ])
+Mixin.setPlugin('editor', 'add_menu', add_editor_menu)
+
+def editor_init(win):
+    wx.EVT_UPDATE_UI(win, win.IDPM_COPY_RUN, win.OnUpdateUI)
+Mixin.setPlugin('editor', 'init', editor_init)
+
+def editor_updateui(win, event):
+    eid = event.GetId()
+    if eid == win.IDPM_COPY_RUN:
+        doc = win.editctrl.getCurDoc()
+        event.Enable(bool(doc.GetSelectedText()))
+Mixin.setPlugin('editor', 'on_update_ui', editor_updateui)
+
+def OnEditorCopyRun(win, event):
+    _copy_and_run(win)
+Mixin.setMixin('editor', 'OnEditorCopyRun', OnEditorCopyRun)
+
+def _copy_and_run(doc):
+    from modules import Globals
+
+    win = Globals.mainframe
+    text = doc.GetSelectedText()
+    if text:
+        win.createShellWindow()
+        win.panel.showPage(tr('Shell'))
+        shellwin = win.panel.getPage(tr('Shell'))
+        shellwin.Execute(text.rstrip())
+
+def OnEditCopyRun(win, event):
+    _copy_and_run(win.editctrl.getCurDoc())
+Mixin.setMixin('mainframe', 'OnEditCopyRun', OnEditCopyRun)
+
+def add_mainframe_menu(menulist):
+    menulist.extend([
+        ('IDM_EDIT',
+        [
+            (285, 'IDM_EDIT_COPY_RUN', tr('&Run in Shell') + '\tCtrl+F5', wx.ITEM_NORMAL, 'OnEditCopyRun', tr('Copy code to shell window and run it.')),
+        ]),
+    ])
+Mixin.setPlugin('mainframe', 'add_menu', add_mainframe_menu)
+
+def on_mainframe_updateui(win, event):
+    eid = event.GetId()
+    if eid == win.IDM_EDIT_COPY_RUN:
+        doc = win.editctrl.getCurDoc()
+        event.Enable(bool(doc.GetSelectedText()))
+Mixin.setPlugin('mainframe', 'on_update_ui', on_mainframe_updateui)
+
+def afterinit(win):
+    wx.EVT_UPDATE_UI(win, win.IDM_EDIT_COPY_RUN, win.OnUpdateUI)
+Mixin.setPlugin('mainframe', 'afterinit', afterinit)
+
 
 
 
