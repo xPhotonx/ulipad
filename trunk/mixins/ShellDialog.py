@@ -25,23 +25,21 @@ __doc__ = 'run shell command'
 
 import wx
 from modules import Entry
-
+from modules import CheckList
 class ShellDialog(wx.Dialog):
     def __init__(self, parent, pref):
-        wx.Dialog.__init__(self, parent, -1, tr('Shell Manage'), size=(500, 300))
+        wx.Dialog.__init__(self, parent, -1, tr('Shell Manage'), size=(600, 300))
         self.parent = parent
         self.pref = pref
 
         box = wx.BoxSizer(wx.VERTICAL)
-        self.list = wx.ListCtrl(self, -1, style=wx.LC_REPORT | wx.LC_SINGLE_SEL | wx.LC_EDIT_LABELS)
-        self.list.InsertColumn(0, tr("Description"))
-        self.list.InsertColumn(1, tr("Shell Command Line"))
-        self.list.SetColumnWidth(0, 150)
-        self.list.SetColumnWidth(1, 330)
+        self.list = CheckList.List(self, columns=[
+                (tr("Description"), 150, 'left'),
+                (tr("Shell Command Line"), 330, 'left'),
+                ], style=wx.LC_REPORT | wx.SUNKEN_BORDER | wx.LC_EDIT_LABELS)
+        
         for i, item in enumerate(pref.shells):
-            description, command = item
-            self.list.InsertStringItem(i, description)
-            self.list.SetStringItem(i, 1, command)
+            self.list.addline(item)
 
         box.Add(self.list, 1, wx.EXPAND|wx.ALL, 5)
         box2 = wx.BoxSizer(wx.HORIZONTAL)
@@ -56,7 +54,7 @@ class ShellDialog(wx.Dialog):
         box2.Add(self.btnDown, 0, 0, 5)
         self.btnAdd = wx.Button(self, self.ID_ADD, tr("Add"))
         box2.Add(self.btnAdd, 0, 0, 5)
-        self.btnModify = wx.Button(self, self.ID_MODIFY, tr("Modify"))
+        self.btnModify = wx.Button(self, self.ID_MODIFY, tr("Edit"))
         box2.Add(self.btnModify, 0, 0, 5)
         self.btnRemove = wx.Button(self, self.ID_REMOVE, tr("Remove"))
         box2.Add(self.btnRemove, 0, 0, 5)

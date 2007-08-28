@@ -78,7 +78,7 @@ class MyFileEntry(wx.Dialog):
 
         self.SetSizer(box)
         self.SetAutoLayout(True)
-#        box.Fit(self)
+        box.Fit(self)
 
         self.value = defaultvalue
 
