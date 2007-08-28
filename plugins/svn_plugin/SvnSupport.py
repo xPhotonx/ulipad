@@ -241,17 +241,15 @@ class CommitDialog(wx.Dialog):
         box = wx.BoxSizer(wx.VERTICAL)
         
         #add message label and recent messages button
-        box1 = wx.BoxSizer(wx.HORIZONTAL)
-        box1.Add(wx.StaticText(self, -1, label=tr('Message')), 0, wx.ALIGN_LEFT|wx.ALIGN_CENTER_VERTICAL)
-        box1.AddStretchSpacer()
+        title = wx.StaticBox(self, -1, tr("Message"))
+        box1 = wx.StaticBoxSizer(title, wx.VERTICAL)
         self.ID_HISMSG = wx.NewId()
         self.btnHisMsg = wx.Button(self, self.ID_HISMSG, tr("Recent Messages"))
-        box1.Add(self.btnHisMsg, 0, wx.ALIGN_RIGHT)
-        box.Add(box1, 0, wx.EXPAND|wx.LEFT|wx.TOP|wx.RIGHT, 5)
-        
+        box1.Add(self.btnHisMsg, 0, wx.LEFT, 5)
         #add message input box
         self.text = wx.TextCtrl(self, -1, '', style=wx.TE_MULTILINE)
-        box.Add(self.text, 1, wx.EXPAND|wx.ALL, 5)
+        box1.Add(self.text, 1, wx.EXPAND|wx.ALL, 5)
+        box.Add(box1, 1, wx.EXPAND|wx.LEFT|wx.TOP|wx.RIGHT, 5)
 
         #add filenames list
         self.filenames = CheckList.CheckList(self, columns=[

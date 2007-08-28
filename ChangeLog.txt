@@ -1,4 +1,7 @@
 ﻿$Rev$
+[2007/08/28]
+SvnSupport.py       Remove box.AddStretchSpacer invoke, replaced to StaticBoxSizer
+
 [2007/08/27]
 doc                 Change the plugin.txt, fixed bug and added some missing plugins description
 svn_plugin CheckList.py
