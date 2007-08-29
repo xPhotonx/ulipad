@@ -120,7 +120,6 @@ def OnVC_Settings(win, event):
     if dlg.ShowModal() == wx.ID_OK:
         values = dlg.GetValue()
         win.pref.svn_exe = values['svn_exe']
-        print values['svn_exe']
         win.pref.save()
     dlg.Destroy()
 Mixin.setMixin('dirbrowser', 'OnVC_Settings', OnVC_Settings)
