@@ -58,7 +58,7 @@ class FiletypeBase(Mixin.Mixin):
     def leave(self, mainframe, filename, languagename):
         if languagename == self.name:
             dynamicmenu.menuRemove(mainframe, self.menulist)
-            mainframe.removeAccel()
+            mainframe.restoreAccel()
             maketoolbar.removetoolbar(mainframe, mainframe.toollist, self.toollist, self.toolbaritems)
             self.doleave(mainframe, filename, languagename)
             self.callplugin('on_leave', mainframe, filename, languagename)

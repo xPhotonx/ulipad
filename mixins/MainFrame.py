@@ -147,13 +147,24 @@ class MainFrame(wx.Frame, Mixin.Mixin):
         self.callplugin('on_active', self, event)
         event.Skip()
 
-    def removeAccel(self):
+    def restoreAccel(self):
         MainFrame.accellist = copy.deepcopy(MainFrame.default_accellist)
         MainFrame.editoraccellist = copy.deepcopy(MainFrame.default_editoraccellist)
         self.editorkeycodes = {}
         Accelerator.getkeycodes(self.editoraccellist, self.editorkeycodes)
         Accelerator.initaccelerator(self, MainFrame.accellist)
 
+    def removeAccel(self, accel, editoraccel):
+        for k in accel:
+            if k in MainFrame.accellist:
+                del MainFrame.accellist[k]
+        for k in editoraccel:
+            if k in MainFrame.editoraccellist:
+                del MainFrame.editoraccellist[k]
+        self.editorkeycodes = {}
+        Accelerator.getkeycodes(self.editoraccellist, self.editorkeycodes)
+        Accelerator.initaccelerator(self, MainFrame.accellist)
+        
     def insertAccel(self, accel, editoraccel):
         MainFrame.accellist.update(accel)
         MainFrame.editoraccellist.update(editoraccel)
