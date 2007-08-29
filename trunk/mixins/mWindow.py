@@ -139,7 +139,7 @@ def OnMessageWindow(win, event):
     win.panel.showPage(tr('Message'))
 Mixin.setMixin('notebook', 'OnMessageWindow', OnMessageWindow)
 
-def OnEditClearShell(win, self):
+def OnEditClearShell(win, event):
     shellwin = win.panel.getPage(tr('Shell'))
     if shellwin:
         shellwin.clear()

@@ -48,6 +48,7 @@ class ShellWindow(wx.py.shell.Shell, Mixin.Mixin):
             (150, 'IDPM_PASTE', tr('Paste') + '\tCtrl+V', wx.ITEM_NORMAL, 'OnPopupEdit', tr('Pastes text from the clipboard into the shell window')),
             (160, '', '-', wx.ITEM_SEPARATOR, None, ''),
             (170, 'IDPM_SELECTALL', tr('Select All') + '\tCtrl+A', wx.ITEM_NORMAL, 'OnPopupEdit', tr('Selects all text.')),
+            (180, 'IDPM_CLEAR', tr('Clear Shell Window') + '\tCtrl+Alt+R', wx.ITEM_NORMAL, 'OnClearShell', tr('Clears content of shell window.')),
         ]),
     ]
     imagelist = {
@@ -146,6 +147,10 @@ class ShellWindow(wx.py.shell.Shell, Mixin.Mixin):
             event.Enable(bool(self.CanUndo()))
         elif eid == self.IDPM_REDO:
             event.Enable(bool(self.CanRedo()))
+    
+    def OnClearShell(self, event):
+        self.clear()
+        self.prompt()
     
     def OnKillFocus(self, event):
         if self.AutoCompActive():
