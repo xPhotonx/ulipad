@@ -7720,7 +7720,6 @@ Mixin.setPlugin('editctrl', 'on_document_enter', on_document_enter)
 #-----------------------  mReloadMixins.py ------------------
 import wx
 from modules import Mixin
-from modules import Globals
 import ReloadMixins
 
 
@@ -7795,7 +7794,6 @@ def OnToolreload_mixins(win, event):
         #ReloadMixins.create_import_py(win,flag=True)
     else:
         ReloadMixins.create_import_py(win)
-    Globals.mainframe.Close()
 Mixin.setMixin('mainframe', 'OnToolreload_mixins', OnToolreload_mixins)
 
 

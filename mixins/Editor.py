@@ -32,6 +32,7 @@ from modules import makemenu
 from modules import Id
 from modules.Debug import error
 from modules import Globals
+from modules import Accelerator
 
 keylist = {
     'DOWN'  :wx.stc.STC_KEY_DOWN,
@@ -617,28 +618,8 @@ class TextEditor(wx.stc.StyledTextCtrl, Mixin.Mixin, DocumentBase.DocumentBase):
 
         for keys, cmd in action:
             self.keydefs[keys.upper()] = cmd
-            f, ikey = self.convert_key(keys)
+            f, ikey = Accelerator.create_key(keys, keylist)
             self.CmdKeyAssign(ikey, f, cmd)
-
-    def convert_key(self, keydef):
-        f = 0
-        ikey = 0
-        for k in keydef.split('+'):
-            uk = k.upper()
-            if uk == 'CTRL':
-                f |= wx.stc.STC_SCMOD_CTRL
-            elif uk == 'ALT':
-                f |= wx.stc.STC_SCMOD_ALT
-            elif uk == 'SHIFT':
-                f |= wx.stc.STC_SCMOD_SHIFT
-            elif keylist.has_key(uk):
-                ikey = keylist[uk]
-            elif len(uk) == 1:
-                ikey = ord(uk)
-            else:
-                error.error("[TextEditor] Undefined char [%s]" % uk)
-                continue
-        return f, ikey
 
     def execute_key(self, keydef):
         cmd = self.keydefs.get(keydef.upper(), None)

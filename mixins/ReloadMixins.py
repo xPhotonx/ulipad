@@ -138,14 +138,14 @@ class MixinDialog(wx.Dialog):
         s = self.mixins.keys()
         s.sort()
         for i, name in enumerate(s):
-            yield (self.state[name], (unicode(name, 'utf-8'),) )
+            yield ([unicode(name, 'utf-8')], self.state[name])
            
     def OnEnter(self, event):
         index =  event.GetIndex()
         self.list.notFlag(index)
 
     def OnOK(self, event):
-        for flag, v in self.list.GetValue():
+        for v, flag in self.list.GetValue():
             self.state[v[0]] = flag
         sel_name = [s for s in self.mixins if self.state[s]]
         self.mainframe.pref.mixin_reload_name = sel_name

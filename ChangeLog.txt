@@ -1,4 +1,7 @@
 ﻿$Rev$
+[2007/08/29]
+CheckList.py *      CheckList improvement.
+
 [2007/08/28]
 SvnSupport.py       Remove box.AddStretchSpacer invoke, replaced to StaticBoxSizer
 ShellDialog.py ScriptDialog.py Entry.py

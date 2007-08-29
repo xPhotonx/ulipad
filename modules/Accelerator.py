@@ -23,7 +23,7 @@
 
 import wx
 import Id
-from Debug import debug
+from Debug import error, debug
 
 keylist = {
 'BS'        :wx.WXK_BACK,
@@ -86,7 +86,7 @@ keylist = {
 'NUMLOCK'   :wx.WXK_NUMLOCK,
 }
 
-def create_key(keystr):
+def create_key(keystr, keylist=keylist):
     f = wx.ACCEL_NORMAL
     ikey=0
     for k in keystr.split('+'):
@@ -102,11 +102,28 @@ def create_key(keystr):
         elif len(uk) == 1:
             ikey = ord(uk)
         else:
-            debug.error("[accelerator] Error: Undefined char [%s]" % uk)
+            error.error("[accelerator] Error: Undefined char [%s]" % uk)
     return f, ikey
 
-def get_keystring(fkey):
+def get_keystring(fkey, keylist=keylist):
     f, ikey = fkey
+    s = []
+    if f & wx.ACCEL_CTRL:
+        s.append('Ctrl')
+    if f & wx.ACCEL_SHIFT:
+        s.append('Shift')
+    if f & wx.ACCEL_ALT:
+        s.append('Alt')
+       
+    key = ''
+    for k, v in keylist.items():
+        if v == ikey:
+            key = k
+            break
+    if not key:
+        key = chr(ikey)
+    s.append(key)
+    return '+'.join(s)
     
 def initaccelerator(win, acceleratorlist):
     ikey = 0

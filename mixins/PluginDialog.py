@@ -32,7 +32,7 @@ from modules.Debug import error
 
 class PluginDialog(wx.Dialog):
     def __init__(self, parent):
-        wx.Dialog.__init__(self, parent, -1, tr('Plugin Manage'), size=(600, 300))
+        wx.Dialog.__init__(self, parent, -1, tr('Plugin Manage'), size=(600, 400))
         self.parent = parent
         self.mainframe = parent
         self.state = {}
@@ -49,10 +49,10 @@ class PluginDialog(wx.Dialog):
         box = wx.BoxSizer(wx.VERTICAL)
         self.list = CheckList.CheckList(self, columns=[
                 (tr("Name"), 120, 'left'),
-                (tr("Description"), 250, 'left'),
-                (tr("Author"), 80, 'right'),
-                (tr("Version"), 40, 'right'),
-                (tr("Date"), 80, 'right'),
+                (tr("Description"), 220, 'left'),
+                (tr("Author"), 80, 'left'),
+                (tr("Version"), 40, 'center'),
+                (tr("Date"), 80, 'left'),
                 ], style=wx.LC_REPORT | wx.SUNKEN_BORDER)
         self.list.load(self.getdata)
 
@@ -80,15 +80,16 @@ class PluginDialog(wx.Dialog):
             author = ini.info.author or ''
             version = ini.info.version or ''
             date = ini.info.date or ''
-            yield (self.state[name], (unicode(name, 'utf-8'), unicode(description, 'utf-8'),
-                    unicode(author, 'utf-8'), unicode(version, 'utf-8'), unicode(date, 'utf-8')))
+            yield ([unicode(name, 'utf-8'), unicode(description, 'utf-8'),
+                    unicode(author, 'utf-8'), unicode(version, 'utf-8'), 
+                    unicode(date, 'utf-8')], self.state[name])
 
     def OnEnter(self, event):
         index =  event.GetIndex()
         self.list.notFlag(index)
 
     def OnOK(self, event):
-        for flag, v in self.list.GetValue():
+        for v, flag in self.list.GetValue():
             self.state[v[0]] = flag
         text = file(self.mainframe.plugin_initfile).read()
         pos1 = text.find('from')

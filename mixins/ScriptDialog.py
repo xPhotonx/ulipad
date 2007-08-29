@@ -25,6 +25,7 @@ import wx
 import os.path
 import wx.lib.dialogs
 from modules import CheckList
+from modules import common
 
 class ScriptDialog(wx.Dialog):
     def __init__(self, parent, pref):
@@ -67,51 +68,36 @@ class ScriptDialog(wx.Dialog):
         wx.EVT_BUTTON(self.btnAdd, self.ID_ADD, self.OnAdd)
         wx.EVT_BUTTON(self.btnRemove, self.ID_REMOVE, self.OnRemove)
         wx.EVT_BUTTON(self.btnOK, wx.ID_OK, self.OnOK)
-        wx.EVT_LIST_ITEM_SELECTED(self.list, self.list.GetId(), self.OnItemSelected)
-        wx.EVT_LIST_ITEM_DESELECTED(self.list, self.list.GetId(), self.OnItemDeselected)
-
-        self.OnItemDeselected(None)
+        wx.EVT_UPDATE_UI(self.btnUp, self.ID_UP, self.OnUpdateUI)
+        wx.EVT_UPDATE_UI(self.btnDown, self.ID_DOWN, self.OnUpdateUI)
+        wx.EVT_UPDATE_UI(self.btnRemove, self.ID_REMOVE, self.OnUpdateUI)
 
         self.SetSizer(box)
         self.SetAutoLayout(True)
 
-    def exchangeItem(self, a, b):
-        if b<0 or b>self.list.GetItemCount()-1:
-            return
-        item = max([a, b])
-        ins = min([a, b])
-        description, filename = self.getItemText(item)
-        self.list.DeleteItem(item)
-        self.list.InsertStringItem(ins, description)
-        self.list.SetStringItem(ins, 1, filename)
-
-    def getItemText(self, item):
-        return self.list.GetItemText(item), self.list.GetItem(item, 1).GetText()
-
     def OnUp(self, event):
         if self.list.GetSelectedItemCount() > 1:
-            dlg = wx.MessageDialog(self, tr("You can select only one item"), tr("Up Script"), wx.OK | wx.ICON_INFORMATION)
-            dlg.ShowModal()
+            common.showmessage(self, tr("You can select only one item"))
             return
         item = self.list.GetNextItem(-1, wx.LIST_NEXT_ALL, wx.LIST_STATE_SELECTED)
-        self.exchangeItem(item, item - 1)
+        self.list.exchangeline(item, item - 1)
 
     def OnDown(self, event):
         if self.list.GetSelectedItemCount() > 1:
-            dlg = wx.MessageDialog(self, tr("You can select only one item"), tr("Down Script"), wx.OK | wx.ICON_INFORMATION)
-            dlg.ShowModal()
+            common.showmessage(self, tr("You can select only one item"))
             return
         item = self.list.GetNextItem(-1, wx.LIST_NEXT_ALL, wx.LIST_STATE_SELECTED)
-        self.exchangeItem(item, item + 1)
+        self.list.exchangeline(item, item + 1)
 
     def OnRemove(self, event):
         lastitem = -1
         item = self.list.GetNextItem(lastitem, wx.LIST_NEXT_ALL, wx.LIST_STATE_SELECTED)
         while item > -1:
-            dlg = wx.MessageDialog(self, tr("Do you realy want to delete current item [%s]?") % self.getItemText(item)[0], tr("Deleting Script"), wx.YES_NO | wx.CANCEL | wx.ICON_QUESTION)
+            dlg = wx.MessageDialog(self, tr("Do you realy want to delete current item [%s]?") % self.list.getCell(item), tr("Deleting Script"), wx.YES_NO | wx.CANCEL | wx.ICON_QUESTION)
             answer = dlg.ShowModal()
+            dlg.Destroy()
             if answer == wx.ID_YES:
-                self.list.DeleteItem(item)
+                self.list.delline(item)
             elif answer == wx.ID_NO:
                 lastitem = item
             else:
@@ -131,7 +117,7 @@ class ScriptDialog(wx.Dialog):
             import re
             import os
             
-            r = re.compile('#\s*name:(.*)$', re.M)
+            r = re.compile('(?i)#\s*(?:caption|name)\s*[:=](.*)$', re.M)
             b = r.search(text)
             name = ''
             if b:
@@ -160,7 +146,8 @@ class ScriptDialog(wx.Dialog):
         i = self.list.addline([name, filename])
         self.pref.last_script_dir = os.path.dirname(filename)
         self.pref.save()
-        self.list.EditLabel(i)
+        if name == 'Change the description':
+            self.list.EditLabel(i)
 
     def OnOK(self, event):
         from modules import common
@@ -176,12 +163,8 @@ class ScriptDialog(wx.Dialog):
         self.pref.save()
         event.Skip()
 
-    def OnItemSelected(self, event):
-        self.btnUp.Enable(True)
-        self.btnDown.Enable(True)
-        self.btnRemove.Enable(True)
-
-    def OnItemDeselected(self, event):
-        self.btnUp.Enable(False)
-        self.btnDown.Enable(False)
-        self.btnRemove.Enable(False)
+    def OnUpdateUI(self, event):
+        _id = event.GetId()
+        count = self.list.GetSelectedItemCount()
+        if _id in (self.ID_UP, self.ID_DOWN, self.ID_REMOVE):
+            event.Enable(count>0)

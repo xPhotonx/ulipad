@@ -7,7 +7,6 @@
 #   this patch was maded by ygao for Ulipad.
 import wx
 from modules import Mixin
-from modules import Globals
 import ReloadMixins
 
 
@@ -82,7 +81,7 @@ def OnToolreload_mixins(win, event):
         #ReloadMixins.create_import_py(win,flag=True)
     else:
         ReloadMixins.create_import_py(win)
-    Globals.mainframe.Close()
+#    Globals.mainframe.Close()
 Mixin.setMixin('mainframe', 'OnToolreload_mixins', OnToolreload_mixins)
 
 

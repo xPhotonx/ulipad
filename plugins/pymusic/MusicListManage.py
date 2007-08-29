@@ -191,7 +191,7 @@ class MusicListManage(wx.Panel):
     def OnDel(self, event):
         item = self.musiclist.GetNextItem(-1, wx.LIST_NEXT_ALL, wx.LIST_STATE_SELECTED)
         while item > -1:
-            self.musiclist.DeleteItem(item)
+            self.musiclist.delline(item)
             self.m3u.Delete(item)
             item = self.musiclist.GetNextItem(-1, wx.LIST_NEXT_ALL, wx.LIST_STATE_SELECTED)
         self.mainframe.selectedid = -1
@@ -228,10 +228,12 @@ class MusicListManage(wx.Panel):
 
     def addrecord(self,record):
         lastid=self.musiclist.GetItemCount()
-        self.musiclist.InsertStringItem(lastid,str(lastid+1))
-        self.musiclist.SetStringItem(lastid,1,common.decode_string(record['Author-Title'], common.defaultfilesystemencoding))
-        self.musiclist.SetStringItem(lastid,2,timeformat(record['Time']))
-        self.musiclist.SetStringItem(lastid,3,common.decode_string(record['Path'], common.defaultfilesystemencoding))
+        self.musiclist.addline([
+            str(lastid+1),
+            common.decode_string(record['Author-Title'], common.defaultfilesystemencoding),
+            timeformat(record['Time']),
+            common.decode_string(record['Path'], common.defaultfilesystemencoding)
+            ])
 
     def setplaying(self,playing):
         self.playingname.SetLabel('Playing : %s'%playing)
