@@ -91,7 +91,7 @@ class RssPage(wx.SplitterWindow, DocumentBase.DocumentBase, Mixin.Mixin):
         self.data = []
         feed = RssDb.Feed.get(rssid)
         for i, data in enumerate(RssDb.Data.get_posts(feed.id)):
-            self.data.append((data.read, (data.title, data.pubDate.strftime("%Y-%m-%d %H:%M:%S"))))
+            self.data.append(([data.title, data.pubDate.strftime("%Y-%m-%d %H:%M:%S")], data.read))
             self.guids[i] = data.guid
         self.title = feed.title
         editctrl = Globals.mainframe.editctrl

@@ -5,6 +5,7 @@
 # Version :1.0
 # Description:
 #     Convert reStructuredText to Html
+# Name: Convert reStructuredText to Html
 #
 #---------------------------------------------------
 def run(win):

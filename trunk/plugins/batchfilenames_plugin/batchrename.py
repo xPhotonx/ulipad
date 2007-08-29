@@ -37,7 +37,7 @@ class BatchRename(wx.Panel):
         
         #add filenames ctrl
         self.filenames = CheckList.CheckList(self, columns=[
-                (tr("Directory"), 100, 'left'),
+                (tr("Directory"), 200, 'left'),
                 (tr("Source Filenames"), 350, 'left'),
                 (tr("Results"), 300, 'left'),
                 ], style=wx.LC_REPORT | wx.SUNKEN_BORDER)
@@ -197,7 +197,7 @@ class BatchRename(wx.Panel):
         for i in range(self.filenames.GetItemCount()):
             if not self.filenames.getFlag(i):
                 continue
-            self.filenames.SetStringItem(i, 2, '')
+            self.filenames.setCell(i, 2, '')
             
     def OnUpdateUI(self, event):
         eid = event.GetId()
@@ -209,15 +209,15 @@ class BatchRename(wx.Panel):
             
     def OnEnterItem(self, event):
         i = event.GetIndex()
-        self.text.SetValue(self.filenames.GetItem(i, 1).GetText())
+        self.text.SetValue(self.filenames.getCell(i, 1))
         
     def OnSelectItem(self, event):
         i = event.GetIndex()
-        self.result.ChangeValue(self.filenames.GetItem(i, 2).GetText())
+        self.result.ChangeValue(self.filenames.getCell(i, 2))
         
     def OnAll(self, event):
-        for i in range(self.filenames.GetItemCount()):
-            self.filenames.setFlag(i, self.chk_all.GetValue())
+        f = self.chk_all.GetValue()
+        self.filenames.checkAll(f)
             
     def OnCreate(self, event):
         find = self.text.GetValue()
@@ -231,13 +231,13 @@ class BatchRename(wx.Panel):
             if not self.filenames.getFlag(i):
                 continue
             if not find:
-                f = self.filenames.GetItem(i, 1).GetText()
+                f = self.filenames.getCell(i, 1)
             else:
                 if p:
                     f = find.replace(p, str(start).zfill(p_len))
                 else:
                     f = find
-            self.filenames.SetStringItem(i, 2, f)
+            self.filenames.setCell(i, 2, f)
             start = start + 1
         self._select()
         
@@ -257,7 +257,7 @@ class BatchRename(wx.Panel):
                 ext = os.path.splitext(filename)[1]
             else:
                 ext = ''
-            f = self.filenames.GetItem(i, 2).GetText()
+            f = self.filenames.getCell(i, 2)
             if f:
                 newf = os.path.join(path, f+ext)
                 try:
@@ -272,7 +272,7 @@ class BatchRename(wx.Panel):
     def OnUpdate(self, event):
         i = self.filenames.GetFirstSelected()
         if i>-1:
-            self.filenames.SetStringItem(i, 2, self.result.GetValue())
+            self.filenames.setCell(i, 2, self.result.GetValue())
             
     def _get_find(self):
         if self.chk_regular.GetValue():
@@ -291,9 +291,9 @@ class BatchRename(wx.Panel):
         for i in range(self.filenames.GetItemCount()):
             if not self.filenames.getFlag(i):
                 continue
-            f = self.filenames.GetItem(i, 2).GetText()
+            f = self.filenames.getCell(i, 2)
             f = f[:pos] + b.sub('', f[pos:], 1)
-            self.filenames.SetStringItem(i, 2, f)
+            self.filenames.setCell(i, 2, f)
         self._select()
     
     def OnInsert(self, event):
@@ -303,7 +303,7 @@ class BatchRename(wx.Panel):
                 continue
             f = self.filenames.GetItem(i, 2).GetText()
             f = f[:pos] + self.find.GetValue() + f[pos:]
-            self.filenames.SetStringItem(i, 2, f)
+            self.filenames.setCell(i, 2, f)
         self._select()
         
     def OnReplace(self, event):
@@ -316,9 +316,9 @@ class BatchRename(wx.Panel):
         for i in range(self.filenames.GetItemCount()):
             if not self.filenames.getFlag(i):
                 continue
-            f = self.filenames.GetItem(i, 2).GetText()
+            f = self.filenames.getCell(i, 2)
             f = f[:pos] + b.sub(self.replace_text.GetValue(), f[pos:], 1)
-            self.filenames.SetStringItem(i, 2, f)
+            self.filenames.setCell(i, 2, f)
         self._select()
         
     def _get_insert_pos(self):

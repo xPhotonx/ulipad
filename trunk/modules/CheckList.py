@@ -23,7 +23,7 @@
 #   Update:
 #   2008/08/27
 #       * CheckList Add DeleteAllItems method
-#       * CheckListMixin Add selectAll(flag) method
+#       * CheckListMixin Add checkAll(flag) method
 
 import wx
 from wx import ImageFromStream, BitmapFromImage
@@ -105,16 +105,18 @@ class List(wx.ListView, listmix.ListCtrlAutoWidthMixin):
             for i, t in enumerate(v[1:]):
                 self.SetStringItem(index, i+1, t)
 
-    def insertline(self, index, data):
+    def insertline(self, index, data, id=None):
         index = self.InsertStringItem(index, data[0])
-        self._id += 1
-        self.SetItemData(index, self._id)
+        if id is None:
+            self._id += 1
+            id = self._id
+        self.SetItemData(index, id)
         for i, t in enumerate(data[1:]):
             self.SetStringItem(index, i+1, t)
         return index
     
-    def addline(self, data):
-        return self.insertline(sys.maxint, data)
+    def addline(self, data, id=None):
+        return self.insertline(sys.maxint, data, id)
     
     def delline(self, index):
         _id = self.GetItemData(index)
@@ -130,8 +132,51 @@ class List(wx.ListView, listmix.ListCtrlAutoWidthMixin):
     def getline(self, index):
         s = []
         for j in range(self.GetColumnCount()):
-            s.append(self.GetItem(i, j).GetText())
+            s.append(self.GetItem(index, j).GetText())
         return s
+    
+    def exchangeline(self, a, b):
+        if b<0 or b>self.GetItemCount()-1:
+            return
+        selected = self.GetFirstSelected()
+        item = max([a, b])
+        ins = min([a, b])
+        data = self.getline(item)
+        id_a = self.GetItemData(a)
+        id_b = self.GetItemData(b)
+        self.delline(item)
+        if ins == a:
+            index = self.insertline(ins, data, id_b)
+        else:
+            index = self.insertline(ins, data, id_a)
+        if ins == selected:
+            self.selectSingle(index+1)
+        else:
+            self.selectSingle(index)
+            
+#    def Select(self, index, on=True):
+#        if on:
+#            self.SetItemState(index, wx.LIST_STATE_SELECTED, wx.LIST_STATE_SELECTED)
+#        else:
+#            self.SetItemState(index, 0, wx.LIST_STATE_SELECTED|wx.LIST_STATE_FOCUSED)
+#            
+    def selectSingle(self, index, on=True):
+        if self.GetSelectedItemCount() > 0:
+            item = self.GetNextItem(-1, wx.LIST_NEXT_ALL, wx.LIST_STATE_SELECTED)
+            while item > -1:
+                self.Select(item, False)
+                item = self.GetNextItem(-1, wx.LIST_NEXT_ALL, wx.LIST_STATE_SELECTED)
+        self.Select(index, on)
+        
+    def selectAll(self, on=True):
+        for i in range(self.GetItemCount()):
+            self.Select(i, on)
+            
+    def getCell(self, index, col=0):
+        return self.GetItem(index, col).GetText()
+    
+    def setCell(self, index, col=0, text=''):
+        self.SetStringItem(index, col, text)
 
 class CheckListMixin:
     def __init__(self, check_image=None, uncheck_image=None):
@@ -152,29 +197,45 @@ class CheckListMixin:
 
     def load(self, getdata):
         self.values = {}
-        for flag, v in getdata():
+        for v, flag in getdata():
             self.addline(v, flag)
           
-    def insertline(self, index, data, flag=False):
+    def insertline(self, index, data, flag=False, id=None):
         if flag != -1:
             index = self.InsertImageStringItem(index, data[0], int(flag))
         else:
             index = self.InsertStringItem(index, data[0])
-        self._id += 1
-        self.values[self._id] = int(flag)
-        self.SetItemData(index, self._id)
+        if id is None:
+            self._id += 1
+            id = self._id
+        self.values[id] = int(flag)
+        self.SetItemData(index, id)
         for i, t in enumerate(data[1:]):
             self.SetStringItem(index, i+1, t)
         return index
         
-    def addline(self, data, flag=False):
-        return self.insertline(sys.maxint, data, flag)
+    def addline(self, data, flag=False, id=None):
+        return self.insertline(sys.maxint, data, flag, id)
     
     def delline(self, index):
         _id = self.GetItemData(index)
         del self.values[_id]
         self.DeleteItem(index)
 
+    def exchangeline(self, a, b):
+        if b<0 or b>self.GetItemCount()-1:
+            return
+        item = max([a, b])
+        ins = min([a, b])
+        data = self.getline(item)
+        id_a = self.GetItemData(a)
+        id_b = self.GetItemData(a)
+        self.delline(item)
+        if ins == a:
+            self.insertline(ins, data, id_b)
+        else:
+            self.insertline(ins, data, id_a)
+    
     def OnLeftDown(self,event):
         (index, flags) = self.HitTest(event.GetPosition())
         if flags == wx.LIST_HITTEST_ONITEMICON:
@@ -195,7 +256,7 @@ class CheckListMixin:
             s = []
             for j in range(self.GetColumnCount()):
                 s.append(self.GetItem(i, j).GetText())
-            yield (self.values[self.GetItemData(i)], tuple(s))
+            yield (s, self.values[self.GetItemData(i)])
 
     def getFlag(self, index):
         i = self.GetItemData(index)
@@ -210,9 +271,16 @@ class CheckListMixin:
         f = self.getFlag(index)
         self.setFlag(index, f ^ 1)
         
-    def selectAll(self, f):
+    def checkAll(self, f):
         for i in range(self.GetItemCount()):
             self.setFlag(i, f)
+            
+    def getline(self, index):
+        s = []
+        for j in range(self.GetColumnCount()):
+            s.append(self.GetItem(index, j).GetText())
+            
+        return s, self.getFlag(index)
             
 class CheckList(CheckListMixin, List):
     def __init__(self, parent, columns, check_image=None, uncheck_image=None, style=wx.LC_REPORT):

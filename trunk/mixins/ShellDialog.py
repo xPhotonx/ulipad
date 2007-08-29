@@ -24,8 +24,10 @@
 __doc__ = 'run shell command'
 
 import wx
+import os
 from modules import Entry
 from modules import CheckList
+from modules import common
 
 class ShellDialog(wx.Dialog):
     def __init__(self, parent, pref):
@@ -72,51 +74,37 @@ class ShellDialog(wx.Dialog):
         wx.EVT_BUTTON(self.btnModify, self.ID_MODIFY, self.OnModify)
         wx.EVT_BUTTON(self.btnRemove, self.ID_REMOVE, self.OnRemove)
         wx.EVT_BUTTON(self.btnOK, wx.ID_OK, self.OnOK)
-        wx.EVT_LIST_ITEM_SELECTED(self.list, self.list.GetId(), self.OnItemSelected)
-        wx.EVT_LIST_ITEM_DESELECTED(self.list, self.list.GetId(), self.OnItemDeselected)
-
-        self.OnItemDeselected(None)
+        wx.EVT_UPDATE_UI(self.btnUp, self.ID_UP, self.OnUpdateUI)
+        wx.EVT_UPDATE_UI(self.btnDown, self.ID_DOWN, self.OnUpdateUI)
+        wx.EVT_UPDATE_UI(self.btnRemove, self.ID_REMOVE, self.OnUpdateUI)
+        wx.EVT_UPDATE_UI(self.btnModify, self.ID_MODIFY, self.OnUpdateUI)
 
         self.SetSizer(box)
         self.SetAutoLayout(True)
 
-    def exchangeItem(self, a, b):
-        if b<0 or b>self.list.GetItemCount()-1:
-            return
-        item = max([a, b])
-        ins = min([a, b])
-        description, command = self.getItemText(item)
-        self.list.DeleteItem(item)
-        self.list.InsertStringItem(ins, description)
-        self.list.SetStringItem(ins, 1, command)
-
-    def getItemText(self, item):
-        return self.list.GetItemText(item), self.list.GetItem(item, 1).GetText()
-
     def OnUp(self, event):
         if self.list.GetSelectedItemCount() > 1:
-            dlg = wx.MessageDialog(self, tr("You can select only one item"), tr("Up Shell Command"), wx.OK | wx.ICON_INFORMATION)
-            dlg.ShowModal()
+            common.showmessage(self, tr("You can select only one item"))
             return
         item = self.list.GetNextItem(-1, wx.LIST_NEXT_ALL, wx.LIST_STATE_SELECTED)
-        self.exchangeItem(item, item - 1)
+        self.list.exchangeline(item, item - 1)
 
     def OnDown(self, event):
         if self.list.GetSelectedItemCount() > 1:
-            dlg = wx.MessageDialog(self, tr("You can select only one item"), tr("Down Shell Command"), wx.OK | wx.ICON_INFORMATION)
-            dlg.ShowModal()
+            common.showmessage(self, tr("You can select only one item"), tr("Down Shell Command"))
             return
         item = self.list.GetNextItem(-1, wx.LIST_NEXT_ALL, wx.LIST_STATE_SELECTED)
-        self.exchangeItem(item, item + 1)
+        self.list.exchangeline(item, item + 1)
 
     def OnRemove(self, event):
         lastitem = -1
         item = self.list.GetNextItem(lastitem, wx.LIST_NEXT_ALL, wx.LIST_STATE_SELECTED)
         while item > -1:
-            dlg = wx.MessageDialog(self, tr("Do you realy want to delete current item [%s]?") % self.getItemText(item)[0], tr("Deleting Shell Command"), wx.YES_NO | wx.CANCEL | wx.ICON_QUESTION)
+            dlg = wx.MessageDialog(self, tr("Do you realy want to delete current item [%s]?") % self.list.getCell(item), tr("Deleting Shell Command"), wx.YES_NO | wx.CANCEL | wx.ICON_QUESTION)
             answer = dlg.ShowModal()
+            dlg.Destroy()
             if answer == wx.ID_YES:
-                self.list.DeleteItem(item)
+                self.list.delline(item)
             elif answer == wx.ID_NO:
                 lastitem = item
             else:
@@ -126,50 +114,43 @@ class ShellDialog(wx.Dialog):
     def OnAdd(self, event):
         dlg = Entry.MyFileEntry(self, tr("Shell Command Line"), tr("Enter the shell command line:\n$file will be replaced by current document filename\n$path will be replaced by current document filename's directory"), '')
         answer = dlg.ShowModal()
+        command = dlg.GetValue()
+        dlg.Destroy()
         if answer == wx.ID_OK:
-            command = dlg.GetValue()
             if len(command) > 0:
-                i = self.list.GetItemCount()
-                self.list.InsertStringItem(i, 'Change the description')
-                self.list.SetStringItem(i, 1, command)
+                name = os.path.splitext(os.path.basename(command))[0]
+                i = self.list.addline([name, command])
                 self.list.EditLabel(i)
 
     def OnModify(self, event):
         if self.list.GetSelectedItemCount() > 1:
-            dlg = wx.MessageDialog(self, tr("You can select only one item"), tr("Modify Shell Command"), wx.OK | wx.ICON_INFORMATION)
-            dlg.ShowModal()
+            common.showmessage(self, tr("You can select only one item"))
             return
         item = self.list.GetNextItem(-1, wx.LIST_NEXT_ALL, wx.LIST_STATE_SELECTED)
-        dlg = Entry.MyFileEntry(self, tr("Shell Command Line"), tr("Enter the shell command line:\n$file will be replaced by current document filename\n$path will be replaced by current document filename's directory"), self.getItemText(item)[1])
+        dlg = Entry.MyFileEntry(self, tr("Shell Command Line"), 
+            tr("Enter the shell command line:\n$file will be replaced by current document filename\n$path will be replaced by current document filename's directory"), self.list.getCell(item, 1))
         answer = dlg.ShowModal()
+        command = dlg.GetValue()
+        dlg.Destroy()
         if answer == wx.ID_OK:
-            command = dlg.GetValue()
             if len(command) > 0:
-                self.list.SetStringItem(item, 1, command)
+                self.list.setCell(item, 1, command)
 
     def OnOK(self, event):
         shells = []
         for i in range(self.list.GetItemCount()):
-            description, command = self.getItemText(i)
+            description, command = self.list.getline(i)
             shells.append((description, command))
             if (description == '') or (description == 'Change the description'):
-                dlg = wx.MessageDialog(self, tr("The description must not be empty or ") + '"Change the description"' +
-                         tr('.\nPlease change them first!'), tr("Saving Shell Command"), wx.OK | wx.ICON_INFORMATION)
-                dlg.ShowModal()
+                common.showerror(self, tr("The description must not be empty or ") + '"Change the description"' +
+                         tr('.\nPlease change them first!'))
                 return
-        else:
-            self.pref.shells = shells[:]
-            self.pref.save()
-            event.Skip()
+        self.pref.shells = shells[:]
+        self.pref.save()
+        event.Skip()
 
-    def OnItemSelected(self, event):
-        self.btnUp.Enable(True)
-        self.btnDown.Enable(True)
-        self.btnRemove.Enable(True)
-        self.btnModify.Enable(True)
-
-    def OnItemDeselected(self, event):
-        self.btnUp.Enable(False)
-        self.btnDown.Enable(False)
-        self.btnRemove.Enable(False)
-        self.btnModify.Enable(False)
+    def OnUpdateUI(self, event):
+        _id = event.GetId()
+        count = self.list.GetSelectedItemCount()
+        if _id in (self.ID_UP, self.ID_DOWN, self.ID_REMOVE, self.ID_MODIFY):
+            event.Enable(count>0)

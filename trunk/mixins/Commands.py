@@ -86,7 +86,9 @@ class Commands(object):
             s = []
             for v in self.searchbuf:
                 t = v[0] + v[1]
+                print info, t
                 p = strin(info, t)
+                print p
                 if p:
                     s.append((p, v))
             s.sort()
@@ -140,7 +142,7 @@ def strin(s, text):
         k = pos
         while 1:
             k = t.find(s[0], k+1)
-            if k > 0:
+            if k > -1:
                 if s[1:]:
                     f(s[1:], t, r+[k], k)
                 else:   #finish

@@ -400,9 +400,9 @@ class CommitDialog(wx.Dialog):
     def OnSelect(self, event):
         value = event.GetEventObject().Get3StateValue()
         if value == wx.CHK_UNCHECKED:
-            self.filenames.selectAll(False)
+            self.filenames.checkAll(False)
         elif value == wx.CHK_CHECKED:
-            self.filenames.selectAll(True)
+            self.filenames.checkAll(True)
             
     def OnCheck(self, index, f):
         self.check_state()

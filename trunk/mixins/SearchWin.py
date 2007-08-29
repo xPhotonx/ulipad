@@ -29,12 +29,12 @@ import Commands
 
 class SearchWin(wx.Dialog):
     def __init__(self, parent, title=''):
-        if hasattr(Globals.mainframe.pref, 'searchwin_pos') and hasattr(Globals.mainframe.pref, 'searchwin_size'):
-            searchwin_pos = Globals.mainframe.pref.searchwin_pos
-            searchwin_size = Globals.mainframe.pref.searchwin_size
+        if hasattr(Globals.pref, 'searchwin_pos') and hasattr(Globals.pref, 'searchwin_size'):
+            searchwin_pos = Globals.pref.searchwin_pos
+            searchwin_size = Globals.pref.searchwin_size
             wx.Dialog.__init__(self, parent, -1, title, searchwin_pos, searchwin_size, style=wx.RESIZE_BORDER|wx.DEFAULT_DIALOG_STYLE)
         else:
-            wx.Dialog.__init__(self, parent, -1, title, style=wx.RESIZE_BORDER|wx.DEFAULT_DIALOG_STYLE)
+            wx.Dialog.__init__(self, parent, -1, title, size=(600, 400), style=wx.RESIZE_BORDER|wx.DEFAULT_DIALOG_STYLE)
             self.Center()
             
         self.SetBackgroundColour(wx.SystemSettings.GetColour(wx.SYS_COLOUR_BTNFACE))
@@ -52,7 +52,7 @@ class SearchWin(wx.Dialog):
         
         self.list = CheckList.List(self, columns=[
                 (tr("Function"), 300, 'left'),
-                (tr("ShortCuts"), 80, 'left'),
+                (tr("ShortCuts"), 120, 'left'),
                 (tr("Impact"), 80, 'left'),
                 ], style=wx.LC_REPORT | wx.SUNKEN_BORDER | wx.LC_SINGLE_SEL)
         self.commandar = Commands.getinstance()    
@@ -74,7 +74,7 @@ class SearchWin(wx.Dialog):
         wx.EVT_CHECKBOX(self.impact_check, self.impact_check.GetId(), self.OnCheckImpact)
         wx.EVT_CHECKBOX(self.autoclose_check, self.autoclose_check.GetId(), self.OnCheckAutoClose)
         
-        self.impact_check.SetValue(Globals.mainframe.pref.commands_impact)
+        self.impact_check.SetValue(Globals.pref.commands_impact)
         
         self.SetSizer(sizer)
         self.SetAutoLayout(True)
@@ -100,9 +100,9 @@ class SearchWin(wx.Dialog):
         return s
         
     def save_status(self):
-        Globals.mainframe.pref.searchwin_pos = self.GetPosition()
-        Globals.mainframe.pref.searchwin_size = self.GetSize()
-        Globals.mainframe.pref.save()
+        Globals.pref.searchwin_pos = self.GetPosition()
+        Globals.pref.searchwin_size = self.GetSize()
+        Globals.pref.save()
         
     def OnClose(self, event):
         self.save_status()
@@ -114,7 +114,7 @@ class SearchWin(wx.Dialog):
         
     def OnChange(self, event):
         text = self.text.GetValue()
-        if not Globals.mainframe.pref.commands_impact:
+        if not Globals.pref.commands_impact:
             self.load(self.commandar.search(text))
         else:
             s = self.commandar.impact_search(text)
@@ -159,14 +159,14 @@ class SearchWin(wx.Dialog):
             self.commandar.run(cmd_id)
             if self.text.GetValue():
                 self.text.Clear()
-            if Globals.mainframe.pref.commands_autoclose:
+            if Globals.pref.commands_autoclose:
                 self.Close()
                 
     def OnCheckImpact(self, event):
-        Globals.mainframe.pref.commands_impact = event.IsChecked()
-        Globals.mainframe.pref.save()
+        Globals.pref.commands_impact = event.IsChecked()
+        Globals.pref.save()
         
     def OnCheckAutoClose(self, event):
-        Globals.mainframe.pref.commands_autoclose = event.IsChecked()
-        Globals.mainframe.pref.save()
+        Globals.pref.commands_autoclose = event.IsChecked()
+        Globals.pref.save()
         
