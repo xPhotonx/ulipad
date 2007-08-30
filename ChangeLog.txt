@@ -2,6 +2,7 @@
 [2007/08/29]
 ScriptDialog.py ShellDialog.py mScript.py mShell.py
                     Add script and shell key binding. Change shell to external tool
+ShellWindow.py      Add Alt+Enter implement the same functionality of Ctrl+Enter
                     
 [2007/08/29]
 CheckList.py *      CheckList improvement.

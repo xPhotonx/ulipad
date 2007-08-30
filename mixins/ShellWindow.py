@@ -181,6 +181,32 @@ class ShellWindow(wx.py.shell.Shell, Mixin.Mixin):
         
     def Copy(self):
         self.CopyWithPrompts()
+        
+    def OnKeyDown(self, event):
+        key = event.GetKeyCode()
+        # If the auto-complete window is up let it do its thing.
+        if self.AutoCompActive():
+            event.Skip()
+            return
+        
+        # Prevent modification of previously submitted
+        # commands/responses.
+        controlDown = event.ControlDown()
+        altDown = event.AltDown()
+        shiftDown = event.ShiftDown()
+        currpos = self.GetCurrentPos()
+        endpos = self.GetTextLength()
+        selecting = self.GetSelectionStart() != self.GetSelectionEnd()
+        
+        if not controlDown and altDown and not shiftDown and key in [wx.WXK_RETURN, wx.WXK_NUMPAD_ENTER]:
+            if self.CallTipActive():
+                self.CallTipCancel()
+            if currpos == endpos:
+                self.processLine()
+            else:
+                self.insertLineBreak()
+        else:
+            super(ShellWindow, self).OnKeyDown(event)
 
 class NEInterpreter(Interpreter):
     def push(self, command):
