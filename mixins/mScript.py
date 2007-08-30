@@ -55,6 +55,7 @@ def OnScriptManage(win, event):
 Mixin.setMixin('mainframe', 'OnScriptManage', OnScriptManage)
 
 def beforeinit(win):
+    win.old_script_accel = {}
     win.scriptmenu_ids=[win.IDM_SCRIPT_ITEMS]
     makescriptmenu(win, win.pref)
 Mixin.setPlugin('mainframe', 'beforeinit', beforeinit)
@@ -72,11 +73,21 @@ def makescriptmenu(win, pref):
         menu.Enable(id, False)
         win.scriptmenu_ids=[id]
     else:
+        accel = {}
         for description, filename in win.pref.scripts:
             id = wx.NewId()
             win.scriptmenu_ids.append(id)
             menu.Append(id, description)
+            pos = description.find('\t')
+            if pos > -1:
+                key = description[pos+1:]
+                accel[id] = (key, '')
             wx.EVT_MENU(win, id, win.OnScriptItems)
+        if win.old_script_accel:
+            win.removeAccel(win.old_script_accel)
+        win.old_script_accel = accel
+        if accel:
+            win.insertAccel(accel)
 
 def OnScriptItems(win, event):
     import wx.lib.dialogs

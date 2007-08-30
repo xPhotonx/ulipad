@@ -21,7 +21,7 @@
 #
 #   $Id: mShellRun.py 1566 2006-10-09 04:44:08Z limodou $
 
-__doc__ = 'run shell command'
+__doc__ = 'run external tools'
 
 import os
 import wx
@@ -35,11 +35,11 @@ Mixin.setPlugin('preference', 'init', pref_init)
 def add_mainframe_menu(menulist):
     menulist.extend([('IDM_TOOL',
         [
-            (100, 'IDM_SHELL', tr('Shell Command'), wx.ITEM_NORMAL, None, ''),
+            (100, 'IDM_SHELL', tr('External Tools'), wx.ITEM_NORMAL, None, ''),
         ]),
         ('IDM_SHELL', #parent menu id
         [
-            (100, 'IDM_SHELL_MANAGE', tr('Shell Command Manager...'), wx.ITEM_NORMAL, 'OnShellManage', tr('Shell command manager')),
+            (100, 'IDM_SHELL_MANAGE', tr('External Tools Manager...'), wx.ITEM_NORMAL, 'OnShellManage', tr('Shell command manager')),
             (110, '', '-', wx.ITEM_SEPARATOR, None, ''),
             (120, 'IDM_SHELL_ITEMS', tr('(empty)'), wx.ITEM_NORMAL, 'OnShellItems', tr('Execute an shell command')),
         ]),
