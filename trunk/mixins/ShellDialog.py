@@ -25,24 +25,31 @@ __doc__ = 'run shell command'
 
 import wx
 import os
-from modules import Entry
 from modules import CheckList
 from modules import common
 
 class ShellDialog(wx.Dialog):
     def __init__(self, parent, pref):
-        wx.Dialog.__init__(self, parent, -1, tr('Shell Manage'), size=(600, 300))
+        wx.Dialog.__init__(self, parent, -1, tr('External Tools Manage'), size=(600, 300))
         self.parent = parent
         self.pref = pref
 
         box = wx.BoxSizer(wx.VERTICAL)
         self.list = CheckList.List(self, columns=[
                 (tr("Description"), 150, 'left'),
-                (tr("Shell Command Line"), 330, 'left'),
+                (tr("Command Line"), 330, 'left'),
+                (tr("Shortcut"), 80, 'center'),
                 ], style=wx.LC_REPORT | wx.SUNKEN_BORDER | wx.LC_EDIT_LABELS)
         
         for i, item in enumerate(pref.shells):
-            self.list.addline(item)
+            description, filename = item
+            pos = description.find('\t')
+            if pos > -1:
+                shortcut = description[pos+1:]
+                description = description[:pos]
+            else:
+                shortcut = ''
+            self.list.addline([description, filename, shortcut])
 
         box.Add(self.list, 1, wx.EXPAND|wx.ALL, 5)
         box2 = wx.BoxSizer(wx.HORIZONTAL)
@@ -74,6 +81,7 @@ class ShellDialog(wx.Dialog):
         wx.EVT_BUTTON(self.btnModify, self.ID_MODIFY, self.OnModify)
         wx.EVT_BUTTON(self.btnRemove, self.ID_REMOVE, self.OnRemove)
         wx.EVT_BUTTON(self.btnOK, wx.ID_OK, self.OnOK)
+        wx.EVT_LIST_ITEM_ACTIVATED(self.list, self.list.GetId(), self.OnModify)
         wx.EVT_UPDATE_UI(self.btnUp, self.ID_UP, self.OnUpdateUI)
         wx.EVT_UPDATE_UI(self.btnDown, self.ID_DOWN, self.OnUpdateUI)
         wx.EVT_UPDATE_UI(self.btnRemove, self.ID_REMOVE, self.OnUpdateUI)
@@ -83,16 +91,10 @@ class ShellDialog(wx.Dialog):
         self.SetAutoLayout(True)
 
     def OnUp(self, event):
-        if self.list.GetSelectedItemCount() > 1:
-            common.showmessage(self, tr("You can select only one item"))
-            return
         item = self.list.GetNextItem(-1, wx.LIST_NEXT_ALL, wx.LIST_STATE_SELECTED)
         self.list.exchangeline(item, item - 1)
 
     def OnDown(self, event):
-        if self.list.GetSelectedItemCount() > 1:
-            common.showmessage(self, tr("You can select only one item"), tr("Down Shell Command"))
-            return
         item = self.list.GetNextItem(-1, wx.LIST_NEXT_ALL, wx.LIST_STATE_SELECTED)
         self.list.exchangeline(item, item + 1)
 
@@ -112,35 +114,48 @@ class ShellDialog(wx.Dialog):
             item = self.list.GetNextItem(lastitem, wx.LIST_NEXT_ALL, wx.LIST_STATE_SELECTED)
 
     def OnAdd(self, event):
-        dlg = Entry.MyFileEntry(self, tr("Shell Command Line"), tr("Enter the shell command line:\n$file will be replaced by current document filename\n$path will be replaced by current document filename's directory"), '')
-        answer = dlg.ShowModal()
-        command = dlg.GetValue()
-        dlg.Destroy()
-        if answer == wx.ID_OK:
-            if len(command) > 0:
-                name = os.path.splitext(os.path.basename(command))[0]
-                i = self.list.addline([name, command])
-                self.list.EditLabel(i)
+        dlg = AddShellDialog(self)
+        value = None
+        try:
+            if dlg.ShowModal() == wx.ID_OK:
+                value = dlg.GetValue()
+            else:
+                return
+        finally:
+            dlg.Destroy()
+        
+        i = self.list.addline([value['description'], value['filename'],
+            value['shortcut']])
+        self.pref.last_script_dir = os.path.dirname(value['filename'])
+        self.pref.save()
+        if value['description'] == 'Change the description':
+            self.list.EditLabel(i)
 
     def OnModify(self, event):
-        if self.list.GetSelectedItemCount() > 1:
-            common.showmessage(self, tr("You can select only one item"))
-            return
-        item = self.list.GetNextItem(-1, wx.LIST_NEXT_ALL, wx.LIST_STATE_SELECTED)
-        dlg = Entry.MyFileEntry(self, tr("Shell Command Line"), 
-            tr("Enter the shell command line:\n$file will be replaced by current document filename\n$path will be replaced by current document filename's directory"), self.list.getCell(item, 1))
-        answer = dlg.ShowModal()
-        command = dlg.GetValue()
-        dlg.Destroy()
-        if answer == wx.ID_OK:
-            if len(command) > 0:
-                self.list.setCell(item, 1, command)
-
+        i = self.list.GetNextItem(-1, wx.LIST_NEXT_ALL, wx.LIST_STATE_SELECTED)
+        value = dict(zip(['description', 'filename', 'shortcut'],
+            self.list.getline(i)))
+        dlg = AddShellDialog(self, value=value)
+        value = None
+        try:
+            if dlg.ShowModal() == wx.ID_OK:
+                value = dlg.GetValue()
+            else:
+                return
+        finally:
+            dlg.Destroy()
+        
+        self.list.updateline(i, [value['description'], value['filename'],
+            value['shortcut']])
+        self.pref.last_script_dir = os.path.dirname(value['filename'])
+        self.pref.save()
+        if value['description'] == 'Change the description':
+            self.list.EditLabel(i)
+        
     def OnOK(self, event):
         shells = []
-        for i in range(self.list.GetItemCount()):
-            description, command = self.list.getline(i)
-            shells.append((description, command))
+        for description, filename, shortcut in self.list.GetValue():
+            shells.append((description+'\t'+shortcut, filename))
             if (description == '') or (description == 'Change the description'):
                 common.showerror(self, tr("The description must not be empty or ") + '"Change the description"' +
                          tr('.\nPlease change them first!'))
@@ -154,3 +169,77 @@ class ShellDialog(wx.Dialog):
         count = self.list.GetSelectedItemCount()
         if _id in (self.ID_UP, self.ID_DOWN, self.ID_REMOVE, self.ID_MODIFY):
             event.Enable(count>0)
+
+class AddShellDialog(wx.Dialog):
+    def __init__(self, parent, value=None, size=(400, 150)):
+        wx.Dialog.__init__(self, parent, -1, style = wx.DEFAULT_DIALOG_STYLE, title = tr('Add Tool'), size=size)
+
+        box = wx.BoxSizer(wx.VERTICAL)
+        gbs = wx.GridBagSizer(5, 5)
+        
+        self.filename = wx.TextCtrl(self, -1, '')
+        gbs.Add(wx.StaticText(self, -1, tr('Tool File')), (0, 0), flag=wx.ALIGN_CENTER_VERTICAL, border=2)
+        
+        box1 = wx.BoxSizer(wx.HORIZONTAL)
+        box1.Add(self.filename, 1, wx.EXPAND)
+        self.ID_BROWSER = wx.NewId()
+        self.btnBrowser = wx.Button(self, self.ID_BROWSER, '...', size=(22, 22))
+        box1.Add(self.btnBrowser, 0, wx.LEFT, 5)
+        gbs.Add(box1, (0, 1), flag=wx.EXPAND|wx.ALIGN_CENTER_VERTICAL, border=2)
+        
+        self.text = wx.TextCtrl(self, -1, '')
+        gbs.Add(wx.StaticText(self, -1, tr('Description')), (1, 0), flag=wx.ALIGN_CENTER_VERTICAL, border=2)
+        gbs.Add(self.text, (1, 1), flag=wx.EXPAND|wx.ALIGN_CENTER_VERTICAL, border=2)
+        
+        shortcuts = []
+        for i in range(1, 11):
+            shortcuts.append('Alt+%d' % i)
+        self.shortcut = wx.ComboBox(self, -1, '', choices = shortcuts, style = wx.CB_DROPDOWN|wx.CB_READONLY )
+        gbs.Add(wx.StaticText(self, -1, tr('Choice Shortcut')), (2, 0), flag=wx.ALIGN_CENTER_VERTICAL, border=2)
+        gbs.Add(self.shortcut, (2, 1), flag=wx.ALIGN_CENTER_VERTICAL, border=2)
+        
+        box.Add(gbs, 1, wx.EXPAND|wx.ALL, 5)
+        gbs.AddGrowableCol(1)
+        
+        box2 = wx.BoxSizer(wx.HORIZONTAL)
+        btnOK = wx.Button(self, wx.ID_OK, tr("OK"))
+        btnOK.SetDefault()
+        box2.Add(btnOK, 0, wx.ALIGN_RIGHT|wx.RIGHT, 5)
+        btnCancel = wx.Button(self, wx.ID_CANCEL, tr("Cancel"))
+        box2.Add(btnCancel, 0, wx.ALIGN_LEFT|wx.LEFT, 5)
+        box.Add(box2, 0, wx.ALIGN_CENTER|wx.BOTTOM, 5)
+
+        wx.EVT_BUTTON(self.btnBrowser, self.ID_BROWSER, self.OnBrowser)
+        
+        if value:
+            self.text.SetValue(value['description'])
+            self.filename.SetValue(value['filename'])
+            self.shortcut.SetValue(value['shortcut'])
+        
+        self.SetSizer(box)
+        self.SetAutoLayout(True)
+        
+        self.Centre()
+
+    def GetValue(self):
+        v = {}
+        v['description'] = self.text.GetValue()
+        v['filename'] = self.filename.GetValue()
+        v['shortcut'] = self.shortcut.GetValue()
+        return v
+
+    def OnBrowser(self, event):
+        filename = ''
+        dlg = wx.FileDialog(self, tr("Select Tool File"), "", 
+            "", tr("All files (*.*)|*.*"), wx.OPEN)
+        try:
+            if dlg.ShowModal() == wx.ID_OK:
+                filename = dlg.GetPath()
+                self.filename.SetValue(filename)
+                if not self.text.GetValue():
+                    text = os.path.splitext(os.path.basename(filename))[0]
+                    self.text.SetValue(text)
+        finally:
+            dlg.Destroy()
+        
+    

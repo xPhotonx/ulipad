@@ -28,6 +28,9 @@ def makeidlist(win, idlist):
         makeid(win, idname)
 
 def makeid(win, idname):
+    if isinstance(idname, int):
+        return idname
+    
     if idname.startswith('wx.'):
         idname = idname[3:]
         if hasattr(wx, idname):

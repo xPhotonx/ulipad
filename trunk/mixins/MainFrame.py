@@ -154,7 +154,7 @@ class MainFrame(wx.Frame, Mixin.Mixin):
         Accelerator.getkeycodes(self.editoraccellist, self.editorkeycodes)
         Accelerator.initaccelerator(self, MainFrame.accellist)
 
-    def removeAccel(self, accel, editoraccel):
+    def removeAccel(self, accel, editoraccel={}):
         for k in accel:
             if k in MainFrame.accellist:
                 del MainFrame.accellist[k]
@@ -165,7 +165,7 @@ class MainFrame(wx.Frame, Mixin.Mixin):
         Accelerator.getkeycodes(self.editoraccellist, self.editorkeycodes)
         Accelerator.initaccelerator(self, MainFrame.accellist)
         
-    def insertAccel(self, accel, editoraccel):
+    def insertAccel(self, accel, editoraccel={}):
         MainFrame.accellist.update(accel)
         MainFrame.editoraccellist.update(editoraccel)
         self.editorkeycodes = {}

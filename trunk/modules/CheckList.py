@@ -115,6 +115,10 @@ class List(wx.ListView, listmix.ListCtrlAutoWidthMixin):
             self.SetStringItem(index, i+1, t)
         return index
     
+    def updateline(self, index, data):
+        for i in range(self.GetColumnCount()):
+            self.setCell(index, i, data[i])
+        
     def addline(self, data, id=None):
         return self.insertline(sys.maxint, data, id)
     
