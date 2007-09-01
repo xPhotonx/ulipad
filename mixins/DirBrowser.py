@@ -280,6 +280,8 @@ class DirBrowser(wx.Panel, Mixin.Mixin):
         except:
             error.traceback()
             return
+        if not files:
+            return [], []
         r = [(x, os.path.isdir(os.path.join(path, x))) for x in files if not self.validate(x)]
         if not r: return
         dirs = []
@@ -301,8 +303,8 @@ class DirBrowser(wx.Panel, Mixin.Mixin):
         for x in files:
             item_index = self.get_file_image(x)
             self.addnode(node, path, x, item_index, None, self.getid(), self.FILE_NODE)
-        wx.CallAfter(self.tree.Expand, node)
-        wx.CallAfter(self.tree.SelectItem, node)
+#        wx.CallAfter(self.tree.Expand, node)
+#        wx.CallAfter(self.tree.SelectItem, node)
 
         #add check project plugin call point
         project_names = common.getCurrentPathProjectName(path)

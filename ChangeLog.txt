@@ -1,4 +1,8 @@
 ﻿$Rev$
+[2007/09/01]
+DirBrowser.py 
+                    Fix adding empty directory error
+                    
 [2007/08/29]
 ScriptDialog.py ShellDialog.py mScript.py mShell.py
                     Add script and shell key binding. Change shell to external tool
