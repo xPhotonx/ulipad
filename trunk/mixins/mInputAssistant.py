@@ -321,6 +321,8 @@ class InputAssistantAction(AsyncAction.AsyncAction):
         try:
             if Globals.mainframe.closeflag:
                 return
+            if not hasattr(Globals.mainframe, 'document'):
+                return
             if win != Globals.mainframe.document:
                 return
             i = get_inputassistant_obj(win)
