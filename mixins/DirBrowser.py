@@ -430,6 +430,7 @@ class DirBrowser(wx.Panel, Mixin.Mixin):
     def OnChangeLabel(self, event):
         item = event.GetItem()
         if not self.is_ok(item): return
+        is_file = self.isFile(item)
         _id = self.tree.GetPyData(item)
         data = self.nodes[_id]
         path, name, obj, nodetype = data['path'], data['name'], data['obj'], data['nodetype']
@@ -440,7 +441,10 @@ class DirBrowser(wx.Panel, Mixin.Mixin):
         if name != text:
             f = os.path.join(path, name)
             if os.path.exists(os.path.join(path, text)):
-                common.showerror(self, tr('Filename %s has exists!') % os.path.join(path, text))
+                if is_file:
+                    common.showerror(self, tr('Filename %s has existed!') % os.path.join(path, text))
+                else:
+                    common.showerror(self, tr('Directory %s has existed!') % os.path.join(path, text))
                 return
             if os.path.exists(f):
                 try:
@@ -448,18 +452,21 @@ class DirBrowser(wx.Panel, Mixin.Mixin):
                 except:
                     event.Veto()
                     error.traceback()
-                    common.showerror(self, tr('Cannot change the filename %s to %s!') % (name, text))
+                    if is_file:
+                        common.showerror(self, tr('Cannot change the filename %s to %s!') % (name, text))
+                    else:
+                        common.showerror(self, tr('Cannot change the directory %s to %s!') % (name, text))
                     return
-            doc = None
-            for d in self.mainframe.editctrl.getDocuments():
-                if (os.path.exists(os.path.join(path, text)) and d.getFilename() == os.path.join(path, name)) or d.getFilename() == name:
-                    d.setFilename(os.path.join(path, text))
-                    self.mainframe.editctrl.showPageTitle(d)
-                    doc = d
-                    if d is self.mainframe.editctrl.getCurDoc():
-                        self.mainframe.editctrl.showTitle(d)
             self.nodes[_id] = dict(path=path, name=text, obj=obj, nodetype=nodetype)
-            if self.isFile(item):
+            if is_file:
+                doc = None
+                for d in self.mainframe.editctrl.getDocuments():
+                    if (os.path.exists(os.path.join(path, text)) and d.getFilename() == os.path.join(path, name)) or d.getFilename() == name:
+                        d.setFilename(os.path.join(path, text))
+                        self.mainframe.editctrl.showPageTitle(d)
+                        doc = d
+                        if d is self.mainframe.editctrl.getCurDoc():
+                            self.mainframe.editctrl.showTitle(d)
                 item_index = self.get_file_image(text)
                 self.tree.SetItemImage(item, item_index, wx.TreeItemIcon_Normal)
                 if doc:
@@ -540,7 +547,7 @@ class DirBrowser(wx.Panel, Mixin.Mixin):
             item = self.tree.GetItemParent(item)
             filename = self.get_node_filename(item)
         if os.path.exists(os.path.join(filename, foldername)):
-            common.showerror(self, tr('Directory %s has exists!') % os.path.join(filename, foldername))
+            common.showerror(self, tr('Directory %s has existed!') % os.path.join(filename, foldername))
             return
 
         try:
@@ -549,7 +556,7 @@ class DirBrowser(wx.Panel, Mixin.Mixin):
             error.traceback()
             common.showerror(self, tr('Create directory %s error!') % os.path.join(filename, foldername))
             return
-        node = self.addnode(item, filename, foldername, self.close_image, self.open_image, self.getid(), self.FILE_NODE)
+        node = self.addnode(item, filename, foldername, self.close_image, self.open_image, self.getid(), self.DIR_NODE)
         wx.CallAfter(self.tree.Expand, item)
         wx.CallAfter(self.tree.EditLabel, node)
 

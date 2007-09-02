@@ -168,7 +168,7 @@ def get_entries(path):
         f = line[0]
         line = line.strip()
         filename = line.split()[-1]
-        if filename in ('.', '..'):
+        if filename in ('.', '..') or os.path.normpath(path) == os.path.normpath(filename):
             continue
         entries[os.path.basename(filename)] = f
     return entries
