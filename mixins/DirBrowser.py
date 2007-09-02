@@ -279,11 +279,11 @@ class DirBrowser(wx.Panel, Mixin.Mixin):
             files = os.listdir(path)
         except:
             error.traceback()
-            return
+            return [], []
         if not files:
             return [], []
         r = [(x, os.path.isdir(os.path.join(path, x))) for x in files if not self.validate(x)]
-        if not r: return
+        if not r: return [], []
         dirs = []
         files = []
         for x, dir in r:
