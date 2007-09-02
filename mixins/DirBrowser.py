@@ -271,6 +271,7 @@ class DirBrowser(wx.Panel, Mixin.Mixin):
             self.tree.SetItemHasChildren(node, True)
             if expand:
                 self.addpathnodes(path, node)
+                wx.CallAfter(self.tree.SelectItem, node)
             self.callplugin('after_addpath', self, node)
         self.tree.Thaw()
 
