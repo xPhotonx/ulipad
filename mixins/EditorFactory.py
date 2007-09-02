@@ -111,7 +111,6 @@ class EditorFactory(FNB.FlatNotebook, Mixin.Mixin):
         if not delay:
             #open delayed document
             if not document.opened:
-                index = self.getIndex(document)
                 try:
                     document.openfile(document.filename, document.locale, False)
                     #add restore session process
@@ -131,7 +130,7 @@ class EditorFactory(FNB.FlatNotebook, Mixin.Mixin):
                 except:
                     error.traceback()
                     filename = document.filename
-                    wx.MessageDialog(self, tr("Can't open the file [%s]!") % common.uni_file(filename), tr("Open file..."), wx.OK).ShowModal()
+                    common.showerror(self, tr("Can't open the file [%s]!") % common.uni_file(filename))
                     wx.CallAfter(self.closefile, document)
                     return
             self._changeDocument(document)
@@ -162,6 +161,8 @@ class EditorFactory(FNB.FlatNotebook, Mixin.Mixin):
         return -1
 
     def getDoc(self, index):
+        if index < 0 or index > len(self.getDocuments()):
+            return None
         return self.getDocuments()[index]
     
     def new(self, filename='', encoding='', delay=False, defaulttext='', language='', documenttype='texteditor'):
@@ -184,7 +185,7 @@ class EditorFactory(FNB.FlatNotebook, Mixin.Mixin):
                         doc = self.document
                     except:
                         error.traceback()
-                        wx.MessageDialog(self, tr("Can't open the file [%s]!") % filename, tr("Open file..."), wx.OK).ShowModal()
+                        common.showerror(self, tr("Can't open the file [%s]!") % filename)
                         doc = self.document
                     else:
                         self.switch(self.document, delay)
@@ -196,6 +197,7 @@ class EditorFactory(FNB.FlatNotebook, Mixin.Mixin):
 
         self.callplugin('afternewfile', self, doc)
         return doc
+    
     def newPage(self, filename, encoding=None, documenttype='texteditor', delay=False, defaulttext='', language='', **kwargs):
         try:
             panelclass = self.panellist[documenttype]
@@ -220,16 +222,14 @@ class EditorFactory(FNB.FlatNotebook, Mixin.Mixin):
             error.traceback()
             if panel:
                 panel.Destroy()
-            wx.MessageDialog(self, tr("Can't open the file [%s]!") % filename, tr("Open file..."), wx.OK).ShowModal()
+            common.showerror(self, tr("Can't open the file [%s]!") % filename)
             return None
 
         self.AddPage(panel, document.getShortFilename(), select=False)
-#        self.SetSelection(self.getIndex(document))
         imageindex = self.imageindex.get(document.pageimagename, -1)
         if imageindex > -1:
             self.SetPageImage(self.GetPageCount() - 1, imageindex)
         self.switch(document, delay)
-
         return document
 
     def OnChanged(self, event):

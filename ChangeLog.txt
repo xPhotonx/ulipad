@@ -1,4 +1,8 @@
 ﻿$Rev$
+[2007/09/02]
+EditorFactory.py Editor.py
+                    Fix open un-exists file will popup two message dialog bug
+                    
 [2007/09/01]
 DirBrowser.py 
                     Fix adding empty directory error
