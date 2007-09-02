@@ -189,7 +189,7 @@ class TextEditor(wx.stc.StyledTextCtrl, Mixin.Mixin, DocumentBase.DocumentBase):
         oldfilename = self.filename
         self.setFilename(filename)
 
-        self.callplugin('call_lexer', self, '', filename, language)
+#        self.callplugin('call_lexer', self, '', filename, language)
         if filename:
             stext = []
             flag = self.execplugin('readfiletext', self, filename, stext)
@@ -231,6 +231,7 @@ class TextEditor(wx.stc.StyledTextCtrl, Mixin.Mixin, DocumentBase.DocumentBase):
                 self.SetSavePoint()
                 self.settext = False
 
+        self.callplugin('call_lexer', self, '', filename, language)
         self.callplugin('afteropenfile', self, filename)
         self.callplugin('leaveopenfile', self, filename)
 
