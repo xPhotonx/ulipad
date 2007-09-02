@@ -44,6 +44,7 @@ def other_popup_menu(dirwin, projectname, menus):
     is_svn_dir = detect_svn(common.getCurrentDir(dirwin.get_node_filename(item)))
     menus.extend([ (None,
         [
+            (93.0, 'IDPM_VC_CHECKOUT', tr('SVN Checkout'), wx.ITEM_NORMAL, 'OnVC_DoCommand', ''),
             (93.3, 'IDPM_VC_COMMANDS', tr('SVN Commands'), wx.ITEM_NORMAL, '', ''),
             (93.4, '', '-', wx.ITEM_SEPARATOR, None, ''),
         ]),
@@ -73,12 +74,6 @@ def other_popup_menu(dirwin, projectname, menus):
                 (190, '', '-', wx.ITEM_SEPARATOR, None, ''),
                 (200, 'IDPM_VC_COMMANDS_EXPORT', tr('Export'), wx.ITEM_NORMAL, 'OnVC_DoCommand', ''),
                 (210, '', '-', wx.ITEM_SEPARATOR, None, ''),
-            ]),
-        ])
-    else:
-        menus.extend([ (None,
-            [
-                (93, 'IDPM_VC_CHECKOUT', tr('SVN Checkout'), wx.ITEM_NORMAL, 'OnVC_DoCommand', ''),
             ]),
         ])
 Mixin.setPlugin('dirbrowser', 'other_popup_menu', other_popup_menu)
