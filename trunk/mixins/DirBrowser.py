@@ -647,9 +647,9 @@ class DirBrowser(wx.Panel, Mixin.Mixin):
             
         #add rest dirs and files
         for filename in dirs:
-            self.insert_filename_node(cur_item, path, filename, False)
+            self.insert_filename_node(item, path, filename, False)
         for filename in files:
-            self.insert_filename_node(cur_item, path, filename, True)
+            self.insert_filename_node(item, path, filename, True)
         
         if first:
             wx.CallAfter(self.tree.Expand, item)
