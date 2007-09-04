@@ -32,9 +32,14 @@ class UnicodeError(Exception):
 def unicodetext(text, defaultencoding='utf-8'):
     encoding = None
     begin = 0
+    
     if text.startswith('\xEF\xBB\xBF'):
         begin = 3
         encoding = 'utf-8'
+    if text.startswith('\xFF\xFE'):
+        begin = 3
+        encoding = 'utf-16'
+
     if not encoding:
         r = re.compile(r'coding[=:]\s*([-\w.]+)')
         
@@ -66,7 +71,7 @@ def unicodetext(text, defaultencoding='utf-8'):
     except:
         encoding = common.defaultencoding
         try:
-            s = unicode(text, encoding, 'replace')
+            s = unicode(text[begin:], encoding, 'replace')
         except:
             error.traceback()
             raise UnicodeError('Unicode error')
