@@ -30,7 +30,6 @@
 #         as repr().
 
 
-import os
 import wx
 import locale
 import types
@@ -141,7 +140,7 @@ def OnKeyDown(win, event):
 
             if isinstance(text, types.UnicodeType):
                 text = text.encode(locale.getdefaultlocale()[1])
-            win.outputstream.write(text + os.linesep)
+            win.outputstream.write(text + '\n')
             win.GotoPos(win.GetLength())
         if keycode == wx.WXK_UP:
             l = len(win.CommandArray)
