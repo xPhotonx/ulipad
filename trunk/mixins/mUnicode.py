@@ -46,7 +46,13 @@ Mixin.setPlugin('editor', 'init', editor_init)
 
 def openfileencoding(win, filename, stext, encoding):
     text = stext[0]
-
+    begin = 0
+    if text.startswith('\xEF\xBB\xBF'):
+        begin = 3
+        encoding = 'utf-8'
+    elif text.startswith('\xFF\xFE'):
+        begin = 2
+        encoding = 'utf-16'
     if not encoding:
         if filename:
             if win.mainframe.pref.auto_detect_utf8:
@@ -62,13 +68,13 @@ def openfileencoding(win, filename, stext, encoding):
                 encoding = common.defaultencoding
 
     try:
-        s = unicode(text, encoding)
+        s = unicode(text[begin:], encoding)
         win.locale = encoding
     except:
         if win.mainframe.pref.auto_detect_utf8 and encoding == 'utf-8':
             encoding = win.defaultlocale
             try:
-                s = unicode(text, encoding, 'replace')
+                s = unicode(text[begin:], encoding, 'replace')
                 win.locale = encoding
             except:
                 error.traceback()
