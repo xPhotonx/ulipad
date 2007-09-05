@@ -271,6 +271,7 @@ class DirBrowser(wx.Panel, Mixin.Mixin):
             self.tree.SetItemHasChildren(node, True)
             if expand:
                 self.addpathnodes(path, node)
+#                wx.CallAfter(self.tree.Expand, node)
                 wx.CallAfter(self.tree.SelectItem, node)
             self.callplugin('after_addpath', self, node)
         self.tree.Thaw()
@@ -617,7 +618,7 @@ class DirBrowser(wx.Panel, Mixin.Mixin):
     def OnRefresh(self, event=None):
         item = self.tree.GetSelection()
         if not self.is_ok(item): return
-        self.refresh(item)
+        self.refresh(self.get_top_parent(item))
         
     def refresh(self, item, first=True):
         cur_item = item
@@ -652,9 +653,6 @@ class DirBrowser(wx.Panel, Mixin.Mixin):
             self.insert_filename_node(item, path, filename, True)
         
         if first:
-            wx.CallAfter(self.tree.Expand, item)
-            wx.CallAfter(self.tree.SelectItem, cur_item)
-            
             self.callplugin('after_refresh', self, item)
 
     def OnRename(self, event):
@@ -674,6 +672,11 @@ class DirBrowser(wx.Panel, Mixin.Mixin):
     def is_first_node(self, item):
         parent = self.tree.GetItemParent(item)
         return parent == self.root
+    
+    def get_top_parent(self, item):
+        while not self.is_first_node(item):
+            item = self.tree.GetItemParent(item)
+        return item
 
     def get_node_filename(self, item):
         _id = self.tree.GetPyData(item)
