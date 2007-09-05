@@ -233,5 +233,9 @@ Mixin.setPlugin('editor', 'aftersavefile', aftersavefile)
 ########################################################
 
 def detect_svn(path):
-    if os.path.exists(os.path.join(path, '.svn')):
-        return True
+    lastdir = ''
+    while lastdir != path:
+        if os.path.exists(os.path.join(path, '.svn')):
+            return True
+        lastdir = path
+        path = os.path.dirname(path)
