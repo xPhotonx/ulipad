@@ -760,15 +760,15 @@ class InputAssistant(Mixin.Mixin):
             self.editor.input_analysis.append(func)
 
     def call_calltip(self, word, syncvar):
-        for f in self.editor.input_calltip:
-            try:
+        try:
+            for f in self.editor.input_calltip:
                 r = f(self.editor, word, syncvar)
                 if r:
                     return r
-            except StopException:
-                pass
-            except:
-                error.traceback()
+        except StopException:
+            pass
+        except:
+            error.traceback()
            
     def call_autodot(self, word, syncvar):
         result = []
@@ -784,24 +784,24 @@ class InputAssistant(Mixin.Mixin):
         return result
     
     def call_locals(self, line, word, syncvar):
-        for f in self.editor.input_locals:
-            try:
+        try:
+            for f in self.editor.input_locals:
                 r = f(self.editor, line, word, syncvar)
                 if r:
                     return r
-            except StopException:
-                pass
-            except:
-                error.traceback()
+        except StopException:
+            pass
+        except:
+            error.traceback()
 
     def call_analysis(self, syncvar):
-        for f in self.editor.input_analysis:
-            try:
+        try:
+            for f in self.editor.input_analysis:
                 r = f(self.editor, syncvar)
-            except StopException:
-                pass
-            except:
-                error.traceback()
+        except StopException:
+            pass
+        except:
+            error.traceback()
                 
     r_key = re.compile(r'(.*?)%(.*?)%$')
     def install_keylist(self, items, re_flag=False):
