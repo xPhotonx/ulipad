@@ -630,21 +630,25 @@ class DirBrowser(wx.Panel, Mixin.Mixin):
         path = common.getCurrentDir(self.get_node_filename(item))
         dirs, files = self.get_files(path)
         node, cookie = self.tree.GetFirstChild(item)
+        delnodes = []
         while self.is_ok(node):
             filename = self.tree.GetItemText(node)
             if self.isFile(node):
                 if filename in files:
                     files.remove(filename)
                 else:
-                    self.tree.Delete(node)
+                    delnodes.append(node)
             else:
                 if filename in dirs:
                     dirs.remove(filename)
                     if self.tree.GetChildrenCount(node) > 0:
                         self.refresh(node, False)
                 else:
-                    self.tree.Delete(node)
+                    delnodes.append(node)
             node, cookie = self.tree.GetNextChild(item, cookie)
+        
+        for node in delnodes:
+            self.tree.Delete(node)
             
         #add rest dirs and files
         for filename in dirs:
