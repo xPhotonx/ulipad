@@ -931,12 +931,7 @@ class DirBrowser(wx.Panel, Mixin.Mixin):
                 error.traceback()
                 common.showerror(self, tr("Move %(filename)s to %(dst)s failed!") % {'filename':src, 'dst':dst})
                 return
-            self.tree.Delete(item)
-        self.tree.DeleteChildren(dstobj)
-        if os.path.isfile(dst):
-            dst = os.path.dirname(dst)
-        self.addpathnodes(dst, dstobj)
-        wx.CallAfter(self.tree.Expand, dstobj)
+        self.OnRefresh()
 
     def OnKeyDown(self, event):
         key = event.GetKeyCode()
