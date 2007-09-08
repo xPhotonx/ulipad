@@ -21,72 +21,22 @@
 #
 #   $Id: Entry.py 1783 2006-12-20 13:33:46Z limodou $
 
-import wx
+import meide as ui
 
-class MyTextEntry(wx.Dialog):
-    def __init__(self, parent, title, message, defaultvalue):
-        wx.Dialog.__init__(self, parent, -1, style = wx.DEFAULT_DIALOG_STYLE, title = title)
-
-        box = wx.BoxSizer(wx.VERTICAL)
-        stext = wx.StaticText(self, -1, label=message)
-        box.Add(stext, 0, wx.ALIGN_LEFT|wx.ALL, 5)
-        self.text = wx.TextCtrl(self, -1, defaultvalue)
-        self.text.SetSelection(-1, -1)
-        box.Add(self.text, 1, wx.EXPAND|wx.ALL, 5)
-        box2 = wx.BoxSizer(wx.HORIZONTAL)
-        btnOK = wx.Button(self, wx.ID_OK, tr("OK"))
-        btnOK.SetDefault()
-        box2.Add(btnOK, 0, wx.ALIGN_RIGHT|wx.RIGHT, 5)
-        btnCancel = wx.Button(self, wx.ID_CANCEL, tr("Cancel"))
-        box2.Add(btnCancel, 0, wx.ALIGN_LEFT|wx.LEFT, 5)
-        box.Add(box2, 0, wx.ALIGN_CENTER|wx.BOTTOM, 5)
-
-        self.SetSizer(box)
-        self.SetAutoLayout(True)
-
-        box.Fit(self)
-
-        self.value = defaultvalue
+class MyTextEntry(ui.SimpleDialog):
+    def __init__(self, parent, title, message, defaultvalue, fit=2):
+        box = ui.SimpleGrid()
+        box.add(message, ui.Text(defaultvalue), name='text')
+        super(MyTextEntry, self).__init__(parent, box, title, fit=fit)
 
     def GetValue(self):
-        return self.text.GetValue()
+        return self.layout.GetValue()['text']
 
-class MyFileEntry(wx.Dialog):
-    def __init__(self, parent, title, message, defaultvalue):
-        wx.Dialog.__init__(self, parent, -1, style = wx.DEFAULT_DIALOG_STYLE, title = title, size=(300, -1))
-
-        box = wx.BoxSizer(wx.VERTICAL)
-        stext = wx.StaticText(self, -1, label=message)
-        box.Add(stext, 0, wx.ALIGN_LEFT|wx.ALL, 5)
-        box1 = wx.BoxSizer(wx.HORIZONTAL)
-        self.text = wx.TextCtrl(self, -1, defaultvalue)
-        self.text.SetSelection(-1, -1)
-        box1.Add(self.text, 1, wx.EXPAND|wx.ALL, 5)
-        self.ID_BROWSER = wx.NewId()
-        self.btnBrowser = wx.Button(self, self.ID_BROWSER, tr("Browser"), size=(50, -1))
-        box1.Add(self.btnBrowser, 0, wx.ALL, 5)
-        box.Add(box1, 1, wx.EXPAND, 5)
-        box2 = wx.BoxSizer(wx.HORIZONTAL)
-        btnOK = wx.Button(self, wx.ID_OK, tr("OK"))
-        btnOK.SetDefault()
-        box2.Add(btnOK, 0, wx.ALIGN_RIGHT|wx.RIGHT, 5)
-        btnCancel = wx.Button(self, wx.ID_CANCEL, tr("Cancel"))
-        box2.Add(btnCancel, 0, wx.ALIGN_LEFT|wx.LEFT, 5)
-        box.Add(box2, 0, wx.ALIGN_CENTER|wx.BOTTOM, 5)
-
-        wx.EVT_BUTTON(self.btnBrowser, self.ID_BROWSER, self.OnBrowser)
-
-        self.SetSizer(box)
-        self.SetAutoLayout(True)
-        box.Fit(self)
-
-        self.value = defaultvalue
+class MyFileEntry(ui.SimpleDialog):
+    def __init__(self, parent, title, message, defaultvalue, fit=1):
+        box = ui.SimpleGrid()
+        box.add(message, ui.OpenFile(defaultvalue), name='filename')
+        super(MyFileEntry, self).__init__(parent, box, title, fit=fit, size=(400, -1))
 
     def GetValue(self):
-        return self.text.GetValue()
-
-    def OnBrowser(self, event):
-        dlg = wx.FileDialog(self, tr("Select A File"), "", "", tr("All file (*.*)|*.*"), wx.OPEN|wx.HIDE_READONLY)
-        if dlg.ShowModal() == wx.ID_OK:
-            filename = dlg.GetPath()
-            self.text.SetValue('%s' % filename)
+        return self.layout.GetValue()['filename']
