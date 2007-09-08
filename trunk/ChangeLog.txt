@@ -1,4 +1,7 @@
 $Rev$
+[2007/09/08]
+Entry.py            Rewrite the code with meide module
+
 [2007/09/06]
 DirBrowser.py       Fix refresh bug
 
