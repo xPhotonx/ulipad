@@ -22,7 +22,7 @@
 #   $Id$
 
 import compiler
-from modules import pyflakes
+from modules.pyflakes import checker
 from modules import common
 import wx
 from modules.EasyGuider import EasyList
@@ -44,7 +44,7 @@ def check(codeString, filename):
         error.traceback()
         message.append((filename, -1, tr('There are some unknown errors, please check error.txt')))
     else:
-        w = pyflakes.Checker(tree, filename)
+        w = checker.Checker(tree, filename)
         w.messages.sort(lambda a, b: cmp(a.lineno, b.lineno))
         for warning in w.messages:
             message.append((filename, warning.lineno, warning.message % warning.message_args))

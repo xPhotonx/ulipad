@@ -1004,7 +1004,7 @@ class Date(ValueElement):
         import datetime
         
         if not value:
-            date = wx.DateTimeFromTimeT(time.time())
+            date = wx.DateTime.Now()
         elif isinstance(value, str):
             d = time.strptime(value, "%Y-%m-%d")
             date = wx.DateTimeFromTimeT(time.mktime(d))
@@ -1017,7 +1017,7 @@ class Date(ValueElement):
         import datetime
         
         date = self.get_obj().GetValue()
-        return datetime.date(date.Year, date.Mon, date.Day)
+        return datetime.date(date.Year, date.Month+1, date.Day)
     
 class Time(ValueElement):
     def _create_obj(self, win):
@@ -1037,7 +1037,7 @@ class Time(ValueElement):
         import datetime
         
         if not value:
-            date = wx.DateTimeFromTimeT(time.time())
+            date = wx.DateTime.Now()
         elif isinstance(value, str):
             d = time.strptime(value, "%H:%M:%S")
             date = wx.DateTimeFromTimeT(time.mktime(d))
