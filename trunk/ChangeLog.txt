@@ -1,4 +1,9 @@
 $Rev$
+[2007/09/15]
+DirBrowser.py       Fix directory browser insert node bug
+Editor.py mUnicode.py
+                    Don't create a tmp file again, directly save the file
+                    
 [2007/09/09]
 pyflakes SyntaxCheck.py
                     Update to svn version

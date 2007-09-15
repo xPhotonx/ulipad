@@ -388,7 +388,11 @@ class DirBrowser(wx.Panel, Mixin.Mixin):
         return obj
             
     def insertnode(self, parent, previous, path, name, imagenormal, imageexpand=None, _id=None, data='file'):
-        obj = self.tree.InsertItem(parent, previous, name)
+        item = self.tree.GetPrevSibling(previous)
+        if self.is_ok(item):
+            obj = self.tree.InsertItem(parent, item, name)
+        else:
+            self.tree.InsertItemBefore(parent, 0, name)
         self.nodes[_id] = dict(path=path, name=name, obj=obj, nodetype=data)
         self.tree.SetPyData(obj, _id)
         self.tree.SetItemImage(obj, imagenormal, wx.TreeItemIcon_Normal)
@@ -902,7 +906,8 @@ class DirBrowser(wx.Panel, Mixin.Mixin):
                 flag = True
             if flag:
                 from modules.Entry import MyTextEntry
-                dlg = MyTextEntry(self, tr("Save File"), tr("Change the filename:"), fname)
+                dlg = MyTextEntry(self, tr("Save File"), tr("Change the filename:"), 
+                    fname, fit=1, size=(300, -1))
                 result = dlg.ShowModal()
                 if result == wx.ID_OK:
                     dst = os.path.join(dst, dlg.GetValue())

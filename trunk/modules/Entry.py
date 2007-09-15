@@ -22,12 +22,13 @@
 #   $Id: Entry.py 1783 2006-12-20 13:33:46Z limodou $
 
 import meide as ui
+import wx
 
 class MyTextEntry(ui.SimpleDialog):
-    def __init__(self, parent, title, message, defaultvalue, fit=2):
+    def __init__(self, parent, title, message, defaultvalue, fit=2, size=wx.DefaultSize):
         box = ui.SimpleGrid()
         box.add(message, ui.Text(defaultvalue), name='text')
-        super(MyTextEntry, self).__init__(parent, box, title, fit=fit)
+        super(MyTextEntry, self).__init__(parent, box, title, fit=fit, size=size)
 
     def GetValue(self):
         return self.layout.GetValue()['text']
