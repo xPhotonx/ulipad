@@ -2100,7 +2100,7 @@ def savefileencoding(win, stext, encoding):
         except:
             error.traceback()
             try:
-                s = text.encode(encoding, 'ignore')
+                s = text.encode(encoding, 'replace')
             except:
                 raise MyUnicodeException(win, tr("Cann't convert file to [%s] encoding!\nThe file cann't be saved!") % encoding,
                     tr("Unicode Error"))

@@ -22,8 +22,6 @@
 #   $Id: Editor.py 2067 2007-05-11 04:30:14Z limodou $
 
 import wx
-import os
-import stat
 import DocumentBase
 import thread
 from modules import common
@@ -260,21 +258,21 @@ class TextEditor(wx.stc.StyledTextCtrl, Mixin.Mixin, DocumentBase.DocumentBase):
             if not flag:
                 #test if the file can be write
                 try:
-                    tmp = filename + '.tmp'
-                    f = file(tmp, 'wb')
+#                    tmp = filename + '.tmp'
+                    f = file(filename, 'wb')
                     f.write(stext[0])
                     f.close()
 
-                    mask = os.umask(0)
-                    newflag = False
-                    if os.path.exists(filename):
-                        st = os.stat(filename)
-                        os.remove(filename)
-                        newflag = True
-                    os.rename(tmp, filename)
-                    if newflag:
-                        os.chmod(filename, st[stat.ST_MODE])
-                    os.umask(mask)
+#                    mask = os.umask(0)
+#                    newflag = False
+#                    if os.path.exists(filename):
+#                        st = os.stat(filename)
+#                        os.remove(filename)
+#                        newflag = True
+#                    os.rename(tmp, filename)
+#                    if newflag:
+#                        os.chmod(filename, st[stat.ST_MODE])
+#                    os.umask(mask)
                 except Exception, e:
                     common.showerror(self, str(e))
                     raise
