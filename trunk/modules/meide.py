@@ -153,7 +153,10 @@ class Element(object):
         created.
         """
         #create object
-        if self.created: return self
+        if self.win is win:
+            if self.created: return self
+        else:
+            self.created = False
         self.win = win
         self.obj = obj = self._create_obj(win)
         
@@ -199,8 +202,11 @@ class Element(object):
         """
         if self.created:
             self._bind_event(event_name, func)
-        else:
-            self.events.append((event_name, func))
+        for i, eve_name, func in enumerate(self.events):
+            if eve_name == event_name:
+                del self.events[i]
+                break
+        self.events.append((event_name, func))
         return self
         
     def binds(self, events):
@@ -213,10 +219,8 @@ class Element(object):
             
         binds method also support lazy binding.
         """
-        if self.created:
-            self._binds(events)
-        else:
-            self.events.extend(events)
+        for eve in events:
+            self.bind(*eve)
         return self
         
     def get_obj(self):
@@ -451,7 +455,10 @@ class LayoutBase(Element, LayoutValidateMixin):
     
     def create(self, win):
         #create object
-        if self.created: return self
+        if self.win is win:
+            if self.created: return self
+        else:
+            self.created = False
         self.win = win
         self.obj = obj = self._create_obj(win)
         #create childen widgets
@@ -568,16 +575,18 @@ class LayoutBase(Element, LayoutValidateMixin):
     def bind(self, name, event_name, func):
         if self.created:
             self._bind_event(name, event_name, func)
-        else:
-            self.events.append((name, event_name, func))
+        
+        for i, n, eve_name, func in enumerate(self.events):
+            if n == name and eve_name == event_name:
+                del self.events[i]
+                break
+
+        self.events.append((name, event_name, func))
         return self
         
     def binds(self, events):
-        if self.created:
-            for name, eve, func in events:
-                self._bind_event(name, eve, func)
-        else:
-            self.events.extend(events)
+        for eve in events:
+            self.bind(*eve)
         return self
         
     def _bind_event(self, name, eve, func):
@@ -927,7 +936,9 @@ class ValueElement(EasyElement, ValidateMixin):
     
     def __init__(self, value=None, *args, **kwargs):
         """
-        The first paramter of each ValueElement is always `value`.
+        The first paramter of each ValueElement is always `value`. And ValueElement
+        supports lazy value calculte, so you can pass a callable object ,and when
+        creating the object, the callable will be automatically calculated.
         """
         EasyElement.__init__(self, *args, **kwargs)
         ValidateMixin.__init__(self)
@@ -939,13 +950,21 @@ class ValueElement(EasyElement, ValidateMixin):
         invoke the SetValue() to initialize the underlying widget object.
         """
         #create object
-        if self.created: return self
+        if self.win is win:
+            if self.created: return self
+        else:
+            self.created = False
         self.win = win
         self.obj = obj = self._create_obj(win)
         if self.value is None:
             value = self._get_default_value()
         else:
-            value = self.value
+            #support lazy value calculate
+            if callable(self.value):
+                value = self.value()
+            else:
+                value = self.value
+            
         self.SetValue(value)
         
         #set external attributes
