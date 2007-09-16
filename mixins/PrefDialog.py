@@ -23,9 +23,9 @@
 
 import wx
 import Preference
-import types
 from modules import Mixin
 from modules.Debug import error
+from modules import meide as ui
 
 class PrefDialog(wx.Dialog, Mixin.Mixin):
     __mixinname__ = 'prefdialog'
@@ -35,31 +35,24 @@ class PrefDialog(wx.Dialog, Mixin.Mixin):
 
         wx.Dialog.__init__(self, parent, -1, title=tr("Preference..."), size=wx.Size(600, 400), style=wx.DEFAULT_DIALOG_STYLE)
 
-        self.items = {}
+        self.value_set = []
 
         self.parent = parent
         self.pref = self.parent.pref
         self.default_pref = Preference.Preference()
-        self.box1 = wx.BoxSizer(wx.VERTICAL)
+        
+        self.box = box = ui.VBox()
         self.notebook = wx.Notebook(self, -1)
         self.addPages(self.notebook)
-        self.box1.Add(self.notebook, 1, wx.EXPAND|wx.ALL, 3)
+        
+        box.add(self.notebook, proportion=1, flag=wx.EXPAND|wx.ALL, border=3)
 
-        self.box2 = wx.BoxSizer(wx.HORIZONTAL)
-
-        self.btnok = wx.Button(self, wx.ID_OK, tr("OK"))
-        self.btnok.SetDefault()
-        self.box2.Add(self.btnok, 0, wx.ALIGN_CENTRE|wx.ALL, 3)
-        self.btncancel = wx.Button(self, wx.ID_CANCEL, tr("Cancel"))
-        self.box2.Add(self.btncancel, 0, wx.ALIGN_CENTRE|wx.ALL, 3)
-
-        self.box1.Add(self.box2, 0, wx.ALIGN_CENTER|wx.ALL, 3)
-
-        self.SetSizer(self.box1)
-        self.SetAutoLayout(True)
-        wx.EVT_BUTTON(self, wx.ID_OK, self.OnOk)
-
+        box.add(ui.simple_buttons(), flag=wx.ALIGN_CENTER|wx.BOTTOM)
+        box.bind('btnOk', 'click', self.OnOk)
+        
         self.callplugin('initpreference', self)
+        ui.create(self, box, 0)
+        box.find('btnOk').get_obj().SetDefault()
 
     def addPages(self, notebook):
         pages = []
@@ -70,15 +63,13 @@ class PrefDialog(wx.Dialog, Mixin.Mixin):
             else:
                 prefvalue = getattr(self.parent.pref, prefname)
             if pages.count(pagename)==0:
-#                               page = wx.Panel(notebook, -1)
                 page = wx.ScrolledWindow(notebook, -1)
                 page.EnableScrolling(False, True)
                 page.SetScrollbars(10, 10, 30, 30)
                 notebook.AddPage(page, pagename)
                 pages.append(pagename)
-                page.box = wx.BoxSizer(wx.VERTICAL)
-                page.SetSizer(page.box)
-                page.SetAutoLayout(True)
+                page.box = ui.SimpleGrid().create(page).auto_layout()
+                self.value_set.append(page.box)
             else:
                 page = notebook.GetPage(pages.index(pagename))
             value = self.validate(prefname, kind, prefvalue)
@@ -87,56 +78,42 @@ class PrefDialog(wx.Dialog, Mixin.Mixin):
     def addItem(self, page, kind, prefname, prefvalue, message, extern):
         if self.execplugin("additem", self, page, kind, prefname, prefvalue, message, extern):
             return
-        if kind == 'check':
-            obj = wx.CheckBox(page, -1, message)
-            obj.SetValue(prefvalue)
-            self.items[prefname] = (obj, obj.GetValue)
-        elif kind == 'num':
-            obj = wx.BoxSizer(wx.HORIZONTAL)
-            obj.Add(wx.StaticText(page, -1, message), 0, wx.ALIGN_CENTER_VERTICAL|wx.RIGHT, 10)
-            nc = wx.SpinCtrl(page, min=1, max=100000, size=(60, 22))
-            nc.SetValue(prefvalue)
-            obj.Add(nc, 0)
-            self.items[prefname] = (nc, nc.GetValue)
-        elif kind == 'int':
-            obj = wx.BoxSizer(wx.HORIZONTAL)
-            obj.Add(wx.StaticText(page, -1, message), 0, wx.ALIGN_CENTER_VERTICAL|wx.RIGHT, 10)
-            from wx.lib.intctrl import IntCtrl
-            nc = IntCtrl(page)
-            nc.SetValue(prefvalue)
-            obj.Add(nc, 0)
-            self.items[prefname] = (nc, nc.GetValue)
-        elif kind == 'choice':
-            obj = wx.BoxSizer(wx.HORIZONTAL)
-            obj.Add(wx.StaticText(page, -1, message), 0, wx.ALIGN_CENTER_VERTICAL|wx.RIGHT, 10)
-            cb = wx.ComboBox(page, -1, '', choices = extern, style = wx.CB_DROPDOWN|wx.CB_READONLY )
-            obj.Add(cb, 0)
-            if types.IntType == type(prefvalue):
-                cb.SetSelection(prefvalue)
-                self.items[prefname] = (cb, cb.GetSelection)
+        
+        obj = None
+        label = message
+        kwargs = None
+        if not isinstance(kind, str):
+            obj = kind
+            kwargs = extern
+        else:
+            if kind == 'check':
+                obj = ui.Check(prefvalue, label=message)
+                label = ''
+            elif kind == 'num':
+                obj = ui.IntSpin(prefvalue, max=100000, min=1, size=(60, -1))
+            elif kind == 'int':
+                obj = ui.Int(prefvalue)
+            elif kind == 'choice':
+                obj = ui.SingleChoice(prefvalue, choices=extern)
+            elif kind == 'text':
+                obj = ui.Text(prefvalue)
+            elif kind == 'password':
+                obj = ui.Password(prefvalue)
+            elif kind == 'openfile':
+                obj = ui.OpenFile(prefvalue)
+            elif kind == 'button':
+                label = ''
+                func = getattr(self, extern)
+                obj = ui.Button(message).bind('click', func)
+                
+        if not kwargs:
+            if label:
+                span = False
             else:
-                cb.SetValue(prefvalue)
-                self.items[prefname] = (cb, cb.GetValue)
-        elif kind == 'text':
-            obj = wx.BoxSizer(wx.HORIZONTAL)
-            obj.Add(wx.StaticText(page, -1, message), 0, wx.ALIGN_CENTER_VERTICAL|wx.RIGHT, 10)
-            tc = wx.TextCtrl(page, -1, prefvalue)
-            obj.Add(tc, 0)
-            self.items[prefname] = (tc, tc.GetValue)
-        elif kind == 'password':
-            obj = wx.BoxSizer(wx.HORIZONTAL)
-            obj.Add(wx.StaticText(page, -1, message), 0, wx.ALIGN_CENTER_VERTICAL|wx.RIGHT, 10)
-            tc = wx.TextCtrl(page, -1, prefvalue, style=wx.TE_PASSWORD)
-            obj.Add(tc, 0)
-            self.items[prefname] = (tc, tc.GetValue)
-        elif kind == 'button':
-            #message is button's label
-            #extern is button event handler function
-            button_id = wx.NewId()
-            obj = wx.Button(page, button_id, message)
-            func = getattr(self, extern)
-            wx.EVT_BUTTON(obj, button_id, func)
-        page.box.Add(obj, 0, wx.LEFT|wx.TOP|wx.RIGHT, 5)
+                span = True
+            page.box.add(label, obj, name=prefname, span=span)
+        else:
+            page.box.add(label, obj, name=prefname, **kwargs)
 
     def validate(self, name, kind, value):
         if kind == 'check':
@@ -151,14 +128,12 @@ class PrefDialog(wx.Dialog, Mixin.Mixin):
         else:
             return value
 
-    def getObj(self, name):
-        v = self.items[name]
-        return v[0]
-
     def OnOk(self, event):
-        for name, v in self.items.items():
-            obj, func = v
-            setattr(self.parent.pref, name, func())
+        values = {}
+        for b in self.value_set:
+            values.update(b.GetValue())
+        for name, v in values.items():
+            setattr(self.parent.pref, name, v)
         self.parent.pref.save()
 
         #self.parent = mainframe

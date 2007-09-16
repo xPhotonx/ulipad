@@ -6373,11 +6373,23 @@ def pref_init(pref):
 Mixin.setPlugin('preference', 'init', pref_init)
 
 def add_pref(preflist):
+
+    def _get(name):
+        def _f(name=name):
+            from modules import Globals
+            return getattr(Globals.pref, name)
+        return _f
+
+    from modules import meide as ui
+    box = ui.VGroup(tr('Network'))
+    grid = ui.SimpleGrid()
+    grid.add('', ui.Check(_get('use_proxy'), tr('Use proxy')), name='use_proxy', span=True)
+    grid.add(tr('Proxy URL:'), ui.Text(_get('proxy')), name='proxy')
+    grid.add(tr('Proxy User:'), ui.Text(_get('proxy_user')), name='proxy_user')
+    grid.add(tr('Proxy Password:'), ui.Password(_get('proxy_password')), name='proxy_password')
+    box.add(grid)
     preflist.extend([
-        (tr('General'), 200, 'check', 'use_proxy', tr('Use proxy'), None),
-        (tr('General'), 210, 'text', 'proxy', tr('Proxy URL:'), None),
-        (tr('General'), 220, 'text', 'proxy_user', tr('Proxy User:'), None),
-        (tr('General'), 230, 'password', 'proxy_password', tr('Proxy Password:'), None),
+        (tr('Network'), 100, box, '', '', {'span':True}),
     ])
 Mixin.setPlugin('preference', 'add_pref', add_pref)
 
