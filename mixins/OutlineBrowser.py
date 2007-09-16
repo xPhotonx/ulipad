@@ -19,16 +19,16 @@
 #   along with this program; if not, write to the Free Software
 #   Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 #
-#   $Id: OutlookBrowser.py 1792 2006-12-23 02:54:21Z limodou $
+#   $Id$
 
 import wx
 from modules import common
 from modules import makemenu
 from modules import Mixin
 
-class OutlookBrowser(wx.Panel, Mixin.Mixin):
+class OutlineBrowser(wx.Panel, Mixin.Mixin):
 
-    __mixinname__ = 'outlookbrowser'
+    __mixinname__ = 'outlinebrowser'
 
     popmenulist = []
 
@@ -68,7 +68,7 @@ class OutlookBrowser(wx.Panel, Mixin.Mixin):
         self.tree.SetImageList(self.imagelist)
 
         self.sizer.Add(self.tree, 1, wx.EXPAND)
-        self.root = self.tree.AddRoot('OutlookBrowser')
+        self.root = self.tree.AddRoot('OutlineBrowser')
 
         self.nodes = {}
         self.ID = 1
@@ -141,8 +141,8 @@ class OutlookBrowser(wx.Panel, Mixin.Mixin):
 
     def OnCloseWin(self):
         for klass in self.processors.values():
-            if hasattr(klass, 'OnOutlookBrowserClose'):
-                klass.OnOutlookBrowserClose()
+            if hasattr(klass, 'OnOutlineBrowserClose'):
+                klass.OnOutlineBrowserClose()
 
     def OnChangeLabel(self, event):
         item = event.GetItem()
@@ -169,9 +169,9 @@ class OutlookBrowser(wx.Panel, Mixin.Mixin):
         self.callplugin('other_popup_menu', self, other_menus)
         import copy
         if other_menus:
-            pop_menus = copy.deepcopy(OutlookBrowser.popmenulist + other_menus)
+            pop_menus = copy.deepcopy(OutlineBrowser.popmenulist + other_menus)
         else:
-            pop_menus = copy.deepcopy(OutlookBrowser.popmenulist)
+            pop_menus = copy.deepcopy(OutlineBrowser.popmenulist)
         self.popmenus = pop_menus = makemenu.makepopmenu(self, pop_menus)
 
         self.tree.PopupMenu(pop_menus, event.GetPosition())

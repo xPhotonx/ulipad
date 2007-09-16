@@ -3,6 +3,8 @@ $Rev$
 DirBrowser.py       Fix directory browser insert node bug
 Editor.py mUnicode.py
                     Don't create a tmp file again, directly save the file
+mClassBrowser.py    Add option to control if show the docstring in class browser window.
+                    rename OutlookBrowser.py to OutlineBrowser.py
                     
 [2007/09/09]
 pyflakes SyntaxCheck.py

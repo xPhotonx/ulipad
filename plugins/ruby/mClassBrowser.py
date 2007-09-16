@@ -56,7 +56,7 @@ def OnRubyClassBrowser(win, event):
     if win.document.panel.LeftIsVisible:
         if win.document.init_class_browser == False:
             win.document.init_class_browser = True
-            win.document.outlookbrowser.show()
+            win.document.outlinebrowser.show()
 Mixin.setMixin('mainframe', 'OnRubyClassBrowser', OnRubyClassBrowser)
 
 def aftersavefile(win, filename):
@@ -64,11 +64,11 @@ def aftersavefile(win, filename):
         and win.languagename == 'ruby'
         and win.pref.ruby_classbrowser_refresh_as_save
         and win.init_class_browser):
-        win.outlookbrowser.show()
+        win.outlinebrowser.show()
 Mixin.setPlugin('editor', 'aftersavefile', aftersavefile)
 
 def OnRubyClassBrowserRefresh(win, event):
-    win.document.outlookbrowser.show()
+    win.document.outlinebrowser.show()
 Mixin.setMixin('mainframe', 'OnRubyClassBrowserRefresh', OnRubyClassBrowserRefresh)
 
 def OnRubyUpdateUI(win, event):
@@ -85,7 +85,7 @@ def on_enter(mainframe, document):
         if document.panel.LeftIsVisible:
             if document.init_class_browser == False:
                 document.init_class_browser = True
-                document.outlookbrowser.show()
+                document.outlinebrowser.show()
 Mixin.setPlugin('rubyfiletype', 'on_enter', on_enter)
 
 def on_leave(mainframe, filename, languagename):
@@ -101,7 +101,7 @@ def add_images(images):
         ]
     for name, f in s:
         images[name] = os.path.join(Globals.workpath, 'images/%s' % f)
-Mixin.setPlugin('outlookbrowser', 'add_images', add_images)
+Mixin.setPlugin('outlinebrowser', 'add_images', add_images)
 
 def parsetext(win, editor):
     if editor.edittype == 'edit' and editor.languagename == 'ruby':
@@ -124,7 +124,7 @@ def parsetext(win, editor):
             for info, lineno in functions:
                 win.addnode(node, info, win.get_image_id('METHOD'), None,  lineno)
             win.tree.Expand(node)
-Mixin.setPlugin('outlookbrowser', 'parsetext', parsetext)
+Mixin.setPlugin('outlinebrowser', 'parsetext', parsetext)
 
 toollist = [
     (2000, 'classbrowser'),
