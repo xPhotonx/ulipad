@@ -130,6 +130,8 @@ class Element(object):
         self.obj = None
         self.widget = None
         self.events = []
+        self.win = None
+        self.created = False
         
     def _create_obj(self, win):
         """
@@ -151,6 +153,8 @@ class Element(object):
         created.
         """
         #create object
+        if self.created: return self
+        self.win = win
         self.obj = obj = self._create_obj(win)
         
         #set external attributes
@@ -160,6 +164,7 @@ class Element(object):
             obj.attr_size = self.size
         
         self._do_bind()
+        self.created = True
         return self
     
     def GetValue(self):
@@ -187,8 +192,15 @@ class Element(object):
         will not immediately bind the event to underlying widget, the event binding
         is happened when you invoking create() function. So you must bind event 
         before create() invoke, this is very important.
+        
+        Bind support lazy binding. So if you'v created the element, when you binding
+        an event to a function, the binding is executed immediately. But if not,
+        you can bind the event later. And the same process with binds.
         """
-        self.events.append((event_name, func))
+        if self.created:
+            self._bind_event(event_name, func)
+        else:
+            self.events.append((event_name, func))
         return self
         
     def binds(self, events):
@@ -198,8 +210,13 @@ class Element(object):
         events is a tuple list, it looks like:
             
             [(event_name, func), (event_name, func), ...]
+            
+        binds method also support lazy binding.
         """
-        self.events.extend(events)
+        if self.created:
+            self._binds(events)
+        else:
+            self.events.extend(events)
         return self
         
     def get_obj(self):
@@ -222,20 +239,28 @@ class Element(object):
         """
         return self.widget or self.obj
     
-    def _do_bind(self):
+    def _bind_event(self, eve, func):
+        """
+        Bind one event to an function
+        """
+        obj = self.get_widget()
+        try:
+            if isinstance(eve, str):
+                e = eve_mapping[eve]
+            else:
+                e = eve
+        except:
+            raise UnsupportException("This event type [%s] doesn't been supported" % eve)
+        e(obj, obj.GetId(), func)
+        
+    def _do_bind(self, events=None):
         """
         Private function used to do the real bind work. It'll be invoked in create().
         """
-        obj = self.get_obj()
-        for eve, func in self.events:
-            try:
-                if isinstance(eve, str):
-                    e = eve_mapping[eve]
-                else:
-                    e = eve
-            except:
-                raise UnsupportException("This event type [%s] doesn't been supported" % eve)
-            e(obj, obj.GetId(), func)
+        if not events:
+            events = self.events
+        for eve, func in events:
+            self._bind_event(eve, func)
             
     def _get_kwargs(self, kw):
         """
@@ -348,7 +373,6 @@ class LayoutBase(Element, LayoutValidateMixin):
         self.elements = {}
         self.elements_args = {}
         self.orders = []
-        self.objs = {}
         self.padding = padding
         self._id = 0
         
@@ -394,6 +418,10 @@ class LayoutBase(Element, LayoutValidateMixin):
             `flag` via _guess_expand() and _get_flag()
             `border` via padding
                 
+        add method supports lazy execution. So if you'v created the element, when
+        you invoking add() method, the widget which is being added is created
+        immediately, but if not, the widget will be created when you invoking
+        create() function.
         """
         if not name:
             self._id += 1
@@ -401,8 +429,11 @@ class LayoutBase(Element, LayoutValidateMixin):
         element = self._prepare_element(element)
         self.elements[name] = element
         element.name = name
-        self.elements_args[name] = {'proportion':proportion, 'flag':flag, 'border':border}
+        args = {'proportion':proportion, 'flag':flag, 'border':border}
+        self.elements_args[name] = args
         self.orders.append(name)
+        if self.created:
+            self._create_element(name, element, args, len(self.orders) - 1)
         return element
         
     def get_sizer(self):
@@ -420,50 +451,52 @@ class LayoutBase(Element, LayoutValidateMixin):
     
     def create(self, win):
         #create object
+        if self.created: return self
+        self.win = win
         self.obj = obj = self._create_obj(win)
+        #create childen widgets
+        for i, name in enumerate(self.orders):
+            self._create_element(name, self.elements[name], self.elements_args[name],
+                i)
         self._do_bind()
+        self.created = True
         return self
+    
+    def _create_element(self, name, element, args, i):
+        e = element
+        e.create(self.win)
+        #calculate flag
+        flag = 0
+        if args['flag'] is not None:
+            flag = args['flag']
+        else:
+            if i == 0:
+                flag = flag | self._get_flag(0)
+            if i == len(self.orders) - 1:
+                flag = flag | self._get_flag(1)
+            else:
+                flag = flag | self._get_flag(2)
+                
+            flag |= self._guess_expand(e)
+            
+        #calculate proportion
+        proportion = 0
+        if args['proportion'] is not None:
+            proportion = args['proportion']
+        else:
+            proportion = self._guess_proportion(e)
+            
+        #calculate border
+        border = self.padding
+        if args['border'] is not None:
+            border = args['border']
+        
+        sizer = self.get_sizer()
+        #add obj
+        self._add_element(self.win, sizer, name, e, args, i, proportion, flag, border)
 
     def _create_obj(self, win):
-        sizer = self._create_sizer(win)
-        for i, name in enumerate(self.orders):
-            e = self.elements[name]
-            e.create(win)
-            if isinstance(e, LayoutBase):
-                self.objs.update(e.objs)
-            else:
-                self.objs[name] = e
-            args = self.elements_args[name]
-
-            #calculate flag
-            flag = 0
-            if args['flag'] is not None:
-                flag = args['flag']
-            else:
-                if i == 0:
-                    flag = flag | self._get_flag(0)
-                if i == len(self.orders) - 1:
-                    flag = flag | self._get_flag(1)
-                else:
-                    flag = flag | self._get_flag(2)
-                    
-                flag |= self._guess_expand(e)
-                    
-            #calculate proportion
-            proportion = 0
-            if args['proportion'] is not None:
-                proportion = args['proportion']
-            else:
-                proportion = self._guess_proportion(e)
-                
-            #calculate border
-            border = self.padding
-            if args['border'] is not None:
-                border = args['border']
-
-            #add obj
-            self._add_element(win, sizer, name, e, args, i, proportion, flag, border)
-        return sizer
+        return self._create_sizer(win)
     
     def _add_element(self, win, sizer, name, e, args, i, proportion, flag, border):
         """
@@ -506,7 +539,7 @@ class LayoutBase(Element, LayoutValidateMixin):
             
     def GetValue(self):
         d = {}
-        for name, obj in self.objs.items():
+        for name, obj in self.elements.items():
             if obj.has_value:
                 v = obj.GetValue()
                 if isinstance(v, dict):
@@ -533,25 +566,35 @@ class LayoutBase(Element, LayoutValidateMixin):
             return wx.LEFT | wx.RIGHT | wx.BOTTOM
         
     def bind(self, name, event_name, func):
-        self.events.append((name, event_name, func))
+        if self.created:
+            self._bind_event(name, event_name, func)
+        else:
+            self.events.append((name, event_name, func))
         return self
         
     def binds(self, events):
-        self.events.extend(events)
+        if self.created:
+            for name, eve, func in events:
+                self._bind_event(name, eve, func)
+        else:
+            self.events.extend(events)
         return self
+        
+    def _bind_event(self, name, eve, func):
+        obj = self.find(name).get_widget()
+        if obj:
+            try:
+                if isinstance(eve, str):
+                    e = eve_mapping[eve]
+                else:
+                    e = eve
+            except:
+                raise UnsupportException("This event type [%s] doesn't been supported" % eve)
+            e(obj, obj.GetId(), func)
         
     def _do_bind(self):
         for name, eve, func in self.events:
-            obj = self.find(name).get_obj()
-            if obj:
-                try:
-                    if isinstance(eve, str):
-                        e = eve_mapping[eve]
-                    else:
-                        e = eve
-                except:
-                    raise UnsupportException("This event type [%s] doesn't been supported" % eve)
-                e(obj, obj.GetId(), func)
+            self._bind_event(name, eve, func)
         #process elements events
         for e in self.elements.values():
             e._do_bind()
@@ -561,8 +604,32 @@ class LayoutBase(Element, LayoutValidateMixin):
         Return the element object according the name. If there is no such a element
         object existed according to the name, then `None` returned.
         """
-        return self.objs.get(name, None)
+        def _f(obj, name):
+            if name in obj.elements:
+                return obj.elements[name]
+            else:
+                for e in obj.elements.values():
+                    if isinstance(e, LayoutBase):
+                        o = _f(e, name)
+                        if o: return o
+            
+        return _f(self, name)
     
+    def auto_layout(self):
+        """
+        Just like create() function, it can be used to create layout object immediately
+        and automatically set itself as a sizer of the win object.
+        """
+        self.win.SetSizer(self.get_sizer())
+        self.win.SetAutoLayout(True)
+        return self
+        
+    def auto_fit(self, fit=1):
+        if fit == 1:
+            self.win.SetSize((self.win.GetSize()[0], self.win.GetBestSize()[1]))
+        elif fit == 2:
+            self.win.SetSize(self.win.GetBestSize())
+        return self
     
 class HBox(LayoutBase):
     """
@@ -643,9 +710,12 @@ class Grid(LayoutBase):
         element = self._prepare_element(element)
         self.elements[name] = element
         element.name = name
-        self.elements_args[name] = {'pos':pos, 'proportion':proportion, 
+        args = {'pos':pos, 'proportion':proportion, 
             'flag':flag, 'border':border, 'span':span}
+        self.elements_args[name] = args
         self.orders.append(name)
+        if self.created:
+            self._create_element(name, element, args, len(self.orders) - 1)
         return element
     
     def _add_element(self, win, sizer, name, e, args, i, proportion, flag, border):
@@ -707,9 +777,12 @@ class SimpleGrid(Grid):
         element.name = name
         if span:
             span = (1, 2)
-        self.elements_args[name] = {'proportion':proportion, 
+        args = {'proportion':proportion, 
             'flag':flag, 'border':border, 'span':span, 'label':label}
+        self.elements_args[name] = args
         self.orders.append(name)
+        if self.created:
+            self._create_element(name, element, args, len(self.orders) - 1)
         return element
     
     def _add_element(self, win, sizer, name, e, args, i, proportion, flag, border):
@@ -866,6 +939,8 @@ class ValueElement(EasyElement, ValidateMixin):
         invoke the SetValue() to initialize the underlying widget object.
         """
         #create object
+        if self.created: return self
+        self.win = win
         self.obj = obj = self._create_obj(win)
         if self.value is None:
             value = self._get_default_value()
@@ -880,6 +955,7 @@ class ValueElement(EasyElement, ValidateMixin):
             obj.attr_size = self.size
     
         self._do_bind()
+        self.created = True
         return self
     
     def _get_default_value(self):
@@ -907,12 +983,16 @@ class Int(ValueElement):
     klass = IntCtrl
     default_value = 0
     
+class IntSpin(ValueElement):
+    klass = 'SpinCtrl'
+    default_value = 0
+    
 class Check(ValueElement):
     klass = 'CheckBox'
     default_value = False
     
     def __init__(self, value=None, label='', *args, **kwargs):
-        super(Check, self).__init__(label, *args, **kwargs)
+        super(Check, self).__init__(label=label, *args, **kwargs)
         self.value = value
         
 class Check3D(Check):
@@ -936,7 +1016,10 @@ class SingleChoice(ValueElement):
                 value_list = [x[0] for x in choices]
             else:
                 value_list = choices
-                value_dict = dict(zip(choices, choices))
+                if isinstance(value, int):
+                    value_dict = dict(zip(choices, list(range(len(choices)))))
+                else:
+                    value_dict = dict(zip(choices, choices))
         else:
             value_dict = choices
             value_list = sorted(choices.values())
@@ -968,7 +1051,10 @@ class MulitChoice(ValueElement):
                 value_list = [x[0] for x in choices]
             else:
                 value_list = choices
-                value_dict = dict(zip(choices, choices))
+                if isinstance(value, int):
+                    value_dict = dict(zip(choices, list(range(len(choices)))))
+                else:
+                    value_dict = dict(zip(choices, choices))
         else:
             value_dict = choices
             value_list = sorted(choices.values())
