@@ -3067,16 +3067,19 @@ import wx
 import os.path
 from modules import Mixin
 from modules import Globals
+from modules.Debug import error
 
 def pref_init(pref):
     pref.python_classbrowser_show = False
     pref.python_classbrowser_refresh_as_save = True
+    pref.python_classbrowser_show_docstring = True
 Mixin.setPlugin('preference', 'init', pref_init)
 
 def add_pref(preflist):
     preflist.extend([
         ('Python', 100, 'check', 'python_classbrowser_show', tr('Show class browser window when opening python source file'), None),
         ('Python', 105, 'check', 'python_classbrowser_refresh_as_save', tr('Refresh class browser window when saving python source file'), None),
+        ('Python', 106, 'check', 'python_classbrowser_show_docstring', tr('Show docstring when cursor moving on a node of class browser tree'), None),
     ])
 Mixin.setPlugin('preference', 'add_pref', add_pref)
 
@@ -3100,7 +3103,7 @@ def OnPythonClassBrowser(win, event):
     if win.document.panel.LeftIsVisible:
         if win.document.init_class_browser == False:
             win.document.init_class_browser = True
-            win.document.outlookbrowser.show()
+            win.document.outlinebrowser.show()
 Mixin.setMixin('mainframe', 'OnPythonClassBrowser', OnPythonClassBrowser)
 
 def aftersavefile(win, filename):
@@ -3108,11 +3111,11 @@ def aftersavefile(win, filename):
         and win.languagename == 'python'
         and win.pref.python_classbrowser_refresh_as_save
         and win.init_class_browser):
-        win.outlookbrowser.show()
+        win.outlinebrowser.show()
 Mixin.setPlugin('editor', 'aftersavefile', aftersavefile)
 
 def OnPythonClassBrowserRefresh(win, event):
-    win.document.outlookbrowser.show()
+    win.document.outlinebrowser.show()
 Mixin.setMixin('mainframe', 'OnPythonClassBrowserRefresh', OnPythonClassBrowserRefresh)
 
 def OnPythonUpdateUI(win, event):
@@ -3134,7 +3137,7 @@ def on_document_enter(mainframe, document):
         if document.panel.LeftIsVisible:
             if document.init_class_browser == False:
                 document.init_class_browser = True
-                document.outlookbrowser.show()
+                document.outlinebrowser.show()
 Mixin.setPlugin('editctrl', 'on_document_enter', on_document_enter)
 
 def on_leave(mainframe, filename, languagename):
@@ -3151,7 +3154,7 @@ def add_images(images):
         ]
     for name, f in s:
         images[name] = os.path.join(Globals.workpath, 'images/%s' % f)
-Mixin.setPlugin('outlookbrowser', 'add_images', add_images)
+Mixin.setPlugin('outlinebrowser', 'add_images', add_images)
 
 c = lambda x,y:cmp(x[0].upper(), y[0].upper())
 
@@ -3196,7 +3199,7 @@ def parsetext(win, editor):
                     if otype == 'class' or otype == 'function':
                         _id, obj = win.addnode(node, oinfo, win.get_image_id('METHOD'), None,  olineno)
                         editor.doc_nodes[_id] = oo.docstring
-Mixin.setPlugin('outlookbrowser', 'parsetext', parsetext)
+Mixin.setPlugin('outlinebrowser', 'parsetext', parsetext)
 
 def addlocals(win, root, node, treenode):
     s = []
@@ -3235,9 +3238,9 @@ def addlocals(win, root, node, treenode):
         win.addnode(treenode, info , win.get_image_id('VARIABLE'), None,  lineno)
 
 def new_window(win, document, panel):
-    from OutlookBrowser import OutlookBrowser
-    document.outlookbrowser = OutlookBrowser(panel.left, document, autoexpand=False)
-    document.outlookbrowser.set_tooltip_func(on_get_tool_tip)
+    from OutlineBrowser import OutlineBrowser
+    document.outlinebrowser = OutlineBrowser(panel.left, document, autoexpand=False)
+    document.outlinebrowser.set_tooltip_func(on_get_tool_tip)
 Mixin.setPlugin('textpanel', 'new_window', new_window)
 
 def add_tool_list(toollist, toolbaritems):
@@ -3274,7 +3277,7 @@ def on_jump_definition(editor, word):
 Mixin.setPlugin('editor', 'on_jump_definition', on_jump_definition)
 
 def on_get_tool_tip(win, event):
-    if hasattr(win.editor, 'doc_nodes'):
+    if hasattr(win.editor, 'doc_nodes') and Globals.pref.python_classbrowser_show_docstring:
         nodes = win.editor.doc_nodes
         item = event.GetItem()
         if item.IsOk():
@@ -3282,10 +3285,37 @@ def on_get_tool_tip(win, event):
             tip = nodes.get(_id, '')
             if tip:
                 try:
-                    tip = eval(tip).replace('\r\n', '\n')
+                    tip = remove_leading_spaces(win.editor, eval(tip).rstrip())
                     event.SetToolTip(tip)
                 except:
-                    pass
+                    import traceback
+                    traceback.print_exc()
+                    error.traceback()
+
+import re
+re_spaces = re.compile(r'^(\s*)')
+re_eol = re.compile(r'\r\n|\r|\n')
+def remove_leading_spaces(win, text):
+    minspaces = []
+    contentlines = re_eol.sub(win.getEOLChar(), text).splitlines()
+    flag = False
+    index = 0
+    for i, line in enumerate(contentlines):
+        #skip blank line
+        if not line.strip():
+            if not flag:
+                index = i + 1
+            continue
+        flag = True
+        b = re_spaces.search(line)
+        if b:
+            minspaces.append(b.span()[1])
+
+    minspace = min(minspaces)
+    lines = [x[minspace:] for x in contentlines[index:]]
+
+    return '\n'.join(lines)
+
 
 
 

@@ -32,7 +32,7 @@ Mixin.setPlugin('preference', 'init', pref_init)
 
 def add_pref(preflist):
     preflist.extend([
-        (tr('Version'), 100, 'text', 'svn_exe', tr('Select location of subversion client'), None)
+        (tr('Version'), 100, 'openfile', 'svn_exe', tr('Select location of subversion client'), None)
     ])
 Mixin.setPlugin('preference', 'add_pref', add_pref)
 
