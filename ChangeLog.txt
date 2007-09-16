@@ -5,6 +5,7 @@ Editor.py mUnicode.py
                     Don't create a tmp file again, directly save the file
 mClassBrowser.py    Add option to control if show the docstring in class browser window.
                     rename OutlookBrowser.py to OutlineBrowser.py
+meide.py            Update to latest version
                     
 [2007/09/09]
 pyflakes SyntaxCheck.py
