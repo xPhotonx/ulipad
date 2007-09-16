@@ -3777,11 +3777,19 @@ def add_mainframe_menu(menulist):
     ])
 Mixin.setPlugin('mainframe', 'add_menu', add_mainframe_menu)
 
-def OnSearchFindInFiles(win, event):
-    import FindInFiles
+def createFindInFilesWindow(win):
+    findinfiles_pagename = tr('Find in Files')
+    if not win.panel.getPage(findinfiles_pagename):
+        from FindInFiles import FindInFiles
 
-    dlg = FindInFiles.FindInFiles(win, win.pref)
-    dlg.Show()
+        page = FindInFiles(win.panel.createNotebook('bottom'), win)
+        win.panel.addPage('bottom', page, findinfiles_pagename)
+    return findinfiles_pagename
+Mixin.setMixin('mainframe', 'createFindInFilesWindow', createFindInFilesWindow)
+
+def OnSearchFindInFiles(win, event):
+    p = win.createFindInFilesWindow()
+    win.panel.showPage(p)
 Mixin.setMixin('mainframe', 'OnSearchFindInFiles', OnSearchFindInFiles)
 
 def pref_init(pref):

@@ -25,120 +25,65 @@ import wx
 import os, fnmatch
 import re
 from modules import common
+from modules import meide as ui
+from modules import Globals
 
-class FindInFiles(wx.Dialog):
+class FindInFiles(wx.Panel):
     def __init__(self, parent, pref, dirs=''):
-        wx.Dialog.__init__(self, parent, -1, tr("Find in files..."), size=(600,400),
-                          style=wx.RESIZE_BORDER|wx.DEFAULT_DIALOG_STYLE)
-
         self.parent = parent
-        self.mainframe = parent
-        self.pref = pref
+        wx.Panel.__init__(self, parent, -1)
 
+        self.pref = Globals.pref
+        self.mainframe = Globals.mainframe
         self.running = 0
         self.stopping = 0
         self.starting = 0
 
-        box = wx.BoxSizer(wx.VERTICAL)
-
-        txt = wx.StaticText(self, -1, tr("Multiple directories or extensions should be separated by semicolons ';'"))
-        box.Add(txt, 0, wx.ALL, 4)
-
-        box1 = wx.BoxSizer(wx.HORIZONTAL)
-
-        txt = wx.StaticText(self, -1, tr("Search for:"), size=(100, -1))
-        box1.Add(txt, 0, wx.ALIGN_CENTER_VERTICAL|wx.RIGHT, 2)
-
-        self.search = wx.ComboBox(self, -1, choices=self.pref.searchinfile_searchlist, style=wx.CB_DROPDOWN)
-        text = self.mainframe.document.GetSelectedText()
-        if text and len(text.splitlines()) == 1:
-            self.search.SetValue(text)
-        else:
-            self.search.SetSelection(0)
-        box1.Add(self.search, 1, wx.RIGHT, 2)
-
-        box.Add(box1, 0, wx.ALL|wx.EXPAND, 4)
-
-        box1 = wx.BoxSizer(wx.HORIZONTAL)
-
-        txt = wx.StaticText(self, -1, tr("Directories:"), size=(100, -1))
-        box1.Add(txt, 0, wx.ALIGN_CENTER_VERTICAL|wx.RIGHT, 2)
-
-        self.sdirs = wx.ComboBox(self, -1, choices=self.pref.searchinfile_dirlist, style=wx.CB_DROPDOWN)
-        self.sdirs.SetSelection(0)
-        if dirs:
-            self.sdirs.SetValue(dirs)
-        box1.Add(self.sdirs, 1, wx.RIGHT, 2)
-
-        self.ID_BROW = wx.NewId()
-        self.btnBrow = wx.Button(self, self.ID_BROW, tr("Add Path"), size=(80, -1))
-        box1.Add(self.btnBrow)
-
-        box.Add(box1, 0, wx.ALL|wx.EXPAND, 4)
-
-        box1 = wx.BoxSizer(wx.HORIZONTAL)
-
-        txt = wx.StaticText(self, -1, tr("Extensions:"), size=(100, -1))
-        box1.Add(txt, 0, wx.ALIGN_CENTER_VERTICAL|wx.RIGHT, 2)
-
-        self.extns = wx.ComboBox(self, -1, choices=self.pref.searchinfile_extlist, style=wx.CB_DROPDOWN)
+        self.box = box = ui.VBox()
+        box.add(ui.Label(tr("Multiple directories or extensions should be separated by semicolons ';'")))
+        h = ui.HBox()
+        h.add(ui.Label(tr("Search for:")))
+        h.add(ui.ComboBox(Globals.mainframe.document.GetSelectedText(), choices=self.pref.searchinfile_searchlist), name='search')
+        h.add(ui.Label(tr("Directories:")))
+        h.add(ui.ComboBox(dirs, choices=self.pref.searchinfile_dirlist), name='sdirs')
+        h.add(ui.Button('...', size=(22,-1)), name='btnBrow').bind('click', self.OnDirButtonClick)
+        box.add(h, flag=wx.EXPAND)
+        h = ui.HBox()
+        h.add(ui.Label(tr("Extensions:")))
         if not self.pref.searchinfile_extlist:
-            self.extns.SetValue('*.*')
+            v = '*.*'
         else:
-            self.extns.SetValue(self.pref.searchinfile_extlist[0])
-        box1.Add(self.extns, 1, wx.RIGHT, 2)
-
-        box.Add(box1, 0, wx.ALL|wx.EXPAND, 4)
-
-        box1 = wx.BoxSizer(wx.HORIZONTAL)
-
-        self.cs = wx.CheckBox(self, -1, tr("Case sensitive"))
-        self.cs.SetValue(self.pref.searchinfile_case)
-        box1.Add(self.cs, 1)
-
-        self.ss = wx.CheckBox(self, -1, tr("Search Subdirectories"))
-        self.ss.SetValue(self.pref.searchinfile_subdir)
-        box1.Add(self.ss, 1)
-
-        self.re = wx.CheckBox(self, -1, tr("Regular Expression"))
-        self.re.SetValue(self.pref.searchinfile_regular)
-        box1.Add(self.re, 1)
-
-        self.onlyfilename = wx.CheckBox(self, -1, tr("Only show filename"))
-        self.onlyfilename.SetValue(self.pref.searchinfile_onlyfilename)
-        box1.Add(self.onlyfilename, 1)
-
-        box.Add(box1, 0, wx.ALL|wx.EXPAND, 4)
-
-        self.ID_LIST = wx.NewId()
-        self.results = wx.ListBox(self, self.ID_LIST, style=wx.LB_SINGLE|wx.LB_NEEDED_SB)
-        box.Add(self.results, 1, wx.EXPAND, 4)
-
-        box1 = wx.BoxSizer(wx.HORIZONTAL)
-
-        txt = wx.StaticText(self, -1, tr('Status:'), size=(100, -1))
-        box1.Add(txt, 0, wx.ALIGN_CENTER_VERTICAL|wx.RIGHT, 2)
-        self.status = wx.TextCtrl(self, -1, tr("Ready."))
-        box1.Add(self.status, 1, wx.ALIGN_CENTER_VERTICAL|wx.RIGHT, 2)
-        self.status.Enable(False)
-
+            v = self.pref.searchinfile_extlist[0]
+        h.add(ui.ComboBox(v, choices=self.pref.searchinfile_extlist), name='extns')
+        h.add(ui.Check(self.pref.searchinfile_case, tr("Case sensitive")), name='cs')
+        h.add(ui.Check(self.pref.searchinfile_subdir, tr("Search Subdirectories")), name='ss')
+        h.add(ui.Check(self.pref.searchinfile_regular, tr("Regular Expression")), name='re')
+        h.add(ui.Check(self.pref.searchinfile_onlyfilename, tr("Only show filename")), name='onlyfilename')
+        box.add(h, flag=wx.EXPAND)
+        box.add(ui.ListBox, name='results').bind(wx.EVT_LISTBOX_DCLICK, self.OpenFound)
+        h = ui.HBox()
+        h.add(ui.Label(tr('Status:')))
+        h.add(ui.Text(tr("Ready.")), name='status')
         self.ID_RUN = wx.NewId()
-        self.btnRun = wx.Button(self, self.ID_RUN, tr("Start Search"))
-        box1.Add(self.btnRun, 0, wx.ALIGN_CENTER_VERTICAL)
+        h.add(ui.Button(tr("Start Search"), id=self.ID_RUN), name='btnRun').bind('click', self.OnFindButtonClick)
+        h.add(ui.Button(tr("CopyClipboard"))).bind('click', self.OnCopyButtonClick)
+        box.add(h, flag=wx.EXPAND)
+        
+        ui.create(self, box)
+        
+        self.results = box.find('results').get_obj()
+        self.status = box.find('status').get_obj()
+        self.search = box.find('search').get_obj()
+        self.sdirs = box.find('sdirs').get_obj()
+        self.extns = box.find('extns').get_obj()
+        self.btnRun = box.find('btnRun').get_obj()
+        self.cs = box.find('cs').get_obj()
+        self.ss = box.find('ss').get_obj()
+        self.re = box.find('re').get_obj()
+        self.onlyfilename = box.find('onlyfilename').get_obj()
+        
+        box.find('status').get_obj().Enable(False)
 
-        self.ID_COPY = wx.NewId()
-        self.btnCopy = wx.Button(self, self.ID_COPY, tr("CopyClipboard"))
-        box1.Add(self.btnCopy, 0, wx.ALIGN_CENTER_VERTICAL)
-
-        box.Add(box1, 0, wx.ALL|wx.EXPAND, 4)
-
-        self.SetSizer(box)
-        self.SetAutoLayout(True)
-
-        wx.EVT_BUTTON(self, self.ID_BROW, self.OnDirButtonClick)
-        wx.EVT_LISTBOX_DCLICK(self.results, self.ID_LIST, self.OpenFound)
-        wx.EVT_BUTTON(self.btnRun, self.ID_RUN, self.OnFindButtonClick)
-        wx.EVT_BUTTON(self.btnCopy, self.ID_COPY, self.OnCopyButtonClick)
         tid = wx.NewId()
         self.timer = wx.Timer(self, tid)
         wx.EVT_TIMER(self, tid, self.OnFindButtonClick)

@@ -654,12 +654,16 @@ class HBox(LayoutBase):
         if hasattr(obj, 'attr_size'):
             if obj.attr_size[0] == -1:
                 return 1
+        elif hasattr(obj, 'proportion') and obj.proportion[0] == -1:
+            return 1
         return 0
     
     def _guess_expand(self, obj):
         if hasattr(obj, 'attr_size'):
             if obj.attr_size[1] == -1:
                 return wx.EXPAND
+        elif hasattr(obj, 'proportion') and obj.proportion[1] == -1:
+            return wx.EXPAND
         return 0
     
     def _get_flag(self, pos):
@@ -886,6 +890,14 @@ class List(EasyElement):
     def __init__(self, columns, *args, **kwargs):
         super(List, self).__init__(columns, *args, **kwargs)
         
+class ListBox(EasyElement):
+    klass = 'ListBox'
+    proportion = (-1, -1)
+        
+class Tree(EasyElement):
+    klass = 'TreeCtrl'
+    proportion = (-1, -1)
+        
 class SimpleElement(EasyElement):
     """
     Wrap class used to encapsulate a non-value widget to Element object.
@@ -1023,10 +1035,18 @@ class Check3D(Check):
 
     def GetValue(self):
         return self.get_obj().Get3StateValue()
+ 
+class ComboBox(ValueElement):
+    klass = 'ComboBox'
+    proportion = (-1, 0)
+
+    def __init__(self, value=None, choices=[], *args, **kwargs):
+        super(ComboBox, self).__init__(value, choices=choices, *args, **kwargs)
     
 class SingleChoice(ValueElement):
     klass = 'ComboBox'
     style = wx.CB_READONLY 
+    proportion = (-1, 0)
     
     def __init__(self, value=None, choices=[], *args, **kwargs):
         if isinstance(choices, (list, tuple)):
