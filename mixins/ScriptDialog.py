@@ -81,7 +81,7 @@ class ScriptDialog(wx.Dialog):
         wx.EVT_BUTTON(self.btnEdit, self.ID_EDIT, self.OnEdit)
         wx.EVT_BUTTON(self.btnRemove, self.ID_REMOVE, self.OnRemove)
         wx.EVT_BUTTON(self.btnOK, wx.ID_OK, self.OnOK)
-        wx.EVT_LIST_ITEM_ACTIVATED(self.list, self.list.GetId(), self.OnModify)
+        wx.EVT_LIST_ITEM_ACTIVATED(self.list, self.list.GetId(), self.OnEdit)
         wx.EVT_UPDATE_UI(self.btnEdit, self.ID_EDIT, self.OnUpdateUI)
         wx.EVT_UPDATE_UI(self.btnUp, self.ID_UP, self.OnUpdateUI)
         wx.EVT_UPDATE_UI(self.btnDown, self.ID_DOWN, self.OnUpdateUI)
@@ -192,7 +192,7 @@ class AddScriptDialog(wx.Dialog):
         gbs.Add(self.text, (1, 1), flag=wx.EXPAND|wx.ALIGN_CENTER_VERTICAL, border=2)
         
         shortcuts = []
-        for i in range(1, 11):
+        for i in range(0, 10):
             shortcuts.append('Ctrl+%d' % i)
         self.shortcut = wx.ComboBox(self, -1, '', choices = shortcuts, style = wx.CB_DROPDOWN|wx.CB_READONLY )
         gbs.Add(wx.StaticText(self, -1, tr('Choice Shortcut')), (2, 0), flag=wx.ALIGN_CENTER_VERTICAL, border=2)
