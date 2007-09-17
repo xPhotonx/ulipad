@@ -6,6 +6,8 @@ mEditorCtrl.py      If save file failed, then invoke save as
 ScriptDialog.py ShellDialog.py
                     Fix shortcuts from 1-based bug
 plugin_spec.txt     Update document
+mLineending.py Editor.py
+                    Fix line end mix checking bug also including twice prompt dialog bug
                     
 [2007/09/15]
 DirBrowser.py       Fix directory browser insert node bug

@@ -515,7 +515,8 @@ class LayoutBase(Element, LayoutValidateMixin):
     def _guess_proportion(self, obj):
         """
         Private function used to guess the proportion value, according the `proportion`
-        class attribute, `proportion` and `size` parameters in add() function.        """
+        class attribute, `proportion` and `size` parameters in add() function.
+        """
         if hasattr(obj, 'attr_size') and hasattr(obj, 'proportion'):
             #vertical direction decide the proportion, assume the sizer is vertical
             if obj.attr_size[1] == -1 and obj.proportion[1] == -1:
@@ -1215,11 +1216,11 @@ class Dir(OpenFile):
         return obj
 
 class Radio(ValueElement):
-    klass = wx.RadioButton
+    klass = 'RadioButton'
     default_value = False
         
 class HRadioBox(ValueElement):
-    klass = wx.RadioBox
+    klass = 'RadioBox'
     style = wx.RA_SPECIFY_COLS
     default_value = 0
     kwargs = {'majorDimension':1}

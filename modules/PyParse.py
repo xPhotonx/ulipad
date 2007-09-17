@@ -611,6 +611,8 @@ class PyParser(object):
                     t = ' import '
                 if t == ',':
                     t = ', '
+                if t == 'as':
+                    t = ' as '
                 info += t
             imports = self.parse_import(info)
             if stack:
@@ -865,12 +867,12 @@ def main():
     file = sys.argv[1]
 
     s = parseFile(file)
-    s.output()
-    print s.idens
+#    s.output()
+#    print s.idens
                 
 #    print s.get_imports(1)
-    print 'self.ppp', s.guess_type(51, 'self.ppp')
-    print 'a', s.guess_type(60, 'a')
+#    print 'self.ppp', s.guess_type(51, 'self.ppp')
+#    print 'a', s.guess_type(60, 'a')
 #    print 'printf', s.guess_type(4, 'printf')
 #    print s.guess_type(40, 'printf')
 #    print 'a', s.guess(17)

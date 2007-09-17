@@ -160,6 +160,7 @@ class TextEditor(wx.stc.StyledTextCtrl, Mixin.Mixin, DocumentBase.DocumentBase):
         
         self.saving = False #saving flag
         self.lock = thread.allocate_lock()
+        self.openning = False
         
         #set drop target
 #        self.SetDropTarget(EditorDropTarget(self))
@@ -182,59 +183,67 @@ class TextEditor(wx.stc.StyledTextCtrl, Mixin.Mixin, DocumentBase.DocumentBase):
             self.opened = False
 
             return
-        self.callplugin('openfile', self, filename)
+        if self.openning:
+            return
+        
+        self.openning = True
+        try:
+            
+            self.callplugin('openfile', self, filename)
 
-        oldfilename = self.filename
-        self.setFilename(filename)
+            oldfilename = self.filename
+            self.setFilename(filename)
 
-#        self.callplugin('call_lexer', self, '', filename, language)
-        if filename:
-            stext = []
-            flag = self.execplugin('readfiletext', self, filename, stext)
-            if not flag:
+    #        self.callplugin('call_lexer', self, '', filename, language)
+            if filename:
+                stext = []
+                flag = self.execplugin('readfiletext', self, filename, stext)
+                if not flag:
+                    try:
+                        f = open(filename, 'rb')
+                        text = f.read()
+                        f.close()
+                    except:
+                        error.traceback()
+                        raise
+                else:
+                    text = stext[0]
+                    if text is None:
+                        raise Exception, tr("Open file error!")
+
+                stext = [text]
+                #stext is a list of the file text. To get the file text you can use
+                #stext[0]. Then you can reset the value in order to change the text
                 try:
-                    f = open(filename, 'rb')
-                    text = f.read()
-                    f.close()
+                    self.callplugin('openfileencoding', self, filename, stext, encoding)
+                    self.callplugin('openfiletext', self, stext)
                 except:
                     error.traceback()
+                    self.filename = oldfilename
                     raise
-            else:
-                text = stext[0]
-                if text is None:
-                    raise Exception, tr("Open file error!")
 
-            stext = [text]
-            #stext is a list of the file text. To get the file text you can use
-            #stext[0]. Then you can reset the value in order to change the text
-            try:
-                self.callplugin('openfileencoding', self, filename, stext, encoding)
-                self.callplugin('openfiletext', self, stext)
-            except:
-                error.traceback()
-                self.filename = oldfilename
-                raise
-
-            self.settext = True
-            self.SetText(stext[0])
-            self.EmptyUndoBuffer()
-            self.SetSavePoint()
-            self.settext = False
-        else:
-            self.callplugin('openfileencoding', self, '', [''], encoding)
-            if defaulttext:
                 self.settext = True
-                self.SetText(defaulttext)
+                self.SetText(stext[0])
                 self.EmptyUndoBuffer()
                 self.SetSavePoint()
                 self.settext = False
+            else:
+                self.callplugin('openfileencoding', self, '', [''], encoding)
+                if defaulttext:
+                    self.settext = True
+                    self.SetText(defaulttext)
+                    self.EmptyUndoBuffer()
+                    self.SetSavePoint()
+                    self.settext = False
 
-        self.callplugin('call_lexer', self, '', filename, language)
-        self.callplugin('afteropenfile', self, filename)
-        self.callplugin('leaveopenfile', self, filename)
+            self.callplugin('call_lexer', self, '', filename, language)
+            self.callplugin('afteropenfile', self, filename)
+            self.callplugin('leaveopenfile', self, filename)
 
-        self.opened = True
-
+        finally:
+            self.opened = True
+            self.openning = False
+            
     def savefile(self, filename, encoding):
         self.saving = True
         try:
