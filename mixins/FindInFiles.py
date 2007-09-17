@@ -84,9 +84,10 @@ class FindInFiles(wx.Panel):
         
         box.find('status').get_obj().Enable(False)
 
-        tid = wx.NewId()
-        self.timer = wx.Timer(self, tid)
-        wx.EVT_TIMER(self, tid, self.OnFindButtonClick)
+    def reset(self, dir):
+        self.sdirs.SetValue(dir)
+        self.search.SetValue(self.mainframe.document.GetSelectedText())
+        self.results.Clear()
 
     def OpenFound(self, e):
         selected = self.results.GetSelection()
@@ -126,7 +127,7 @@ class FindInFiles(wx.Panel):
             #running, we want to try to stop
             self.stopping = 1
             self.status.SetValue(tr("Stopping...please wait."))
-            self.btnRun.SetLabel("Start Search")
+            self.btnRun.SetLabel(tr("Start Search"))
             return
 
         if e.GetId() == self.ID_RUN:
@@ -138,28 +139,14 @@ class FindInFiles(wx.Panel):
                 self.status.SetValue(tr("Search cancelled."))
                 self.btnRun.SetLabel(tr("Start Search"))
                 return
-        elif not self.starting:
-            #I was a waiting timer event, but I don't
-            #need to start anymore
-            return
 
         #try to start
         self.starting = 1
         self.btnRun.SetLabel(tr("Stop Search"))
 
-        try:
-            wx.Yield()
-        except:
-            #would have tried to start while in another function's
-            #wx.Yield() call.  Will wait 100ms and try again
-            self.status.SetValue(tr("Waiting for another process to stop, please wait."))
-            self.timer.Start(100, wx.TIMER_ONE_SHOT)
-            return
-
         #am currently the topmost call, so will continue.
         self.starting = 0
         self.running = 1
-        wx.Yield()
 
         def getlist(c):
             cc = c.GetCount()
@@ -203,66 +190,71 @@ class FindInFiles(wx.Panel):
         results = self.results
         results.Clear()
 
-        def file_iterator(path, subdirs, extns):
-            try:    lst = os.listdir(path)
-            except: return
-            d = []
-            for file in lst:
-                a = common.uni_join_path(path, file)
-                if os.path.isfile(a):
-                    for extn in extns:
-                        if fnmatch.fnmatch(file, str(extn)):
-                            yield a
-                            break
-                elif subdirs and os.path.isdir(a):
-                    d.append(a)
-            if not subdirs:
-                return
-            for p in d:
-                for f in file_iterator(p, subdirs, extns):
-                    yield f
-
-        filecount = 0
-        filefcount = 0
-        foundcount = 0
-        ss = tr("Found %i instances in %i files out of %i files checked.")
-        for path in paths:
-            wx.Yield()
-            if not self.running:
-                break
-            for filename in file_iterator(path, subd, extns):
-                wx.Yield()
-                filecount += 1
-                if not self.stopping:
-                    r = sfunct(filename, search, case)
-                    if r:
-                        try:
-                            for a in r:
-                                results.Append(a)
-                                if self.onlyfilename.IsChecked():
-                                    break
-                        except:
-                            #for platforms with limited sized
-                            #wx.ListBox controls
-                            pass
-                        filefcount += 1
-                        foundcount += len(r)-1
-                    self.status.SetValue((ss % (foundcount, filefcount, filecount)) + tr('...searching...'))
-                else:
+        def _find():
+            def file_iterator(path, subdirs, extns):
+                try:    lst = os.listdir(path)
+                except: return
+                d = []
+                for file in lst:
+                    a = common.uni_join_path(path, file)
+                    if os.path.isfile(a):
+                        for extn in extns:
+                            if fnmatch.fnmatch(file, str(extn)):
+                                yield a
+                                break
+                    elif subdirs and os.path.isdir(a):
+                        d.append(a)
+                if not subdirs:
+                    return
+                for p in d:
+                    for f in file_iterator(p, subdirs, extns):
+                        yield f
+            
+            filecount = 0
+            filefcount = 0
+            foundcount = 0
+            ss = tr("Found %i instances in %i files out of %i files checked.")
+            
+            for path in paths:
+                if not self.running:
                     break
-        if self.stopping:
+                for filename in file_iterator(path, subd, extns):
+                    filecount += 1
+                    if not self.stopping:
+                        r = sfunct(filename, search, case)
+                        if r:
+                            try:
+                                for a in r:
+                                    results.Append(a)
+                                    if self.onlyfilename.IsChecked():
+                                        break
+                            except:
+                                #for platforms with limited sized
+                                #wx.ListBox controls
+                                pass
+                            filefcount += 1
+                            foundcount += len(r)-1
+                        wx.CallAfter(self.status.SetValue, (ss % (foundcount, filefcount, filecount)) + tr('...searching...'))
+                    else:
+                        break
+            if self.stopping:
+                self.stopping = 0
+                ex = tr('...cancelled.')
+                #was stopped by a button press
+            else:
+                self.running = 0
+                ex = tr('...done.')
+            wx.CallAfter(self.btnRun.SetLabel, tr("Start Search"))
+            wx.CallAfter(self.status.SetValue, (ss%(foundcount, filefcount, filecount)) + ex)
             self.stopping = 0
-            ex = tr('...cancelled.')
-            #was stopped by a button press
-        else:
             self.running = 0
-            ex = tr('...done.')
-        self.btnRun.SetLabel(tr("Start Search"))
-        self.status.SetValue((ss%(foundcount, filefcount, filecount)) + ex)
-        self.stopping = 0
-        self.running = 0
-        self.starting = 0
-
+            self.starting = 0
+            
+        if self.running:
+            from modules import Casing
+            d = Casing.Casing(_find)
+            d.start_thread()
+        
     def searchST(self, filename, pattern, casesensitive):
         try:
             lines = auto_uni_open_file(filename)
@@ -291,8 +283,6 @@ class FindInFiles(wx.Panel):
             except:
                 import traceback
                 traceback.print_exc()
-                pass
-            wx.Yield()
         return found
 
     def searchRE(self, filename, pattern, toss):
@@ -312,7 +302,6 @@ class FindInFiles(wx.Panel):
                     text = line[max(0, b.start()-20):b.end()+20]
                     found.append('      '+str(i+1) + ': '+text.rstrip().replace('\t', spt))
             except: pass
-            wx.Yield()
         return found
     
     def OnCopyButtonClick(self, event):
@@ -326,8 +315,8 @@ class FindInFiles(wx.Panel):
             wx.MessageBox(tr("Unable to open the clipboard"), tr("Error"))
 
 def auto_uni_open_file(filename):
-    import codecs
-    try:
-        return codecs.open(filename, 'r', 'utf-8').readlines()
-    except:
-        return codecs.open(filename, 'r', common.defaultfilesystemencoding, 'replace').readlines()
+    text = open(filename, 'rU').read()
+    from modules import unicodetext
+    
+    text, encoding = unicodetext.unicodetext(text)
+    return text.splitlines()
