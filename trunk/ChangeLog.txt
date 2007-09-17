@@ -17,6 +17,8 @@ FindInFiles.py      Change Find in Files dialog to panel
 [2007/09/09]
 pyflakes SyntaxCheck.py
                     Update to svn version
+ScriptDialog.py ShellDialog.py
+                    Fix shortcuts from 1-based bug
 
 [2007/09/08]
 Entry.py            Rewrite the code with meide module

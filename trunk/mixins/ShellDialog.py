@@ -192,7 +192,7 @@ class AddShellDialog(wx.Dialog):
         gbs.Add(self.text, (1, 1), flag=wx.EXPAND|wx.ALIGN_CENTER_VERTICAL, border=2)
         
         shortcuts = []
-        for i in range(1, 11):
+        for i in range(0, 10):
             shortcuts.append('Alt+%d' % i)
         self.shortcut = wx.ComboBox(self, -1, '', choices = shortcuts, style = wx.CB_DROPDOWN|wx.CB_READONLY )
         gbs.Add(wx.StaticText(self, -1, tr('Choice Shortcut')), (2, 0), flag=wx.ALIGN_CENTER_VERTICAL, border=2)
