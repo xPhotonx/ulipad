@@ -340,7 +340,7 @@ class ClassNode(Node):
         return ''.join(s)
     
 def parseFile(filename, syncvar=None):
-    text = open(filename).read()
+    text = open(filename, 'rU').read()
     return parseString(text, syncvar)
 
 def parseString(text, syncvar=None):
