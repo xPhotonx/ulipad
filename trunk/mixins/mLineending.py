@@ -102,7 +102,7 @@ def fileopentext(win, stext):
     len_mac = eollist.count('\r')
     if len_mac > 0 and len_unix == 0:
         win.eolmode = 2
-    elif len_win == len_unix:
+    elif len_win == len_unix == len_mac:
         win.eolmode = 1
     elif len_unix > 0 and len_win == 0 and len_mac == 0:
         win.eolmode = 0
@@ -111,19 +111,21 @@ def fileopentext(win, stext):
 Mixin.setPlugin('editor', 'openfiletext', fileopentext)
 
 def afteropenfile(win, filename):
-    if win.lineendingsaremixed:
-        eolmodestr = "MIX"
-        d = wx.MessageDialog(win,
-            tr('%s is currently Mixed.\nWould you like to change it to the default?\nThe Default is: %s')
-            % (win.filename, win.eolmess[win.pref.default_eol_mode]),
-            tr("Mixed Line Ending"), wx.YES_NO | wx.ICON_QUESTION)
-        if d.ShowModal() == wx.ID_YES:
-            setEOLMode(win, win.pref.default_eol_mode)
-#            win.savefile(win.filename, win.locale)
-    if win.lineendingsaremixed == False:
-        eolmodestr = win.eolstr[win.eolmode]
-    win.mainframe.SetStatusText(eolmodestr, 3)
-    win.SetEOLMode(win.eolmode)
+    def f():
+        if win.lineendingsaremixed:
+            eolmodestr = "MIX"
+            d = wx.MessageDialog(win,
+                tr('%s is currently Mixed.\nWould you like to change it to the default?\nThe Default is: %s')
+                % (win.filename, win.eolmess[win.pref.default_eol_mode]),
+                tr("Mixed Line Ending"), wx.YES_NO | wx.ICON_QUESTION)
+            if d.ShowModal() == wx.ID_YES:
+                setEOLMode(win, win.pref.default_eol_mode)
+    #            win.savefile(win.filename, win.locale)
+        if win.lineendingsaremixed == False:
+            eolmodestr = win.eolstr[win.eolmode]
+        win.mainframe.SetStatusText(eolmodestr, 3)
+        win.SetEOLMode(win.eolmode)
+    wx.CallAfter(f)
 Mixin.setPlugin('editor', 'afteropenfile', afteropenfile)
 
 #def savefile(win, filename):
