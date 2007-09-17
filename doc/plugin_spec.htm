@@ -4,7 +4,8 @@
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
 <meta name="generator" content="Docutils 0.4: http://docutils.sourceforge.net/" />
-<title>Plugin的发布规范</title>
+<title>Plugin Develop Specification</title>
+<meta name="author" content="limodou" />
 <style type="text/css">
 
 /*
@@ -290,46 +291,72 @@ ul.auto-toc {
 </style>
 </head>
 <body>
-<div class="document" id="plugin">
-<h1 class="title">Plugin的发布规范</h1>
+<div class="document" id="plugin-develop-specification">
+<h1 class="title">Plugin Develop Specification</h1>
 <table class="docinfo" frame="void" rules="none">
 <col class="docinfo-name" />
 <col class="docinfo-content" />
 <tbody valign="top">
-<tr class="field"><th class="docinfo-name">作者:</th><td class="field-body">limodou</td>
-</tr>
-<tr class="field"><th class="docinfo-name">联系:</th><td class="field-body"><a class="reference" href="mailto:limodou&#64;gmail.com">limodou&#64;gmail.com</a></td>
-</tr>
-<tr class="field"><th class="docinfo-name">主页:</th><td class="field-body"><a class="reference" href="http://code.google.com/p/ulipad/">http://code.google.com/p/ulipad/</a></td>
+<tr><th class="docinfo-name">Author:</th>
+<td>limodou</td></tr>
+<tr><th class="docinfo-name">Contact:</th>
+<td><a class="first last reference" href="mailto:limodou&#64;gmail.com">limodou&#64;gmail.com</a></td></tr>
+<tr class="field"><th class="docinfo-name">Homepage:</th><td class="field-body"><a class="reference" href="http://code.google.com/p/ulipad/">http://code.google.com/p/ulipad/</a></td>
 </tr>
 <tr class="field"><th class="docinfo-name">BLOG:</th><td class="field-body"><a class="reference" href="http://www.donews.net/limodou">http://www.donews.net/limodou</a></td>
 </tr>
-<tr class="field"><th class="docinfo-name">版权:</th><td class="field-body">GPL</td>
+<tr class="field"><th class="docinfo-name">Copyleft:</th><td class="field-body">GPL</td>
 </tr>
 </tbody>
 </table>
 <div class="contents topic">
 <p class="topic-title first"><a id="contents" name="contents">Contents</a></p>
 <ul class="simple">
-<li><a class="reference" href="#id1" id="id3" name="id3">说明</a></li>
+<li><a class="reference" href="#description" id="id1" name="id1">Description</a></li>
+<li><a class="reference" href="#details-of-pin-file" id="id2" name="id2">Details of .pin file</a></li>
+<li><a class="reference" href="#how-to-write-a-plugin" id="id3" name="id3">How to write a plugin</a></li>
 </ul>
 </div>
 <div class="section">
-<h1><a class="toc-backref" href="#id3" id="id1" name="id1">说明</a></h1>
-<p>每一个plugin都应发布到plugins目录下，每个插件需要占用一个目录。这个目录将至少需要提供一个
-说明文件，如：plugin.pin，和一个__init__.py程序。如果plugin带有自已编写的其它模块，可以
-放在任何地方，但在plugin应可以访问得到。建议除了上述两个文件外，将其它文件放在
-plugins目录的一个子目录下，子目录名可以为plugin的名字，如:</p>
+<h1><a class="toc-backref" href="#id1" id="description" name="description">Description</a></h1>
+<p>Each plugin should be installed in plugins folder, and each plugin
+need be a puthon package, that means each plugin folder need has a
+__init__.py file. And there should be a .pin file, for example,
+djangoproj.pin. This .pin file will describe the information about the
+plugin. The details about the file will list later. Because each
+plugin is a python package, so  it can have any file you want, for
+example: python module, data files, icon files, etc. A plugin
+directory structure could be like:</p>
 <pre class="literal-block">
-  plugins
-\---myplugin
-    \------myplugin.pin
-    \------__init__.py
-    \------myplugin
-       \---other files
-       ...
+plugins
+ \---myplugin
+     \------myplugin.pin
+     \------__init__.py
+     \---other files
+        ...
 </pre>
-<p>.pin的作用是作为一个插件的标识文件，内容可以为空，如果不为空应包括以下信息:</p>
+<p>If you understand Mixin tech used in UliPad, you will know how to
+write a plugin. A plugin really a mixin, but it can be enabled and
+disabled outside of the core in UliPad.</p>
+<p>If you eanbled wizard plugin, you can create an empty plugin by it.
+Once you enabled wizard plugin, you'll find a wizard icon in the tool
+bar, and you can also find a menu item ([Open Wizard Window]) in
+[Window] menu. Exeucting the wizard, there will be a wizard window
+openned in left pane. Then you'll find a &quot;Plugin Template&quot; entry, then
+double click on it. It'll pop up a window, then you can input some
+information about your plugin, such as:</p>
+<p>Plugin name(must), Author, Email, Date, Version, Description,
+Homepage, and in the second tab page, you can add information about
+the third party module which you used in plugin. If there are no third
+party module used, just leave it alone.</p>
+<p>Here Plugin name in wizard is important, because UliPad will use it to
+create plugin folder, so I suggest that you name your plugin name in
+lower case letters, and don't have space and wired characters in the
+name.</p>
+</div>
+<div class="section">
+<h1><a class="toc-backref" href="#id2" id="details-of-pin-file" name="details-of-pin-file">Details of .pin file</a></h1>
+<p>.pin file just like a ini-like file, the content should be:</p>
 <pre class="literal-block">
 [info]
 author=xxx
@@ -338,9 +365,18 @@ version=xxx
 description=xxx
 homepage=xxx
 </pre>
-<p>其中，author, date, version, description必须要有，但内容可以为空。其它你可以自行增加。如果有
-特殊的第三方模块还可以增加模块信息。</p>
-<p><a class="reference" href="technical.htm">[返回]</a></p>
+<p>author, date, version, description can be blank.</p>
+</div>
+<div class="section">
+<h1><a class="toc-backref" href="#id3" id="how-to-write-a-plugin" name="how-to-write-a-plugin">How to write a plugin</a></h1>
+<p>Now, if you'v created a correct plugin folder and fill in the .pin
+file, you 'll see the plugin entry in [Tool] -&gt; [Plugin Manager..]
+menu item after you restart the UliPad.</p>
+<p>And write plugin code just like write mixin code in UliPad. And I
+cann't decribe it so clearly now, but there are many examples in
+plugins and mixins folder. Because almost every functionalities
+implementation in UliPad are via mixin and plugin.</p>
+<p><a class="reference" href="technical.htm">[Return]</a></p>
 </div>
 </div>
 </body>

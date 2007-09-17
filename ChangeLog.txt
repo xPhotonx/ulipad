@@ -3,6 +3,9 @@ $Rev$
 FindInFiles.py DirBrowser.py
                     Improve Find in Files process with thread
 mEditorCtrl.py      If save file failed, then invoke save as
+ScriptDialog.py ShellDialog.py
+                    Fix shortcuts from 1-based bug
+plugin_spec.txt     Update document
                     
 [2007/09/15]
 DirBrowser.py       Fix directory browser insert node bug
@@ -17,9 +20,6 @@ FindInFiles.py      Change Find in Files dialog to panel
 [2007/09/09]
 pyflakes SyntaxCheck.py
                     Update to svn version
-ScriptDialog.py ShellDialog.py
-                    Fix shortcuts from 1-based bug
-
 [2007/09/08]
 Entry.py            Rewrite the code with meide module
 

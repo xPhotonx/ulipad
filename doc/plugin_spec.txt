@@ -1,43 +1,82 @@
-=================
- Plugin的发布规范
-=================
+================================
+ Plugin Develop Specification
+================================
 
-:作者: limodou
-:联系: limodou@gmail.com
-:主页: http://code.google.com/p/ulipad/
+:Author: limodou
+:Contact: limodou@gmail.com
+:Homepage: http://code.google.com/p/ulipad/
 :BLOG: http://www.donews.net/limodou
-:版权: GPL
+:Copyleft: GPL
 
 .. contents::
 
-说明
-----
+Description
+=============
 
-每一个plugin都应发布到plugins目录下，每个插件需要占用一个目录。这个目录将至少需要提供一个
-说明文件，如：plugin.pin，和一个__init__.py程序。如果plugin带有自已编写的其它模块，可以
-放在任何地方，但在plugin应可以访问得到。建议除了上述两个文件外，将其它文件放在
-plugins目录的一个子目录下，子目录名可以为plugin的名字，如::
+Each plugin should be installed in plugins folder, and each plugin
+need be a puthon package, that means each plugin folder need has a
+__init__.py file. And there should be a .pin file, for example,
+djangoproj.pin. This .pin file will describe the information about the
+plugin. The details about the file will list later. Because each
+plugin is a python package, so  it can have any file you want, for
+example: python module, data files, icon files, etc. A plugin
+directory structure could be like::
 
-	plugins
-      \---myplugin
-          \------myplugin.pin
-          \------__init__.py
-          \------myplugin
-             \---other files
-             ...
-	
-.pin的作用是作为一个插件的标识文件，内容可以为空，如果不为空应包括以下信息::
+    plugins
+     \---myplugin
+         \------myplugin.pin
+         \------__init__.py
+         \---other files
+            ...
 
-	[info]
-	author=xxx
-	date=xxx
-	version=xxx
-	description=xxx
-	homepage=xxx
+If you understand Mixin tech used in UliPad, you will know how to
+write a plugin. A plugin really a mixin, but it can be enabled and
+disabled outside of the core in UliPad.
 
-其中，author, date, version, description必须要有，但内容可以为空。其它你可以自行增加。如果有
-特殊的第三方模块还可以增加模块信息。
+If you eanbled wizard plugin, you can create an empty plugin by it.
+Once you enabled wizard plugin, you'll find a wizard icon in the tool
+bar, and you can also find a menu item ([Open Wizard Window]) in
+[Window] menu. Exeucting the wizard, there will be a wizard window
+openned in left pane. Then you'll find a "Plugin Template" entry, then
+double click on it. It'll pop up a window, then you can input some
+information about your plugin, such as:
 
-`[返回]`_
+Plugin name(must), Author, Email, Date, Version, Description,
+Homepage, and in the second tab page, you can add information about
+the third party module which you used in plugin. If there are no third
+party module used, just leave it alone.
 
-.. _`[返回]`: technical.htm
+Here Plugin name in wizard is important, because UliPad will use it to
+create plugin folder, so I suggest that you name your plugin name in
+lower case letters, and don't have space and wired characters in the
+name.
+
+Details of .pin file
+=======================
+
+.pin file just like a ini-like file, the content should be::
+
+       [info]
+       author=xxx
+       date=xxx
+       version=xxx
+       description=xxx
+       homepage=xxx
+
+author, date, version, description can be blank.
+
+How to write a plugin
+========================
+
+Now, if you'v created a correct plugin folder and fill in the .pin
+file, you 'll see the plugin entry in [Tool] -> [Plugin Manager..]
+menu item after you restart the UliPad.
+
+And write plugin code just like write mixin code in UliPad. And I
+cann't decribe it so clearly now, but there are many examples in
+plugins and mixins folder. Because almost every functionalities
+implementation in UliPad are via mixin and plugin.
+
+`[Return]`_
+
+.. _`[Return]`: technical.htm
