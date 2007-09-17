@@ -198,7 +198,10 @@ Mixin.setMixin('mainframe', 'CloseFile', CloseFile)
 
 def OnFileSave(win, event):
     document = findDocument(win.document)
-    win.SaveFile(document)
+    r = win.SaveFile(document)
+    #if saving file failed, then invoke SaveAs
+    if not r:
+        win.SaveFile(document, True)
     document.SetFocus()
 Mixin.setMixin('mainframe', 'OnFileSave', OnFileSave)
 
