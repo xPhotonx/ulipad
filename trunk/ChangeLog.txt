@@ -1,4 +1,8 @@
 $Rev$
+[2007/09/17]
+FindInFiles.py DirBrowser.py
+                    Improve Find in Files process with thread
+                    
 [2007/09/15]
 DirBrowser.py       Fix directory browser insert node bug
 Editor.py mUnicode.py
