@@ -6,7 +6,7 @@
 :Email: limodou@gmail.com
 :Homepage: http://code.google.com/p/ulipad/
 :BLOG: http://www.donews.net/limodou
-:Copyright: GPL
+:Copyleft: GPL
 
 .. contents:: Content
 .. sectnum::
@@ -24,11 +24,12 @@ can extend his own functionality into UliPad, and you can treat UliPad as a deve
 How to find & download it
 ----------------------------
 
-For now, UliPad is hosted on China Woodpecker Community wiki site (http://wiki.woodpecker.org.cn), and
-it has its own wiki page (http://wiki.woodpecker.org.cn/moin/UliPad). You can download the lastest version
-of UliPad in this wiki page. And the svn url is: 
+For now, UliPad is hosted on code.google.com site, you can find it at http://code.google.com/p/ulipad . 
+You can download the lastest version of UliPad at here_. And the svn url is: 
 
-http://cvs.woodpecker.org.cn/svn/woodpecker/ulipad/trunk
+http://ulipad.googlecode.com/svn/trunk/
+
+.. _here: http://code.google.com/p/ulipad/downloads/list
 
 How do I get the newest source code from SVN
 ----------------------------------------------
@@ -49,10 +50,10 @@ updating it with TortoiseSVN for the first time:
 #. Right-click within your Ulipad folder to show the context menu.
 #. Note the two menu entries, SVN Checkout, and TortoiseSVN.
 #. Click on SVN Checkout. This will call TortoiseSVN.
-#. Enter http://cvs.woodpecker.org.cn/svn/woodpecker/ulipad/trunk in
+#. Enter http://ulipad.googlecode.com/svn/trunk/ in
    the "URL of repository" box.
 #. The Checkout directory should already show the folder you created
-   for Ulipad, for example, C:\Program Files\Ulipad.
+   for Ulipad, for example, `C:\Program Files\Ulipad`.
 #. Do not check "Only check out the top folder" or "Omit externals".
 #. Select the "HEAD revision" radio button. This will ensure you get
    the latest revision. (Should you want an earlier revision for some
@@ -68,8 +69,8 @@ Hints:
 
 #. Before updating, you may want to backup your Ulipad folder.
 #. Always make a note of the number of latest revision you have.
-#. http://cvs.woodpecker.org.cn/svn/woodpecker/ulipad/ will show the
-   number of the latest revision available. Or using svn update to see 
+#. http://ulipad.googlecode.com/svn/ will show the
+   number of the latest revision available. Or using `svn update` to see 
    the lastest revision.
 #. Keep up-to-date by subscribing to the Ulipad mailing list at
    http://groups.google.com/group/ulipad.
