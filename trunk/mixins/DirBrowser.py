@@ -392,7 +392,7 @@ class DirBrowser(wx.Panel, Mixin.Mixin):
         if self.is_ok(item):
             obj = self.tree.InsertItem(parent, item, name)
         else:
-            self.tree.InsertItemBefore(parent, 0, name)
+            obj = self.tree.InsertItemBefore(parent, 0, name)
         self.nodes[_id] = dict(path=path, name=name, obj=obj, nodetype=data)
         self.tree.SetPyData(obj, _id)
         self.tree.SetItemImage(obj, imagenormal, wx.TreeItemIcon_Normal)
