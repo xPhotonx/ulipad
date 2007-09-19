@@ -24,16 +24,14 @@
 __doc__ = 'simulate DDE support'
 
 import sys
-import wx
 from modules import DDE
 from modules import Mixin
-from modules import dict4ini
-from modules import Globals
+from modules import common
 
 def app_init(app, filenames):
 #    print 'ddeflag', app.ddeflag
     if app.ddeflag:
-        x = dict4ini.DictIni('config.ini')
+        x = common.get_config_file_obj()
         port = x.server.get('port', 0)
         if DDE.senddata('\n'.join(filenames)):
             sys.exit(0)

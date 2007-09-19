@@ -130,9 +130,7 @@ def read_todos(editor):
     if not isinstance(pl, (list, tuple)):
         pl = [pl]
     #first check the config.ini
-    inifile = common.getConfigPathFile('config.ini')
-    from modules import dict4ini
-    ini = dict4ini.DictIni(inifile)
+    ini = common.get_config_file_obj()
     if ini.todo_pattern.has_key(lang):
         pattern = ini.todo_pattern[lang]
         if isinstance(pattern, list):

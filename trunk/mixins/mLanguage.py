@@ -24,7 +24,6 @@
 import wx
 from modules import Mixin
 from modules import makemenu
-from modules import IniFile
 from modules import common
 
 def add_mainframe_menu(menulist):
@@ -71,8 +70,8 @@ def OnOptionLanguageChange(win, event):
     index = win.language_ids.index(eid)
     country = win.language_country[index]
     wx.MessageDialog(win, tr("Because you changed the language, \nit will be enabled at next startup."), tr("Change language"), wx.OK).ShowModal()
-    ini = IniFile.IniFile(common.get_app_filename(win, 'config.ini'), encoding='utf-8')
-    ini.set('language', 'default', country)
+    ini = common.get_config_file_obj()
+    ini.language.default = country
     ini.save()
 
     # change menu check status

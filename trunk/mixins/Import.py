@@ -1508,9 +1508,7 @@ def get_document_comment_chars(mainframe):
     }
     editor = mainframe.document
     lang = editor.languagename
-    inifile = common.getConfigPathFile('config.ini')
-    from modules import dict4ini
-    x = dict4ini.DictIni(inifile, values={'comment_chars':chars})
+    x = common.get_config_file_obj(values={'comment_chars':chars})
     cchar = ''
     if x.comment_chars.has_key(lang):
         cchar = x.comment_chars[lang]
@@ -3641,7 +3639,6 @@ Mixin.setMixin('mainframe', 'OnScriptItems', OnScriptItems)
 import wx
 from modules import Mixin
 from modules import makemenu
-from modules import IniFile
 from modules import common
 
 def add_mainframe_menu(menulist):
@@ -3688,8 +3685,8 @@ def OnOptionLanguageChange(win, event):
     index = win.language_ids.index(eid)
     country = win.language_country[index]
     wx.MessageDialog(win, tr("Because you changed the language, \nit will be enabled at next startup."), tr("Change language"), wx.OK).ShowModal()
-    ini = IniFile.IniFile(common.get_app_filename(win, 'config.ini'), encoding='utf-8')
-    ini.set('language', 'default', country)
+    ini = common.get_config_file_obj()
+    ini.language.default = country
     ini.save()
 
     # change menu check status
@@ -4445,15 +4442,13 @@ Mixin.setPlugin('editor', 'afteropenfile', afteropenfile)
 __doc__ = 'simulate DDE support'
 
 import sys
-import wx
 from modules import DDE
 from modules import Mixin
-from modules import dict4ini
-from modules import Globals
+from modules import common
 
 def app_init(app, filenames):
     if app.ddeflag:
-        x = dict4ini.DictIni('config.ini')
+        x = common.get_config_file_obj()
         port = x.server.get('port', 0)
         if DDE.senddata('\n'.join(filenames)):
             sys.exit(0)
@@ -5640,10 +5635,10 @@ def is_htmlview(page, document):
 #-----------------------  mHotKey.py ------------------
 
 from modules import Mixin
-from modules import dict4ini
+from modules import common
 
 def init_accelerator(win, accellist, editoraccellist):
-    ini = dict4ini.DictIni('config.ini', onelevel=True)
+    ini = common.get_config_file_obj(onelevel=True)
 
     #mid can be a mainframe menu ID or a mainframe function name
     #which should only has one parameter

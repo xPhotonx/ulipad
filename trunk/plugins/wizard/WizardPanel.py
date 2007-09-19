@@ -61,8 +61,6 @@ class WizardPanel(wx.Panel):
         self.loadData()
 
     def loadData(self):
-        from modules import dict4ini
-
         self.tree.CollapseAndReset(self.root)
 
         self.items = {}
@@ -75,7 +73,7 @@ class WizardPanel(wx.Panel):
 
         self._loadPath(self.root, wizardpath)
 
-        x = dict4ini.DictIni(os.path.join(self.mainframe.app.workpath, 'config.ini'))
+        x = common.get_config_file_obj()
         if x.wizard.path:
             if isinstance(x.wizard.path, list):
                 for p in x.wizard.path:

@@ -414,9 +414,7 @@ class DirBrowser(wx.Panel, Mixin.Mixin):
         flag = False
 
         self.filter = ['.*', '*.pyc', '*.bak']
-        configini = os.path.join(self.mainframe.userpath, 'config.ini')
-        from modules import dict4ini
-        ini = dict4ini.DictIni(configini)
+        ini = common.get_config_file_obj()
 
         if ini.ignore.matches:
             self.filter = ini.ignore.matches
@@ -599,7 +597,6 @@ class DirBrowser(wx.Panel, Mixin.Mixin):
         if dlg.ShowModal() == wx.ID_YES:
             if os.path.exists(filename):
                 if os.path.isdir(filename):
-                    import shutil
                     try:
                         shutil.rmtree(filename)
                     except:
@@ -702,9 +699,7 @@ class DirBrowser(wx.Panel, Mixin.Mixin):
         self.fileimages['.ini'] = 'file_txt.gif'
         self.fileimages['.bat'] = 'file_txt.gif'
         self.fileimages['.xml'] = 'file_xml.gif'
-        configini = os.path.join(self.mainframe.userpath, 'config.ini')
-        from modules import dict4ini
-        ini = dict4ini.DictIni(configini)
+        ini = common.get_config_file_obj()
         self.fileimages.update(ini.fileimages)
         ini.fileimages = self.fileimages
         ini.save()
@@ -721,9 +716,7 @@ class DirBrowser(wx.Panel, Mixin.Mixin):
         filename = self.get_node_filename(item)
         if filename not in self.filter:
             self.filter.append(filename)
-            configini = os.path.join(self.mainframe.userpath, 'config.ini')
-            from modules import dict4ini
-            ini = dict4ini.DictIni(configini)
+            ini = common.get_config_file_obj()
             ini.ignore.matches = self.filter
             ini.save()
             self.tree.Delete(item)
@@ -735,9 +728,7 @@ class DirBrowser(wx.Panel, Mixin.Mixin):
         fname, ext = os.path.splitext(filename)
         if ext not in self.filter:
             self.filter.append(str('*' + ext))
-            configini = os.path.join(self.mainframe.userpath, 'config.ini')
-            from modules import dict4ini
-            ini = dict4ini.DictIni(configini)
+            ini = common.get_config_file_obj()
             ini.ignore.matches = self.filter
             ini.save()
             item = self.tree.GetItemParent(item)
@@ -799,12 +790,10 @@ class DirBrowser(wx.Panel, Mixin.Mixin):
         return data['nodetype'] == self.FILE_NODE
 
     def OnAddUliPadWorkPath(self, event):
-        from modules import Globals
         path = Globals.workpath
         self.addpath(path)
 
     def OnAddUliPadUserPath(self, event):
-        from modules import Globals
         path = Globals.userpath
         self.addpath(path)
 
