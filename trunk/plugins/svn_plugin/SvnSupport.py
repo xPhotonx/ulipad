@@ -153,19 +153,20 @@ def run_command(cmd, callback=None):
         
 def pipe_command(cmd, callback):
     def _run(cmd):
-        o = os.popen(cmd)
-        text = convert_text(o.read())
+        s = []
+        for line in os.popen(cmd):
+            s.append(line)
+        text = convert_text(''.join(s))
         if callback:
-            callback(text)
+            wx.CallAfter(callback, text)
     d = Casing.Casing(_run, cmd)
     d.start_thread()
   
 def get_entries(path):
     cmd = '"%s" status -Nv %s' % (Globals.mainframe.pref.svn_exe, path)
-    o = os.popen(cmd)
-    text = convert_text(o.read())
     entries = {}
-    for line in text.splitlines():
+    for line in os.popen(cmd):
+        line = convert_text(line)
         f = line[0]
         line = line.strip()
         filename = line.split()[-1]
@@ -235,7 +236,7 @@ from modules import CheckList
 class CommitDialog(wx.Dialog):
     filetype = 'all'
     def __init__(self, parent, title, files):
-        wx.Dialog.__init__(self, parent, -1, style = wx.DEFAULT_DIALOG_STYLE, title = title, size=(600, -1))
+        wx.Dialog.__init__(self, parent, -1, style = wx.DEFAULT_DIALOG_STYLE, title = title, size=(600, 400))
         self.parent = parent
         self.files = files
         self.fileinfos = {}
@@ -315,28 +316,24 @@ class CommitDialog(wx.Dialog):
     def init(self):
         self.filelist = []
         def _callback(text):
-            try:
-                self.filenames.Freeze()
-                path = os.path.dirname(self.files)
-                length = len(path)
-                for line in text.splitlines():
-                    wx.SafeYield()
-                    line = line.strip()
-                    if not line: continue
-                    filename = line[7:]
-                    ext = os.path.splitext(filename)[1]
-                    if line[0] == '?':
-                        if self.filetype == 'all':
-                            self.filelist.append((False, filename[length+1:], filename, line[0]))
-                    else:
-                        self.filelist.append((True, filename[length+1:], filename, line[0]))
-                if not self.filelist:
-                    common.showmessage(self, tr("No files need to process."))
-                    return
+            path = os.path.dirname(self.files)
+            length = len(path)
+            for line in text.splitlines():
+                line = line.strip()
+                if not line: continue
+                filename = line[7:]
+                ext = os.path.splitext(filename)[1]
+                if line[0] == '?':
+                    if self.filetype == 'all':
+                        self.filelist.append((False, filename[length+1:], filename, line[0]))
+                else:
+                    self.filelist.append((True, filename[length+1:], filename, line[0]))
                 
-                self.load_data(self.filetype == 'all')
-            finally:
-                self.filenames.Thaw()
+            if not self.filelist:
+                common.showmessage(self, tr("No files need to process."))
+                return
+            
+            self.load_data(self.filetype == 'all')
                 
         cmd = '"%s" status %s' % (self.parent.pref.svn_exe, self.files)
         pipe_command(cmd, _callback)
@@ -358,32 +355,28 @@ class CommitDialog(wx.Dialog):
             'M':wx.BLACK,
             'D':wx.RED,
         }
-        try:
-            self.filenames.Freeze()
-            self.filenames.DeleteAllItems()
-            self.fileinfos = {}
-            
-            i = 0
-            for flag, fname, filename, f in self.filelist:
-                wx.SafeYield()
-                ext = os.path.splitext(fname)[1]
-                if flag == False:
-                    if unversioned:
-                        index = self.filenames.addline([fname, ext, status.get(f, '')], False)
-                        item = self.filenames.GetItem(index)
-                        item.SetTextColour('#999999')
-                        self.filenames.SetItem(item)
-                        self.fileinfos[self.filenames.GetItemData(index)] = (filename, False)
-                else:
-                    index = self.filenames.insertline(i, [fname, ext, status.get(f, '')], True)
+        
+        self.filenames.DeleteAllItems()
+        self.fileinfos = {}
+        
+        i = 0
+        for flag, fname, filename, f in self.filelist:
+            ext = os.path.splitext(fname)[1]
+            if flag == False:
+                if unversioned:
+                    index = self.filenames.addline([fname, ext, status.get(f, '')], False)
                     item = self.filenames.GetItem(index)
-                    item.SetTextColour(color.get(f, wx.BLACK))
+                    item.SetTextColour('#999999')
                     self.filenames.SetItem(item)
-                    self.fileinfos[self.filenames.GetItemData(index)] = (filename, True)
-                    i += 1
-            self.check_state()
-        finally:
-            self.filenames.Thaw()
+                    self.fileinfos[self.filenames.GetItemData(index)] = (filename, False)
+            else:
+                index = self.filenames.insertline(i, [fname, ext, status.get(f, '')], True)
+                item = self.filenames.GetItem(index)
+                item.SetTextColour(color.get(f, wx.BLACK))
+                self.filenames.SetItem(item)
+                self.fileinfos[self.filenames.GetItemData(index)] = (filename, True)
+                i += 1
+        self.check_state()
         
     def OnHisMsg(self, event):
         dlg = wx.SingleChoiceDialog(
