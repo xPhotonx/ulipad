@@ -47,7 +47,7 @@ class ValidateFailException(Exception): pass
 # common function
 #############################################
 
-def create(win, layout, fit=1):
+def create(win, layout, fit=1, namebinding=False):
     """
     build layout and all sub-elements.
     win is target window object, and layout will be applied to it
@@ -55,7 +55,7 @@ def create(win, layout, fit=1):
         == 1 will change height size to best size
         == 2 will change width and height both size to best size
     """
-    layout.create(win)
+    layout.create(win, namebinding)
     win.SetSizer(layout.obj)
     win.SetAutoLayout(True)
     if fit == 1:
@@ -86,6 +86,20 @@ def DefaultValidateCallback(message):
 #############################################
 # Elements class definition
 #############################################
+
+def _bind_name(f):
+    """
+    Binding an element to window object, so that you can use win.name to visit
+    the element and use win.name_obj to visit the underlying wx widget. It 
+    equals layout.find(name) and layout.find(name).get_widget()
+    """
+    def _f(self, win, namebinding=False):
+        r = f(self, win, namebinding)
+        if namebinding and not isinstance(self, LayoutBase) and not self.name.startswith('_id'):
+            setattr(win, self.name, self)
+            setattr(win, self.name+'_obj', self.get_widget())
+        return r
+    return _f
 
 class Element(object):
     """
@@ -131,6 +145,7 @@ class Element(object):
         self.widget = None
         self.events = []
         self.win = None
+        self.name = ''
         self.created = False
         
     def _create_obj(self, win):
@@ -140,7 +155,8 @@ class Element(object):
         """
         raise ImplementException('Unimplemented')
     
-    def create(self, win):
+    @_bind_name
+    def create(self, win, namebinding=False):
         """
         This function will really create the underlying wx widgets according the 
         element class type, then binding the events to it. And it'll extrace `size` 
@@ -367,9 +383,11 @@ class LayoutBase(Element, LayoutValidateMixin):
     proportion = (-1, -1)
     has_value = True
     
-    def __init__(self, padding=4, *args, **kwargs):
+    def __init__(self, padding=4, namebinding=False, *args, **kwargs):
         """
         padding is used as default border value.
+        namebinding is a flag, indicate that if binding the element name to a 
+        window object after invoke create() method.
         """
         Element.__init__(self, *args, **kwargs)
         LayoutValidateMixin.__init__(self)
@@ -378,6 +396,7 @@ class LayoutBase(Element, LayoutValidateMixin):
         self.elements_args = {}
         self.orders = []
         self.padding = padding
+        self.namebinding = namebinding
         self._id = 0
         
     def _prepare_element(self, element):
@@ -453,7 +472,10 @@ class LayoutBase(Element, LayoutValidateMixin):
         """
         raise ImplementException('Unimplemented!')
     
-    def create(self, win):
+    @_bind_name
+    def create(self, win, namebinding=None):
+        if namebinding is not None:
+            self.namebinding = namebinding
         #create object
         if self.win is win:
             if self.created: return self
@@ -471,7 +493,8 @@ class LayoutBase(Element, LayoutValidateMixin):
     
     def _create_element(self, name, element, args, i):
         e = element
-        e.create(self.win)
+        e.create(self.win, self.namebinding)
+        
         #calculate flag
         flag = 0
         if args['flag'] is not None:
@@ -538,7 +561,7 @@ class LayoutBase(Element, LayoutValidateMixin):
         elif hasattr(obj, 'proportion') and obj.proportion[0] == -1:
             return wx.EXPAND
         return 0
-        
+    
     def SetValue(self, value):
         for name, v in value.items():
             obj = self.find(name)
@@ -641,6 +664,12 @@ class LayoutBase(Element, LayoutValidateMixin):
             self.win.SetSize(self.win.GetBestSize())
         return self
     
+    def layout(self):
+        """
+        Just like sizer's Layout() method.
+        """
+        self.get_sizer().Layout()
+    
 class HBox(LayoutBase):
     """
     Just like wx.BoxSizer(wx.HORIZONTAL)
@@ -698,7 +727,7 @@ class Grid(LayoutBase):
         growablecol is used to indicate which col could be automatically growable.
         growablecol could be a single integer value or an integer list or tuple.
         """
-        super(Grid, self).__init__(padding, *args, **kwargs)
+        LayoutBase.__init__(self, padding, *args, **kwargs)
         self.vgap = vgap
         self.hgap = hgap
         self.growablecol = growablecol
@@ -745,7 +774,7 @@ class HGroup(HBox):
     """
 
     def __init__(self, title, *args, **kwargs):
-        super(HGroup, self).__init__(*args, **kwargs)
+        HBox.__init__(self, *args, **kwargs)
         self.title = title
         
     def _create_sizer(self, win):
@@ -758,7 +787,7 @@ class VGroup(VBox):
     """
     
     def __init__(self, title, *args, **kwargs):
-        super(VGroup, self).__init__(*args, **kwargs)
+        VBox.__init__(self, *args, **kwargs)
         self.title = title
         
     def _create_sizer(self, win):
@@ -775,7 +804,7 @@ class SimpleGrid(Grid):
     for textarea, list, tree, etc.
     """
     def __init__(self, vgap=2, hgap=2, padding=4, *args, **kwargs):
-        super(SimpleGrid, self).__init__(vgap, hgap, padding, 1, *args, **kwargs)
+        Grid.__init__(self, vgap, hgap, padding, 1, *args, **kwargs)
         
     def add(self, label, element, name='', proportion=None, flag=None, border=None, span=False):
         """
@@ -806,13 +835,13 @@ class SimpleGrid(Grid):
             if args['label']:
                 box.add(Label(args['label']))
             box.add(e.obj, name=name, proportion=proportion, flag=flag, border=border)
-            box.create(win)
+            box.create(win, self.namebinding)
             sizer.Add(box.obj, (i, 0), span, flag, border)
         else:
             span = wx.DefaultSpan
             if args['label'] is not None:
                 label = Label(args['label'])
-                label.create(win)
+                label.create(win, self.namebinding)
                 sizer.Add(label.obj, (i, 0), span, wx.ALIGN_CENTER_VERTICAL|wx.LEFT, border)
             sizer.Add(e.obj, (i, 1), span, flag, border)
     
@@ -843,7 +872,7 @@ class EasyElement(Element):
         """
         args and kwargs will pass to underlying wx widget constructor function.
         """
-        super(EasyElement, self).__init__(*args, **kwargs)
+        Element.__init__(self, *args, **kwargs)
         
     def _create_obj(self, win):
         if self.klass:
@@ -889,8 +918,12 @@ class List(EasyElement):
     proportion = (-1, -1)
     
     def __init__(self, columns, *args, **kwargs):
-        super(List, self).__init__(columns, *args, **kwargs)
+        EasyElement.__init__(self, columns, *args, **kwargs)
         
+class CheckList(List):
+    from ui.List import CheckList
+    klass = CheckList
+
 class ListBox(EasyElement):
     klass = 'ListBox'
     proportion = (-1, -1)
@@ -904,7 +937,7 @@ class SimpleElement(EasyElement):
     Wrap class used to encapsulate a non-value widget to Element object.
     """
     def __init__(self, obj):
-        super(EasyElement, self).__init__()
+        EasyElement.__init__(self)
         self.obj = obj
         
     def _create_obj(self, win):
@@ -957,7 +990,8 @@ class ValueElement(EasyElement, ValidateMixin):
         ValidateMixin.__init__(self)
         self.value = value
         
-    def create(self, win):
+    @_bind_name
+    def create(self, win, namebinding):
         """
         The mainly difference is after create the Element object, ValueElement will
         invoke the SetValue() to initialize the underlying widget object.
@@ -1024,7 +1058,14 @@ class Check(ValueElement):
     default_value = False
     
     def __init__(self, value=None, label='', *args, **kwargs):
-        super(Check, self).__init__(label=label, *args, **kwargs)
+        ValueElement.__init__(self, label=label, *args, **kwargs)
+        if isinstance(value, str):
+            if value.lower() in ('true', 'yes', 'on'):
+                value = True
+            else:
+                value = False
+        else:
+            value = bool(value)
         self.value = value
         
 class Check3D(Check):
@@ -1042,7 +1083,7 @@ class ComboBox(ValueElement):
     proportion = (-1, 0)
 
     def __init__(self, value=None, choices=[], *args, **kwargs):
-        super(ComboBox, self).__init__(value, choices=choices, *args, **kwargs)
+        ValueElement.__init__(self, value, choices=choices, *args, **kwargs)
     
 class SingleChoice(ValueElement):
     klass = 'ComboBox'
@@ -1066,7 +1107,7 @@ class SingleChoice(ValueElement):
         
         self.value_dict = value_dict
         self.value_list = value_list
-        super(SingleChoice, self).__init__(value, choices=value_list, *args, **kwargs)
+        ValueElement.__init__(self, value, choices=value_list, *args, **kwargs)
         
     def SetValue(self, value):
         key = [k for k, v in self.value_dict.items() if v == value][0]
@@ -1101,11 +1142,11 @@ class MulitChoice(ValueElement):
         
         self.value_dict = value_dict
         self.value_list = value_list
-        super(MulitChoice, self).__init__(value, choices=value_list, *args, **kwargs)
+        ValueElement.__init__(self, value, choices=value_list, *args, **kwargs)
         
     def _create_obj(self, win):
         self.args = self.args[1:]
-        return super(MulitChoice, self)._create_obj(win)
+        return ValueElement._create_obj(self, win)
         
     def SetValue(self, value):
         for i, k in enumerate(self.value_list):
@@ -1183,15 +1224,13 @@ class OpenFile(ValueElement):
     proportion = (-1, 0)
     
     def __init__(self, value='', *args, **kwargs):
-        if value:
-            value = os.path.abspath(value)
         kwargs['initialValue'] = value
-        super(OpenFile, self).__init__(value, *args, **kwargs)
+        ValueElement.__init__(self, value, *args, **kwargs)
         
     def SetValue(self, value):
         if value:
             value = os.path.abspath(value)
-        super(OpenFile, self).SetValue(value)
+        ValueElement.SetValue(self, value)
     
     def _create_obj(self, win):
         from ui.FileBtnCtrl import FileBrowseButton
@@ -1229,7 +1268,7 @@ class HRadioBox(ValueElement):
         """
         Create a radio box
         """
-        super(HRadioBox, self).__init__(label=title, choices=choices, *args, **kwargs)
+        ValueElement.__init__(self, label=title, choices=choices, *args, **kwargs)
     
     def SetValue(self, value):
         self.get_obj().SetSelection(value)
@@ -1317,7 +1356,7 @@ class SimpleDialog(Dialog):
     """
     def __init__(self, parent, layout, title='', value=None, fit=1, callback=None,
             style=wx.DEFAULT_DIALOG_STYLE|wx.RESIZE_BORDER, **kwargs):
-        super(SimpleDialog, self).__init__(parent, layout, title, value, fit, callback,
+        Dialog.__init__(self, parent, layout, title, value, fit, callback,
             style, **kwargs)
     
     def _create(self):
@@ -1326,7 +1365,7 @@ class SimpleDialog(Dialog):
         box.add(simple_buttons(), flag=wx.ALIGN_CENTER|wx.BOTTOM)
         self.layout = box
         box.bind('btnOk', 'click', self.OnOk)
-        super(SimpleDialog, self)._create()
+        Dialog._create(self)
         box.find('btnOk').get_obj().SetDefault()
         
     def OnOk(self, event):

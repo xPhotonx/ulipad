@@ -26,7 +26,7 @@ from modules import Mixin
 import os
 
 def pref_init(pref):
-    pref.svn_exe = ''
+    pref.svn_exe = 'svn'
     pref.svn_log_history = []
 Mixin.setPlugin('preference', 'init', pref_init)
 
@@ -106,11 +106,15 @@ def OnVC_DoCommand(win, event):
 Mixin.setMixin('dirbrowser', 'OnVC_DoCommand', OnVC_DoCommand)
 
 def OnVC_Settings(win, event):
-    dialog = [
-            ('openfile', 'svn_exe', win.pref.svn_exe, tr('Select location of subversion client'), None),
-        ]
-    from modules.EasyGuider import EasyDialog
-    dlg = EasyDialog.EasyDialog(win.mainframe, title=tr("SVN Settings"), elements=dialog)
+    from modules import meide as ui
+    from modules import Globals
+    
+    box = ui.VBox()
+    box.add(ui.Label(tr('Select location of subversion client')))
+    box.add(ui.OpenFile(win.pref.svn_exe), name='svn_exe')
+    
+    dlg = ui.SimpleDialog(Globals.mainframe, box, title=tr("SVN Settings"),
+        size=(300, -1))
     values = None
     if dlg.ShowModal() == wx.ID_OK:
         values = dlg.GetValue()

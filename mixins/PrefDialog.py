@@ -25,7 +25,10 @@ import wx
 import Preference
 from modules import Mixin
 from modules.Debug import error
+from modules import common
 from modules import meide as ui
+
+CONFIG_PREFIX = '_config_'
 
 class PrefDialog(wx.Dialog, Mixin.Mixin):
     __mixinname__ = 'prefdialog'
@@ -33,6 +36,9 @@ class PrefDialog(wx.Dialog, Mixin.Mixin):
     def __init__(self, parent):
         self.initmixin()
 
+        #config.ini
+        self.ini = common.get_config_file_obj()
+        
         wx.Dialog.__init__(self, parent, -1, title=tr("Preference..."), size=wx.Size(600, 400), style=wx.DEFAULT_DIALOG_STYLE)
 
         self.value_set = []
@@ -53,15 +59,19 @@ class PrefDialog(wx.Dialog, Mixin.Mixin):
         self.callplugin('initpreference', self)
         ui.create(self, box, 0)
         box.find('btnOk').get_obj().SetDefault()
-
+        
     def addPages(self, notebook):
         pages = []
         for v in self.pref.preflist:
             pagename, order, kind, prefname, message, extern = v
-            if not hasattr(self.pref, prefname):
-                prefvalue = None
+            #add config options process
+            prefvalue = None
+            if prefname.startswith(CONFIG_PREFIX):
+                section, key = prefname[len(CONFIG_PREFIX):].split('_')
+                if self.ini.has_key(section) and self.ini[section].has_key(key):
+                    prefvalue = self.ini[section][key]
             else:
-                prefvalue = getattr(self.parent.pref, prefname)
+                prefvalue = getattr(self.parent.pref, prefname, prefvalue)
             if pages.count(pagename)==0:
                 page = wx.ScrolledWindow(notebook, -1)
                 page.EnableScrolling(False, True)
@@ -130,11 +140,23 @@ class PrefDialog(wx.Dialog, Mixin.Mixin):
 
     def OnOk(self, event):
         values = {}
+        config = []
         for b in self.value_set:
             values.update(b.GetValue())
         for name, v in values.items():
-            setattr(self.parent.pref, name, v)
+            #if a name starts with CONFIG_PREFIX, so this value should be saved
+            #in config.ini file, but not preference file
+            if name.startswith(CONFIG_PREFIX):
+                config.append((name, v))
+            else:
+                setattr(self.parent.pref, name, v)
         self.parent.pref.save()
+        
+        #process config options
+        for name, v in config:
+            section, key = name[len(CONFIG_PREFIX):].split('_')
+            self.ini[section][key] = v
+        self.ini.save()
 
         #self.parent = mainframe
         self.callplugin('savepreference', self.parent, self.parent.pref)
