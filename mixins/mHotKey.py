@@ -22,10 +22,10 @@
 #   $Id: mHotKey.py 1566 2006-10-09 04:44:08Z limodou $
 
 from modules import Mixin
-from modules import dict4ini
+from modules import common
 
 def init_accelerator(win, accellist, editoraccellist):
-    ini = dict4ini.DictIni('config.ini', onelevel=True)
+    ini = common.get_config_file_obj(onelevel=True)
 
     #mid can be a mainframe menu ID or a mainframe function name
     #which should only has one parameter

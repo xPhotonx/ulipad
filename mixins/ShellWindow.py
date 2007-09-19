@@ -30,7 +30,6 @@ from wx.py.interpreter import Interpreter
 from wx.py import dispatcher
 from modules import Mixin
 from modules import common
-from modules import dict4ini
 from modules import makemenu
 
 
@@ -63,8 +62,7 @@ class ShellWindow(wx.py.shell.Shell, Mixin.Mixin):
         self.initmixin()
 
         #add default font settings in config.ini
-        inifile = common.getConfigPathFile('config.ini')
-        x = dict4ini.DictIni(inifile)
+        x = common.get_config_file_obj()
         font = wx.SystemSettings_GetFont(wx.SYS_DEFAULT_GUI_FONT)
         fontname = x.default.get('shell_font', font.GetFaceName())
         fontsize = x.default.get('shell_fontsize', 10)

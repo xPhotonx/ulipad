@@ -265,6 +265,13 @@ def getConfigPathFile(f, prefix=''):
         return filename
     return ''
 
+def get_config_file():
+    return getConfigPathFile('config.ini')
+
+def get_config_file_obj(*args, **kwargs):
+    from modules import dict4ini
+    return dict4ini.DictIni(get_config_file(), *args, **kwargs)
+    
 def uni_file(filename):
     if isinstance(filename, str):
         return decode_string(filename, defaultfilesystemencoding)

@@ -225,7 +225,7 @@ class FindInFiles(wx.Panel):
                         if r:
                             try:
                                 for a in r:
-                                    results.Append(a)
+                                    wx.CallAfter(results.Append, a)
                                     if self.onlyfilename.IsChecked():
                                         break
                             except:

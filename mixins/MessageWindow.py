@@ -29,7 +29,6 @@ import locale
 from modules import Mixin
 from modules import common
 from modules import makemenu
-from modules import dict4ini
 
 class MessageWindow(wx.stc.StyledTextCtrl, Mixin.Mixin):
     __mixinname__ = 'messagewindow'
@@ -67,8 +66,7 @@ class MessageWindow(wx.stc.StyledTextCtrl, Mixin.Mixin):
         self.SetMarginWidth(2, 0)
 
         #add default font settings in config.ini
-        inifile = common.getConfigPathFile('config.ini')
-        x = dict4ini.DictIni(inifile)
+        x = common.get_config_file_obj()
         font = wx.SystemSettings_GetFont(wx.SYS_DEFAULT_GUI_FONT)
         fontname = x.default.get('message_font', font.GetFaceName())
         fontsize = x.default.get('message_fontsize', 10)

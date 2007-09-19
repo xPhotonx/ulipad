@@ -28,7 +28,6 @@ import wx
 import os
 from modules import common
 from modules import Mixin
-from modules import dict4ini
 
 class LexerBase(Mixin.Mixin):
     __mixinname__ = 'lexerbase'
@@ -103,8 +102,7 @@ class LexerBase(Mixin.Mixin):
         self.preview_code = ''
 
         #add default font settings in config.ini
-        inifile = common.getConfigPathFile('config.ini')
-        x = dict4ini.DictIni(inifile, encoding='utf-8')
+        x = common.get_config_file_obj()
 #        font = wx.SystemSettings_GetFont(wx.SYS_DEFAULT_GUI_FONT)
 #        font = wx.Font(10, wx.TELETYPE, wx.NORMAL, wx.NORMAL, True)
 #        fontname = x.default.get('editor_font', font.GetFaceName())

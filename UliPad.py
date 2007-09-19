@@ -32,7 +32,6 @@ import os
 from modules import common
 from modules import Debug
 from modules import i18n
-from modules import dict4ini
 from modules import Globals
 
 DEBUG = True
@@ -48,7 +47,7 @@ os.chdir(workpath)
 Globals.workpath = workpath
 Globals.confpath = confpath
 
-ini = dict4ini.DictIni(os.path.join(workpath, 'config.ini'))
+ini = common.get_config_file_obj()
 debugflag = ini.default.get('debug', False)
 
 #add pythonpath settings

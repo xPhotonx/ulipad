@@ -170,9 +170,7 @@ def get_document_comment_chars(mainframe):
     }
     editor = mainframe.document
     lang = editor.languagename
-    inifile = common.getConfigPathFile('config.ini')
-    from modules import dict4ini
-    x = dict4ini.DictIni(inifile, values={'comment_chars':chars})
+    x = common.get_config_file_obj(values={'comment_chars':chars})
     cchar = ''
     if x.comment_chars.has_key(lang):
         cchar = x.comment_chars[lang]
