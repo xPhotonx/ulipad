@@ -293,8 +293,8 @@ class DirBrowser(wx.Panel, Mixin.Mixin):
                 dirs.append(x)
             else:
                 files.append(x)
-        dirs.sort(lambda x, y: cmp(x[0].lower(), y[0].lower()))
-        files.sort(lambda x, y: cmp(x[0].lower(), y[0].lower()))
+        dirs.sort(lambda x, y: cmp(x.lower(), y.lower()))
+        files.sort(lambda x, y: cmp(x.lower(), y.lower()))
         return dirs, files
     
     def addpathnodes(self, path, node):
