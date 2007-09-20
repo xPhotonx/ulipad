@@ -19,11 +19,13 @@
 #   along with this program; if not, write to the Free Software
 #   Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 #
-#   $Id: FindReplaceDialog.py 1652 2006-10-28 12:56:52Z limodou $
+#   $Id$
 
 import wx
 import re
 from modules import common
+from modules import Globals
+from modules import meide as ui
 
 def getRawText(string):
     if wx.USE_UNICODE:
@@ -219,145 +221,221 @@ class Finder:
     def regularReplace(self, text):
         return re.sub(self.findtext, self.replacetext, text)
 
-class FindDialog(wx.Dialog):
-    def __init__(self, *args, **kwargs):
-        wx.Dialog.__init__(self, *args, **kwargs)
+class FindPanel(wx.Panel):
+    def __init__(self, parent, name, replace=False, *args, **kwargs):
+        self.parent = parent
+        self.name = name
+        wx.Panel.__init__(self, parent, -1, *args, **kwargs)
+        
+        self.pref = Globals.pref
+        self._create(replace)
+        
+    def _create(self, replace):
+        from modules.wxctrl import FlatButtons
 
-    def init(self, finder):
+        self.sizer = sizer = ui.HBox(padding=0, namebinding='widget').create(self).auto_layout()
+        
+        box1 = ui.HBox(2)
+        sizer.add(box1, proportion=0, flag=0)
+        btn = FlatButtons.FlatBitmapButton(self, -1, common.getpngimage('images/closewin.gif'))
+        btn.SetToolTip(wx.ToolTip(tr("Close")))
+        box1.add(btn).bind('click', self.OnClose)
+        btn = FlatButtons.FlatBitmapButton(self, -1, common.getpngimage('images/replace.gif'))
+        btn.SetToolTip(wx.ToolTip(tr("Open Replace")))
+        box1.add(btn).bind('click', self.OnOpenReplace)
+        
+        box2 = ui.VBox(0)
+        sizer.add(box2, name='box2')
+        
+        box = ui.HBox(2)
+        box2.add(box)
+        
+        #add find widgets
+        box.add(ui.ComboBox, name='findtext')
+        btn = FlatButtons.FlatBitmapButton(self, -1, common.getpngimage('images/next.gif'))
+        btn.SetToolTip(wx.ToolTip(tr("Next")))
+        box.add(btn).bind('click', self.OnNext)
+        btn = FlatButtons.FlatBitmapButton(self, -1, common.getpngimage('images/prev.gif'))
+        btn.SetToolTip(wx.ToolTip(tr("Prev")))
+        box.add(btn).bind('click', self.OnPrev)
+        box.add(ui.Check(False, tr("Match Case")), name="chkCase")
+        box.add(ui.Check(False, tr("Whole Word")), name="chkWhole")
+        box.add(ui.Check(False, tr("Regular Expression")), name="chkRe")
+        box.add(ui.Check(False, tr("Wrap Search")), name="chkWrap")
+        
+        #add replace widgets
+        if replace:
+            self._create_replace()
+#        self.SetBackgroundColour('#FFFFE1')
+        
+    def _create_replace(self):
+        if 'replace_sizer' not in self.sizer:
+            box = ui.HBox(2)
+            box2 = self.sizer.find('box2')
+            box2.add(box, name='replace_sizer')
+            
+            box.add(ui.ComboBox, name='replacetext')
+            box.add(ui.Button(tr('Replace'))).bind('click', self.OnReplace)
+            box.add(ui.Button(tr('Replace All'))).bind('click', self.OnReplaceAll)
+            box.add(ui.Radio(False, tr('Whole File'), style=wx.RB_GROUP), name='rdoWhole')
+            box.add(ui.Radio(False, tr('Selected Text')), name='rdoSelection')
+            
+            self.parent.sizer.layout()
+        
+    def is_replace_show(self):
+        return ('replace_sizer' in self.sizer) and self.sizer.is_shown('replace_sizer')
+    
+    def reset(self, finder, replace=None):
+        if replace:
+            if 'replace_sizer' not in self.sizer:
+                self._create_replace()
+            elif not self.sizer.is_shown('replace_sizer'):
+                self.sizer.show('replace_sizer')
+                self.parent.sizer.layout()
+        else:
+            if self.sizer.is_shown('replace_sizer'):
+                self.sizer.hide('replace_sizer')
+                self.parent.sizer.layout()
+            
         self.finder = finder
-        self.pref = finder.win.pref
-        self.obj_ID_CLOSE.SetId(wx.ID_CANCEL)
-        wx.EVT_BUTTON(self, self.ID_FIND, self.OnFind)
-        wx.EVT_BUTTON(self, wx.ID_CANCEL, self.OnClose)
-        wx.EVT_CHECKBOX(self, self.ID_REGEX, self.OnCheckRegular)
-        wx.EVT_CLOSE(self, self.OnClose)
-
+        self.findtext.Clear()
         text = self.finder.win.GetSelectedText()
         if (len(text) > 0) and (text.count(self.finder.win.getEOLChar()) == 0):
-            self.obj_ID_FINDTEXT.SetValue(text)
+            self.findtext.SetValue(text)
             self.finder.findtext = text
         else:
-            self.obj_ID_FINDTEXT.SetValue(self.finder.findtext)
+            self.findtext.SetValue(self.finder.findtext)
 
         for s in self.pref.findtexts:
-            self.obj_ID_FINDTEXT.Append(s)
+            self.findtext.Append(s)
+            
+        if self.is_replace_show():
+            self._reset_replace()
 
         self.setValue()
-
-        self.obj_ID_FINDTEXT.SetFocus()
-
-    def OnFind(self, event):
+        self.findtext.SetFocus()
+        
+    def _reset_replace(self):
+        self.replacetext.Clear()
+        text = self.finder.win.GetSelectedText()
+        if len(text) > 0:
+            self.rdoWhole.SetValue(False)
+            self.rdoSelection.SetValue(True)
+        else:
+            self.rdoWhole.SetValue(True)
+            self.rdoSelection.SetValue(False)
+        
+        self.replacetext.SetValue(self.finder.replacetext)
+        for s in self.pref.replacetexts:
+            self.replacetext.Append(s)
+        
+    def OnClose(self, event):
+        self.getValue()
+        self.parent.sizer.remove(self.name)
+        self.Destroy()
+        wx.CallAfter(Globals.mainframe.document.SetFocus)
+       
+    def _find(self, flag):
         self.getValue()
         if not self.finder.findtext:
-            common.showerror(self, tr("Target text cann't be empty!"))
+            common.warn(tr("Target text cann't be empty!"))
             return
         self.addFindString(self.finder.findtext)
-        self.finder.find(self.finder.direction)
-
+        self.finder.find(flag)
+        
+    def OnNext(self, event):
+        self._find(0)
+        wx.CallAfter(Globals.mainframe.document.SetFocus)
+        
+    def OnPrev(self, event):
+        self._find(1)
+        wx.CallAfter(Globals.mainframe.document.SetFocus)
+    
     def addFindString(self, text):
+        if not text: return
         if text in self.pref.findtexts:
             self.pref.findtexts.remove(text)
             self.pref.findtexts.insert(0, text)
         else:
             self.pref.findtexts.insert(0, text)
-        while len(self.pref.findtexts) > self.pref.max_number:
-            del self.pref.findtexts[-1]
+        del self.pref.findtexts[self.pref.max_number:]
 
         self.pref.save()
 
-        self.obj_ID_FINDTEXT.Clear()
+        self.findtext.Clear()
         for s in self.pref.findtexts:
-            self.obj_ID_FINDTEXT.Append(s)
+            self.findtext.Append(s)
 
-        self.obj_ID_FINDTEXT.SetValue(text)
-        self.obj_ID_FINDTEXT.SetMark(0, len(text))
-
-    def OnClose(self, event):
-        self.getValue()
-        self.Destroy()
-
-    def OnCheckRegular(self, event):
-        self.obj_ID_WHOLEWORD.SetValue(0)
-        self.obj_ID_WHOLEWORD.Enable(not self.obj_ID_REGEX.GetValue())
-        if self.obj_ID_REGEX.GetValue():
-            self.obj_ID_DIRECTION.SetSelection(not self.obj_ID_REGEX.GetValue())
-        self.obj_ID_DIRECTION.Enable(not self.obj_ID_REGEX.GetValue())
+        self.findtext.SetValue(text)
+        self.findtext.SetMark(0, len(text))
+        
+    def OnOpenReplace(self, event=None):
+        if 'replace_sizer' not in self.sizer:
+            self._create_replace()
+            self._reset_replace()
+        else:
+            if self.sizer.is_shown('replace_sizer'):
+                self.sizer.hide('replace_sizer')
+            else:
+                self.sizer.show('replace_sizer')
+            self.parent.sizer.layout()
 
     def getValue(self):
-        self.finder.findtext = self.obj_ID_FINDTEXT.GetValue()
-        self.finder.regular = self.obj_ID_REGEX.GetValue()
-        self.finder.rewind = self.obj_ID_REWIND.GetValue()
-        self.finder.matchcase = self.obj_ID_MATCHCASE.GetValue()
-        self.finder.wholeword = self.obj_ID_WHOLEWORD.GetValue()
-        self.finder.direction = self.obj_ID_DIRECTION.GetSelection()
+        self.finder.findtext = self.findtext.GetValue()
+        self.finder.regular = self.chkRe.GetValue()
+        self.finder.rewind = self.chkWrap.GetValue()
+        self.finder.matchcase = self.chkCase.GetValue()
+        self.finder.wholeword = self.chkWhole.GetValue()
+        if self.is_replace_show():
+            self.finder.replacetext = self.replacetext.GetValue()
+#        self.finder.direction = 
 
     def setValue(self):
-        self.obj_ID_REGEX.SetValue(self.finder.regular)
-        self.obj_ID_REWIND.SetValue(self.finder.rewind)
-        self.obj_ID_MATCHCASE.SetValue(self.finder.matchcase)
-        self.obj_ID_WHOLEWORD.SetValue(self.finder.wholeword)
-        self.obj_ID_DIRECTION.SetSelection(self.finder.direction)
-        self.obj_ID_DIRECTION.Enable(not self.finder.regular)
-        self.obj_ID_WHOLEWORD.Enable(not self.obj_ID_REGEX.GetValue())
-
-class FindReplaceDialog(FindDialog):
-    def __init__(self, *args, **kwargs):
-        FindDialog.__init__(self, *args, **kwargs)
-
-    def init(self, finder):
-        FindDialog.init(self, finder)
-        wx.EVT_BUTTON(self, self.ID_REPLACE, self.OnReplace)
-        wx.EVT_BUTTON(self, self.ID_REPLACEALL, self.OnReplaceAll)
-
-        text = self.finder.win.GetSelectedText()
-        if len(text) > 0:
-            self.obj_ID_SECTION.SetSelection(1)
-
-        for s in self.pref.replacetexts:
-            self.obj_ID_REPLACETEXT.Append(s)
-
-        self.setValue()
+        self.chkRe.SetValue(self.finder.regular)
+        self.chkWrap.SetValue(self.finder.rewind)
+        self.chkCase.SetValue(self.finder.matchcase)
+        self.chkWhole.SetValue(self.finder.wholeword)
+#        self.obj_ID_DIRECTION.SetSelection(self.finder.direction)
+#        self.obj_ID_DIRECTION.Enable(not self.finder.regular)
+        self.chkWhole.Enable(not self.chkRe.GetValue())
+        if self.is_replace_show():
+            self.replacetext.SetValue(self.finder.replacetext)
 
     def addReplaceString(self, text):
+        if not text: return
         if self.pref.replacetexts.count(text) > 0:
             self.pref.replacetexts.remove(text)
             self.pref.replacetexts.insert(0, text)
         else:
             self.pref.replacetexts.insert(0, text)
-        while len(self.pref.replacetexts) > self.pref.max_number:
-            del self.pref.replacetexts[-1]
-
+        del self.pref.replacetexts[self.pref.max_number:]
+    
         self.pref.save()
-
-        self.obj_ID_REPLACETEXT.Clear()
+    
+        self.replacetext.Clear()
         for s in self.pref.replacetexts:
-            self.obj_ID_REPLACETEXT.Append(s)
-
-        self.obj_ID_REPLACETEXT.SetValue(text)
-        self.obj_ID_REPLACETEXT.SetMark(0, len(text))
-
+            self.replacetext.Append(s)
+    
+        self.replacetext.SetValue(text)
+        self.replacetext.SetMark(0, len(text))
+    
     def OnReplace(self, event):
         self.getValue()
         if not self.finder.findtext:
-            common.showerror(self, tr("Target text cann't be empty!"))
+            common.warn(tr("Target text cann't be empty!"))
             return
         self.addFindString(self.finder.findtext)
         self.addReplaceString(self.finder.replacetext)
         self.finder.replace()
-
+        wx.CallAfter(Globals.mainframe.document.SetFocus)
+    
     def OnReplaceAll(self, event):
         self.getValue()
         if not self.finder.findtext:
-            common.showerror(self, tr("Target text cann't be empty!"))
+            common.warn(tr("Target text cann't be empty!"))
             return
         self.addFindString(self.finder.findtext)
         self.addReplaceString(self.finder.replacetext)
-        self.finder.replaceAll(self.obj_ID_SECTION.GetSelection())
+        self.finder.replaceAll(int(self.rdoSelection.GetValue()))
+        wx.CallAfter(Globals.mainframe.document.SetFocus)
 
-    def getValue(self):
-        FindDialog.getValue(self)
-        self.finder.replacetext = self.obj_ID_REPLACETEXT.GetValue()
-
-    def setValue(self):
-        FindDialog.setValue(self)
-        self.obj_ID_REPLACETEXT.SetValue(self.finder.replacetext)

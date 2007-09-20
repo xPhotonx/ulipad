@@ -4,6 +4,7 @@ SvnSupport.py       Fix svn_plugin crash in Linux
 common.py           Add get_config_file_obj() function, and change the invoke.
 PrefDialog.py dict4ini.py
                     Add config.ini support in Preference Dialog
+FindReplaceDialog.py Removed replaced with FindReplace.py and refactor find and replace
 
 [2007/09/17]
 FindInFiles.py DirBrowser.py

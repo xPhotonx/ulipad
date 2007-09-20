@@ -81,8 +81,9 @@ Mixin.setPlugin('editctrl', 'add_menu_image_list', add_editctrl_menu_image_list)
 def neweditctrl(win):
     from EditorFactory import EditorFactory
 
-    win.notebook = EditorFactory(win.top, win.mainframe)
-Mixin.setPlugin('mainsubframe', 'init', neweditctrl)
+    win.notebook = EditorFactory(win, Globals.mainframe)
+    return win.notebook
+Mixin.setPlugin('documentarea', 'init', neweditctrl)
 
 def on_close(win, event):
     if event.CanVeto():

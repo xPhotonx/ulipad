@@ -69,28 +69,17 @@ class FindInFiles(wx.Panel):
         h.add(ui.Button(tr("CopyClipboard"))).bind('click', self.OnCopyButtonClick)
         box.add(h, flag=wx.EXPAND)
         
-        ui.create(self, box)
+        ui.create(self, box, namebinding='widget')
         
-        self.results = box.find('results').get_obj()
-        self.status = box.find('status').get_obj()
-        self.search = box.find('search').get_obj()
-        self.sdirs = box.find('sdirs').get_obj()
-        self.extns = box.find('extns').get_obj()
-        self.btnRun = box.find('btnRun').get_obj()
-        self.cs = box.find('cs').get_obj()
-        self.ss = box.find('ss').get_obj()
-        self.re = box.find('re').get_obj()
-        self.onlyfilename = box.find('onlyfilename').get_obj()
+        self.status.Enable(False)
         
-        box.find('status').get_obj().Enable(False)
-
     def reset(self, dir):
         self.sdirs.SetValue(dir)
         self.search.SetValue(self.mainframe.document.GetSelectedText())
         self.results.Clear()
 
     def OpenFound(self, e):
-        selected = self.results.GetSelection()
+        selected = self.results_obj.GetSelection()
         if selected < 0:
             return
         cur = selected

@@ -35,7 +35,7 @@ class MainSubFrame(MyPanel.SashPanel, Mixin.Mixin):
         self.mainframe.panel = self
 
         MyPanel.SashPanel.__init__(self, parent)
-
+        
         self.callplugin('init', self)
 
 def init(win):
