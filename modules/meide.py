@@ -1010,7 +1010,7 @@ class ValueElement(EasyElement, ValidateMixin):
             if callable(self.value):
                 value = self.value()
             else:
-                value = self.value
+                value = self._validate_value(self.value)
             
         self.SetValue(value)
         
@@ -1026,6 +1026,9 @@ class ValueElement(EasyElement, ValidateMixin):
     
     def _get_default_value(self):
         return self.default_value
+    
+    def _validate_value(self, value):
+        return value
     
 class Text(ValueElement):
     """
@@ -1049,7 +1052,10 @@ class Int(ValueElement):
     klass = IntCtrl
     default_value = 0
     
-class IntSpin(ValueElement):
+    def _validate_value(self, value):
+        return int(value)
+    
+class IntSpin(Int):
     klass = 'SpinCtrl'
     default_value = 0
     
@@ -1059,6 +1065,9 @@ class Check(ValueElement):
     
     def __init__(self, value=None, label='', *args, **kwargs):
         ValueElement.__init__(self, label=label, *args, **kwargs)
+        self.value = value
+        
+    def _validate_value(self, value):
         if isinstance(value, str):
             if value.lower() in ('true', 'yes', 'on'):
                 value = True
@@ -1066,8 +1075,8 @@ class Check(ValueElement):
                 value = False
         else:
             value = bool(value)
-        self.value = value
-        
+        return value
+    
 class Check3D(Check):
     style = wx.CHK_3STATE
     default_value = 0
@@ -1123,7 +1132,7 @@ class SingleChoice(ValueElement):
 class MulitChoice(ValueElement):
     klass = 'CheckListBox'
     proportion = (-1, -1)
-    default_value = 0
+    default_value = []
     
     def __init__(self, value=None, choices=[], *args, **kwargs):
         if isinstance(choices, (list, tuple)):
@@ -1166,25 +1175,24 @@ class Date(ValueElement):
     klass = 'DatePickerCtrl'
     style = wx.DP_DROPDOWN | wx.DP_SHOWCENTURY
 
-    def SetValue(self, value):
-        import time
-        import datetime
-        
-        if not value:
-            date = wx.DateTime.Now()
-        elif isinstance(value, str):
-            d = time.strptime(value, "%Y-%m-%d")
-            date = wx.DateTimeFromTimeT(time.mktime(d))
-        elif isinstance(value, datetime.datetime):
-            date = wx.DateTimeFromTimeT(time.mktime(value.timetuple()))
-            
-        self.get_obj().SetValue(date)
-    
     def GetValue(self):
         import datetime
         
         date = self.get_obj().GetValue()
         return datetime.date(date.Year, date.Month+1, date.Day)
+    
+    def _get_default_value(self):
+        return wx.DateTime.Now()
+    
+    def _validate_value(self, value):
+        import time, datetime
+        
+        if isinstance(value, str):
+            d = time.strptime(value, "%Y-%m-%d")
+            date = wx.DateTimeFromTimeT(time.mktime(d))
+        elif isinstance(value, datetime.datetime):
+            date = wx.DateTimeFromTimeT(time.mktime(value.timetuple()))
+        return date
     
 class Time(ValueElement):
     def _create_obj(self, win):
@@ -1200,18 +1208,7 @@ class Time(ValueElement):
         return box
     
     def SetValue(self, value):
-        import time
-        import datetime
-        
-        if not value:
-            date = wx.DateTime.Now()
-        elif isinstance(value, str):
-            d = time.strptime(value, "%H:%M:%S")
-            date = wx.DateTimeFromTimeT(time.mktime(d))
-        elif isinstance(value, datetime.datetime):
-            date = wx.DateTimeFromTimeT(time.mktime(value.timetuple()))
-            
-        self.widget.SetValue(date)
+        self.widget.SetValue(value)
         
     def GetValue(self):
         import datetime
@@ -1219,6 +1216,18 @@ class Time(ValueElement):
         value = self.widget.GetValue()
         time = map(int, value.split(':'))
         return datetime.time(*time)
+    
+    def _get_default_value(self):
+        return wx.DateTime.Now()
+    
+    def _validate_value(self, value):
+        import time, datetime
+        if isinstance(value, str):
+            d = time.strptime(value, "%H:%M:%S")
+            date = wx.DateTimeFromTimeT(time.mktime(d))
+        elif isinstance(value, datetime.datetime):
+            date = wx.DateTimeFromTimeT(time.mktime(value.timetuple()))
+        return date
     
 class OpenFile(ValueElement):
     proportion = (-1, 0)
