@@ -25,7 +25,6 @@
 
 import wx
 from modules import Mixin
-from modules import common
 
 def add_mainframe_menu(menulist):
     menulist.extend([ (None, #parent menu id
@@ -69,10 +68,9 @@ def add_tool_list(toollist, toolbaritems):
 Mixin.setPlugin('mainframe', 'add_tool_list', add_tool_list)
 
 def afterinit(win):
-    import FindReplaceDialog
+    import FindReplace
 
-    win.finder = FindReplaceDialog.Finder()
-    win.finddialog = None
+    win.finder = FindReplace.Finder()
 Mixin.setPlugin('mainframe', 'afterinit', afterinit)
 
 def on_set_focus(win, event):
@@ -84,15 +82,18 @@ def on_document_enter(win, document):
 Mixin.setPlugin('editctrl', 'on_document_enter', on_document_enter)
 
 def OnSearchFind(win, event):
-    if not win.finddialog:
-        from modules import Resource
-        from modules import i18n
-        import FindReplaceDialog
-
-        findresfile = common.uni_work_file('resources/finddialog.xrc')
-        filename = i18n.makefilename(findresfile, win.app.i18n.lang)
-        win.finddialog = dlg = Resource.loadfromresfile(filename, win, FindReplaceDialog.FindDialog, 'FindDialog', win.finder)
-        dlg.Show()
+    name = 'findpanel'
+    if not win.documentarea.sizer.is_shown(name):
+        import FindReplace
+        
+        panel = FindReplace.FindPanel(win.documentarea, name)
+        win.documentarea.sizer.add(panel, 
+            name=name, flag=wx.EXPAND|wx.ALL, border=2)
+    else:
+        panel = win.documentarea.sizer.find(name)
+        if panel:
+            panel = panel.get_obj()
+    panel.reset(win.finder)
 Mixin.setMixin('mainframe', 'OnSearchFind', OnSearchFind)
 
 def OnSearchDirectFind(win, event):
@@ -103,14 +104,18 @@ def OnSearchDirectFind(win, event):
 Mixin.setMixin('mainframe', 'OnSearchDirectFind', OnSearchDirectFind)
 
 def OnSearchReplace(win, event):
-    from modules import Resource
-    from modules import i18n
-    import FindReplaceDialog
-
-    findresfile = common.uni_work_file('resources/finddialog.xrc')
-    filename = i18n.makefilename(findresfile, win.app.i18n.lang)
-    dlg = Resource.loadfromresfile(filename, win, FindReplaceDialog.FindReplaceDialog, 'FindReplaceDialog', win.finder)
-    dlg.Show()
+    name = 'findpanel'
+    if not win.documentarea.sizer.is_shown(name):
+        import FindReplace
+        
+        panel = FindReplace.FindPanel(win.documentarea, name)
+        win.documentarea.sizer.add(panel, 
+            name=name, flag=wx.EXPAND|wx.ALL, border=2)
+    else:
+        panel = win.documentarea.sizer.find(name)
+        if panel:
+            panel = panel.get_obj()
+    panel.reset(win.finder, replace=True)
 Mixin.setMixin('mainframe', 'OnSearchReplace', OnSearchReplace)
 
 def OnSearchFindNext(win, event):

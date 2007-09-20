@@ -42,12 +42,13 @@ eve_mapping = {
 class ImplementException(Exception): pass
 class UnsupportException(Exception): pass
 class ValidateFailException(Exception): pass
+class ErrorException(Exception): pass
 
 #############################################
 # common function
 #############################################
 
-def create(win, layout, fit=1, namebinding=False):
+def create(win, layout, fit=1, namebinding=None):
     """
     build layout and all sub-elements.
     win is target window object, and layout will be applied to it
@@ -89,15 +90,26 @@ def DefaultValidateCallback(message):
 
 def _bind_name(f):
     """
-    Binding an element to window object, so that you can use win.name to visit
-    the element and use win.name_obj to visit the underlying wx widget. It 
-    equals layout.find(name) and layout.find(name).get_widget()
+    Binding an element or its underlying wx widget to window object, so that you 
+    can use win.name to visit the element or its underlying wx widget. It 
+    equals layout.find(name) and layout.find(name).get_widget(). It supports two
+    fashion: element binding and widget binding, so you should carefully use them.
+    
+    namebinding could be 'element' or 'widget' or None, if the value is 'element', then
+    bind the element to window object and if the value is 'widget', then bind
+    the underlying widget to window object
     """
-    def _f(self, win, namebinding=False):
+    def _f(self, win, namebinding=None):
         r = f(self, win, namebinding)
-        if namebinding and not isinstance(self, LayoutBase) and not self.name.startswith('_id'):
-            setattr(win, self.name, self)
-            setattr(win, self.name+'_obj', self.get_widget())
+        if not namebinding:
+            return r
+        if namebinding not in ('element', 'widget'):
+            raise ErrorException('The namebinding parameter must be "element" or "widget".')
+        if self.name and not self.name.startswith('_id'):
+            if namebinding == 'element':
+                setattr(win, self.name, self)
+            else:
+                setattr(win, self.name, self.get_widget())
         return r
     return _f
 
@@ -156,7 +168,7 @@ class Element(object):
         raise ImplementException('Unimplemented')
     
     @_bind_name
-    def create(self, win, namebinding=False):
+    def create(self, win, namebinding=None):
         """
         This function will really create the underlying wx widgets according the 
         element class type, then binding the events to it. And it'll extrace `size` 
@@ -383,11 +395,13 @@ class LayoutBase(Element, LayoutValidateMixin):
     proportion = (-1, -1)
     has_value = True
     
-    def __init__(self, padding=4, namebinding=False, *args, **kwargs):
+    def __init__(self, padding=4, namebinding=None, auto_layout=False, *args, **kwargs):
         """
         padding is used as default border value.
         namebinding is a flag, indicate that if binding the element name to a 
         window object after invoke create() method.
+        
+        namebinding should be 'element', 'widget', None
         """
         Element.__init__(self, *args, **kwargs)
         LayoutValidateMixin.__init__(self)
@@ -397,6 +411,7 @@ class LayoutBase(Element, LayoutValidateMixin):
         self.orders = []
         self.padding = padding
         self.namebinding = namebinding
+        self.auto_layout_flag = auto_layout
         self._id = 0
         
     def _prepare_element(self, element):
@@ -457,6 +472,7 @@ class LayoutBase(Element, LayoutValidateMixin):
         self.orders.append(name)
         if self.created:
             self._create_element(name, element, args, len(self.orders) - 1)
+            self._layout()
         return element
         
     def get_sizer(self):
@@ -489,6 +505,8 @@ class LayoutBase(Element, LayoutValidateMixin):
                 i)
         self._do_bind()
         self.created = True
+        if self.auto_layout_flag:
+            self.auto_layout()
         return self
     
     def _create_element(self, name, element, args, i):
@@ -637,16 +655,14 @@ class LayoutBase(Element, LayoutValidateMixin):
         Return the element object according the name. If there is no such a element
         object existed according to the name, then `None` returned.
         """
-        def _f(obj, name):
-            if name in obj.elements:
-                return obj.elements[name]
-            else:
-                for e in obj.elements.values():
-                    if isinstance(e, LayoutBase):
-                        o = _f(e, name)
-                        if o: return o
-            
-        return _f(self, name)
+        v = self._process(name)
+        if not v:
+            return None
+        else:
+            return v[1]
+    
+    def __contains__(self, name):
+        return bool(self.find(name))
     
     def auto_layout(self):
         """
@@ -655,6 +671,8 @@ class LayoutBase(Element, LayoutValidateMixin):
         """
         self.win.SetSizer(self.get_sizer())
         self.win.SetAutoLayout(True)
+        
+        self.auto_layout_flag = True
         return self
         
     def auto_fit(self, fit=1):
@@ -664,12 +682,69 @@ class LayoutBase(Element, LayoutValidateMixin):
             self.win.SetSize(self.win.GetBestSize())
         return self
     
+    def _layout(self):
+        if self.auto_layout_flag:
+            self.layout()
+            
     def layout(self):
         """
         Just like sizer's Layout() method.
         """
         self.get_sizer().Layout()
+        
+    def _process(self, name, obj=None):
+        """
+        Search the name in elements, and return the parent layout and element object.
+        """
+        if obj is None:
+            obj = self
+        if name in obj.elements:
+            element = obj.elements[name]
+            return obj, element
+        else:
+            for e in obj.elements.values():
+                if isinstance(e, LayoutBase):
+                    o = self._process(name, e)
+                    if o: return o
+            
+    def hide(self, name):
+        v = self._process(name)
+        if v:
+            layout, element = v
+            layout.get_sizer().Hide(element.get_obj())
+            self._layout()
+            
+    def show(self, name):
+        v = self._process(name)
+        if v:
+            layout, element = v
+            layout.get_sizer().Show(element.get_obj())
+            self._layout()
+            
+    def remove(self, name):
+        v = self._process(name)
+        if v:
+            layout, element = v
+            obj = element.get_obj()
+            layout.get_sizer().Detach(obj)
+            self._layout()
+            del layout.elements[name]
+            del layout.elements_args[name]
+            layout.orders.remove(name)
+            for i, (n, eve, func) in enumerate(layout.events[:]):
+                if n == name:
+                    del layout.events[i] 
+            return obj
     
+    def is_shown(self, name):
+        if not self.created:
+            return False
+        
+        v = self._process(name)
+        if v:
+            layout, element = v
+            return layout.get_sizer().IsShown(element.get_obj())
+        
 class HBox(LayoutBase):
     """
     Just like wx.BoxSizer(wx.HORIZONTAL)
@@ -677,6 +752,10 @@ class HBox(LayoutBase):
     
     proportion = (-1, 0)
 
+    def __init__(self, padding=4, namebinding=None, vertical_center=True, *args, **kwargs):
+        LayoutBase.__init__(self, padding, namebinding, *args, **kwargs)
+        self.vertical_center = vertical_center
+        
     def _create_sizer(self, win):
         return wx.BoxSizer(wx.HORIZONTAL)
     
@@ -697,12 +776,15 @@ class HBox(LayoutBase):
         return 0
     
     def _get_flag(self, pos):
+        flag = 0
+        if self.vertical_center:
+            flag = wx.ALIGN_CENTER_VERTICAL
         if pos == 0:
-            return wx.LEFT | wx.TOP | wx.RIGHT | wx.BOTTOM
+            return flag | wx.LEFT | wx.TOP | wx.RIGHT | wx.BOTTOM
         if pos == 1:
-            return wx.TOP | wx.BOTTOM | wx.RIGHT
+            return flag | wx.TOP | wx.BOTTOM | wx.RIGHT
         else:
-            return wx.TOP | wx.RIGHT | wx.BOTTOM
+            return flag | wx.TOP | wx.RIGHT | wx.BOTTOM
             
 class VBox(LayoutBase):
     """
@@ -711,8 +793,23 @@ class VBox(LayoutBase):
     
     proportion = (-1, -1)
     
+    def __init__(self, padding=4, namebinding=None, horizontal_center=False, *args, **kwargs):
+        LayoutBase.__init__(self, padding, namebinding, *args, **kwargs)
+        self.horizontal_center = horizontal_center
+        
     def _create_sizer(self, win):
         return wx.BoxSizer(wx.VERTICAL)
+    
+    def _get_flag(self, pos):
+        flag = 0
+        if self.horizontal_center:
+            flag = wx.ALIGN_CENTER_HORIZONTAL
+        if pos == 0:
+            return flag | wx.LEFT | wx.TOP | wx.RIGHT | wx.BOTTOM
+        if pos == 1:
+            return flag | wx.TOP | wx.BOTTOM | wx.RIGHT
+        else:
+            return flag | wx.TOP | wx.RIGHT | wx.BOTTOM
     
 class Grid(LayoutBase):
     """

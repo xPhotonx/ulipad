@@ -29,7 +29,6 @@ def getmainframe(app, filenames):
     Globals.starting = True
 
     app.mainframe = frame = MainFrame(app, filenames)
-    Globals.mainframe = frame
         
     frame.workpath = app.workpath
     frame.userpath = app.userpath

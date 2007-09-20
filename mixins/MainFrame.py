@@ -31,6 +31,7 @@ from modules import makemenu
 from modules import Accelerator
 from modules import MyStatusBar
 from modules import Casing
+from modules import Globals
 #from modules import common
 
 class MainFrame(wx.Frame, Mixin.Mixin):
@@ -71,6 +72,8 @@ class MainFrame(wx.Frame, Mixin.Mixin):
 
         wx.Frame.__init__(self, None, -1, self.app.appname, size=wx.Size(600, 400), name=self.app.appname)
 
+        Globals.mainframe = self
+        
         #@add_menu menulist
         self.callplugin_once('add_menu', MainFrame.menulist)
         #@add_menu_image_list

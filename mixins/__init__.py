@@ -147,5 +147,6 @@
 #import mVersionControl
 #import mShell
 #import mConfig
+#import mDocumentArea
 
 import Import

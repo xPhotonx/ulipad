@@ -31,7 +31,6 @@ def getmainframe(app, filenames):
     Globals.starting = True
 
     app.mainframe = frame = MainFrame(app, filenames)
-    Globals.mainframe = frame
 
     frame.workpath = app.workpath
     frame.userpath = app.userpath
@@ -164,8 +163,9 @@ Mixin.setPlugin('editctrl', 'add_menu_image_list', add_editctrl_menu_image_list)
 def neweditctrl(win):
     from EditorFactory import EditorFactory
 
-    win.notebook = EditorFactory(win.top, win.mainframe)
-Mixin.setPlugin('mainsubframe', 'init', neweditctrl)
+    win.notebook = EditorFactory(win, Globals.mainframe)
+    return win.notebook
+Mixin.setPlugin('documentarea', 'init', neweditctrl)
 
 def on_close(win, event):
     if event.CanVeto():
@@ -900,7 +900,6 @@ def open_recent_files(win, index):
 
 import wx
 from modules import Mixin
-from modules import common
 
 def add_mainframe_menu(menulist):
     menulist.extend([ (None, #parent menu id
@@ -947,7 +946,6 @@ def afterinit(win):
     import FindReplaceDialog
 
     win.finder = FindReplaceDialog.Finder()
-    win.finddialog = None
 Mixin.setPlugin('mainframe', 'afterinit', afterinit)
 
 def on_set_focus(win, event):
@@ -959,15 +957,18 @@ def on_document_enter(win, document):
 Mixin.setPlugin('editctrl', 'on_document_enter', on_document_enter)
 
 def OnSearchFind(win, event):
-    if not win.finddialog:
-        from modules import Resource
-        from modules import i18n
-        import FindReplaceDialog
+    name = 'findpanel'
+    if not win.documentarea.sizer.is_shown(name):
+        import FindReplace
 
-        findresfile = common.uni_work_file('resources/finddialog.xrc')
-        filename = i18n.makefilename(findresfile, win.app.i18n.lang)
-        win.finddialog = dlg = Resource.loadfromresfile(filename, win, FindReplaceDialog.FindDialog, 'FindDialog', win.finder)
-        dlg.Show()
+        panel = FindReplace.FindPanel(win.documentarea, name)
+        win.documentarea.sizer.add(panel,
+            name=name, flag=wx.EXPAND|wx.ALL, border=2)
+    else:
+        panel = win.documentarea.sizer.find(name)
+        if panel:
+            panel = panel.get_obj()
+    panel.reset(win.finder)
 Mixin.setMixin('mainframe', 'OnSearchFind', OnSearchFind)
 
 def OnSearchDirectFind(win, event):
@@ -978,14 +979,18 @@ def OnSearchDirectFind(win, event):
 Mixin.setMixin('mainframe', 'OnSearchDirectFind', OnSearchDirectFind)
 
 def OnSearchReplace(win, event):
-    from modules import Resource
-    from modules import i18n
-    import FindReplaceDialog
+    name = 'findpanel'
+    if not win.documentarea.sizer.is_shown(name):
+        import FindReplace
 
-    findresfile = common.uni_work_file('resources/finddialog.xrc')
-    filename = i18n.makefilename(findresfile, win.app.i18n.lang)
-    dlg = Resource.loadfromresfile(filename, win, FindReplaceDialog.FindReplaceDialog, 'FindReplaceDialog', win.finder)
-    dlg.Show()
+        panel = FindReplace.FindPanel(win.documentarea, name)
+        win.documentarea.sizer.add(panel,
+            name=name, flag=wx.EXPAND|wx.ALL, border=2)
+    else:
+        panel = win.documentarea.sizer.find(name)
+        if panel:
+            panel = panel.get_obj()
+    panel.reset(win.finder, replace=True)
 Mixin.setMixin('mainframe', 'OnSearchReplace', OnSearchReplace)
 
 def OnSearchFindNext(win, event):
@@ -8005,6 +8010,32 @@ def add_pref(preflist):
         (tr('Config'), 100, 'check', '_config_default_debug', tr('Enable debug mode'), None)
     ])
 Mixin.setPlugin('preference', 'add_pref', add_pref)
+
+
+
+#-----------------------  mDocumentArea.py ------------------
+
+import wx
+from modules import Mixin
+from modules import meide as ui
+
+def create_document_area(win):
+    win.mainframe.documentarea = DocumentArea(win.top)
+Mixin.setPlugin('mainsubframe', 'init', create_document_area)
+
+class DocumentArea(wx.Panel, Mixin.Mixin):
+
+    __mixinname__ = 'documentarea'
+
+    def __init__(self, parent):
+        self.initmixin()
+
+        wx.Panel.__init__(self, parent, -1)
+
+        self.sizer = ui.VBox(0).create(self).auto_layout()
+        obj = self.execplugin('init', self)
+        self.sizer.add(obj, proportion=1, flag=wx.EXPAND)
+
 
 
 
