@@ -68,7 +68,7 @@ class PrefDialog(wx.Dialog, Mixin.Mixin):
             prefvalue = None
             if prefname.startswith(CONFIG_PREFIX):
                 section, key = prefname[len(CONFIG_PREFIX):].split('_')
-                if self.ini.has_key(section) and self.ini[section].has_key(key):
+                if section in self.ini and key in self.ini[section]:
                     prefvalue = self.ini[section][key]
             else:
                 prefvalue = getattr(self.parent.pref, prefname, prefvalue)
