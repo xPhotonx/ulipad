@@ -6,13 +6,68 @@ msgid ""
 msgstr ""
 "Project-Id-Version: ulipad\n"
 "POT-Creation-Date: Sun Aug 26 23:46:48 2007\n"
-"PO-Revision-Date: 2007-08-27 13:19+0800\n"
+"PO-Revision-Date: 2007-09-21 17:56+0800\n"
 "Last-Translator: limodou <limodou@gmail.com>\n"
 "Language-Team: limodou <limodou@gmail.com>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=utf-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Generated-By: pygettext.py 1.5\n"
+
+#: ..\plugins\svn_plugin\SvnSettings.py:30
+msgid "SVN Settings"
+msgstr "SVN 设置"
+
+#: ..\plugins\svn_plugin\SvnSettings.py:43
+msgid "Subversion client"
+msgstr "Subversion客户端"
+
+#: ..\plugins\svn_plugin\SvnSettings.py:44
+msgid "Select location of subversion client"
+msgstr "选择Subversion客户端的位置"
+
+#: ..\plugins\svn_plugin\SvnSettings.py:45
+msgid "Global ignores"
+msgstr "全局忽略"
+
+#: ..\plugins\svn_plugin\SvnSettings.py:46
+msgid "Multiple ignores should be delimeted by space"
+msgstr "多个忽略应该用空格分开"
+
+#: ..\plugins\svn_plugin\SvnSettings.py:48
+msgid "Enable proxy server"
+msgstr "允许使用代理服务器"
+
+#: ..\plugins\svn_plugin\SvnSettings.py:50
+msgid "Proxy settings"
+msgstr "代理服务器设置"
+
+#: ..\plugins\svn_plugin\SvnSettings.py:53
+msgid "Server Address"
+msgstr "服务器地址"
+
+#: ..\plugins\svn_plugin\SvnSettings.py:55
+msgid "Port"
+msgstr "端口"
+
+#: ..\plugins\svn_plugin\SvnSettings.py:57
+msgid "Username"
+msgstr "用户名"
+
+#: ..\plugins\svn_plugin\SvnSettings.py:59
+msgid "Password"
+msgstr "口令"
+
+#: ..\plugins\svn_plugin\SvnSettings.py:61
+msgid "Proxy timeout in seconds"
+msgstr "代理服务器超时(秒计)"
+
+#: ..\plugins\svn_plugin\SvnSettings.py:100
+#: ..\plugins\svn_plugin\SvnSettings.py:107
+#: ..\plugins\svn_plugin\SvnSettings.py:134
+#: ..\plugins\svn_plugin\SvnSettings.py:145
+msgid "Maybe your subversion doesn't be installed or installed uncorrectly."
+msgstr "也许你没有安装Subversion或安装不正确。"
 
 #: ..\plugins\svn_plugin\SvnSupport.py:43
 msgid "non-versioned"
@@ -67,102 +122,102 @@ msgstr "目录已经存在，想要覆盖吗？"
 msgid "Export"
 msgstr "导出"
 
-#: ..\plugins\svn_plugin\SvnSupport.py:181
+#: ..\plugins\svn_plugin\SvnSupport.py:183
 msgid "Select directory:"
 msgstr "选择目录："
 
-#: ..\plugins\svn_plugin\SvnSupport.py:188
+#: ..\plugins\svn_plugin\SvnSupport.py:191
 msgid "New name"
 msgstr "新名字"
 
-#: ..\plugins\svn_plugin\SvnSupport.py:189
+#: ..\plugins\svn_plugin\SvnSupport.py:192
 #: ..\plugins\svn_plugin\__init__.py:70
 msgid "Rename"
 msgstr "重命名"
 
-#: ..\plugins\svn_plugin\SvnSupport.py:198
+#: ..\plugins\svn_plugin\SvnSupport.py:201
 msgid "URL of repository:"
 msgstr "仓库的URL："
 
-#: ..\plugins\svn_plugin\SvnSupport.py:199
+#: ..\plugins\svn_plugin\SvnSupport.py:202
 msgid "Checkout Directory"
 msgstr "导出目录"
 
-#: ..\plugins\svn_plugin\SvnSupport.py:200
+#: ..\plugins\svn_plugin\SvnSupport.py:203
 msgid "Revision"
 msgstr "修改版"
 
-#: ..\plugins\svn_plugin\SvnSupport.py:203
+#: ..\plugins\svn_plugin\SvnSupport.py:206
 msgid "Checkout"
 msgstr "导出"
 
-#: ..\plugins\svn_plugin\SvnSupport.py:219
+#: ..\plugins\svn_plugin\SvnSupport.py:222
 msgid "Commit"
 msgstr "提交"
 
-#: ..\plugins\svn_plugin\SvnSupport.py:226
+#: ..\plugins\svn_plugin\SvnSupport.py:229
 #: ..\plugins\svn_plugin\__init__.py:72
 msgid "Revert"
 msgstr "恢复"
 
-#: ..\plugins\svn_plugin\SvnSupport.py:245
+#: ..\plugins\svn_plugin\SvnSupport.py:247
 msgid "Message"
 msgstr "消息"
 
-#: ..\plugins\svn_plugin\SvnSupport.py:248
+#: ..\plugins\svn_plugin\SvnSupport.py:250
 msgid "Recent Messages"
 msgstr "最近消息"
 
-#: ..\plugins\svn_plugin\SvnSupport.py:258
-#: ..\plugins\svn_plugin\SvnSupport.py:418
+#: ..\plugins\svn_plugin\SvnSupport.py:259
+#: ..\plugins\svn_plugin\SvnSupport.py:415
 msgid "File"
 msgstr "文件"
 
-#: ..\plugins\svn_plugin\SvnSupport.py:259
+#: ..\plugins\svn_plugin\SvnSupport.py:260
+#: ..\plugins\svn_plugin\SvnSupport.py:416
 msgid "Extension"
 msgstr "扩展"
 
-#: ..\plugins\svn_plugin\SvnSupport.py:260
-#: ..\plugins\svn_plugin\SvnSupport.py:419
+#: ..\plugins\svn_plugin\SvnSupport.py:261
+#: ..\plugins\svn_plugin\SvnSupport.py:417
 #: ..\plugins\svn_plugin\__init__.py:66
 msgid "Status"
 msgstr "状态"
 
-#: ..\plugins\svn_plugin\SvnSupport.py:267
+#: ..\plugins\svn_plugin\SvnSupport.py:268
 msgid "Show unversioned files"
 msgstr "显示未受控文件"
 
-#: ..\plugins\svn_plugin\SvnSupport.py:271
-#: ..\plugins\svn_plugin\SvnSupport.py:426
+#: ..\plugins\svn_plugin\SvnSupport.py:272
+#: ..\plugins\svn_plugin\SvnSupport.py:424
 msgid "Select / deselect All"
 msgstr "全部选中 / 不选中"
 
-#: ..\plugins\svn_plugin\SvnSupport.py:277
-#: ..\plugins\svn_plugin\SvnSupport.py:432
+#: ..\plugins\svn_plugin\SvnSupport.py:278
+#: ..\plugins\svn_plugin\SvnSupport.py:430
 msgid "OK"
 msgstr "确定"
 
-#: ..\plugins\svn_plugin\SvnSupport.py:280
-#: ..\plugins\svn_plugin\SvnSupport.py:435
+#: ..\plugins\svn_plugin\SvnSupport.py:281
+#: ..\plugins\svn_plugin\SvnSupport.py:433
 msgid "Cancel"
 msgstr "取消"
 
-#: ..\plugins\svn_plugin\SvnSupport.py:386
+#: ..\plugins\svn_plugin\SvnSupport.py:333
+msgid "No files need to process."
+msgstr "没有文件需要处理。"
+
+#: ..\plugins\svn_plugin\SvnSupport.py:383
 msgid "Log History"
 msgstr "日志历史"
 
-#: ..\plugins\svn_plugin\SvnSupport.py:386
+#: ..\plugins\svn_plugin\SvnSupport.py:383
 msgid "Select one log"
 msgstr "选择一条日志"
 
-#: ..\plugins\svn_plugin\__init__.py:35
-msgid "Version"
-msgstr "版本"
-
-#: ..\plugins\svn_plugin\__init__.py:35
-#: ..\plugins\svn_plugin\__init__.py:115
-msgid "Select location of subversion client"
-msgstr "选择Subversion客户端的位置"
+#: ..\plugins\svn_plugin\__init__.py:46
+msgid "SVN Checkout"
+msgstr "SVN 检出"
 
 #: ..\plugins\svn_plugin\__init__.py:47
 msgid "SVN Commands"
@@ -200,15 +255,7 @@ msgstr "增加"
 msgid "Delete"
 msgstr "删除"
 
-#: ..\plugins\svn_plugin\__init__.py:81
-msgid "SVN Checkout"
-msgstr "SVN 检出"
-
-#: ..\plugins\svn_plugin\__init__.py:118
-msgid "SVN Settings"
-msgstr "SVN 设置"
-
-#: ..\plugins\svn_plugin\__init__.py:208
+#: ..\plugins\svn_plugin\__init__.py:197
 msgid "Dir Browser"
-msgstr ""
+msgstr "目录浏览"
 
