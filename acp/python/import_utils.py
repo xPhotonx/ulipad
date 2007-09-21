@@ -86,12 +86,17 @@ def evaluate(win, word):
         obj = eval(word, namespace)
         return obj
     except:
-        import_document(win)
+        exec('import %s' % word) in namespace
         try:
             obj = eval(word, namespace)
             return obj
         except:
-            return None
+            import_document(win)
+            try:
+                obj = eval(word, namespace)
+                return obj
+            except:
+                return None
 
 def getargspec(win, func):
     """Get argument specifications"""
@@ -330,16 +335,20 @@ def getObject(win, word, syncvar=None):
             object = eval(word, namespace)
             if syncvar and not syncvar.empty:
                 raise StopException
-            
         except:
-            import_document(win, syncvar)
-            if syncvar and not syncvar.empty:
-                raise StopException
-            
+            exec('import %s' % word) in namespace
             try:
-                object = eval(word, namespace)
+                obj = eval(word, namespace)
+                return obj
             except:
-                pass
+                import_document(win, syncvar)
+                if syncvar and not syncvar.empty:
+                    raise StopException
+                
+                try:
+                    object = eval(word, namespace)
+                except:
+                    pass
     pout(INDENT, 'getObject result [%s]:' % word, object)
     return object
     

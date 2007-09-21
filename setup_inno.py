@@ -120,9 +120,9 @@ class InnoScript:
         print >> ofi, "AppName=%s" % self.name
         print >> ofi, "AppVerName=%s" % self.name + ' ' + self.version
         print >> ofi, "AppPublisher=Limodou"
-        print >> ofi, "AppPublisherURL=http://wiki.woodpecker.org.cn/moin/UliPad"
+        print >> ofi, "AppPublisherURL=http://code.google.com/p/ulipad/"
         print >> ofi, "AppSupportURL=http://www.donews.net/limodou"
-        print >> ofi, "AppUpdatesURL=http://wiki.woodpecker.org.cn/moin/UliPad"
+        print >> ofi, "AppUpdatesURL=http://code.google.com/p/ulipad/"
         print >> ofi, "DefaultDirName={pf}\%s" % self.name
         print >> ofi, "DefaultGroupName=%s" % self.name
         print >> ofi, "AllowNoIcons=yes"
@@ -145,10 +145,10 @@ class InnoScript:
         print >> ofi, 'Name: "{userdesktop}\%s"; Filename: "{app}\%s.exe"; Tasks: desktopicon' % (self.name, self.name)
         print >> ofi, 'Name: "{userappdata}\Microsoft\Internet Explorer\Quick Launch\%s"; Filename: "{app}\%s.exe"; Tasks: quicklaunchicon' % (self.name, self.name)
         print >> ofi
-        print >> ofi, "[Registry]"
-        print >> ofi, 'Root: HKCR; Subkey: "*\shell\UliPad"; Flags: uninsdeletekey deletekey;'
-        print >> ofi, 'Root: HKCR; Subkey: "*\\shell\\UliPad\\command"; Flags: uninsdeletekey deletekey; ValueType: string; ValueData: "{app}\\%s.exe \"\"%%L\"\""' % self.name
-        print >> ofi
+#        print >> ofi, "[Registry]"
+#        print >> ofi, 'Root: HKCR; Subkey: "*\shell\UliPad"; Flags: uninsdeletekey deletekey;'
+#        print >> ofi, 'Root: HKCR; Subkey: "*\\shell\\UliPad\\command"; Flags: uninsdeletekey deletekey; ValueType: string; ValueData: "{app}\\%s.exe \"\"%%L\"\""' % self.name
+#        print >> ofi
         print >> ofi, "[Run]"
         print >> ofi, 'Filename: "{app}\%s.exe"; Description: "{cm:LaunchProgram,%s}"; Flags: nowait postinstall skipifsilent' % (self.name, self.name)
         print >> ofi
