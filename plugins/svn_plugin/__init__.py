@@ -39,8 +39,9 @@ Mixin.setPlugin('preference', 'init', pref_init)
 
 def other_popup_menu(dirwin, projectname, menus):
     item = dirwin.tree.GetSelection()
-    if not item.IsOk(): return
-    is_svn_dir = detect_svn(common.getCurrentDir(dirwin.get_node_filename(item)))
+    if not item.IsOk(): is_svn_dir = False
+    else:
+        is_svn_dir = detect_svn(common.getCurrentDir(dirwin.get_node_filename(item)))
     menus.extend([ (None,
         [
             (93.0, 'IDPM_VC_CHECKOUT', tr('SVN Checkout'), wx.ITEM_NORMAL, 'OnVC_DoCommand', ''),
