@@ -1386,8 +1386,6 @@ class OpenFile(ValueElement):
         ValueElement.__init__(self, value, *args, **kwargs)
         
     def SetValue(self, value):
-        if value:
-            value = os.path.abspath(value)
         ValueElement.SetValue(self, value)
     
     def _create_obj(self, win):
