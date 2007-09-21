@@ -251,7 +251,7 @@ class FindPanel(wx.Panel):
         box2.add(box)
         
         #add find widgets
-        box.add(ui.ComboBox, name='findtext')
+        box.add(ui.ComboBox, name='findtext').bind('enter', self.OnNext1)
         btn = FlatButtons.FlatBitmapButton(self, -1, common.getpngimage('images/next.gif'))
         btn.SetToolTip(wx.ToolTip(tr("Next")))
         box.add(btn).bind('click', self.OnNext)
@@ -274,7 +274,7 @@ class FindPanel(wx.Panel):
             box2 = self.sizer.find('box2')
             box2.add(box, name='replace_sizer')
             
-            box.add(ui.ComboBox, name='replacetext')
+            box.add(ui.ComboBox, name='replacetext').bind('enter', self.OnReplace1)
             box.add(ui.Button(tr('Replace'))).bind('click', self.OnReplace)
             box.add(ui.Button(tr('Replace All'))).bind('click', self.OnReplaceAll)
             box.add(ui.Radio(False, tr('Whole File'), style=wx.RB_GROUP), name='rdoWhole')
@@ -346,6 +346,9 @@ class FindPanel(wx.Panel):
     def OnNext(self, event):
         self._find(0)
         wx.CallAfter(Globals.mainframe.document.SetFocus)
+        
+    def OnNext1(self, event):
+        self._find(0)
         
     def OnPrev(self, event):
         self._find(1)
@@ -419,7 +422,7 @@ class FindPanel(wx.Panel):
         self.replacetext.SetValue(text)
         self.replacetext.SetMark(0, len(text))
     
-    def OnReplace(self, event):
+    def OnReplace1(self, event):
         self.getValue()
         if not self.finder.findtext:
             common.warn(tr("Target text cann't be empty!"))
@@ -427,6 +430,9 @@ class FindPanel(wx.Panel):
         self.addFindString(self.finder.findtext)
         self.addReplaceString(self.finder.replacetext)
         self.finder.replace()
+        
+    def OnReplace(self, event):
+        self.OnReplace1(event)
         wx.CallAfter(Globals.mainframe.document.SetFocus)
     
     def OnReplaceAll(self, event):
