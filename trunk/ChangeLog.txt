@@ -3,6 +3,7 @@ $Rev$
 mHelp.py            Fix webbrowser bug. Thanks Tom Eubank
                     remove finddialog.xrc and finddialog_zh_CN.xrc
 import_utils.py     When evalating a word, try to import it first.
+SVNSettings.py      Add windows svn proxy setting support
 
 [2007/09/20]
 FindReplaceDialog.py Removed replaced with FindReplace.py and refactor find and replace

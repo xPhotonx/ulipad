@@ -21,13 +21,20 @@
 #
 #   $Id$
 
+import os
 import wx
 from modules import Mixin
-import os
+from modules import common
+from modules.Debug import error
 
 def pref_init(pref):
     pref.svn_exe = 'svn'
     pref.svn_log_history = []
+    pref.svn_proxy_server = ''
+    pref.svn_proxy_port = 0
+    pref.svn_proxy_username = ''
+    pref.svn_proxy_password = ''
+    pref.svn_proxy_timeout = 0
 Mixin.setPlugin('preference', 'init', pref_init)
 
 def add_pref(preflist):
@@ -37,8 +44,6 @@ def add_pref(preflist):
 Mixin.setPlugin('preference', 'add_pref', add_pref)
 
 def other_popup_menu(dirwin, projectname, menus):
-    from modules import common
-    
     item = dirwin.tree.GetSelection()
     if not item.IsOk(): return
     is_svn_dir = detect_svn(common.getCurrentDir(dirwin.get_node_filename(item)))
@@ -106,21 +111,13 @@ def OnVC_DoCommand(win, event):
 Mixin.setMixin('dirbrowser', 'OnVC_DoCommand', OnVC_DoCommand)
 
 def OnVC_Settings(win, event):
-    from modules import meide as ui
-    from modules import Globals
+    from SvnSettings import SVNSettings
     
-    box = ui.VBox()
-    box.add(ui.Label(tr('Select location of subversion client')))
-    box.add(ui.OpenFile(win.pref.svn_exe), name='svn_exe')
-    
-    dlg = ui.SimpleDialog(Globals.mainframe, box, title=tr("SVN Settings"),
-        size=(300, -1))
-    values = None
-    if dlg.ShowModal() == wx.ID_OK:
-        values = dlg.GetValue()
-        win.pref.svn_exe = values['svn_exe']
-        win.pref.save()
-    dlg.Destroy()
+    try:
+        dlg = SVNSettings(win)
+        dlg.ShowModal()
+    except:
+        error.traceback()
 Mixin.setMixin('dirbrowser', 'OnVC_Settings', OnVC_Settings)
 
 _image_ids = {}
