@@ -25,6 +25,8 @@
 import os
 import wx
 
+DEBUG = False
+
 #############################################
 # event mapping
 # they'll be used in bind() and binds() methods
@@ -37,6 +39,7 @@ eve_mapping = {
     'click':wx.EVT_BUTTON,
     'check':wx.EVT_CHECKBOX,
     'change':wx.EVT_TEXT,
+    'enter':wx.EVT_TEXT_ENTER,
 }
 
 class ImplementException(Exception): pass
@@ -113,6 +116,24 @@ def _bind_name(f):
         return r
     return _f
 
+def _print_flag(flag):
+    flags = [(wx.LEFT, 'left'), (wx.RIGHT, 'right'),
+        (wx.TOP, 'top'), (wx.BOTTOM, 'bottom'),
+        (wx.ALL, 'all'), (wx.ALIGN_CENTER, 'align_center'),
+        (wx.ALIGN_CENTER_HORIZONTAL, 'align_center_horizontal'),
+        (wx.ALIGN_CENTER_VERTICAL, 'align_center_vertical')]
+    s = []
+    for f, v in flags:
+        if flag & f == f:
+            s.append(v)
+    return ','.join(s)
+
+def _p(*args):
+    if DEBUG:
+        for i in args:
+            print i,
+        print
+        
 class Element(object):
     """
     Base class of all meide elements
@@ -158,6 +179,8 @@ class Element(object):
         self.events = []
         self.win = None
         self.name = ''
+        self.tip = ''
+        self.attr_size = None
         self.created = False
         
     def _create_obj(self, win):
@@ -180,6 +203,7 @@ class Element(object):
         After you invoke it, the underlying widgets of elements will really be
         created.
         """
+        _p('>>> Create', self.__class__.__name__)
         #create object
         if self.win is win:
             if self.created: return self
@@ -190,11 +214,12 @@ class Element(object):
         
         #set external attributes
         if 'size' in self.kwargs:
-            obj.attr_size = self.kwargs['size']
+            self.attr_size = self.kwargs['size']
         elif hasattr(self, 'size'):
-            obj.attr_size = self.size
+            self.attr_size = self.size
         
         self._do_bind()
+        self._set_tooltip()
         self.created = True
         return self
     
@@ -251,6 +276,25 @@ class Element(object):
             self.bind(*eve)
         return self
         
+    def _set_tooltip(self):
+        if self.tip:
+            obj = self.get_obj()
+            if hasattr(obj, 'SetToolTip'):
+                obj.SetToolTip(wx.ToolTip(self.tip))
+            else:
+                obj = self.get_widget()
+                if hasattr(obj, 'SetToolTip'):
+                    obj.SetToolTip(wx.ToolTip(self.tip))
+        
+    def tooltip(self, tip):
+        """
+        Set a tooltip to an object. And this object must have SetToolTip method.
+        """
+        self.tip = tip
+        if self.created:
+            self._set_tooltip()
+        return self
+    
     def get_obj(self):
         """
         Return the underlying wx widget object. And if the element is a layout Element,
@@ -490,6 +534,7 @@ class LayoutBase(Element, LayoutValidateMixin):
     
     @_bind_name
     def create(self, win, namebinding=None):
+        _p('>>> Create', self.__class__.__name__)
         if namebinding is not None:
             self.namebinding = namebinding
         #create object
@@ -511,6 +556,7 @@ class LayoutBase(Element, LayoutValidateMixin):
     
     def _create_element(self, name, element, args, i):
         e = element
+        _p('... Create', name, 'type=%s' % element.__class__.__name__, 'pos=%d' % i)
         e.create(self.win, self.namebinding)
         
         #calculate flag
@@ -524,7 +570,7 @@ class LayoutBase(Element, LayoutValidateMixin):
                 flag = flag | self._get_flag(1)
             else:
                 flag = flag | self._get_flag(2)
-                
+            
             flag |= self._guess_expand(e)
             
         #calculate proportion
@@ -551,6 +597,7 @@ class LayoutBase(Element, LayoutValidateMixin):
         Private function used to add a element object to current layout object.
         Child class can overwrite it.
         """
+        _p('parent=%s' % self.name, 'pos=%d' % i, 'name=%s' % name, '[', _print_flag(flag), ']', proportion, border)
         sizer.Add(e.obj, proportion, flag, border)
         
     def _guess_proportion(self, obj):
@@ -558,7 +605,7 @@ class LayoutBase(Element, LayoutValidateMixin):
         Private function used to guess the proportion value, according the `proportion`
         class attribute, `proportion` and `size` parameters in add() function.
         """
-        if hasattr(obj, 'attr_size') and hasattr(obj, 'proportion'):
+        if hasattr(obj, 'attr_size') and obj.attr_size and hasattr(obj, 'proportion'):
             #vertical direction decide the proportion, assume the sizer is vertical
             if obj.attr_size[1] == -1 and obj.proportion[1] == -1:
                 return 1
@@ -572,7 +619,7 @@ class LayoutBase(Element, LayoutValidateMixin):
         class attribute, and `size` parameters in add() function. It'll be merged
         with `flag` parameter in add() function.
         """
-        if hasattr(obj, 'attr_size') and hasattr(obj, 'proportion'):
+        if hasattr(obj, 'attr_size') and obj.attr_size and hasattr(obj, 'proportion'):
             #vertical direction decide the proportion, assume the sizer is vertical
             if obj.attr_size[0] == -1 and obj.proportion[0] == -1:
                 return wx.EXPAND
@@ -760,16 +807,16 @@ class HBox(LayoutBase):
         return wx.BoxSizer(wx.HORIZONTAL)
     
     def _guess_proportion(self, obj):
-        if hasattr(obj, 'attr_size'):
-            if obj.attr_size[0] == -1:
+        if hasattr(obj, 'attr_size') and obj.attr_size and hasattr(obj, 'proportion'):
+            if obj.attr_size[0] == -1 and obj.proportion[0] == -1:
                 return 1
         elif hasattr(obj, 'proportion') and obj.proportion[0] == -1:
             return 1
         return 0
     
     def _guess_expand(self, obj):
-        if hasattr(obj, 'attr_size'):
-            if obj.attr_size[1] == -1:
+        if hasattr(obj, 'attr_size') and obj.attr_size and hasattr(obj, 'proportion'):
+            if obj.attr_size[1] == -1 and obj.proportion[1] == -1:
                 return wx.EXPAND
         elif hasattr(obj, 'proportion') and obj.proportion[1] == -1:
             return wx.EXPAND
@@ -806,10 +853,8 @@ class VBox(LayoutBase):
             flag = wx.ALIGN_CENTER_HORIZONTAL
         if pos == 0:
             return flag | wx.LEFT | wx.TOP | wx.RIGHT | wx.BOTTOM
-        if pos == 1:
-            return flag | wx.TOP | wx.BOTTOM | wx.RIGHT
         else:
-            return flag | wx.TOP | wx.RIGHT | wx.BOTTOM
+            return flag | wx.LEFT | wx.BOTTOM | wx.RIGHT
     
 class Grid(LayoutBase):
     """
@@ -856,6 +901,7 @@ class Grid(LayoutBase):
         self.orders.append(name)
         if self.created:
             self._create_element(name, element, args, len(self.orders) - 1)
+            self._layout()
         return element
     
     def _add_element(self, win, sizer, name, e, args, i, proportion, flag, border):
@@ -923,6 +969,7 @@ class SimpleGrid(Grid):
         self.orders.append(name)
         if self.created:
             self._create_element(name, element, args, len(self.orders) - 1)
+            self._layout()
         return element
     
     def _add_element(self, win, sizer, name, e, args, i, proportion, flag, border):
@@ -1093,6 +1140,7 @@ class ValueElement(EasyElement, ValidateMixin):
         The mainly difference is after create the Element object, ValueElement will
         invoke the SetValue() to initialize the underlying widget object.
         """
+        _p('>>> Create', self.__class__.__name__)
         #create object
         if self.win is win:
             if self.created: return self
@@ -1113,11 +1161,12 @@ class ValueElement(EasyElement, ValidateMixin):
         
         #set external attributes
         if 'size' in self.kwargs:
-            obj.attr_size = self.kwargs['size']
+            self.attr_size = self.kwargs['size']
         elif hasattr(self, 'size'):
-            obj.attr_size = self.size
+            self.attr_size = self.size
     
         self._do_bind()
+        self._set_tooltip()
         self.created = True
         return self
     
@@ -1150,6 +1199,8 @@ class Int(ValueElement):
     default_value = 0
     
     def _validate_value(self, value):
+        if not value:
+            return 0
         return int(value)
     
 class IntSpin(Int):
@@ -1187,6 +1238,7 @@ class Check3D(Check):
 class ComboBox(ValueElement):
     klass = 'ComboBox'
     proportion = (-1, 0)
+    style = wx.TE_PROCESS_ENTER
 
     def __init__(self, value=None, choices=[], *args, **kwargs):
         ValueElement.__init__(self, value, choices=choices, *args, **kwargs)
@@ -1415,10 +1467,10 @@ class FrameBase(object):
         self.callback = callback
         
         self._create()
-        if callback and callable(callback):
-            callback(self)
         if value:
             self.layout.SetValue(value)
+        if callback and callable(callback):
+            callback(self)
         
     def _create(self):
         create(self, self.layout, self.fit)

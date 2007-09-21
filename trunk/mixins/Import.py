@@ -8009,7 +8009,7 @@ from modules import Mixin
 
 def add_pref(preflist):
     preflist.extend([
-        (tr('Config'), 100, 'check', '_config_default_debug', tr('Enable debug mode'), None)
+        ('Config.ini', 100, 'check', '_config_default_debug', tr('Enable debug mode'), None)
     ])
 Mixin.setPlugin('preference', 'add_pref', add_pref)
 
