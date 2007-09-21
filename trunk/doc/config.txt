@@ -6,7 +6,7 @@
 :Contact: limodou@gmail.com
 :Homepage: http://code.google.com/p/ulipad/
 :BLOG: http://www.donews.net/limodou
-:Copyright: GPL
+:Copyright: FDL
 
 UliPad supports many customized works, but many of them don't has a visual or GUI
 operation interface. So here is detail description about it.
@@ -197,3 +197,15 @@ So you can change it::
     
 If default is empty, then UliPad will aotomatically detect language. If the i18n has some problem,
 you can set it `en` to use English language. 
+
+Add python path
+-------------------
+
+You may have some directories want to add to sys.path when starting UliPad, so you can
+set as::
+
+    [default]
+    pythonpath = "d:\\",c:/,
+    
+Each directory should be delimetered by ',', and you can use double-quoters to 
+quote a directory just like "d:\\".
