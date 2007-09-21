@@ -305,7 +305,7 @@ class CommitDialog(wx.Dialog):
         if add_files:
             vc_exe = Globals.mainframe.pref.svn_exe
             cmd_add = u'"%s" add %s' % (vc_exe, u' '.join(add_files))
-            run_command(cmd_add)
+            pipe_command(cmd_add)
             
         #save log
         Globals.pref.svn_log_history.insert(0, self.text.GetValue())
