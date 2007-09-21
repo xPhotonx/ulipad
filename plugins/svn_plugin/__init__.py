@@ -37,12 +37,6 @@ def pref_init(pref):
     pref.svn_proxy_timeout = 0
 Mixin.setPlugin('preference', 'init', pref_init)
 
-def add_pref(preflist):
-    preflist.extend([
-        (tr('Version'), 100, 'openfile', 'svn_exe', tr('Select location of subversion client'), None)
-    ])
-Mixin.setPlugin('preference', 'add_pref', add_pref)
-
 def other_popup_menu(dirwin, projectname, menus):
     item = dirwin.tree.GetSelection()
     if not item.IsOk(): return
