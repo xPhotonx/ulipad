@@ -114,7 +114,9 @@ Mixin.setPlugin('mainframe', 'add_menu', add_mainframe_menu)
 def OnHelpIndex(win, event):
     import webbrowser
 
-    webbrowser.open('file:///'+common.get_app_filename(win, 'doc/index.htm'), 1)
+    o = webbrowser.get()
+    o.args = ["%s"]
+    o.open('file:///'+common.get_app_filename(win, 'doc/index.htm'), 1)
 Mixin.setMixin('mainframe', 'OnHelpIndex', OnHelpIndex)
 
 def OnHelpAbout(win, event):
