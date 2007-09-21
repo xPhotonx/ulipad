@@ -6,7 +6,7 @@
 <meta name="generator" content="Docutils 0.4: http://docutils.sourceforge.net/" />
 <title>Config.ini Description</title>
 <meta name="author" content="limodou" />
-<meta name="copyright" content="GPL" />
+<meta name="copyright" content="FDL" />
 <style type="text/css">
 
 /*
@@ -307,7 +307,7 @@ ul.auto-toc {
 <tr class="field"><th class="docinfo-name">BLOG:</th><td class="field-body"><a class="reference" href="http://www.donews.net/limodou">http://www.donews.net/limodou</a></td>
 </tr>
 <tr><th class="docinfo-name">Copyright:</th>
-<td>GPL</td></tr>
+<td>FDL</td></tr>
 </tbody>
 </table>
 <p>UliPad supports many customized works, but many of them don't has a visual or GUI
@@ -485,6 +485,17 @@ default =
 </pre>
 <p>If default is empty, then UliPad will aotomatically detect language. If the i18n has some problem,
 you can set it <cite>en</cite> to use English language.</p>
+</div>
+<div class="section">
+<h1><a id="add-python-path" name="add-python-path">Add python path</a></h1>
+<p>You may have some directories want to add to sys.path when starting UliPad, so you can
+set as:</p>
+<pre class="literal-block">
+[default]
+pythonpath = &quot;d:\\&quot;,c:/,
+</pre>
+<p>Each directory should be delimetered by ',', and you can use double-quoters to
+quote a directory just like &quot;d:\&quot;.</p>
 </div>
 </div>
 </body>
