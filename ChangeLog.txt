@@ -1,4 +1,9 @@
 $Rev$
+[2007/09/22]
+mHelp.py            Fix webbrowser bug. Thanks Tom Eubank
+svn_plugin          Fix directory browser context menu process
+FlatButtons.py      Compatible process
+
 [2007/09/21]
 mHelp.py            Fix webbrowser bug. Thanks Tom Eubank
                     remove finddialog.xrc and finddialog_zh_CN.xrc
