@@ -518,7 +518,6 @@ class DictIni(DictNode):
                 v = str(a)
             elif isinstance(a, unicode):
                 v = a.encode(encoding)
-                print 'v=', v
             else:
                 print 'Error to save: does not support this type %r' % type(a)
                 return
