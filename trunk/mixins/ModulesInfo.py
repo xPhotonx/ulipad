@@ -1,10 +1,10 @@
-#       Programmer:     limodou
-#       E-mail:         limodou@gmail.com
-#
-#       Copyleft 2006 limodou
-#
-#       Distributed under the terms of the GPL (GNU Public License)
-#
+#   Programmer:     limodou
+#   E-mail:         limodou@gmail.com
+#   
+#   Copyleft 2006 limodou
+#   
+#   Distributed under the terms of the GPL (GNU Public License)
+#   
 #   UliPad is free software; you can redistribute it and/or modify
 #   it under the terms of the GNU General Public License as published by
 #   the Free Software Foundation; either version 2 of the License, or
@@ -19,7 +19,7 @@
 #   along with this program; if not, write to the Free Software
 #   Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 #
-#       $Id: ModulesInfo.py 1457 2006-08-23 02:12:12Z limodou $
+#   $Id: ModulesInfo.py 1457 2006-08-23 02:12:12Z limodou $
 
 import glob
 import os.path
@@ -62,9 +62,7 @@ def show_modules_info(win):
         fout = file(f, "w")
         fout.write(template.value('html', {'body':plugins}))
         fout.close()
-        import webbrowser
-
-        webbrowser.open('file:///'+f, 1)
+        common.webopen(f)
     except:
         error.traceback()
         common.showerror(win, tr("Output modules information error!"))

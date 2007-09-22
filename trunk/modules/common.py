@@ -420,3 +420,11 @@ def who_called_me(show_filename=False, out=None, indent=' '):
             return fn(*args, **kwargs)
         return _inner_wrapper
     return _wrapper
+
+def webopen(filename):
+    import webbrowser
+
+    o = webbrowser.get()
+    if hasattr(o, 'args'):
+        o.args = [arg.replace('"%s"', '%s') for arg in o.args]
+    o.open('file://'+filename, 1)
