@@ -86,8 +86,8 @@ def evaluate(win, word):
         obj = eval(word, namespace)
         return obj
     except:
-        exec('import %s' % word) in namespace
         try:
+            exec('import %s' % word) in namespace
             obj = eval(word, namespace)
             return obj
         except:
@@ -268,12 +268,12 @@ def guessWordObject(win, command, striplast=True, syncvar=None):
         if syncvar and not syncvar.empty:
             raise StopException
         
-        if not attributes:
+        if not attributes or attributes[0] == '':
             return flag, object
         
         if flag == 'source' or attributes:
             #deal other rest
-            flag, object = try_get_obj_attribute(win, flag, object, attributes)
+            flag, object = try_get_obj_attribute(win, firstword, flag, object, attributes)
             pout(INDENT, 'result:', flag, 'object=', object)
     else:
         if firstword.startswith('self.'):
@@ -296,6 +296,21 @@ def guessWordObject(win, command, striplast=True, syncvar=None):
         else:
             flag = 'obj'
             object = getObject(win, firstword, syncvar)
+            if object:
+                s = []
+                for a in attributes:
+                    if not a:
+                        break
+                    pout(INDENT*2, 'get attribute', a)
+                    s.append(a)
+                    if hasattr(object, a):
+                        object = getattr(object, a)
+                        pout(INDENT*2, 'found', firstword, s)
+                    else:
+                        pout(INDENT*2, 'unfound', 'try to get', '.'.join([firstword]+s))
+                        object = getObject(win, '.'.join([firstword]+s), syncvar)
+                        if not object:
+                            break
 
     if syncvar and not syncvar.empty:
         raise StopException
@@ -336,8 +351,9 @@ def getObject(win, word, syncvar=None):
             if syncvar and not syncvar.empty:
                 raise StopException
         except:
-            exec('import %s' % word) in namespace
             try:
+                pout(INDENT*2, 'import %s' % word)
+                exec('import %s' % word) in namespace
                 obj = eval(word, namespace)
                 return obj
             except:
@@ -387,21 +403,29 @@ def try_get_obj_type(win, t, v, lineno):
         node = getObject(win, v)
     return flag, node
     
-def try_get_obj_attribute(win, flag, object, attributes):
-    pout(INDENT, "try_get_obj_attribute", flag, object, attributes)
+def try_get_obj_attribute(win, firstword, flag, object, attributes):
+    pout(INDENT, "try_get_obj_attribute", firstword, flag, object, attributes)
     root = win.syntax_info
     if object:
         if flag == 'obj':
-            if len(attributes) > 1:
+            if len(attributes) > 1 and attributes[:-1] == '':
                 attrs = attributes[:-1]
             else:
                 attrs = attributes
-            for o in attrs:
-                if hasattr(object, o):
-                    object = getattr(object, o)
-                else:
-                    object = None
+            s = []
+            for a in attrs:
+                if not a:
                     break
+                pout(INDENT*2, 'get attribute', a)
+                s.append(a)
+                if hasattr(object, a):
+                    object = getattr(object, a)
+                    pout(INDENT*2, 'found', firstword, s)
+                else:
+                    pout(INDENT*2, 'unfound', 'try to get', '.'.join([firstword]+s))
+                    object = getObject(win, '.'.join([firstword]+s))
+                    if not object:
+                        break
         else:
             o = attributes[0]
             del attributes[0]
@@ -415,7 +439,7 @@ def try_get_obj_attribute(win, flag, object, attributes):
                 
                 flag, object = try_get_obj_type(win, t, v, line)
                 if attributes:
-                    return try_get_obj_attribute(win, flag, object, attributes)
+                    return try_get_obj_attribute(win, firstword, flag, object, attributes)
                 else:
                     return flag, object
             else:
@@ -432,7 +456,7 @@ def try_get_obj_attribute(win, flag, object, attributes):
                                    t, v = gt
                            flag, object = try_get_obj_type(win, t, v, line)
                            if attributes:
-                               return try_get_obj_attribute(win, flag, object, attributes)
+                               return try_get_obj_attribute(win, firstword, flag, object, attributes)
                            else:
                                return flag, object
                     else:

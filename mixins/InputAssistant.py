@@ -359,7 +359,10 @@ class InputAssistant(Mixin.Mixin):
         self.syncvar = syncvar
         self.oldpos = editor.GetCurrentPos()
         self.on_char = True
-        return self.process_default(True, editor)
+        try:
+            return self.process_default(True, editor)
+        except StopException:
+            return False
         
     def process_default(self, skipkey=False, editor=None):
         if not editor:
