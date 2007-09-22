@@ -21,11 +21,14 @@
 #
 #   $Id$
 
+import os
+import wx
 from modules import meide as ui
 from modules import Globals
 from modules import common
-import wx
+from modules import dict4ini
 
+GLOBAL_IGNORES = '*.pyc *.pyo *.tmp *.bak *.o'
 class SVNSettings(wx.Dialog):
     def __init__(self, parent, title=tr('SVN Settings'), size=(450, -1)):
         self.pref = Globals.pref
@@ -116,6 +119,27 @@ class SVNSettings(wx.Dialog):
             else:
                 for i in range(len(key.values)-1, -1, -1):
                     key.values[i].delete()
+        else:
+            path = os.path.join(common.getHomeDir(), '.subversion')
+            if os.path.exists(path):
+                config = os.path.join(path, 'config')
+                servers = os.path.join(path, 'servers')
+                if os.path.exists(config) and os.path.exists(servers):
+                    ini = dict4ini.DictIni(config, normal=True)
+                    ini.miscellany['global-ignores'] = v['svn_global_ignores']
+                    ini.save()
+                    ini = dict4ini.DictIni(servers, normal=True)
+                    if v['proxy']:
+                        ini['global']['http-proxy-host'] = v['server']
+                        ini['global']['http-proxy-port'] = v['port']
+                        ini['global']['http-proxy-username'] = v['username']
+                        ini['global']['http-proxy-password'] = v['password']
+                        ini.save()
+                    else:
+                        ini['global'] = {}
+                        ini.save()
+            else:
+                common.warn(tr("Maybe your subversion doesn't be installed or installed uncorrectly."))
             
     def _get_info(self):
         v = {}
@@ -136,7 +160,7 @@ class SVNSettings(wx.Dialog):
             if 'global-ignores' in key.values:
                 v['svn_global_ignores'] = key.values['global-ignores'].getvalue()
             else:
-                key.values.set('global-ignores', '*.pyc *.pyo *.tmp *.bak')
+                key.values.set('global-ignores', GLOBAL_IGNORES)
                 v['svn_global_ignores'] = key.values['global-ignores'].getvalue()
             
             try:
@@ -153,6 +177,23 @@ class SVNSettings(wx.Dialog):
                 self.pref.svn_proxy_timeout = v['timeout'] = int(key.values['http-proxy-timeout'].getvalue())
                 self.pref.svn_proxy_username = v['username'] = key.values['http-proxy-username'].getvalue()
                 self.pref.save()
-
+        
+        else:
+            path = os.path.join(common.getHomeDir(), '.subversion')
+            if os.path.exists(path):
+                config = os.path.join(path, 'config')
+                servers = os.path.join(path, 'servers')
+                if os.path.exists(config) and os.path.exists(servers):
+                    ini = dict4ini.DictIni(config, normal=True)
+                    v['svn_global_ignores'] = ini.miscellany.get('global-ignores', GLOBAL_IGNORES)
+                    ini = dict4ini.DictIni(servers, normal=True)
+                    if ini['global']:
+                        v['proxy'] = True
+                        self.pref.svn_proxy_server = v['server'] = ini['global'].get('http-proxy-host', '')
+                        self.pref.svn_proxy_port = v['port'] = int(ini['global'].get('http-proxy-port', 0))
+                        self.pref.svn_proxy_password = v['password'] = ini['global'].get('http-proxy-password', '')
+                        self.pref.svn_proxy_username = v['username'] = ini['global'].get('http-proxy-username', '')
+                        self.pref.save()
+            
         return v
     

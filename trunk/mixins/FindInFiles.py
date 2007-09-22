@@ -79,7 +79,7 @@ class FindInFiles(wx.Panel):
         self.results.Clear()
 
     def OpenFound(self, e):
-        selected = self.results_obj.GetSelection()
+        selected = self.results.GetSelection()
         if selected < 0:
             return
         cur = selected
