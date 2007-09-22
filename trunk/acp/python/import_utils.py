@@ -87,12 +87,12 @@ def evaluate(win, word):
         return obj
     except:
         try:
-            exec('import %s' % word) in namespace
+            import_document(win)
             obj = eval(word, namespace)
             return obj
         except:
-            import_document(win)
             try:
+                exec('import %s' % word) in namespace
                 obj = eval(word, namespace)
                 return obj
             except:
@@ -346,25 +346,25 @@ def getObject(win, word, syncvar=None):
             except:
                 pass
     else:
-        try:
-            object = eval(word, namespace)
-            if syncvar and not syncvar.empty:
-                raise StopException
-        except:
-            try:
-                pout(INDENT*2, 'import %s' % word)
-                exec('import %s' % word) in namespace
-                obj = eval(word, namespace)
-                return obj
-            except:
-                import_document(win, syncvar)
-                if syncvar and not syncvar.empty:
-                    raise StopException
-                
-                try:
-                    object = eval(word, namespace)
-                except:
-                    pass
+        object = evaluate(win, word)
+#        try:
+#            object = eval(word, namespace)
+#            if syncvar and not syncvar.empty:
+#                raise StopException
+#        except:
+#            try:
+#                import_document(win, syncvar)
+#                if syncvar and not syncvar.empty:
+#                    raise StopException
+#                
+#                object = eval(word, namespace)
+#            except:
+#                try:
+#                    pout(INDENT*2, 'import %s' % word)
+#                    exec('import %s' % word) in namespace
+#                    object = eval(word, namespace)
+#                except:
+#                    pass
     pout(INDENT, 'getObject result [%s]:' % word, object)
     return object
     
