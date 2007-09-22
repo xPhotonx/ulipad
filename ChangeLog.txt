@@ -3,6 +3,7 @@ $Rev$
 mHelp.py            Fix webbrowser bug. Thanks Tom Eubank
 svn_plugin          Fix directory browser context menu process
 FlatButtons.py      Compatible process
+SvnSettings.py      Add svn proxy support under linux platform
 
 [2007/09/21]
 mHelp.py            Fix webbrowser bug. Thanks Tom Eubank
