@@ -39,7 +39,8 @@ Mixin.setPlugin('preference', 'init', pref_init)
 
 def other_popup_menu(dirwin, projectname, menus):
     item = dirwin.tree.GetSelection()
-    if not item.IsOk(): is_svn_dir = False
+    if not dirwin.is_ok(item):
+        is_svn_dir = False
     else:
         is_svn_dir = detect_svn(common.getCurrentDir(dirwin.get_node_filename(item)))
     menus.extend([ (None,

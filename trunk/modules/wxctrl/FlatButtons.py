@@ -40,7 +40,10 @@ class FlatBitmapButton(GenBitmapButton):
 
     def SetBestSize(self, size=None):
         size = (23, 22)
-        wx.PyControl.SetInitialSize(self, size)
+        try:
+            wx.PyControl.SetInitialSize(self, size)
+        except:
+            wx.PyControl.SetBestFittingSize(self, size)
         
     def ButtonOnMouseEnter(self, event):
         self.SetBezelWidth(1)
