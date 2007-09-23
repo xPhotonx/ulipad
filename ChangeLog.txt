@@ -2,6 +2,9 @@ $Rev$
 [2007/09/23]
 DirBrowser.py mDirBrowser.py mEditorCtrl.py
                     Made Open Command Here work in Linux
+Mixin.py            Disable RELOAD_MIXINS flag, if this is True, when you close 
+                    directory browser and reopen it again, some extended menu will
+                    not work.
                     
 [2007/09/22]
 mHelp.py            Fix webbrowser bug. Thanks Tom Eubank
