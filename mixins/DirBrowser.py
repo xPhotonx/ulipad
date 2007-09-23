@@ -840,10 +840,10 @@ class DirBrowser(wx.Panel, Mixin.Mixin):
             item = self.tree.GetItemParent(item)
             filename = self.get_node_filename(item)
         if wx.Platform == '__WXMSW__':
-            cmdline = os.environ['ComSpec']
-            os.spawnl(os.P_NOWAIT, cmdline,r" /k %s && cd %s" % (os.path.split(filename)[0][:2], filename))
+            os.spawnl(os.P_NOWAIT, self.pref.command_line, r" /k %s && cd %s" % (os.path.split(filename)[0][:2], filename))
         else:
-            common.showerror(self, tr('This features is only implemented in Windows Platform.\nIf you know how to implement in Linux please tell me.'))
+            cmdline = self.pref.command_line.replace('{path}', filename)
+            wx.Shell(cmdline)
 
     def is_ok(self, item):
         return item.IsOk() and item != self.root

@@ -106,7 +106,6 @@ Mixin.setPlugin('mainframe', 'init', init)
 import wx
 import os.path
 from modules.wxctrl import FlatNotebook as FNB
-from modules import common
 from modules import Globals
 from modules import Mixin
 
@@ -377,10 +376,9 @@ def OnOpenCmdWindow(win, event=None):
     else:
         filename = os.path.dirname(filename)
     if wx.Platform == '__WXMSW__':
-        cmdline = os.environ['ComSpec']
-        os.spawnl(os.P_NOWAIT, cmdline,r" /k %s && cd %s" % (os.path.split(filename)[0][:2], filename))
+        os.spawnl(os.P_NOWAIT, win.pref.command_line,r" /k %s && cd %s" % (os.path.split(filename)[0][:2], filename))
     else:
-        common.showerror(win, tr('This features is only implemented in Windows Platform.\nIf you know how to implement in Linux please tell me.'))
+        wx.Shell(win.pref.command_line + ' ;cd %s' % filename)
 Mixin.setMixin('editctrl', 'OnOpenCmdWindow', OnOpenCmdWindow)
 
 
@@ -5824,6 +5822,7 @@ Mixin.setMixin('mainframe', 'OnHelpModules', OnHelpModules)
 #-----------------------  mDirBrowser.py ------------------
 
 import wx
+import os
 from modules import Mixin
 from modules import Globals
 
@@ -5865,7 +5864,6 @@ def afterinit(win):
         wx.CallAfter(win.panel.showPage, tr('Dir Browser'))
 Mixin.setPlugin('mainframe', 'afterinit', afterinit)
 
-
 def createDirBrowserWindow(win, dirs=None):
     if not win.panel.getPage(tr('Dir Browser')):
         from DirBrowser import DirBrowser
@@ -5891,12 +5889,18 @@ def pref_init(pref):
     pref.recent_dir_paths_num = 10
     pref.last_dir_paths = []
     pref.open_last_dir_as_startup = True
+    if wx.Platform == '__WXMSW__':
+        cmdline = os.environ['ComSpec']
+        pref.command_line = cmdline
+    else:
+        pref.command_line = 'gnome-terminal'
 Mixin.setPlugin('preference', 'init', pref_init)
 
 def add_pref(preflist):
     preflist.extend([
         (tr('General'), 115, 'num', 'recent_dir_paths_num', tr('Max number of recent browse directories:'), None),
         (tr('General'), 240, 'check', 'open_last_dir_as_startup', tr('Open last directory browser upon startup'), None),
+        (tr('General'), 241, 'openfile', 'command_line', tr('Command line of Open Command Window Here'), None),
     ])
 Mixin.setPlugin('preference', 'add_pref', add_pref)
 
