@@ -24,7 +24,6 @@
 import types
 from Debug import debug
 from Debug import error
-import time
 import sys
 import os.path
 import inspect
@@ -37,7 +36,7 @@ MIDDLE = 2
 LOW = 3
 MUST_FUNC = False
 ENABLE = True
-RELOAD_MIXINS = True
+RELOAD_MIXINS = False
 RELOAD_NAME = ['Import']
 
 
@@ -406,11 +405,11 @@ def setProperty(obj, name, value, self):
         return getattr(self, name)
     else:
         f = import_func(value)
-        #bug: if name is "getShortFilename",in case no file opened,program will crash.
-        if  name in ("OnPythonRunUpdateUI", 'OnPythonUpdateUI', "getShortFilename"):
-            setattr(obj, name, f)
-            return getattr(self, name)
-            
+#        #bug: if name is "getShortFilename",in case no file opened,program will crash.
+#        if  name in ("OnPythonRunUpdateUI", 'OnPythonUpdateUI', "getShortFilename"):
+#            setattr(obj, name, f)
+#            return getattr(self, name)
+#            
         if  RELOAD_MIXINS:
             if  get_name(f) not in RELOAD_NAME:
                 def ff(*args, **kwargs):

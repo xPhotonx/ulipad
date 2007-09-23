@@ -378,7 +378,8 @@ def OnOpenCmdWindow(win, event=None):
     if wx.Platform == '__WXMSW__':
         os.spawnl(os.P_NOWAIT, win.pref.command_line,r" /k %s && cd %s" % (os.path.split(filename)[0][:2], filename))
     else:
-        wx.Shell(win.pref.command_line + ' ;cd %s' % filename)
+        cmdline = win.pref.command_line.replace('{path}', filename)
+        wx.Shell(cmdline)
 Mixin.setMixin('editctrl', 'OnOpenCmdWindow', OnOpenCmdWindow)
 
 
@@ -5893,7 +5894,7 @@ def pref_init(pref):
         cmdline = os.environ['ComSpec']
         pref.command_line = cmdline
     else:
-        pref.command_line = 'gnome-terminal'
+        pref.command_line = 'gnome-terminal --working-directory={path}'
 Mixin.setPlugin('preference', 'init', pref_init)
 
 def add_pref(preflist):
