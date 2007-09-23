@@ -1,4 +1,8 @@
 $Rev$
+[2007/09/23]
+DirBrowser.py mDirBrowser.py mEditorCtrl.py
+                    Made Open Command Here work in Linux
+                    
 [2007/09/22]
 mHelp.py            Fix webbrowser bug. Thanks Tom Eubank
 svn_plugin          Fix directory browser context menu process

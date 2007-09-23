@@ -22,6 +22,7 @@
 #   $Id: mDirBrowser.py 1897 2007-02-03 10:33:43Z limodou $
 
 import wx
+import os
 from modules import Mixin
 from modules import Globals
 
@@ -63,17 +64,6 @@ def afterinit(win):
         wx.CallAfter(win.panel.showPage, tr('Dir Browser'))
 Mixin.setPlugin('mainframe', 'afterinit', afterinit)
 
-#toollist = [
-#   (550, 'dirbrowser'),
-#]
-#Mixin.setMixin('mainframe', 'toollist', toollist)
-#
-##order, IDname, imagefile, short text, long text, func
-#toolbaritems = {
-#   'dirbrowser':(wx.ITEM_NORMAL, 'IDM_WINDOW_DIRBROWSER', images.getWizardBitmap(), tr('dir browser'), tr('Opens directory browser window.'), 'OnWindowDirBrowser'),
-#}
-#Mixin.setMixin('mainframe', 'toolbaritems', toolbaritems)
-
 def createDirBrowserWindow(win, dirs=None):
     if not win.panel.getPage(tr('Dir Browser')):
         from DirBrowser import DirBrowser
@@ -99,12 +89,18 @@ def pref_init(pref):
     pref.recent_dir_paths_num = 10
     pref.last_dir_paths = []
     pref.open_last_dir_as_startup = True
+    if wx.Platform == '__WXMSW__':
+        cmdline = os.environ['ComSpec']
+        pref.command_line = cmdline
+    else:
+        pref.command_line = 'gnome-terminal --working-directory={path}'
 Mixin.setPlugin('preference', 'init', pref_init)
 
 def add_pref(preflist):
     preflist.extend([
         (tr('General'), 115, 'num', 'recent_dir_paths_num', tr('Max number of recent browse directories:'), None),
         (tr('General'), 240, 'check', 'open_last_dir_as_startup', tr('Open last directory browser upon startup'), None),
+        (tr('General'), 241, 'openfile', 'command_line', tr('Command line of Open Command Window Here'), None),
     ])
 Mixin.setPlugin('preference', 'add_pref', add_pref)
 

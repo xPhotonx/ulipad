@@ -24,7 +24,6 @@
 import wx
 import os.path
 from modules.wxctrl import FlatNotebook as FNB
-from modules import common
 from modules import Globals
 from modules import Mixin
 
@@ -295,8 +294,8 @@ def OnOpenCmdWindow(win, event=None):
     else:
         filename = os.path.dirname(filename)
     if wx.Platform == '__WXMSW__':
-        cmdline = os.environ['ComSpec']
-        os.spawnl(os.P_NOWAIT, cmdline,r" /k %s && cd %s" % (os.path.split(filename)[0][:2], filename))
+        os.spawnl(os.P_NOWAIT, win.pref.command_line,r" /k %s && cd %s" % (os.path.split(filename)[0][:2], filename))
     else:
-        common.showerror(win, tr('This features is only implemented in Windows Platform.\nIf you know how to implement in Linux please tell me.'))
+        cmdline = win.pref.command_line.replace('{path}', filename)
+        wx.Shell(cmdline)
 Mixin.setMixin('editctrl', 'OnOpenCmdWindow', OnOpenCmdWindow)
