@@ -251,7 +251,8 @@ class FindPanel(wx.Panel):
         box2.add(box)
         
         #add find widgets
-        box.add(ui.ComboBox, name='findtext').bind('enter', self.OnNext1)
+        box.add(ui.ComboBox, name='findtext').bind('enter', self.OnNext1)\
+            .bind(wx.EVT_KEY_DOWN, self.OnKeyDown)
         btn = FlatButtons.FlatBitmapButton(self, -1, common.getpngimage('images/next.gif'))
         btn.SetToolTip(wx.ToolTip(tr("Next")))
         box.add(btn).bind('click', self.OnNext)
@@ -274,7 +275,8 @@ class FindPanel(wx.Panel):
             box2 = self.sizer.find('box2')
             box2.add(box, name='replace_sizer')
             
-            box.add(ui.ComboBox, name='replacetext').bind('enter', self.OnReplace1)
+            box.add(ui.ComboBox, name='replacetext').bind('enter', self.OnReplace1)\
+                .bind(wx.EVT_KEY_DOWN, self.OnKeyDown)
             box.add(ui.Button(tr('Replace'))).bind('click', self.OnReplace)
             box.add(ui.Button(tr('Replace All'))).bind('click', self.OnReplaceAll)
             box.add(ui.Radio(False, tr('Whole File'), style=wx.RB_GROUP), name='rdoWhole')
@@ -334,6 +336,13 @@ class FindPanel(wx.Panel):
         self.parent.sizer.remove(self.name)
         self.Destroy()
         wx.CallAfter(Globals.mainframe.document.SetFocus)
+        
+    def OnKeyDown(self, event):
+        key = event.GetKeyCode()
+        if key == wx.WXK_ESCAPE:
+            self.OnClose(None)
+        else:
+            event.Skip()
        
     def _find(self, flag):
         self.getValue()

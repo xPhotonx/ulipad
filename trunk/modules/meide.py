@@ -255,7 +255,7 @@ class Element(object):
         """
         if self.created:
             self._bind_event(event_name, func)
-        for i, eve_name, func in enumerate(self.events):
+        for i, (eve_name, func) in enumerate(self.events):
             if eve_name == event_name:
                 del self.events[i]
                 break
@@ -327,7 +327,10 @@ class Element(object):
                 e = eve
         except:
             raise UnsupportException("This event type [%s] doesn't been supported" % eve)
-        e(obj, obj.GetId(), func)
+        try:
+            e(obj, obj.GetId(), func)
+        except:
+            e(obj, func)
         
     def _do_bind(self, events=None):
         """
@@ -665,7 +668,7 @@ class LayoutBase(Element, LayoutValidateMixin):
         if self.created:
             self._bind_event(name, event_name, func)
         
-        for i, n, eve_name, func in enumerate(self.events):
+        for i, (n, eve_name, func) in enumerate(self.events):
             if n == name and eve_name == event_name:
                 del self.events[i]
                 break
