@@ -266,7 +266,10 @@ def getConfigPathFile(f, prefix=''):
     return ''
 
 def get_config_file():
-    return getConfigPathFile('config.ini')
+    filename = getConfigPathFile('config.ini')
+    if not filename:
+        filename = os.path.join(Globals.workpath, 'config.ini')
+    return filename
 
 def get_config_file_obj(*args, **kwargs):
     from modules import dict4ini

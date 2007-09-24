@@ -1,4 +1,7 @@
 $Rev$
+[2007/09/24]
+common.py           Fix get_config_file() bug(return '', should return a default filename
+                    if the config.ini is not existed)
 [2007/09/23]
 DirBrowser.py mDirBrowser.py mEditorCtrl.py
                     Made Open Command Here work in Linux

@@ -950,11 +950,6 @@ class DirBrowser(wx.Panel, Mixin.Mixin):
         else:
             event.Skip()
             
-    def __del__(self):
-        self.tree.Freeze()
-        self.tree.DeleteAllItems()
-        self.tree.Thaw()
-        
 def my_copytree(src, dst):
     """Recursively copy a directory tree using copy2().
 
