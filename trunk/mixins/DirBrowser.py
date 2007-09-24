@@ -560,6 +560,7 @@ class DirBrowser(wx.Panel, Mixin.Mixin):
             common.showerror(self, tr('Create directory %s error!') % os.path.join(filename, foldername))
             return
         node = self.addnode(item, filename, foldername, self.close_image, self.open_image, self.getid(), self.DIR_NODE)
+        self.tree.SetItemHasChildren(node, True)
         wx.CallAfter(self.tree.Expand, item)
         wx.CallAfter(self.tree.EditLabel, node)
 
