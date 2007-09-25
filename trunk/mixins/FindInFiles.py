@@ -43,9 +43,11 @@ class FindInFiles(wx.Panel):
         box.add(ui.Label(tr("Multiple directories or extensions should be separated by semicolons ';'")))
         h = ui.HBox()
         h.add(ui.Label(tr("Search for:")))
-        h.add(ui.ComboBox(Globals.mainframe.document.GetSelectedText(), choices=self.pref.searchinfile_searchlist), name='search')
+        h.add(ui.ComboBox(Globals.mainframe.document.GetSelectedText(), choices=self.pref.searchinfile_searchlist), name='search')\
+            .bind('enter', self.OnKeyDown)
         h.add(ui.Label(tr("Directories:")))
-        h.add(ui.ComboBox(dirs, choices=self.pref.searchinfile_dirlist), name='sdirs')
+        h.add(ui.ComboBox(dirs, choices=self.pref.searchinfile_dirlist), name='sdirs')\
+            .bind('enter', self.OnKeyDown)
         h.add(ui.Button('...', size=(22,-1)), name='btnBrow').bind('click', self.OnDirButtonClick)
         box.add(h, flag=wx.EXPAND)
         h = ui.HBox()
@@ -54,7 +56,8 @@ class FindInFiles(wx.Panel):
             v = '*.*'
         else:
             v = self.pref.searchinfile_extlist[0]
-        h.add(ui.ComboBox(v, choices=self.pref.searchinfile_extlist), name='extns')
+        h.add(ui.ComboBox(v, choices=self.pref.searchinfile_extlist), name='extns')\
+            .bind('enter', self.OnKeyDown)
         h.add(ui.Check(self.pref.searchinfile_case, tr("Case sensitive")), name='cs')
         h.add(ui.Check(self.pref.searchinfile_subdir, tr("Search Subdirectories")), name='ss')
         h.add(ui.Check(self.pref.searchinfile_regular, tr("Regular Expression")), name='re')
@@ -64,8 +67,7 @@ class FindInFiles(wx.Panel):
         h = ui.HBox()
         h.add(ui.Label(tr('Status:')))
         h.add(ui.Text(tr("Ready.")), name='status')
-        self.ID_RUN = wx.NewId()
-        h.add(ui.Button(tr("Start Search"), id=self.ID_RUN), name='btnRun').bind('click', self.OnFindButtonClick)
+        h.add(ui.Button(tr("Start Search")), name='btnRun').bind('click', self.OnFindButtonClick)
         h.add(ui.Button(tr("CopyClipboard"))).bind('click', self.OnCopyButtonClick)
         box.add(h, flag=wx.EXPAND)
         
@@ -107,6 +109,9 @@ class FindInFiles(wx.Panel):
             self.pref.save()
         dlg.Destroy()
 
+    def OnKeyDown(self, event):
+        self.OnFindButtonClick(None)
+    
     def OnFindButtonClick(self, e):
         if self.stopping:
             #already stopping
@@ -119,15 +124,14 @@ class FindInFiles(wx.Panel):
             self.btnRun.SetLabel(tr("Start Search"))
             return
 
-        if e.GetId() == self.ID_RUN:
-            if self.starting:
-                #previously was waiting to start due to an
-                #external yield, abort waiting and cancel
-                #search
-                self.starting = 0
-                self.status.SetValue(tr("Search cancelled."))
-                self.btnRun.SetLabel(tr("Start Search"))
-                return
+        if self.starting:
+            #previously was waiting to start due to an
+            #external yield, abort waiting and cancel
+            #search
+            self.starting = 0
+            self.status.SetValue(tr("Search cancelled."))
+            self.btnRun.SetLabel(tr("Start Search"))
+            return
 
         #try to start
         self.starting = 1
