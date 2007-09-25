@@ -25,19 +25,20 @@ import meide as ui
 import wx
 
 class MyTextEntry(ui.SimpleDialog):
-    def __init__(self, parent, title, message, defaultvalue, fit=2, size=wx.DefaultSize):
-        box = ui.SimpleGrid()
+    def __init__(self, parent, title, message, defaultvalue='', fit=2, size=wx.DefaultSize):
+        box = ui.SimpleGrid(namebinding='element')
         box.add(message, ui.Text(defaultvalue), name='text')
         super(MyTextEntry, self).__init__(parent, box, title, fit=fit, size=size)
 
     def GetValue(self):
-        return self.layout.GetValue()['text']
+        return self.text.GetValue()
 
 class MyFileEntry(ui.SimpleDialog):
-    def __init__(self, parent, title, message, defaultvalue, fit=1):
-        box = ui.SimpleGrid()
+    def __init__(self, parent, title, message, defaultvalue='', fit=1, size=wx.DefaultSize):
+        box = ui.SimpleGrid(namebinding='element')
         box.add(message, ui.OpenFile(defaultvalue), name='filename')
-        super(MyFileEntry, self).__init__(parent, box, title, fit=fit, size=(400, -1))
+        super(MyFileEntry, self).__init__(parent, box, title, fit=fit, size=size)
 
     def GetValue(self):
-        return self.layout.GetValue()['filename']
+        return self.filename.GetValue()
+    
