@@ -27,6 +27,7 @@ from modules import Version
 from modules import common
 from modules.HyperLinksCtrl import HyperLinkCtrl, EVT_HYPERLINK_LEFT
 from modules import Globals
+from modules import meide as ui
 
 homepage = 'http://code.google.com/p/ulipad/'
 blog = 'http://www.donews.net/limodou'
@@ -40,50 +41,34 @@ class AboutDialog(wx.Dialog):
 
 #        self.SetFont(wx.Font(12, wx.SWISS, wx.NORMAL, wx.NORMAL, False))
 #
-        box = wx.BoxSizer(wx.VERTICAL)
-        t = wx.StaticText(self, -1, label=tr('UliPad Version %s') % Version.version)
-        font = t.GetFont()
+        box = ui.VBox(padding=6, namebinding='widget').create(self).auto_layout()
+        box.add(ui.Label(tr('UliPad Version %s') % Version.version), name='version', flag=wx.ALIGN_CENTER|wx.ALL)
+        font = self.version.GetFont()
         font.SetPointSize(20)
-        t.SetFont(font)
-        box.Add(t, 0, wx.ALIGN_CENTER|wx.ALL, 10)
-        t = wx.StaticText(self, -1, label=tr('Author: %s (%s)') % (author, email))
-        font.SetPointSize(12)
-        t.SetFont(font)
-        box.Add(t, 0, wx.ALIGN_CENTER|wx.BOTTOM, 10)
-        line = wx.StaticLine(self, -1, size=(-1, -1))
-        box.Add(line, 0, wx.ALIGN_CENTER|wx.BOTTOM, 10)
-        t = wx.StaticText(self, -1, label=tr('If you have any question please contact me !'))
-        box.Add(t, 0, wx.ALIGN_CENTER|wx.BOTTOM, 10)
-
+        self.version.SetFont(font)
+        box.add(ui.Label(tr('Author: %s (%s)') % (author, email)))
+        box.add(ui.Label(tr('If you have any question please contact me !')))
+        
         self.ID_HOMEPAGE = wx.NewId()
         self.homepage = HyperLinkCtrl(self, self.ID_HOMEPAGE, "The UliPad project homepage", URL=homepage)
-        box.Add(self.homepage, 0, wx.ALIGN_CENTER|wx.BOTTOM, 10)
+        box.add(self.homepage).bind(EVT_HYPERLINK_LEFT, self.OnLink)
 
         self.ID_MAILLIST = wx.NewId()
         self.maillist = HyperLinkCtrl(self, self.ID_MAILLIST, "The UliPad maillist", URL=maillist)
-        box.Add(self.maillist, 0, wx.ALIGN_CENTER|wx.BOTTOM, 10)
+        box.add(self.maillist).bind(EVT_HYPERLINK_LEFT, self.OnLink)
 
         self.ID_BLOG = wx.NewId()
         self.blog = HyperLinkCtrl(self, self.ID_BLOG, "My Blog", URL=blog)
-        box.Add(self.blog, 0, wx.ALIGN_CENTER|wx.BOTTOM, 10)
+        box.add(self.blog)
 
         self.ID_EMAIL = wx.NewId()
         self.email = HyperLinkCtrl(self, self.ID_EMAIL, "Contact me", URL='mailto:'+email)
-        box.Add(self.email, 0, wx.ALIGN_CENTER|wx.BOTTOM, 10)
+        box.add(self.email)
 
-        btnOK = wx.Button(self, wx.ID_OK, tr("OK"))
-        btnOK.SetDefault()
-        box.Add(btnOK, 0, wx.ALIGN_CENTER|wx.ALL, 10)
+        box.add(ui.Button(tr("OK"), id=wx.ID_OK), name='btnOk', flag=wx.ALIGN_RIGHT|wx.ALL, border=10)
+        self.btnOk.SetDefault()
 
-        self.SetSizer(box)
-        self.SetAutoLayout(True)
-
-        box.Fit(self)
-
-        EVT_HYPERLINK_LEFT(self.homepage, self.ID_HOMEPAGE, self.OnLink)
-        EVT_HYPERLINK_LEFT(self.maillist, self.ID_MAILLIST, self.OnLink)
-        EVT_HYPERLINK_LEFT(self.blog, self.ID_BLOG, self.OnLink)
-        EVT_HYPERLINK_LEFT(self.email, self.ID_EMAIL, self.OnLink)
+        box.auto_fit(2)
 
     def OnLink(self, event):
         eid = event.GetId()
@@ -120,25 +105,17 @@ def OnHelpAbout(win, event):
 Mixin.setMixin('mainframe', 'OnHelpAbout', OnHelpAbout)
 
 def OnHelpProject(win, event):
-    import webbrowser
-
-    webbrowser.open(homepage, 1)
+    common.webopen(homepage)
 Mixin.setMixin('mainframe', 'OnHelpProject', OnHelpProject)
 
 def OnHelpMaillist(win, event):
-    import webbrowser
-
-    webbrowser.open(maillist, 1)
+    common.webopen(maillist)
 Mixin.setMixin('mainframe', 'OnHelpMaillist', OnHelpMaillist)
 
 def OnHelpEmail(win, event):
-    import webbrowser
-
-    webbrowser.open('mailto:%s' % email)
+    common.webopen('mailto:%s' % email)
 Mixin.setMixin('mainframe', 'OnHelpEmail', OnHelpEmail)
 
 def OnHelpMyBlog(win, event):
-    import webbrowser
-
-    webbrowser.open(blog, 1)
+    common.webopen(blog)
 Mixin.setMixin('mainframe', 'OnHelpMyBlog', OnHelpMyBlog)
