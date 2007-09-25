@@ -1,4 +1,7 @@
 $Rev$
+[2007/09/25]
+mHelp.py            Improve Help with meide
+
 [2007/09/24]
 FindInFiles.py      Improve Enter key process
 
