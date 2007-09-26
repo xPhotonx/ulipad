@@ -1,4 +1,7 @@
 $Rev$
+[2007/09/26]
+TodoWindow.py       Fix date undefined bug
+
 [2007/09/25]
 mHelp.py            Improve Help with meide
 
