@@ -155,6 +155,7 @@ def read_todos(editor):
             for r in pl:
                 b = r.search(line)
                 if b:
+                    date = ''
                     result = filter(None, b.groups())
                     if not result:
                         message = ''
@@ -172,7 +173,6 @@ def read_todos(editor):
                         else:
                             message = ''
                         #find duedate
-                        date = ''
                         m = r_duedate.search(message)
                         if m:
                             message = message[:m.start()] + message[m.end():]
