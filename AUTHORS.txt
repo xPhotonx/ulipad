@@ -11,3 +11,4 @@ Aleksey <Kapkaev AT yandex.ru>                     Report bugs and commit Patch
 yeyesho li <yeyesho AT gmail.com>                  Give advice to NoteBook
 ygao <ygao2004 AT gmail.com>                       Commit many patches
 chaoweilun <chaoweilun@gmail.com>                  Submit Traditional Chinese Translation File
+Tom Eubank <tom@afcon.com>                         Patches and documents

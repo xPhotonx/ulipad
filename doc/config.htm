@@ -4,8 +4,8 @@
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
 <meta name="generator" content="Docutils 0.4: http://docutils.sourceforge.net/" />
-<title>Config.ini Description</title>
-<meta name="author" content="limodou" />
+<title>UliPad Configuration File (config.ini)</title>
+<meta name="author" content="limodou, Tom Eubank" />
 <meta name="copyright" content="FDL" />
 <style type="text/css">
 
@@ -292,16 +292,16 @@ ul.auto-toc {
 </style>
 </head>
 <body>
-<div class="document" id="config-ini-description">
-<h1 class="title">Config.ini Description</h1>
+<div class="document" id="ulipad-configuration-file-config-ini">
+<h1 class="title">UliPad Configuration File (config.ini)</h1>
 <table class="docinfo" frame="void" rules="none">
 <col class="docinfo-name" />
 <col class="docinfo-content" />
 <tbody valign="top">
 <tr><th class="docinfo-name">Author:</th>
-<td>limodou</td></tr>
+<td>limodou, Tom Eubank</td></tr>
 <tr><th class="docinfo-name">Contact:</th>
-<td><a class="first last reference" href="mailto:limodou&#64;gmail.com">limodou&#64;gmail.com</a></td></tr>
+<td><a class="first reference" href="mailto:limodou&#64;gmail.com">limodou&#64;gmail.com</a>, <a class="last reference" href="mailto:tom&#64;afcon.com">tom&#64;afcon.com</a></td></tr>
 <tr class="field"><th class="docinfo-name">Homepage:</th><td class="field-body"><a class="reference" href="http://code.google.com/p/ulipad/">http://code.google.com/p/ulipad/</a></td>
 </tr>
 <tr class="field"><th class="docinfo-name">BLOG:</th><td class="field-body"><a class="reference" href="http://www.donews.net/limodou">http://www.donews.net/limodou</a></td>
@@ -310,7 +310,7 @@ ul.auto-toc {
 <td>FDL</td></tr>
 </tbody>
 </table>
-<p>UliPad supports many customized works, but many of them don't has a visual or GUI
+<p>UliPad is highly configuable, but many of them don't has a visual or GUI
 operation interface. So here is detail description about it.</p>
 <p>As default, config.ini will not be created, untill you change some settings of
 UliPad. So if you want to change the option in config.ini, and there is no such
@@ -319,33 +319,37 @@ folder, that's the same. I always create it in UliPad installed folder, because 
 can easily find it.</p>
 <div class="section">
 <h1><a id="debug-mode" name="debug-mode">Debug mode</a></h1>
-<p>When you installed UliPad, it'll not create debug information. But the debug.txt
-will created automatically, just it's empty. And if you turn on the debug option,
-many things in UliPad will be output into debug.txt, for example: menu items infos,
-shortcuts infos, plugin &amp; mixin infos, etc. So How to turn on it:</p>
+<p>When you install UliPad, the debug.txt file is created in the UliPad root
+directory.  However, it remains empty until you enable the debug setting, after which
+UliPad outputs a lot of information into debug.txt, including: menu items,
+shortcuts, plugins, mixins, etc.  The <tt class="docutils literal"><span class="pre">debug</span></tt> setting is stored in the
+section of the configuration file as follows:</p>
 <pre class="literal-block">
 [default]
 debug = 1
 </pre>
-<p>So if the <cite>debug</cite> is <cite>1</cite>, the debug infos will output to debug.txt. If the <cite>debug</cite>
-is <cite>0</cite>, then the there will no debug infos.</p>
+<p>If <tt class="docutils literal"><span class="pre">debug</span> <span class="pre">=</span> <span class="pre">1</span></tt>, debug information is written to debug.txt.  If <tt class="docutils literal"><span class="pre">debug</span> <span class="pre">=</span> <span class="pre">0</span></tt>
+(or unspecified), then there is no debug information. For now, you can switch
+the debug mode in Preference Dialog.</p>
 </div>
 <div class="section">
-<h1><a id="change-the-shortcuts-of-menu-item" name="change-the-shortcuts-of-menu-item">Change the shortcuts of menu item</a></h1>
-<p>UliPad enable you change the shortcuts of menu items. But the work has some hard
-work now. So how to define them in config.ini? There are two section used in
-config.ini. <cite>main_hotkey</cite> is aimed for mainframe shortcus. And <cite>editor_hotkey</cite> is
-aimed for only editor shortcuts. For example:</p>
+<h1><a id="shortcut-keys" name="shortcut-keys">Shortcut Keys</a></h1>
+<p>Shortcut keys for menu items are stored in two sections used of the configuration
+file. The <tt class="docutils literal"><span class="pre">main_hotkey</span></tt> section defines shortcuts for the menu bar.  The
+<tt class="docutils literal"><span class="pre">editor_hotkey</span></tt> section defines shortcuts for editing. For example:</p>
 <pre class="literal-block">
 [main_hotkey]
 IDM_FILE_SAVEAS=F12
 </pre>
-<p>So you can see the key if menu item's ID, and the value is key name. Key name could
-be: F1, A, Ctrl, Shift, Alt, etc. And you can use <cite>+</cite> to combine control key and
-normal key, for example: Ctrl+A.</p>
-<p>And how to find the menu item ID.</p>
+<p>Each shortcut is defined by specifying the menu-item ID and one or more key names.
+Key names include: <em>shift keys</em> (<tt class="docutils literal"><span class="pre">Ctrl</span></tt>, <tt class="docutils literal"><span class="pre">Shift</span></tt>, <tt class="docutils literal"><span class="pre">Alt</span></tt>, etc.), <em>function
+keys</em> (e.g., <tt class="docutils literal"><span class="pre">F1</span></tt>, <tt class="docutils literal"><span class="pre">Esc</span></tt>, <tt class="docutils literal"><span class="pre">Tab</span></tt>, <tt class="docutils literal"><span class="pre">Enter</span></tt>, etc.) and <em>letter keys</em> (e.g.,
+<tt class="docutils literal"><span class="pre">A</span></tt>, etc.).  Each shortcut can contain zero or more shift keys followed by a
+single function key, or one or more shift keys followed by a single letter key.
+Use <tt class="docutils literal"><span class="pre">+</span></tt> to combine key names, for example: <tt class="docutils literal"><span class="pre">Ctrl+A</span></tt>.</p>
+<p>You can use one of the following methods to locate valid entries for the menu-item ID.</p>
 <ol class="arabic">
-<li><p class="first">Open mixins/Import.py source file, and serach menu items definition, for example:</p>
+<li><p class="first">Open mixins/Import.py source file, and serach for <tt class="docutils literal"><span class="pre">IDM_</span></tt>, for example:</p>
 <pre class="literal-block">
 (100, 'IDM_FILE_NEW', tr('New') + '\tCtrl+N', wx.ITEM_NORMAL,
     'OnFileNew', tr('Creates a new document')),
@@ -354,9 +358,29 @@ normal key, for example: Ctrl+A.</p>
 (110, 'IDM_FILE_OPEN', tr('Open') + '\tCtrl+O', wx.ITEM_NORMAL,
     'OnFileOpen', tr('Opens an existing document')),
 </pre>
-<p>So you can find <cite>IDM_FILE_NEW</cite> is the menu time ID.</p>
+<p>The following menu item ID's are found above: <tt class="docutils literal"><span class="pre">IDM_FILE_NEW</span></tt>, <tt class="docutils literal"><span class="pre">IDM_FILE_NEWMORE</span></tt>,
+<tt class="docutils literal"><span class="pre">IDM_FILE_OPEN</span></tt>. But some menu items may start with <tt class="docutils literal"><span class="pre">wx.ID_</span></tt>, because they
+are stocked IDs also used in UliPad.</p>
+<blockquote>
+<div class="note">
+<p class="first admonition-title">Note</p>
+<p>Populating debug.txt</p>
+<p>If debug.txt is empty, populate it as follows:</p>
+<blockquote class="last">
+<ol class="arabic simple">
+<li>Enable debug mode.</li>
+<li>Exit and restart UliPad.</li>
+<li>Open debug.txt.</li>
+</ol>
+</blockquote>
+</div>
+</blockquote>
 </li>
-<li><p class="first">Enable debug mode, and you can serch:</p>
+<li><p class="first">Search for instances of <tt class="docutils literal"><span class="pre">[makemenu]</span> <span class="pre">makeaccelerator</span></tt> in debug.txt to locate
+the various lists of menu ID's with their current shortcuts.  If an menu item
+has no shortcuts defined, its key-name list is empty (<tt class="docutils literal"><span class="pre">[]</span></tt>).</p>
+</li>
+</ol>
 <pre class="literal-block">
 [ INFO] -- [makemenu] makeaccelerator...
 [ INFO] --  IDM_FILE_NEWMORE_NULL []
@@ -366,15 +390,11 @@ normal key, for example: Ctrl+A.</p>
 [ INFO] --  IDM_FILE_REOPEN [Ctrl+Shift+O]
 [ INFO] --  IDM_FILE_RECENTFILES []
 </pre>
-<p>So you can see the IDs and its shortcuts. If an ID has no shortcuts definition, the
-list following it is <cite>[]</cite>.</p>
-</li>
-</ol>
 </div>
 <div class="section">
-<h1><a id="change-default-font-of-editor-message-window-shell-window" name="change-default-font-of-editor-message-window-shell-window">Change default font of Editor, Message Window, Shell Window</a></h1>
-<p>If you don't like the default font of editor, message window, shell window, you can change
-them:</p>
+<h1><a id="default-fonts" name="default-fonts">Default Fonts</a></h1>
+<p>If you don't like the default fonts of the Editor, Message Window, or Shell
+Window, you can change them:</p>
 <pre class="literal-block">
 [default]
 editor_font = &quot;fontname&quot;
@@ -384,18 +404,20 @@ message_fontsize = 10
 shell_font = &quot;fontname&quot;
 shell_fontsize = 10
 </pre>
-<p>And you can also change the caret line background color:</p>
+<p>And you can also change the caret-line background color:</p>
 <pre class="literal-block">
 [default]
 message_caretlineback = #FF0000
 </pre>
-<p>Here the color is represented as <cite>#XXXXXX</cite>. I think you can also use <cite>red</cite>, <cite>green</cite>, etc.</p>
+<p>Here the color is represented using hexidecimal <tt class="docutils literal"><span class="pre">#XXXXXX</span></tt>. I think you can also
+use <tt class="docutils literal"><span class="pre">red</span></tt>, <tt class="docutils literal"><span class="pre">green</span></tt>, etc.</p>
 </div>
 <div class="section">
-<h1><a id="change-the-file-icons-of-directory-browser" name="change-the-file-icons-of-directory-browser">Change the file icons of Directory Browser</a></h1>
-<p>UliPad can recognize some files type, and show different icons to these files. And if you don't
-like these icons and want to add some new file icons, you can change them in config.ini. For now,
-UliPad supports: .txt, .ini, .html, .py, .pyw, .xml, .bat, .htm.</p>
+<h1><a id="directory-browser-file-icons" name="directory-browser-file-icons">Directory-browser File Icons</a></h1>
+<p>UliPad can recognize some files type, and show different icons to these files.
+And if you don't like these icons and want to add some new file icons, you can
+change them in config.ini. For now, UliPad supports: .txt, .ini, .html, .py,
+.pyw, .xml, .bat, .htm.</p>
 <pre class="literal-block">
 [fileimages]
 .pyw = file_py.gif
@@ -414,88 +436,90 @@ and the value is the icon filename.</p>
 </div>
 <div class="section">
 <h1><a id="ignore-files-in-directory-browser" name="ignore-files-in-directory-browser">Ignore files in Directory Browser</a></h1>
-<p>UliPad can ignore some file types, you can change them:</p>
+<p>In the default configuration, UliPad ignores some file types in the Directory Browser.</p>
 <pre class="literal-block">
 [ignore]
 matches = .*,*.pyc,*.bak,*.ico,*.m3u,
 </pre>
-<p>Above is default. And it'll be available in global.</p>
+<p>You can extend this list to include other file types.</p>
 </div>
 <div class="section">
-<h1><a id="change-todo-pattern" name="change-todo-pattern">Change TODO pattern</a></h1>
-<p>UliPad supports TODO. For some source files, there some predefined pattern, they are regular
-expression, for example:</p>
+<h1><a id="todo-pattern" name="todo-pattern">TODO pattern</a></h1>
+<p>UliPad supports TODO formatting with predefined entries for many files types
+(e.g., <tt class="docutils literal"><span class="pre">asp</span></tt>, <tt class="docutils literal"><span class="pre">c</span></tt>, <tt class="docutils literal"><span class="pre">css</span></tt>, <tt class="docutils literal"><span class="pre">djangotmp</span></tt>, <tt class="docutils literal"><span class="pre">fortran</span></tt>, <tt class="docutils literal"><span class="pre">html</span></tt>, <tt class="docutils literal"><span class="pre">java</span></tt>,
+<tt class="docutils literal"><span class="pre">js</span></tt>, <tt class="docutils literal"><span class="pre">perl</span></tt>, <tt class="docutils literal"><span class="pre">php</span></tt>, <tt class="docutils literal"><span class="pre">python</span></tt>, <tt class="docutils literal"><span class="pre">rst</span></tt>, <tt class="docutils literal"><span class="pre">ruby</span></tt>, <tt class="docutils literal"><span class="pre">text</span></tt>, and <tt class="docutils literal"><span class="pre">xml</span></tt>).
+Each entry consists of one or more keys and one or more patterns.  Each key is
+the language lexer name (not the file suffix), and multiple keys are separated
+with a slash (<tt class="docutils literal"><span class="pre">/</span></tt>).  Each pattern is a regular expression.  Multple patterns
+are represented using a list format: each pattern delimited with double quotes
+(<tt class="docutils literal"><span class="pre">&quot;</span></tt>), and multiple patterns separated with a comma (<tt class="docutils literal"><span class="pre">,</span></tt>).</p>
+<p>Entry with multiple keys and a single pattern:</p>
 <pre class="literal-block">
-python/ruby/perl:
-
-^\s*#\s*[tT][oO][dD][oO]\s+(.*?)$
+[todo_pattern]
+python/ruby/perl = ^\s*#\s*[tT][oO][dD][oO]\s+(.*?)$
 </pre>
-<p>Examples:</p>
+<p>Sample usage:</p>
 <pre class="literal-block">
 #TODO TEST              Valid
    # todo TEST          Valid
 print aaa #todo test    Invalid
 </pre>
-<p>c/c++/java:</p>
+<p>Multiple keys and multiple patterns:</p>
 <pre class="literal-block">
-^\s*//\s*[tT][oO][dD][oO]\s+(.*?)$
-^\s*/\*\s*[tT][oO][dD][oO]\s+(.*?)$
+[todo_pattern]
+c/c++/java = &quot;^\s*//\s*[tT][oO][dD][oO]\s+(.*?)$&quot;, &quot;^\s*/\*\s*[tT][oO][dD][oO]\s+(.*?)$&quot;
 </pre>
-<p>Examples:</p>
+<p>Sample usage:</p>
 <pre class="literal-block">
 //todo TEST     Valid
   /* todo TEST  Valid
 printf() //todo Invalid
 </pre>
-<p>And if there is a file type, that UliPad doesn't support it yet, you can define them:</p>
+<p>If there is a file type that UliPad doesn't support yet, you can add it:</p>
 <pre class="literal-block">
 [todo_pattern]
 ruby = &quot;^\s*#\s*[tT][oO][dD][oO]\s+(.*?)$&quot;
 </pre>
-<p>If the todo format is multipule, you should define them as a <cite>list</cite> format -- you should delimit
-them with ',', and the each pattern should be quoted with double quoter(<cite>&quot;</cite>), for example:</p>
-<pre class="literal-block">
-c = &quot;^\s*//\s*[tT][oO][dD][oO]\s+(.*?)$&quot;,&quot;^\s*/\*\s*[tT][oO][dD][oO]\s+(.*?)$&quot;
-</pre>
-<p>Note, the key is not the file suffix, but the language lexer name. And for now, UliPad support,
-asp, c, css, djangotmp, fortran, html, java, js, perl, php, python, rst, ruby, text, xml.</p>
-<p>Note, for djangotmp, you should install djangoproj plugin. And for fortran, you should install
-fortran plugin. for ruby, you should install ruby plugin.</p>
+<p>Note, the following language lexer names require that you install their respective plugins:
+djangotmp (djangoproj plugin), fortran (fortran plugin), and ruby (ruby plugin).</p>
 </div>
 <div class="section">
-<h1><a id="change-comment-chars" name="change-comment-chars">Change comment chars</a></h1>
-<p>You can change the comment chars in UliPad. These chars can be used in Comment and Uncomment
-menu. Or press <cite>Ctrl+/</cite> to comment text and press <cite>Ctrl+\</cite> to uncomment text.</p>
+<h1><a id="comment-characters" name="comment-characters">Comment characters</a></h1>
+<p>You can change the characters that UliPad uses to delimit comments for each file
+type. These characters can be used in Comment and Uncomment menu.  Or press
+<tt class="docutils literal"><span class="pre">Ctrl+/</span></tt> to comment text and press <tt class="docutils literal"><span class="pre">Ctrl+\\</span></tt> to uncomment text.</p>
 <pre class="literal-block">
 [comment_chars]
 c = //
 python = #
 default = #
 </pre>
-<p>Note, the key is not the file suffix, but the language lexer name. But <cite>default</cite> is not a language
-name, just a default value.</p>
+<p>Note, the key is not the file suffix, but the language lexer name. But <cite>default</cite>
+is not a language name, just a default value.</p>
 </div>
 <div class="section">
-<h1><a id="change-lanague" name="change-lanague">Change lanague</a></h1>
-<p>UliPad support i18n, and when you change the lanague, it'll save the selection in config.ini.
-So you can change it:</p>
+<h1><a id="preferred-language" name="preferred-language">Preferred language</a></h1>
+<p>UliPad support <em>i18n</em>, and when you changing the lanague, UliPad saves the
+selection in config.ini.</p>
 <pre class="literal-block">
 [language]
 default =
 </pre>
-<p>If default is empty, then UliPad will aotomatically detect language. If the i18n has some problem,
-you can set it <cite>en</cite> to use English language.</p>
+<p>If default is empty, then UliPad attempts to automatically detect language.  If
+UliPad encounters any problems automatically detecting the language, set the
+default language to English (<tt class="docutils literal"><span class="pre">en</span></tt>).</p>
 </div>
 <div class="section">
-<h1><a id="add-python-path" name="add-python-path">Add python path</a></h1>
-<p>You may have some directories want to add to sys.path when starting UliPad, so you can
-set as:</p>
+<h1><a id="python-path" name="python-path">Python path</a></h1>
+<p>In order to extend the python path (sys.path) to include a specific directory,
+change the pytonpath setting:</p>
 <pre class="literal-block">
 [default]
 pythonpath = &quot;d:\\&quot;,c:/,
 </pre>
-<p>Each directory should be delimetered by ',', and you can use double-quoters to
-quote a directory just like &quot;d:\&quot;.</p>
+<p>Directory names should be separated by a comma (<tt class="docutils literal"><span class="pre">,</span></tt>).  Individual directory
+names may be delimited using double-quotes (e.g., <tt class="docutils literal"><span class="pre">&quot;d:\\&quot;</span></tt>); names with
+embedded white space must be quoted.</p>
 </div>
 </div>
 </body>
