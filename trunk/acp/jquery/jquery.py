@@ -34,7 +34,7 @@ def calltip(win, word, syncvar):
             word = win.getChar(pos - 1)       
     return ini.functions.get(word, '')
 
-def autodot(win, word):
+def autodot(win, word, syncvar):
     ini = get_newest_ini()
     return ini.default.dots
 

@@ -81,13 +81,13 @@ def getWord(win, whole=None):
     return txt[start-linePos:end-linePos]
 
 
-def evaluate(win, word):
+def evaluate(win, word, syncvar=None):
     try:
         obj = eval(word, namespace)
         return obj
     except:
         try:
-            import_document(win)
+            import_document(win, syncvar)
             obj = eval(word, namespace)
             return obj
         except:
@@ -346,7 +346,7 @@ def getObject(win, word, syncvar=None):
             except:
                 pass
     else:
-        object = evaluate(win, word)
+        object = evaluate(win, word, syncvar)
 #        try:
 #            object = eval(word, namespace)
 #            if syncvar and not syncvar.empty:

@@ -1,4 +1,8 @@
 $Rev$
+[2007/10/13]
+InputAssistant.py mInputAssistant.py acp
+                    Fix 'import as' bug and input assistant bug
+                    
 [2007/09/26]
 TodoWindow.py       Fix date undefined bug
 
