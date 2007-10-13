@@ -112,15 +112,16 @@ class InputAssistant(Mixin.Mixin):
             error.traceback()
             return False
 
-    def install_acp(self, editor, language):
-        changeflag = False
+    def install_acp(self, editor, language, changeflag=False):
+#        changeflag = False
         filename = common.getConfigPathFile('%s.acp' % language)
         if not os.path.exists(filename):
             if assistant.has_key(language):
                 del assistant[language]
                 changeflag = True
         else:
-            changeflag = self.install_assistant(language, filename)
+            if not changeflag:
+                changeflag = self.install_assistant(language, filename)
         self.editor = editor
         
         try:

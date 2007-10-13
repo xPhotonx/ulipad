@@ -190,6 +190,7 @@ def get_acp_files(win):
         win.custom_assistant = []
         for f in values['custom']:
             win.custom_assistant.append(i.get_assistant(f))
+        i.install_acp(win, win.languagename, True)
             
     easy.Destroy()
     
