@@ -4,9 +4,7 @@
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
 <meta name="generator" content="Docutils 0.4: http://docutils.sourceforge.net/" />
-<title>UliPad Document</title>
-<meta name="author" content="limodou" />
-<meta name="copyright" content="GPL" />
+<title>Mixin Development Standards</title>
 <style type="text/css">
 
 /*
@@ -292,55 +290,18 @@ ul.auto-toc {
 </style>
 </head>
 <body>
-<div class="document" id="ulipad-document">
-<h1 class="title">UliPad Document</h1>
-<table class="docinfo" frame="void" rules="none">
-<col class="docinfo-name" />
-<col class="docinfo-content" />
-<tbody valign="top">
-<tr><th class="docinfo-name">Author:</th>
-<td>limodou</td></tr>
-<tr><th class="docinfo-name">Contact:</th>
-<td><a class="first last reference" href="mailto:limodou&#64;gmail.com">limodou&#64;gmail.com</a></td></tr>
-<tr class="field"><th class="docinfo-name">Homepage:</th><td class="field-body"><a class="reference" href="http://code.google.com/p/ulipad/">http://code.google.com/p/ulipad/</a></td>
-</tr>
-<tr class="field"><th class="docinfo-name">BLOG:</th><td class="field-body"><a class="reference" href="http://www.donews.net/limodou">http://www.donews.net/limodou</a></td>
-</tr>
-<tr><th class="docinfo-name">Copyright:</th>
-<td>GPL</td></tr>
-</tbody>
-</table>
-<p>Thanks for you downloading and using UliPad Editor Software. This software
-is keeping improvment, so please its mailing list or my blog to get the neweset
-information about it.</p>
+<div class="document" id="mixin-development-standards">
+<h1 class="title">Mixin Development Standards</h1>
+<p>(Note: translated from Chinese Simplified by translate.google.com.  Will be improved over time.)</p>
+<!-- contents::CONTENTS -->
 <div class="section">
-<h1><a id="project-introduction-chinese" name="project-introduction-chinese"><a class="reference" href="introduce.htm">Project Introduction</a> (Chinese)</a></h1>
+<h1><a id="objective" name="objective">Objective</a></h1>
+<p>Document the UliPad Mixin Development Standards.</p>
 </div>
 <div class="section">
-<h1><a id="user-manual-chinese" name="user-manual-chinese"><a class="reference" href="userguide.htm">User Manual</a> (Chinese)</a></h1>
-</div>
-<div class="section">
-<h1><a id="tech-manual-chinese" name="tech-manual-chinese"><a class="reference" href="technical.htm">Tech Manual</a> (Chinese)</a></h1>
-</div>
-<div class="section">
-<h1><a id="plugin-introduction" name="plugin-introduction"><a class="reference" href="plugins.htm">Plugin Introduction</a></a></h1>
-</div>
-<div class="section">
-<h1><a id="faq" name="faq"><a class="reference" href="faq.htm">FAQ</a></a></h1>
-</div>
-<div class="section">
-<h1><a id="config-ini-description" name="config-ini-description"><a class="reference" href="config.htm">Config.ini Description</a></a></h1>
-</div>
-<div class="section">
-<h1><a id="contribute-documents" name="contribute-documents">Contribute Documents</a></h1>
-<div class="section">
-<h2><a id="snippets-howto" name="snippets-howto"><a class="reference" href="howto_snippet.htm">Snippets Howto</a></a></h2>
-</div>
-<div class="section">
-<h2><a id="inputassistant-howto" name="inputassistant-howto">'InputAssistant Howto`_</a></h2>
-<p>This document is written in reStructuredText format, and convert to html by docutils tool。
-And all of them is written in UliPad.</p>
-</div>
+<h1><a id="document" name="document">Document</a></h1>
+<p>All Mixin modules are stored in the mixins directory.  The filename begins with a lowercase <tt class="docutils literal"><span class="pre">m</span></tt>, as mAutoBack.py. Only the document simply articulated function (Mixin and plugin), general should only import generic category, for special treatment may be needed into the other category, if these are their own category</p>
+<p>The preparation, it should be an independent document. General on mixins directory. And if not an impact on the overall situation, should be in the corresponding Office Rationale function into these categories, rather than on the beginning of places.</p>
 </div>
 </div>
 </body>
