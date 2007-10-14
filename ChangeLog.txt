@@ -1,4 +1,7 @@
 $Rev$
+[2007/10/14]
+mHelp.py            Can automatically switch lanauge according the current lanaguage
+
 [2007/10/13]
 InputAssistant.py mInputAssistant.py acp
                     Fix 'import as' bug and input assistant bug

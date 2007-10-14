@@ -21,6 +21,7 @@
 #
 #   $Id: mHelp.py 1731 2006-11-22 03:35:50Z limodou $
 
+import os
 import wx
 from modules import Mixin
 from modules import Version
@@ -97,7 +98,13 @@ def add_mainframe_menu(menulist):
 Mixin.setPlugin('mainframe', 'add_menu', add_mainframe_menu)
 
 def OnHelpIndex(win, event):
-    common.webopen(common.get_app_filename(win, 'doc/index.htm'))
+    lang = 'en'
+    if Globals.app.i18n.lang:
+        lang = Globals.app.i18n.lang
+    filename = common.get_app_filename(win, 'doc/%s/index.htm' % lang)
+    if not os.path.exists(filename):
+        filename = common.get_app_filename(win, 'doc/%s/index.htm' % 'en')
+    common.webopen(filename)
 Mixin.setMixin('mainframe', 'OnHelpIndex', OnHelpIndex)
 
 def OnHelpAbout(win, event):

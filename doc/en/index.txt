@@ -50,7 +50,7 @@ Contribute Documents
 
 .. _`Snippets Howto`: howto_snippet.htm
 
-'InputAssistant Howto`_
+`InputAssistant Howto`_
 ~~~~~~~~~~~~~~~~~~~~~~~~
 
 .. _`InputAssistant Howto`: howto_input_assistant.htm
