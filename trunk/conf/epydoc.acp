@@ -10,7 +10,7 @@
 (^\s*)@=param,type,return,rtypekeyword,raise,ivar,cvar,var,type,group,sort,see,version,todo,deprecated,since,status,change,requires,precondition,postcondition,invariant,author,organiation,copyright,license,contract,summary
 
 [autovalues]
-param = param {#p#}!^:
+param = param ${0}:
 type = type !^:
 
 [auto_default]
