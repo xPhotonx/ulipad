@@ -69,6 +69,9 @@ class InputAssistant(Mixin.Mixin):
         self.syncvar = syncvar
         
         key = event.GetKeyCode()
+        ctrl = event.ControlDown()
+        alt = event.AltDown()
+        shift = event.ShiftDown()
         self.on_char = on_char
         self.oldpos = editor.GetCurrentPos()
         self.editor = editor
@@ -84,13 +87,10 @@ class InputAssistant(Mixin.Mixin):
         if not hasattr(self.editor, 'input_analysis'):
             self.editor.input_analysis = []
 
-        if editor.hasSelection() and on_char and (31 < key < 127 or key > wx.WXK_PAGEDOWN):
+        if editor.hasSelection() and on_char and not ctrl and not alt and (31 < key < 127 or key > wx.WXK_PAGEDOWN):
             self.check_selection(editor)
         
         f = 0
-        ctrl = event.ControlDown()
-        alt = event.AltDown()
-        shift = event.ShiftDown()
         if not on_char:
             if ctrl:
                 f |= wx.stc.STC_SCMOD_CTRL
