@@ -1,4 +1,7 @@
 $Rev$
+[2007/11/08]
+dropfile plugin     Add dropfile plugin. thanks Tyberius Prime
+
 [2007/10/14]
 mHelp.py            Can automatically switch lanauge according the current lanaguage
 
