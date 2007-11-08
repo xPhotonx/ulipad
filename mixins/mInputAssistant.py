@@ -309,7 +309,6 @@ def on_modified(win, event):
 Mixin.setPlugin('editor', 'on_modified', on_modified)
 
 from modules import AsyncAction
-
 class InputAssistantAction(AsyncAction.AsyncAction):
     def do_action(self, obj):
         if not self.empty:
