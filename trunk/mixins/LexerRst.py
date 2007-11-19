@@ -21,11 +21,11 @@
 #
 #   $Id$
 
-from modules.ZestyParser import *
-import NewCustomLexer
+#from modules.ZestyParser import *
+from NCustomLexer import *
 import re
     
-class RstLexer(NewCustomLexer.CustomLexer):
+class RstLexer(CustomLexer):
 
     metaname = 'rst'
 
@@ -39,7 +39,7 @@ class RstLexer(NewCustomLexer.CustomLexer):
             'section-numbering', 'include', 'header', 'attention', 
             'important', 'pull-quote', 'compound', 'date', 
             'default-role', 'class', 'parsed-literal', 'title', 
-            'line-block', 'meta', 'error', 'epigraph'] + ['status', 
+            'line-block', 'meta', 'error', 'epigraph', 'alt'] + ['status', 
             'copyright', 'author', 'abstract', 'address', 'contact', 
             'dedication', 'version', 'authors', 'date', 'organization', 
             'revision']
@@ -58,44 +58,35 @@ class RstLexer(NewCustomLexer.CustomLexer):
 The latest working documents may be accessed individually below, or
 from the ``docs`` directory of the `Docutils distribution`_.
 
-.. _Docutils: http://docutils.sourceforge.net/
+.. _Docutils: http://docutils.sourceforge.net/%AD/
 .. _Docutils distribution: http://docutils.sourceforge.net/#download
 
 .. contents::
 """
 
-    def pre_colourize(self, win):
+#    def pre_colourize(self, win):
         #FOLDING
 #        win.enablefolder = True
-        win.SetProperty("fold", "1")
-        win.SetProperty("tab.timmy.whinge.level", "1")
+#        win.SetProperty("fold", "1")
+#        win.SetProperty("tab.timmy.whinge.level", "1")
 
     def initSyntaxItems(self):
-        self.addSyntaxItem('r_default',         'Default',              self.syl_default,           self.STE_STYLE_TEXT)
-        self.addSyntaxItem('keyword',           'Keyword',              self.syl_keyword,           self.STE_STYLE_KEYWORD1)
-        self.addSyntaxItem('inlineliteral',     'Inline Literal',       3,           self.STE_STYLE_CHARACTER)
+        self.addSyntaxItem('r_default',         'Default',              STYLE_DEFAULT,           self.STE_STYLE_TEXT)
+        self.addSyntaxItem('keyword',           'Keyword',              STYLE_KEYWORD,           self.STE_STYLE_KEYWORD1)
+        self.addSyntaxItem('inlineliteral',     'Inline Literal',       3,           'back:#CCCCCC')
         self.addSyntaxItem('directurl',         'DirectUrl',            4,           'fore:#0000FF,underline')
         self.addSyntaxItem('interpretedtext',   'Interpreted Text',     5,           'fore:#339933')
         self.addSyntaxItem('bold',              'Bold',                 6,           'bold')
         self.addSyntaxItem('emphasis',          'Emphasis',             7,           'italic')
 
-        T_KEYWORD1 = Token(re.compile(r'^\.\. (.+?)::', re.MULTILINE), callback=self.is_keyword(1))
-        T_KEYWORD2 = Token(re.compile(r'^:(.+?):', re.MULTILINE), callback=self.is_keyword(1))
-        T_IDEN = Token(r'[_a-zA-Z][_a-zA-Z0-9]*', callback=self.just_return())
-        T_OTHER = Token(r'[^ _a-zA-Z0-9]', callback=self.just_return())
-        T_SP = Token(r'\s+', callback=self.just_return())
-        T_INTEGER = Token(r'[+-]?\d+\.?\d*[eE]*[+-]*\d*', callback=self.just_return())
-        T_URL = Token(r'((?:file|https?|ftp|mailto)://[^\s<]*)', callback=self.just_return(4))
-        
-        self.formats = [T_URL, T_KEYWORD1|T_KEYWORD2, T_IDEN, T_INTEGER, T_OTHER, T_SP]
-
-#        self.formats = [
-#            (re.compile(r'(``.*?``)'), 3),
-#            (re.compile(r'(`.*?`)'), 5),
-#            (re.compile(r'(\*\*.*?\*\*)'), 6),
-#            (re.compile(r'(\*.*?\*)'), 7),
-#            (re.compile("((?:file|https?|ftp|mailto)://[^\s<]*)"), 4),
-#            (re.compile(r'^\.\. (.+?)::', re.MULTILINE), 2),
-#            (re.compile(r'^:(.+?):', re.MULTILINE), 2),
-#        ]
+        self.tokens = self._init_tokens([
+            (re.compile(r'^\.\. (.+?)::', re.M), self.is_keyword(1)),
+            (re.compile(r'^\s*:(.+?):', re.M), self.is_keyword(1)),
+            (re.compile(r'``.*?``'), 3),
+            (re.compile(r'\b_`.*?`|`.*?`_\b|\b\w+_\b|\b_\w+\b'), 5),
+            (re.compile(r'\*\*.*?\*\*'), 6),
+            (re.compile(r'\*.*?\*'), 7),
+            (PATTERN_EMAIL, 4),
+            (PATTERN_URL, 4),
+        ])
 

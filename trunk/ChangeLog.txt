@@ -1,4 +1,7 @@
 $Rev$
+[2007/11/19]
+NCustomLexer.py     Add new custom lexer class
+
 [2007/11/08]
 dropfile plugin     Add dropfile plugin. thanks Tyberius Prime
 InputAssistant.py   Fix Alt+X Ctrl+X key press bug
