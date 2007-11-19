@@ -86,9 +86,7 @@ class Commands(object):
             s = []
             for v in self.searchbuf:
                 t = v[0] + v[1]
-                print info, t
                 p = strin(info, t)
-                print p
                 if p:
                     s.append((p, v))
             s.sort()

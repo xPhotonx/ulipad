@@ -21,11 +21,11 @@
 #
 #   $Id$
 
-from mixins import NewCustomLexer
-from modules.ZestyParser import *
+from mixins.NCustomLexer import *
+#from modules.ZestyParser import *
 import re
     
-class FortranLexer(NewCustomLexer.CustomLexer):
+class FortranLexer(CustomLexer):
 
     metaname = 'fortran'
     casesensitive = False
@@ -65,18 +65,15 @@ end
 """
 
     def initSyntaxItems(self):
-        self.addSyntaxItem('r_default',         'Default',              self.syl_default,           self.STE_STYLE_TEXT)
-        self.addSyntaxItem('keyword',           'Keyword',              self.syl_keyword,           self.STE_STYLE_KEYWORD1)
-        self.addSyntaxItem('comment',           'Comment',              self.syl_comment,           self.STE_STYLE_COMMENT)
-        self.addSyntaxItem('integer',           'Integer',              self.syl_integer,           self.STE_STYLE_NUMBER)
-        self.addSyntaxItem('string',            'String',               self.syl_string,            self.STE_STYLE_CHARACTER)
-
-        T_COMMENT = Token(re.compile(r'![^\n\r]*'), callback=self.just_return(self.syl_comment))
-        T_IDEN = Token(r'[_a-zA-Z][_a-zA-Z0-9]*', callback=self.is_keyword())
-        T_OTHER = Token(r'[^ _a-zA-Z0-9]', callback=self.just_return(self.syl_default))
-        T_INTEGER = Token(r'[+-]?\d+\.?\d*[eE]*', callback=self.just_return(self.syl_integer))
-        T_SP = Token(r'\s+', callback=self.just_return(self.syl_default))
-        T_DQUOTED_STRING = Token(r'"((?:\\.|[^"])*)?"', callback=self.just_return(self.syl_string))
-        T_SQUOTED_STRING = Token(r"'((?:\\.|[^'])*)?'", callback=self.just_return(self.syl_string))
-
-        self.formats = [T_COMMENT, T_DQUOTED_STRING, T_SQUOTED_STRING, T_IDEN, T_INTEGER, T_SP, T_OTHER]
+        self.addSyntaxItem('r_default', 'Default',  STYLE_DEFAULT,  self.STE_STYLE_TEXT)
+        self.addSyntaxItem('keyword',   'Keyword',  STYLE_KEYWORD,  self.STE_STYLE_KEYWORD1)
+        self.addSyntaxItem('comment',   'Comment',  STYLE_COMMENT,  self.STE_STYLE_COMMENT)
+        self.addSyntaxItem('integer',   'Integer',  STYLE_INTEGER,  self.STE_STYLE_NUMBER)
+        self.addSyntaxItem('string',    'String',   STYLE_STRING,   self.STE_STYLE_STRING)
+                                                                    
+        self.tokens = self._init_tokens([
+            (re.compile(r'^(!.*?)$', re.M), self.just_return([(1, STYLE_COMMENT)])),
+            (PATTERN_STRING, STYLE_STRING),
+            (PATTERN_NUMBER, STYLE_INTEGER),
+            (PATTERN_IDEN, self.is_keyword()),
+        ])
