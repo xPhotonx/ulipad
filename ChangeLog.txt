@@ -1,4 +1,7 @@
 $Rev$
+[2007/11/20]
+NCustomLexer.py     Improvement lexer process
+
 [2007/11/19]
 NCustomLexer.py     Add new custom lexer class
 

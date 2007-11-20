@@ -25,7 +25,6 @@ __doc__ = 'C syntax highlitght process'
 
 import wx
 import LexerBase
-import types
 
 class TextLexer(LexerBase.LexerBase):
 
@@ -275,11 +274,9 @@ class HtmlLexer(LexerBase.LexerBase):
         self.addSyntaxItem('hphp_hstring_variable',     'PHP - hstring variable',               wx.stc.STC_HPHP_HSTRING_VARIABLE,       self.STE_STYLE_VALUE),
         self.addSyntaxItem('hphp_operator',             'PHP - operator',                       wx.stc.STC_HPHP_OPERATOR,               self.STE_STYLE_OPERATOR),
 
-import NewCustomLexer
-from modules.ZestyParser import *
-import re
+from NCustomLexer import *
 
-class XMLLexer(NewCustomLexer.CustomLexer):
+class XMLLexer(CustomLexer):
     metaname = 'xml'
 
     def loadPreviewCode(self):
@@ -296,69 +293,45 @@ class XMLLexer(NewCustomLexer.CustomLexer):
 </html>"""
     
     def initSyntaxItems(self):
-        self.syl_tag = self.syl_custom + 1
-        self.syl_attrname = self.syl_custom + 2
-        self.syl_attrvalue = self.syl_custom + 3
-        self.syl_cdatavalue = self.syl_custom + 4
-        self.addSyntaxItem('r_default',         'Default',              self.syl_default,           self.STE_STYLE_TEXT)
-        self.addSyntaxItem('keyword',           'Keyword',              self.syl_keyword,           self.STE_STYLE_KEYWORD1)
-        self.addSyntaxItem('tag',               'Tag',                  self.syl_tag,               'back:#E6E6FA')
-        self.addSyntaxItem('attribute',         'Attribute Name',       self.syl_attrname,          'bold,fore:red')
-        self.addSyntaxItem('attrvalue',         'Attribute Value',      self.syl_attrvalue,         'bold,fore:#008080')
-        self.addSyntaxItem('comment',           'Comment',              self.syl_comment,           self.STE_STYLE_COMMENT)
-        self.addSyntaxItem('cdatavalue',        'CDATA Value',          self.syl_cdatavalue,        self.STE_STYLE_TEXT)
+        self.syl_tag = STYLE_CUSTOM + 1
+        self.syl_attrname = STYLE_CUSTOM + 2
+        self.syl_attrvalue = STYLE_CUSTOM + 3
+        self.syl_cdatavalue = STYLE_CUSTOM + 4
+        self.syl_cdatatag = STYLE_CUSTOM + 5
+        self.addSyntaxItem('r_default',         'Default',              STYLE_DEFAULT,          self.STE_STYLE_TEXT)
+        self.addSyntaxItem('keyword',           'Keyword',              STYLE_KEYWORD,          self.STE_STYLE_KEYWORD1)
+        self.addSyntaxItem('tag',               'Tag',                  self.syl_tag,           'back:#E6E6FA')
+        self.addSyntaxItem('attribute',         'Attribute Name',       self.syl_attrname,      'bold,fore:red')
+        self.addSyntaxItem('attrvalue',         'Attribute Value',      self.syl_attrvalue,     'bold,fore:#008080')
+        self.addSyntaxItem('comment',           'Comment',              STYLE_COMMENT,          self.STE_STYLE_COMMENT)
+#        self.addSyntaxItem('cdatavalue',        'CDATA Value',          self.syl_cdatavalue,    self.STE_STYLE_TEXT)
+        self.addSyntaxItem('cdatatag',          'CDATA Tag',            self.syl_cdatatag,      'fore:#FF833F')
         
-        def p_match(matchobj, style=self.syl_default, group=0):
-            span = matchobj.span(group)
-            return style, span[0], span[1]
+        def is_tag(win, begin, end, text, matchobj):
+            if text.startswith('"') and text.endswith('"'):
+                return self.syl_attrvalue
+            else:
+                return STYLE_DEFAULT
         
-        T_DQUOTED_STRING = Token(r'"((?:\\.|[^"])*)?"', callback=self.just_return(5))
-        T_SQUOTED_STRING = Token(r"'((?:\\.|[^'])*)?'", callback=self.just_return(5))
-        T_SP = Token(r'\s+', callback=self.just_return(self.syl_default))
-        T_IDEN = Token(r'[_a-zA-Z][_a-zA-Z0-9:\-]*', callback=self.just_return(self.syl_default))
-        
-        def p(m):
-            m1, m2 = list(m[0]), list(m[1])
-            m1[0] = self.syl_attrname
-            m2[0] = self.syl_attrvalue
-            return [m1, m2]
-        
-        T_ATTR = (T_IDEN + Omit(Token('\s*=\s*')) + (T_DQUOTED_STRING|T_SQUOTED_STRING)) >> p
-        T_COMMENT = Token(re.compile(r'<!--.*?-->', re.DOTALL), callback=self.just_return(self.syl_comment))
-        T_TEXT = Token('[^<]+', callback=self.just_return(self.syl_default))
-        
-        @CallbackFor(Token('(<!\[CDATA\[)(.*?)(\]\]>)'))
-        def T_CDATA(parser, m, cursor):
-            yield p_match(m, self.syl_tag, 1)
-            yield p_match(m, self.syl_cdatavalue, 2)
-            yield p_match(m, self.syl_tag, 3)
-        
-        T_SATTR = (T_IDEN) >> self.just_return(self.syl_attrname)
-        @CallbackFor(Token(r'((?:</|<!|<\?|<))\s*([_a-zA-Z0-9\-]+)\s*(.*?)((?:\?>|>))'))
-        def T_TAGLINE(parser, m, cursor):
-            yield p_match(m, self.syl_tag, 1)
-            yield p_match(m, self.syl_keyword, 2)
-            if m.group(3):
-                begin, end = m.span(3)
-                p = ZestyParser(m.group(3))
-                for i in p.iter([T_ATTR, T_SATTR, T_SP]):
-                    if isinstance(i, (list, types.GeneratorType)):
-                        for x in i:
-                            t = list(x)
-                            t[1] += begin
-                            t[2] += begin
-                            yield t
-                    else:
-                        t = list(i)
-                        t[1] += begin
-                        t[2] += begin
-                        yield t
-            yield p_match(m, self.syl_tag, 4)
-        
-        self.formats = [T_COMMENT, T_CDATA, T_TAGLINE, T_TEXT, T_SP]
+        token_tag = TokenList([
+            (r'([\w\-:_.]+)\s*=\s*(%s|%s|\S+)' % (PATTERN_DOUBLE_STRING, PATTERN_SINGLE_STRING),
+                [(1, self.syl_attrname), (2, is_tag)]),
+            (r'([\w\-:_.]+)\b(?!=)', self.syl_attrname),
+        ])
+            
+        self.tokens = TokenList([
+            (r'<!--.*?-->', STYLE_COMMENT),
+            (r'(<!\[CDATA\[)(.*?)(\]\]>)', 
+                [(1, self.syl_cdatatag), (3, self.syl_cdatatag)]),
+            (r'(<!|<\?|</?)\s*([\w\-:_.]+)\s*(.*?)\s*(\?>|/?>)', 
+                [(1, self.syl_tag), (2, STYLE_KEYWORD), 
+                (3, token_tag), (4, self.syl_tag)]),
+        ])
         
     def initbackstyle(self):
-        return [(self.syl_cdatavalue, self.syl_tag, '<![CDATA['),
+        return [(self.syl_cdatatag, '<![CDATA['),
+                (STYLE_COMMENT, '<!--'),
+                (self.syl_tag, '<'),
                 ]
 
 class PythonLexer(LexerBase.LexerBase):

@@ -21,16 +21,13 @@
 #
 #   $Id$
 
-from mixins.NewCustomLexer import CustomLexer
+from mixins.NCustomLexer import *
 import re
-from modules.ZestyParser import *
-import types
     
 class MakoTmpLexer(CustomLexer):
 
     metaname = 'makotmp'
     casesensitive = True
-#    fulltext = True
 
     def loadDefaultKeywords(self):
         keys = ['include', 'def', 'namespace', 'inherit', 'call', 'doc',
@@ -52,115 +49,72 @@ ${account()}
 """
 
     def initSyntaxItems(self):
-        self.syl_tag = self.syl_custom + 1
-        self.syl_attrname = self.syl_custom + 2
-        self.syl_attrvalue = self.syl_custom + 3
-        self.syl_variable = self.syl_custom + 4
-        self.syl_symbol = self.syl_custom + 5
+        self.syl_tag = STYLE_CUSTOM + 1
+        self.syl_attrname = STYLE_CUSTOM + 2
+        self.syl_attrvalue = STYLE_CUSTOM + 3
+        self.syl_variable = STYLE_CUSTOM + 4
+        self.syl_symbol = STYLE_CUSTOM + 5
 #        self.syl_filter = self.syl_custom + 6
-        self.syl_tagtext = self.syl_custom + 7
-        self.syl_makotag = self.syl_custom + 8
-        self.syl_script_text = self.syl_custom + 9
-        self.syl_style_text = self.syl_custom + 10
-        self.addSyntaxItem('r_default',         'Default',              self.syl_default,           self.STE_STYLE_TEXT)
-        self.addSyntaxItem('keyword',           'Keyword',              self.syl_keyword,           self.STE_STYLE_KEYWORD1)
+        self.syl_tagtext = STYLE_CUSTOM + 7
+        self.syl_makotag = STYLE_CUSTOM + 8
+        self.syl_script_text = STYLE_CUSTOM + 9
+        self.syl_style_text = STYLE_CUSTOM + 10
+        self.syl_cdatatag = STYLE_CUSTOM + 11
+        
+        self.addSyntaxItem('r_default',         'Default',              STYLE_DEFAULT,              self.STE_STYLE_TEXT)
+        self.addSyntaxItem('keyword',           'Keyword',              STYLE_KEYWORD,              self.STE_STYLE_KEYWORD1)
         self.addSyntaxItem('tag',               'Tag',                  self.syl_tag,               'bold')
         self.addSyntaxItem('attribute',         'Attribute Name',       self.syl_attrname,          'bold,fore:red')
         self.addSyntaxItem('attrvalue',         'Attribute Value',      self.syl_attrvalue,         'bold,fore:#008080')
-        self.addSyntaxItem('comment',           'Comment',              self.syl_comment,           self.STE_STYLE_COMMENT)
+        self.addSyntaxItem('comment',           'Comment',              STYLE_COMMENT,              self.STE_STYLE_COMMENT)
         self.addSyntaxItem('variable',          'Variable',             self.syl_variable,          'bold,italic,back:#FFDCFF')
         self.addSyntaxItem('symbol',            'Symbol',               self.syl_symbol,            'fore:#5c8f59,bold')
-#        self.addSyntaxItem('filter',            'Filter',               self.syl_filter,            'fore:#7f7047,bold')
         self.addSyntaxItem('tagtext',           'Tag Text',             self.syl_tagtext,           'back:#FFEBCD')
         self.addSyntaxItem('makotag',           'Mako Tag',             self.syl_makotag,           'fore:#228B22,bold')
         self.addSyntaxItem('script_text',       'Script Text',          self.syl_script_text,       self.STE_STYLE_COMMENT)
         self.addSyntaxItem('style_text',        'Style Text',           self.syl_style_text,        self.STE_STYLE_COMMENT)
+        self.addSyntaxItem('cdatatag',          'CDATA Tag',            self.syl_cdatatag,          'fore:#FF833F')
         
-        def p_match(matchobj, style=self.syl_default, group=0):
-            span = matchobj.span(group)
-            return style, span[0], span[1]
-        
-        T_DQUOTED_STRING = Token(r'"((?:\\.|[^"])*)?"', callback=self.just_return(5))
-        T_SQUOTED_STRING = Token(r"'((?:\\.|[^'])*)?'", callback=self.just_return(5))
-        T_SP = Token(r'\s+', callback=self.just_return(self.syl_default))
-        T_IDEN = Token(r'[_a-zA-Z][_a-zA-Z0-9:\-]*', callback=self.just_return(self.syl_default))
-        
-        def p(m):
-            m1, m2 = list(m[0]), list(m[1])
-            m1[0] = self.syl_attrname
-            m2[0] = self.syl_attrvalue
-            return [m1, m2]
-        
-        T_ATTR = (T_IDEN + Omit(Token('\s*=\s*')) + (T_DQUOTED_STRING|T_SQUOTED_STRING)) >> p
-        T_COMMENT = Token(r'<!--.*?-->', callback=self.just_return(self.syl_comment))
-        T_COMMENT1 = Token(re.compile(r'^\s*##.*?$', re.M), callback=self.just_return(self.syl_comment))
-        T_COMMENT2 = Token(r'<%doc>.*</%doc>', callback=self.just_return(self.syl_comment))
-        T_TEXT = Token('[^<{$]+', callback=self.just_return(self.syl_default))
-        T_CDATA = Token('<!\[CDATA\[', callback=self.just_return(3)) + Token('.*?(\]\]>)', callback=self.just_return(3, 1))
-        
-        T_SATTR = (T_IDEN) >> self.just_return(self.syl_attrname)
-#        T_SCRIPT = Token(re.compile(r'.*?(?=</script>)', re.DOTALL), callback=self.just_return(self.syl_comment))
-
-        @CallbackFor(Token(r'((?:</|<!|<\?|<))\s*([_a-zA-Z0-9\-]+)\s*(.*?)((?:\?>|>))'))
-        def T_TAGLINE(parser, m, cursor):
-            yield p_match(m, self.syl_tag, 1)
-            yield p_match(m, self.syl_keyword, 2)
-            if m.group(3):
-                begin, end = m.span(3)
-                p = ZestyParser(m.group(3))
-                for i in p.iter([T_ATTR, T_SATTR, T_SP]):
-                    if isinstance(i, (list, types.GeneratorType)):
-                        for x in i:
-                            t = list(x)
-                            t[1] += begin
-                            t[2] += begin
-                            yield t
-                    else:
-                        t = list(i)
-                        t[1] += begin
-                        t[2] += begin
-                        yield t
-            yield p_match(m, self.syl_tag, 4)
-            if m.group(2).lower() == 'script' and m.group(1) == '<':
-                text = parser.data[parser.cursor:]
-                b = re.search(re.compile('</script>', re.IGNORECASE), text)
-                if b:
-                    pos = b.start()
-                else:
-                    pos = len(text)
-                yield self.syl_script_text, parser.cursor, parser.cursor + pos
-                
-                parser.cursor += pos
+        token_tag = TokenList([
+            (r'([\w\-:_.]+)\s*=\s*(%s|%s|\S+)' % (PATTERN_DOUBLE_STRING, PATTERN_SINGLE_STRING),
+                    [(1, self.syl_attrname), (2, self.syl_attrvalue)]),
+            (r'([\w\-:_.]+)\b(?!=)', self.syl_attrname),
+        ])
             
-            elif m.group(2).lower() == 'style' and m.group(1) == '<':
-                text = parser.data[parser.cursor:]
-                b = re.search(re.compile('</style>', re.IGNORECASE), text)
-                if b:
-                    pos = b.start()
-                else:
-                    pos = len(text)
-                yield self.syl_script_text, parser.cursor, parser.cursor + pos
-                
-                parser.cursor += pos
-            
-        
-        @CallbackFor(Token(r'(</?%!?)\s*(\w+)\s*(.*?)\s*(/?>)'))
-        def T_D_TAG(parser, m ,cursor):
-            yield p_match(m, self.syl_symbol, 1)
-            yield p_match(m, self.syl_makotag, 2)
-            yield p_match(m, self.syl_tagtext, 3)
-            yield p_match(m, self.syl_symbol, 4)
-            
-        @CallbackFor(Token(r'(\$\{)\s*(.*?)\s*(\})'))
-        def T_D_VAR(parser, m, cursor):
-            yield p_match(m, self.syl_symbol, 1)
-            yield p_match(m, self.syl_variable, 2)
-            yield p_match(m, self.syl_symbol, 3)
-        self.formats = [T_COMMENT, T_COMMENT1, T_COMMENT2, T_D_TAG, T_D_VAR, T_CDATA, T_TAGLINE, T_TEXT, T_SP]
+        self.tokens = TokenList([
+            (r'<!--.*?-->', STYLE_COMMENT),
+            (re.compile(r'^(##.*?)$', re.M), [(1, STYLE_COMMENT)]),
+            (r'(<!\[CDATA\[)(.*?)(\]\]>)', 
+                [(1, self.syl_cdatatag), (3, self.syl_cdatatag)]),
+            (r'(<)(script)(.*?)(>)(.*?)(</)(script)(>)', 
+                [(1, self.syl_tag), (2, STYLE_KEYWORD), (3, token_tag),
+                (4, self.syl_tag), (5, self.syl_script_text), (6, self.syl_tag), 
+                (7, STYLE_KEYWORD), (8, self.syl_tag),
+                ]),
+            (r'(<)(style)(.*?)(>)(.*?)(</)(style)(>)', 
+                [(1, self.syl_tag), (2, STYLE_KEYWORD), (3, token_tag),
+                (4, self.syl_tag), (5, self.syl_style_text), (6, self.syl_tag), 
+                (7, STYLE_KEYWORD), (8, self.syl_tag),
+                ]),
+            (r'(</?%!?)\s*(\w+)\s*(.*?)\s*(/?>)', 
+                [(1, self.syl_symbol), (2, self.syl_makotag),
+                (3, token_tag), (4, self.syl_symbol),
+                ]),
+            (r'(\$\{)\s*(.*?)\s*(\})',
+                [(1, self.syl_symbol), (2, self.syl_variable),
+                (3, self.syl_symbol),
+                ]),
+            (r'(<!|<\?|</?)\s*([\w\-:_.]+)\s*(.*?)\s*(\?>|/?>)', 
+                [(1, self.syl_tag), (2, STYLE_KEYWORD), 
+                (3, token_tag), (4, self.syl_tag)
+                ]),
+        ])
         
     def initbackstyle(self):
-        return [(self.syl_comment, self.syl_comment),
-                (self.syl_script_text, self.syl_tag, re.compile(r'<script', re.I)),
-                (self.syl_style_text, self.syl_tag, re.compile(r'<style', re.I)),
+        return [(STYLE_COMMENT, '<!--'),
+                (self.syl_cdatatag, '<![CDATA['),
+                (self.syl_tag, '<script'),
+                (self.syl_tag, '<style'),
+                (self.syl_tag, '<'),
                 ]
-    
+        

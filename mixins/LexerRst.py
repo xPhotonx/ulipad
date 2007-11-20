@@ -79,7 +79,7 @@ from the ``docs`` directory of the `Docutils distribution`_.
         self.addSyntaxItem('bold',              'Bold',                 6,           'bold')
         self.addSyntaxItem('emphasis',          'Emphasis',             7,           'italic')
 
-        self.tokens = self._init_tokens([
+        self.tokens = TokenList([
             (re.compile(r'^\.\. (.+?)::', re.M), self.is_keyword(1)),
             (re.compile(r'^\s*:(.+?):', re.M), self.is_keyword(1)),
             (re.compile(r'``.*?``'), 3),
