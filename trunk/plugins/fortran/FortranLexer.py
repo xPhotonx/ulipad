@@ -71,8 +71,8 @@ end
         self.addSyntaxItem('integer',   'Integer',  STYLE_INTEGER,  self.STE_STYLE_NUMBER)
         self.addSyntaxItem('string',    'String',   STYLE_STRING,   self.STE_STYLE_STRING)
                                                                     
-        self.tokens = self._init_tokens([
-            (re.compile(r'^(!.*?)$', re.M), self.just_return([(1, STYLE_COMMENT)])),
+        self.tokens = TokenList([
+            (re.compile(r'^(!.*?)$', re.M), [(1, STYLE_COMMENT)]),
             (PATTERN_STRING, STYLE_STRING),
             (PATTERN_NUMBER, STYLE_INTEGER),
             (PATTERN_IDEN, self.is_keyword()),

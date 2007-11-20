@@ -29,7 +29,7 @@ __all__ = ['STYLE_DEFAULT', 'STYLE_KEYWORD', 'STYLE_COMMENT',
     'PATTERN_NUMBER', 'PATTERN_INT', 'PATTERN_DOUBLE_STRING',
     'PATTERN_SINGLE_STRING', 'PATTERN_STRING', 'PATTERN_IDEN',
     'PATTERN_EMAIL', 'PATTERN_URL',
-    'CustomLexer']
+    'TokenList', 'CustomLexer']
     
 STYLE_DEFAULT = 1
 STYLE_KEYWORD = 2
@@ -45,12 +45,26 @@ PATTERN_SINGLE_STRING = r"'((?:\\.|[^'])*)?'"
 PATTERN_STRING = r'"((?:\\.|[^"])*)?"|\'((?:\\.|[^\'])*)?\''
 PATTERN_IDEN = r'\b\w+\b'
 PATTERN_EMAIL = r'\b[\w\-_/]+@[\w\-_]+(\.[\w\-_]+)+\b'
-PATTERN_URL = r'\b(https?://|ftp://|file://|mailto:)\S+?(?=[^a-zA-Z/0-9.:=&\-%#?_])'
+PATTERN_URL = r'\b(https?://|ftp://|file://|mailto:)\S+?(?=[^a-zA-Z/0-9.:=&\-%#?_!])'
 
+class TokenList(list):
+    def __init__(self, tokens):
+        super(TokenList, self).__init__(self._init_tokens(tokens))
+        
+    def _init_tokens(self, tokens):
+        r = []
+        for p, s in tokens:
+            if isinstance(p, (str, unicode)):
+                p_r = re.compile(p, re.DOTALL)
+            else:
+                p_r = p
+            r.append((p_r, s))
+        return r
+    
 class CustomLexer(LexerBase.LexerBase):
     metaname = 'ncustom'
     casesensitive = True
-    fulltext = False
+#    fulltext = False
     
     def loadDefaultKeywords(self):
         return []
@@ -74,42 +88,15 @@ class CustomLexer(LexerBase.LexerBase):
         self.addSyntaxItem('integer',   'Integer',  STYLE_INTEGER,  self.STE_STYLE_NUMBER)
         self.addSyntaxItem('string',    'String',   STYLE_STRING,   self.STE_STYLE_STRING)
                                                                     
-        self.tokens = self._init_tokens([
-            (r'#(?=$)', STYLE_COMMENT),
+        self.tokens = TokenList([
+            (r'#(.*?)$', STYLE_COMMENT),
             (PATTERN_STRING, STYLE_STRING),
             (PATTERN_NUMBER, STYLE_INTEGER),
             (PATTERN_IDEN, self.is_keyword()),
         ])
         
-    def _init_tokens(self, tokens):
-        r = []
-        for p, s in tokens:
-            if isinstance(p, (str, unicode)):
-                p_r = re.compile(p, re.DOTALL)
-            else:
-                p_r = p
-            r.append((p_r, s))
-        return r
-        
-    def just_return(self, styles):
-        """
-        styls should be a tuple list, for example:
-            [(1, style1), (2, style2)] #(group, style)
-        """
-        def r(matchobj):
-            a = []
-            b = matchobj.start()
-            for group, style in styles:
-                try:
-                    span = matchobj.span(group)
-                    a.append((span[group]-b, span[group]-b, style))
-                except IndexError:
-                    continue
-            return a
-        return r
-    
     def is_keyword(self, group=0):
-        def r(matchobj):
+        def r(win, begin, end, text, matchobj):
             key = matchobj.group(group)
             span = matchobj.span(group)
             if not self.casesensitive:
@@ -123,89 +110,87 @@ class CustomLexer(LexerBase.LexerBase):
 
     def initbackstyle(self):
         '''
-        The element should be (currentstyle, leadingstyle)
+        The element should be (style, matchstring)
         '''
         return []
     
-    def styletext(self, win):
+    def _get_begin_pos(self, win):
+        '''
+        Get a suitable position of beginning
+        '''
         begin = win.GetEndStyled()
         
-        for i in xrange(begin, -1, -1):
+        for i in range(begin, -1, -1):
             style = win.GetStyleAt(i)
             if style:
                 begin = i
                 break
-            
-        flag = False
-        cs, ls, match = None, None, None
-        for v in self.backstyles:
-            if len(v) == 2:
-                (cs, ls), match = v, None
-            else:
-                cs, ls, match = v
-            if cs == style:
-                flag = True
-                break
-        if flag:
-            for i in xrange(begin-1, -1, -1):
-                es = win.GetStyleAt(i)
+        
+        for i in range(begin, -1, -1):
+            es = win.GetStyleAt(i)
+            for ls, match in self.backstyles:
                 if es == ls:
                     if match:
-                        text = win.GetTextRange(i, begin).encode('utf-8')
+                        text = win.GetTextRange(i, begin+1).encode('utf-8')
                         if isinstance(match, str):
                             if text.startswith(match):
-                                begin = i
-                                break
+                                return i
                         elif match.match(text):
-                            begin = i
-                            break
-                else:
-                    if not match:
-                        break
-            else:
-                begin = 0
-            return begin
-        else:
-            return None
+                            return i
+
+        begin = win.PositionFromLine(win.LineFromPosition(win.GetEndStyled()))
+
+        return begin
     
     def styleneeded(self, win, pos):
-        begin = self.styletext(win)
-        if begin is not None:
-            text = win.GetTextRange(begin, pos).encode('utf-8')
-        else:
-            if self.fulltext:
-                text = win.getRawText()
-                begin = 0
-            else:
-                begin = win.PositionFromLine(win.LineFromPosition(win.GetEndStyled()))
-                text = win.GetTextRange(begin, pos).encode('utf-8')
+        begin = self._get_begin_pos(win)
+        text = win.GetTextRange(begin, pos).encode('utf-8')
         if not text:
             return
         
+        self.render(win, begin, pos, text, self.tokens)
+        
+    def render(self, win, begin, end, text, tokens):
+        def _process_result(s, win, begin, end, text, matchobj=None):
+            step = end - begin
+            if not callable(s):
+                if isinstance(s, int):
+                    a = [(0, step, s)]
+                    self.set_comp_style(win, begin, end, a)
+                elif isinstance(s, TokenList):
+                    self.render(win, begin, end, text, s)
+                elif isinstance(s, (list, tuple)):
+                    t = []
+                    b = matchobj.start()
+                    for group, _s in s:
+                        span = matchobj.span(group)
+                        _process_result(_s, win, begin+span[0]-b, 
+                            begin+span[1]-b, matchobj.group(group))
+                        t.append((span[0]-b, span[1]-b, 0))
+                    self.set_comp_style(win, begin, end, t)
+            else:
+                a = s(win, begin, end, text, matchobj)
+                if isinstance(a, int):
+                    a = [(0, step, a)]
+                self.set_comp_style(win, begin, end, a)
+            
         i = 0
-        while begin + i < pos:
+        while begin + i < end:
             flag = False
-            for p, s in self.tokens:
+            for p, s in tokens:
                 r = p.match(text, i)
                 if r:
                     flag = True
                     step = r.end() - r.start()
-                    
-                    if not callable(s):
-                        a = [(0, step, s)]
-                    else:
-                        ret = s(r)
-                        if isinstance(ret, int):
-                            a = [(0, step, ret)]
-                        else:
-                            a = ret
+                    _process_result(s, win, begin+r.start(), begin+r.end(), 
+                        r.group(), r)
                     break
                     
             if not flag:
                 step = 1
                 a = [(0, step, STYLE_DEFAULT)]
-             
-            self.set_comp_style(win, begin+i, begin+i+step, a)
+                self.set_comp_style(win, begin+i, begin+i+step, a)
+            
             i += step
             
     def set_style(self, win, start, end, style):
@@ -219,7 +204,10 @@ class CustomLexer(LexerBase.LexerBase):
         for (styledStart, styledEnd, style) in pos_array:
             if styledStart + begin > start:
                 self.set_style(win, start, styledStart + begin, STYLE_DEFAULT)
-            self.set_style(win, styledStart + begin, styledEnd + begin, style)
+                
+            #if style==0, then skip, user should execute the render work
+            if style:
+                self.set_style(win, styledStart + begin, styledEnd + begin, style)
             start = styledEnd + begin + 1
         
         if styledEnd + begin < end:   
