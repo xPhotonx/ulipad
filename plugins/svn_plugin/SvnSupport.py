@@ -120,7 +120,7 @@ def do(dirwin, command, *args):
     command_name, call_func = commands.get(command)
     if callback:
         call_func = callback
-    cmd = u'"%s" %s %s' % (vc_exe, command_name, u' '.join(args))
+    cmd = u'"%s" %s %s' % (vc_exe, command_name, u' '.join(['"%s"' % x for x in args]))
     run_command(cmd, call_func)
 
 #common functions
@@ -148,6 +148,7 @@ def run_command(cmd, callback=None):
             Globals.mainframe.RunCommand(cmd, redirect=True, hide=True, 
                 input_decorator=svn_input_decorator, callback=callback)
         except:
+            Globals.mainframe.StopCommand()
             error.traceback()
     wx.CallAfter(f)
         

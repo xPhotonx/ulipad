@@ -3387,6 +3387,15 @@ def RunCommand(win, command, redirect=True, hide=False, input_decorator=None,
         wx.Execute(command, wx.EXEC_ASYNC)
 Mixin.setMixin('mainframe', 'RunCommand', RunCommand)
 
+def StopCommand(win):
+    if win.messagewindow.process:
+        wx.Process_Kill(win.messagewindow.pid, wx.SIGKILL)
+        win.messagewindow.SetReadOnly(1)
+        win.messagewindow.pid = -1
+        win.messagewindow.process = None
+Mixin.setMixin('mainframe', 'StopCommand', StopCommand)
+
+
 def OnIdle(win, event):
     if win.process is not None:
         if win.inputstream:
@@ -4036,11 +4045,7 @@ def OnPythonSetArgs(win, event=None):
 Mixin.setMixin('mainframe', 'OnPythonSetArgs', OnPythonSetArgs)
 
 def OnPythonEnd(win, event):
-    if win.messagewindow.process:
-        wx.Process_Kill(win.messagewindow.pid, wx.SIGKILL)
-        win.messagewindow.SetReadOnly(1)
-        win.messagewindow.pid = -1
-        win.messagewindow.process = None
+    win.StopCommand()
     win.SetStatusText(tr("Stopped!"), 0)
 Mixin.setMixin('mainframe', 'OnPythonEnd', OnPythonEnd)
 
