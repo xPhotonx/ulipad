@@ -120,7 +120,13 @@ def do(dirwin, command, *args):
     command_name, call_func = commands.get(command)
     if callback:
         call_func = callback
-    cmd = u'"%s" %s %s' % (vc_exe, command_name, u' '.join(['"%s"' % x for x in args]))
+        
+    args2 = []
+    for arg in args:
+        if arg.find(' ') != -1:
+            arg = r'"%s"' %arg
+        args2.append(arg)
+    cmd = u'"%s" %s %s' % (vc_exe, command_name, u' '.join(args2))
     run_command(cmd, call_func)
 
 #common functions
