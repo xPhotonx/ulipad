@@ -127,11 +127,7 @@ def OnPythonSetArgs(win, event=None):
 Mixin.setMixin('mainframe', 'OnPythonSetArgs', OnPythonSetArgs)
 
 def OnPythonEnd(win, event):
-    if win.messagewindow.process:
-        wx.Process_Kill(win.messagewindow.pid, wx.SIGKILL)
-        win.messagewindow.SetReadOnly(1)
-        win.messagewindow.pid = -1
-        win.messagewindow.process = None
+    win.StopCommand()
     win.SetStatusText(tr("Stopped!"), 0)
 Mixin.setMixin('mainframe', 'OnPythonEnd', OnPythonEnd)
 

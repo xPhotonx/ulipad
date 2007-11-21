@@ -1,4 +1,7 @@
 $Rev$
+[2007/11/21]
+SvnSupport.py       Fix cann't support filename has space bug
+
 [2007/11/20]
 NCustomLexer.py     Improvement lexer process
 
