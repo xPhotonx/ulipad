@@ -28,55 +28,60 @@ import wx
 import os
 from modules import common
 from modules import Mixin
+from modules.Debug import error
+
+STE_STYLE_TEXT = "fore:#000000"
+STE_STYLE_KEYWORD1 = "fore:#0000FF,bold"
+STE_STYLE_KEYWORD2 = "fore:#AA0000"
+STE_STYLE_KEYWORD3 = "fore:#6F4242"
+STE_STYLE_KEYWORD4 = "fore:#AAAA00"
+STE_STYLE_KEYWORD5 = "fore:#2F2F2F"
+STE_STYLE_KEYWORD6 = "fore:#808080"
+STE_STYLE_COMMENT = "fore:#238E23,back:#E8FFE8"
+STE_STYLE_COMMENTDOC = "fore:#238E23,back:#E8FFE8"
+STE_STYLE_COMMENTLINE = "fore:#238E23,back:#E8FFE8"
+STE_STYLE_COMMENTOTHER = "fore:#238E23,back:#E8FFE8"
+STE_STYLE_CHARACTER = "fore:#9F9F9F"
+STE_STYLE_CHARACTEREOL = "fore:#9F9F9F"
+STE_STYLE_STRING = "fore:#2A2AA5"
+STE_STYLE_STRINGEOL = "fore:#000000,back:#E0C0E0,eol" #"fore:#2A2AA5,eol"
+STE_STYLE_DELIMITER = "fore:#3232CC"
+STE_STYLE_PUNCTUATION = "fore:#3232CC"
+STE_STYLE_OPERATOR = "fore:#000000"
+STE_STYLE_BRACE = "fore:#4F2F4F"
+STE_STYLE_COMMAND = "fore:#FF0000"
+STE_STYLE_IDENTIFIER = "fore:#000000"
+STE_STYLE_LABEL = "fore:#4F2F4F"
+STE_STYLE_NUMBER = "fore:#6B238E"
+STE_STYLE_PARAMETER = "fore:#4F2F4F"
+STE_STYLE_REGEX = "fore:#DB70DB"
+STE_STYLE_UUID = "fore:#DB70DB"
+STE_STYLE_VALUE = "fore:#DB70DB"
+STE_STYLE_PREPROCESSOR = "fore:#808080"
+STE_STYLE_SCRIPT = "fore:#2F2F2F"
+STE_STYLE_ERROR = "fore:#0000FF"
+STE_STYLE_UNDEFINED = "fore:#3232CC"
+STE_STYLE_UNUSED = "fore:#000000"
+STC_STYLE_DEFAULT = "face:%(mono)s,size:%(size)d"
+STC_STYLE_LINENUMBER = "back:#AAFFAA,size:%(lnsize)d" #back:#C0C0C0
+STC_STYLE_BRACELIGHT = "fore:#FF0000,bold" #fore:#0000FF,back:#AAFFAA,bold
+STC_STYLE_BRACEBAD = "fore:#0000FF,bold"   #fore:#FF0000,back:#FFFF00,bold
+STC_STYLE_CONTROLCHAR = "fore:#000000"
+STC_STYLE_INDENTGUIDE = "fore:#808080"
+STE_STYLE_SELECTION_COLOUR = "fore:#FFFFFF,back:#C0C0C0"
+STE_STYLE_WHITESPACE_COLOUR = "fore:#000000"
+STE_STYLE_EDGE_COLOUR = "fore:#C0C0C0"
+STE_STYLE_CARET_COLOUR = "fore:#000000,back:#F9F9F9"
+STE_STYLE_FOLD_COLOUR = "fore:#E0E0E0"
 
 class LexerBase(Mixin.Mixin):
     __mixinname__ = 'lexerbase'
 
-    STE_STYLE_TEXT = "fore:#000000"
-    STE_STYLE_KEYWORD1 = "fore:#0000FF,bold"
-    STE_STYLE_KEYWORD2 = "fore:#AA0000"
-    STE_STYLE_KEYWORD3 = "fore:#6F4242"
-    STE_STYLE_KEYWORD4 = "fore:#AAAA00"
-    STE_STYLE_KEYWORD5 = "fore:#2F2F2F"
-    STE_STYLE_KEYWORD6 = "fore:#808080"
-    STE_STYLE_COMMENT = "fore:#238E23,back:#E8FFE8"
-    STE_STYLE_COMMENTDOC = "fore:#238E23,back:#E8FFE8"
-    STE_STYLE_COMMENTLINE = "fore:#238E23,back:#E8FFE8"
-    STE_STYLE_COMMENTOTHER = "fore:#238E23,back:#E8FFE8"
-    STE_STYLE_CHARACTER = "fore:#9F9F9F"
-    STE_STYLE_CHARACTEREOL = "fore:#9F9F9F"
-    STE_STYLE_STRING = "fore:#2A2AA5"
-    STE_STYLE_STRINGEOL = "fore:#000000,back:#E0C0E0,eol" #"fore:#2A2AA5,eol"
-    STE_STYLE_DELIMITER = "fore:#3232CC"
-    STE_STYLE_PUNCTUATION = "fore:#3232CC"
-    STE_STYLE_OPERATOR = "fore:#000000"
-    STE_STYLE_BRACE = "fore:#4F2F4F"
-    STE_STYLE_COMMAND = "fore:#FF0000"
-    STE_STYLE_IDENTIFIER = "fore:#000000"
-    STE_STYLE_LABEL = "fore:#4F2F4F"
-    STE_STYLE_NUMBER = "fore:#6B238E"
-    STE_STYLE_PARAMETER = "fore:#4F2F4F"
-    STE_STYLE_REGEX = "fore:#DB70DB"
-    STE_STYLE_UUID = "fore:#DB70DB"
-    STE_STYLE_VALUE = "fore:#DB70DB"
-    STE_STYLE_PREPROCESSOR = "fore:#808080"
-    STE_STYLE_SCRIPT = "fore:#2F2F2F"
-    STE_STYLE_ERROR = "fore:#0000FF"
-    STE_STYLE_UNDEFINED = "fore:#3232CC"
-    STE_STYLE_UNUSED = "fore:#000000"
-    STC_STYLE_DEFAULT = "face:%(mono)s,size:%(size)d"
-    STC_STYLE_LINENUMBER = "back:#AAFFAA,size:%(lnsize)d" #back:#C0C0C0
-    STC_STYLE_BRACELIGHT = "fore:#FF0000,bold" #fore:#0000FF,back:#AAFFAA,bold
-    STC_STYLE_BRACEBAD = "fore:#0000FF,bold"   #fore:#FF0000,back:#FFFF00,bold
-    STC_STYLE_CONTROLCHAR = "fore:#000000"
-    STC_STYLE_INDENTGUIDE = "fore:#808080"
-    STE_STYLE_SELECTION_COLOUR = "fore:#FFFFFF,back:#C0C0C0"
-    STE_STYLE_WHITESPACE_COLOUR = "fore:#000000"
-    STE_STYLE_EDGE_COLOUR = "fore:#C0C0C0"
-    STE_STYLE_CARET_COLOUR = "fore:#000000,back:#F9F9F9"
-    STE_STYLE_FOLD_COLOUR = "fore:#E0E0E0"
-
     no_expand_styles = ()   #used to indicate which styles will forbid InputAssistant
+    
+    preview_code = ''
+    keywords = []
+    syntaxitems = []
 
     def __init__(self, name, filewildchar, syntaxtype, stxfile=''):
         self.initmixin()
@@ -96,10 +101,8 @@ class LexerBase(Mixin.Mixin):
                 os.makedirs(path)
             self.stxfile = os.path.join(path, stxfile)
         self.syntaxtype = syntaxtype
-        self.keywords = ()
-        self.syntaxitems = {}
-        self.syntaxnames = []
-        self.preview_code = ''
+        self._syntaxitems = {}
+        self._syntaxnames = []
 
         #add default font settings in config.ini
         x = common.get_config_file_obj()
@@ -120,15 +123,16 @@ class LexerBase(Mixin.Mixin):
 
         self.font = wx.Font(fontsize, wx.TELETYPE, wx.NORMAL, wx.NORMAL, face=fontname)
         
-        self.addSyntaxItem('default',       tr('Style default'),            wx.stc.STC_STYLE_DEFAULT,       self.STC_STYLE_DEFAULT % common.faces)
+        self.addSyntaxItem('default',       tr('Style default'),            wx.stc.STC_STYLE_DEFAULT,       STC_STYLE_DEFAULT % common.faces)
         self.addSyntaxItem('-caretfore',    tr('Caret fore colour'),        0,  "fore:#FF0000")
         self.addSyntaxItem('-caretback',    tr('CaretLine back colour'),    0,  "back:#EEEEEE")
         self.addSyntaxItem('-selback',      tr('Selection back colour'),    0,  "back:#000080")
-        self.addSyntaxItem('linenumber',    tr('Line numbers'),             wx.stc.STC_STYLE_LINENUMBER,    self.STC_STYLE_LINENUMBER % common.faces)
-        self.addSyntaxItem('controlchar',   tr('Control characters'),       wx.stc.STC_STYLE_CONTROLCHAR,   self.STC_STYLE_CONTROLCHAR)
-        self.addSyntaxItem('bracelight',    tr('Matched braces'),           wx.stc.STC_STYLE_BRACELIGHT,    self.STC_STYLE_BRACELIGHT)
-        self.addSyntaxItem('bracebad',      tr('Unmatched brace'),          wx.stc.STC_STYLE_BRACEBAD,      self.STC_STYLE_BRACEBAD)
-        self.initSyntaxItems()
+        self.addSyntaxItem('linenumber',    tr('Line numbers'),             wx.stc.STC_STYLE_LINENUMBER,    STC_STYLE_LINENUMBER % common.faces)
+        self.addSyntaxItem('controlchar',   tr('Control characters'),       wx.stc.STC_STYLE_CONTROLCHAR,   STC_STYLE_CONTROLCHAR)
+        self.addSyntaxItem('bracelight',    tr('Matched braces'),           wx.stc.STC_STYLE_BRACELIGHT,    STC_STYLE_BRACELIGHT)
+        self.addSyntaxItem('bracebad',      tr('Unmatched brace'),          wx.stc.STC_STYLE_BRACEBAD,      STC_STYLE_BRACEBAD)
+#        self.initSyntaxItems()
+        self.loadEasySyntaxItems()
         self.load()
 
     def matchfile(self, filename):
@@ -172,22 +176,22 @@ class LexerBase(Mixin.Mixin):
             if self.syntaxtype != wx.stc.STC_LEX_CONTAINER:
                 for i in range(len(self.keywords)):
                     win.SetKeyWords(i, self.keywords[i])
-            for name, style in self.syntaxitems.items():
+            for name, style in self._syntaxitems.items():
                 if style.wx_const in defaultset:
                     win.StyleSetSpec(style.wx_const, style.getStyleString())
             #if wx.Platform != '__WXMSW__':
             win.StyleClearAll()
-            for style in self.syntaxitems.values():
+            for style in self._syntaxitems.values():
                 if style.wx_const not in defaultset and style.name[0] != '-':
                     win.StyleSetSpec(style.wx_const, style.getStyleString())
             win.Colourise(0, win.GetTextLength())
 
             #add caret line
-            win.SetCaretForeground(self.syntaxitems['-caretfore'].style.fore)
-            win.SetCaretLineBack(self.syntaxitems['-caretback'].style.back)
+            win.SetCaretForeground(self._syntaxitems['-caretfore'].style.fore)
+            win.SetCaretLineBack(self._syntaxitems['-caretback'].style.back)
             if hasattr(win, 'pref') and win.pref:
                 win.SetCaretLineVisible(win.pref.caret_line_visible)
-            win.SetSelBackground(1, self.syntaxitems['-selback'].style.back)
+            win.SetSelBackground(1, self._syntaxitems['-selback'].style.back)
 
         #
         self.callplugin('colourize', win)
@@ -209,7 +213,7 @@ class LexerBase(Mixin.Mixin):
             if self.preview_code:
                 self.preview_code = self.preview_code.replace(r'\n', '\n')
 
-            for name, item in self.syntaxitems.items():
+            for name, item in self._syntaxitems.items():
                 stylestring = ini.styleitems.get(name, '')
                 item.style.setStyleString(stylestring)
 
@@ -230,7 +234,7 @@ class LexerBase(Mixin.Mixin):
                 ini.common.previewcode = self.preview_code.replace('\n', r'\n')
             else:
                 ini.common.previewcode = ''
-            for name, item in self.syntaxitems.items():
+            for name, item in self._syntaxitems.items():
                 ini.styleitems[name] = item.style.getStyleString()
             ini.save()
 
@@ -239,15 +243,17 @@ class LexerBase(Mixin.Mixin):
         pass
 
     def addSyntaxItem(self, name, dispname, wx_const, defaultstylestring):
-        if not self.syntaxitems.has_key(name):
-            self.syntaxitems[name] = SyntaxItem(name, dispname, wx_const, defaultstylestring)
-            self.syntaxnames.append(name)
+        if not self._syntaxitems.has_key(name):
+            self._syntaxitems[name] = SyntaxItem(name, dispname, wx_const, defaultstylestring)
+            self._syntaxnames.append(name)
+        else:
+            error.error(tr('The name [%s] is already existed in lexer [%s]' % (name, self.name)))
 
     def getSyntaxItems(self):
-        return self.syntaxitems
+        return self._syntaxitems
 
     def getSyntaxNames(self):
-        return self.syntaxnames
+        return self._syntaxnames
 
     def getFilewildchar(self):
         return "%s (%s)|%s" % (self.wildcharprompt, self.wildchar, self.wildchar)
@@ -266,8 +272,8 @@ class LexerBase(Mixin.Mixin):
 
     def copyto(self, target):
         target.wildchar = self.wildchar
-        for key, item in self.syntaxitems.items():
-            target.syntaxitems[key].setStyleString(self.syntaxitems[key].getStyleString())
+        for key, item in self._syntaxitems.items():
+            target._syntaxitems[key].setStyleString(self._syntaxitems[key].getStyleString())
 
     def cannot_expand(self, document):
         pos = document.GetCurrentPos()
@@ -283,7 +289,31 @@ class LexerBase(Mixin.Mixin):
     
     def styleneeded(self):
         pass
-
+    
+    def loadEasySyntaxItems(self):
+        if not self.syntaxitems:
+            self.initSyntaxItems()
+        else:
+            def get_id(s):
+                return s.replace(' ', '_').lower()
+            
+            for name, style, display in self.syntaxitems:
+                _id = get_id(name)
+                i = 0
+                old_id = _id
+                while 1:
+                    if i:
+                        _id = "%s%d" % (old_id, i)
+                        
+                    if not self._syntaxitems.has_key(_id):
+                        self._syntaxitems[_id] = SyntaxItem(_id, name, style, display)
+                        self._syntaxnames.append(_id)
+                        break
+                    else:
+                        error.error(tr('The name [%s] is already existed in lexer [%s]' % (name, self.name)))
+                    
+                    i += 1
+                
 class SyntaxItem:
     def __init__(self, name, dispname, wx_const, defaultstylestring):
         self.name = name

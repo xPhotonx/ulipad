@@ -24,7 +24,7 @@
 import wx
 from modules import Mixin
 import FortranLexer
-import mFortranFileType
+#import mFortranFileType
 
 def add_lexer(lexer):
     lexer.extend([

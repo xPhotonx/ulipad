@@ -29,8 +29,7 @@ class RstLexer(CustomLexer):
 
     metaname = 'rst'
 
-    def loadDefaultKeywords(self):
-        return ['footer', 'figure', 'danger', 'sectnum', 'image', 
+    keywords = ['footer', 'figure', 'danger', 'sectnum', 'image', 
             'admonition', 'replace', 'topic', 'raw', 'warning', 
             'caution', 'rubric', 'unicode', 'table', 'sidebar', 
             'contents', 'csv-table', 'container', 'hint', 'highlights', 
@@ -44,8 +43,7 @@ class RstLexer(CustomLexer):
             'dedication', 'version', 'authors', 'date', 'organization', 
             'revision']
 
-    def loadPreviewCode(self):
-        return """==========================================
+    preview_code = """==========================================
  Docutils_ Project Documentation Overview
 ==========================================
 
@@ -71,15 +69,16 @@ from the ``docs`` directory of the `Docutils distribution`_.
 #        win.SetProperty("tab.timmy.whinge.level", "1")
 
     def initSyntaxItems(self):
-        self.addSyntaxItem('r_default',         'Default',              STYLE_DEFAULT,           self.STE_STYLE_TEXT)
-        self.addSyntaxItem('keyword',           'Keyword',              STYLE_KEYWORD,           self.STE_STYLE_KEYWORD1)
+        self.addSyntaxItem('r_default',         'Default',              STYLE_DEFAULT,           STE_STYLE_TEXT)
+        self.addSyntaxItem('keyword',           'Keyword',              STYLE_KEYWORD,           STE_STYLE_KEYWORD1)
         self.addSyntaxItem('inlineliteral',     'Inline Literal',       3,           'back:#CCCCCC')
         self.addSyntaxItem('directurl',         'DirectUrl',            4,           'fore:#0000FF,underline')
         self.addSyntaxItem('interpretedtext',   'Interpreted Text',     5,           'fore:#339933')
         self.addSyntaxItem('bold',              'Bold',                 6,           'bold')
         self.addSyntaxItem('emphasis',          'Emphasis',             7,           'italic')
-
-        self.tokens = TokenList([
+    
+    def loadToken(self):
+        return TokenList([
             (re.compile(r'^\.\. (.+?)::', re.M), self.is_keyword(1)),
             (re.compile(r'^\s*:(.+?):', re.M), self.is_keyword(1)),
             (re.compile(r'``.*?``'), 3),
