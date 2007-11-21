@@ -21,16 +21,9 @@
 #
 #   $Id$
 
-import LexerBase
+from LexerBase import *
 import re
 
-__all__ = ['STYLE_DEFAULT', 'STYLE_KEYWORD', 'STYLE_COMMENT',
-    'STYLE_INTEGER', 'STYLE_STRING', 'STYLE_CUSTOM', 
-    'PATTERN_NUMBER', 'PATTERN_INT', 'PATTERN_DOUBLE_STRING',
-    'PATTERN_SINGLE_STRING', 'PATTERN_STRING', 'PATTERN_IDEN',
-    'PATTERN_EMAIL', 'PATTERN_URL',
-    'TokenList', 'CustomLexer']
-    
 STYLE_DEFAULT = 1
 STYLE_KEYWORD = 2
 STYLE_COMMENT = 3
@@ -60,17 +53,44 @@ class TokenList(list):
                 p_r = p
             r.append((p_r, s))
         return r
+
+def is_keyword(group=0, style=STYLE_KEYWORD, keywords=[], casesensitive=False):
+    def r(win, begin, end, text, matchobj):
+        key = matchobj.group(group)
+        span = matchobj.span(group)
+        if not casesensitive:
+            key = key.lower()
+        if key in keywords:
+            b = matchobj.start()
+            return [(span[0]-b, span[1]-b, style)]
+        else:
+            return STYLE_DEFAULT
+    return r
     
-class CustomLexer(LexerBase.LexerBase):
+class CustomLexer(LexerBase):
     metaname = 'ncustom'
     casesensitive = True
-#    fulltext = False
     
-    def loadDefaultKeywords(self):
-        return []
+    tokens = []
+    backstyles = []
+    comment_pattern = ''
+    comment_begin = '#'
+    comment_end = ''
     
-    def loadPreviewCode(self):
-        pass
+    def loadToken(self):
+        if not self.comment_pattern:
+            c_p = re.compile(r'^(%s.*?)%s$' % (self.comment_begin, self.comment_end), re.M)
+        else:
+            if isinstance(self.comment_pattern, (str, unicode)):
+                c_p = re.compile(self.comment_pattern, re.DOTALL)
+            else:
+                c_p = self.comment_pattern
+        return TokenList([
+            (c_p, STYLE_COMMENT),
+            (PATTERN_STRING, STYLE_STRING),
+            (PATTERN_NUMBER, STYLE_INTEGER),
+            (PATTERN_IDEN, self.is_keyword()),
+        ])
     
     def pre_colourize(self, win):
         pass
@@ -79,35 +99,23 @@ class CustomLexer(LexerBase.LexerBase):
         super(CustomLexer, self).load()
         if not self.casesensitive:
             self.keywords = [x.lower() for x in self.keywords]
-        self.backstyles = self.initbackstyle()
+        if not self.backstyles:
+            self.backstyles = self.initbackstyle()
     
     def initSyntaxItems(self):
-        self.addSyntaxItem('r_default', 'Default',  STYLE_DEFAULT,  self.STE_STYLE_TEXT)
-        self.addSyntaxItem('keyword',   'Keyword',  STYLE_KEYWORD,  self.STE_STYLE_KEYWORD1)
-        self.addSyntaxItem('comment',   'Comment',  STYLE_COMMENT,  self.STE_STYLE_COMMENT)
-        self.addSyntaxItem('integer',   'Integer',  STYLE_INTEGER,  self.STE_STYLE_NUMBER)
-        self.addSyntaxItem('string',    'String',   STYLE_STRING,   self.STE_STYLE_STRING)
+        self.addSyntaxItem('r_default', 'Default',  STYLE_DEFAULT,  STE_STYLE_TEXT)
+        self.addSyntaxItem('keyword',   'Keyword',  STYLE_KEYWORD,  STE_STYLE_KEYWORD1)
+        self.addSyntaxItem('comment',   'Comment',  STYLE_COMMENT,  STE_STYLE_COMMENT)
+        self.addSyntaxItem('integer',   'Integer',  STYLE_INTEGER,  STE_STYLE_NUMBER)
+        self.addSyntaxItem('string',    'String',   STYLE_STRING,   STE_STYLE_STRING)
                                                                     
-        self.tokens = TokenList([
-            (r'#(.*?)$', STYLE_COMMENT),
-            (PATTERN_STRING, STYLE_STRING),
-            (PATTERN_NUMBER, STYLE_INTEGER),
-            (PATTERN_IDEN, self.is_keyword()),
-        ])
+    def is_keyword(self, group=0, style=STYLE_KEYWORD, keywords=None, casesensitive=None):
+        if keywords is None:
+            keywords = self.keywords
+        if casesensitive is None:
+            casesensitive = self.casesensitive
+        return is_keyword(group, STYLE_KEYWORD, keywords, casesensitive)
         
-    def is_keyword(self, group=0):
-        def r(win, begin, end, text, matchobj):
-            key = matchobj.group(group)
-            span = matchobj.span(group)
-            if not self.casesensitive:
-                key = key.lower()
-            if key in self.keywords:
-                b = matchobj.start()
-                return [(span[0]-b, span[1]-b, STYLE_KEYWORD)]
-            else:
-                return STYLE_DEFAULT
-        return r
-
     def initbackstyle(self):
         '''
         The element should be (style, matchstring)
@@ -148,15 +156,18 @@ class CustomLexer(LexerBase.LexerBase):
         if not text:
             return
         
-        self.render(win, begin, pos, text, self.tokens)
+        if self.tokens:
+            tokens = self.tokens
+        else:
+            tokens = self.loadToken()
+        self.render(win, begin, pos, text, tokens)
         
     def render(self, win, begin, end, text, tokens):
         def _process_result(s, win, begin, end, text, matchobj=None):
             step = end - begin
             if not callable(s):
                 if isinstance(s, int):
-                    a = [(0, step, s)]
-                    self.set_comp_style(win, begin, end, a)
+                    self.set_comp_style(win, begin, end, s)
                 elif isinstance(s, TokenList):
                     self.render(win, begin, end, text, s)
                 elif isinstance(s, (list, tuple)):
@@ -170,16 +181,19 @@ class CustomLexer(LexerBase.LexerBase):
                     self.set_comp_style(win, begin, end, t)
             else:
                 a = s(win, begin, end, text, matchobj)
-                if isinstance(a, int):
-                    a = [(0, step, a)]
                 self.set_comp_style(win, begin, end, a)
             
         i = 0
+        last_begin = 0
         while begin + i < end:
             flag = False
             for p, s in tokens:
                 r = p.match(text, i)
                 if r:
+                    if last_begin:
+                        self.set_comp_style(win, last_begin, begin + i, STYLE_DEFAULT)
+                        last_begin = 0
+                        
                     flag = True
                     step = r.end() - r.start()
                     _process_result(s, win, begin+r.start(), begin+r.end(), 
@@ -187,17 +201,25 @@ class CustomLexer(LexerBase.LexerBase):
                     break
                     
             if not flag:
+                if not last_begin:
+                    last_begin = begin + i
                 step = 1
-                a = [(0, step, STYLE_DEFAULT)]
-                self.set_comp_style(win, begin+i, begin+i+step, a)
             
             i += step
+        
+        if last_begin:
+            self.set_comp_style(win, last_begin, end, STYLE_DEFAULT)
             
     def set_style(self, win, start, end, style):
         win.StartStyling(start, 0xff)
         win.SetStyling(end - start, style)
         
     def set_comp_style(self, win, begin, end, pos_array):
+        if isinstance(pos_array, int):
+            if pos_array:
+                self.set_style(win, begin, end, pos_array)
+            return
+        
         pos_array.sort(lambda (aStart, aEnd, aStyle), (bStart, bEnd, bStyle): cmp(aStart, bStart))
         start = begin
         styledEnd = begin
