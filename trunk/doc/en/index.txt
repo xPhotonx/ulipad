@@ -42,6 +42,11 @@ information about it.
 
 .. _`Config.ini Description`: config.htm
 
+`Write Custom Syntax Support Howto`_
+--------------------------------------
+
+.. _`Write Custom Syntax Support Howto`: howto_write_custom_syntax_support.htm
+
 Contribute Documents
 ------------------------
 

@@ -107,8 +107,7 @@ class HtmlLexer(LexerBase):
 
     metaname = 'html'
 
-    def loadDefaultKeywords(self):
-        return ("a abbr acronym address applet area b base basefont bdo big "
+    keywords = ("a abbr acronym address applet area b base basefont bdo big "
                 "blockquote body br button caption center cite code col colgroup "
                 "dd del dfn dir div dl dt em fieldset font form frame frameset h1 "
                 "h2 h3 h4 h5 h6 head hr html i iframe img input ins isindex kbd "
@@ -133,8 +132,7 @@ class HtmlLexer(LexerBase):
                 "type usemap valign value valuetype version vlink vspace width "
                 "text password checkbox radio submit reset file hidden image", )
 
-    def loadPreviewCode(self):
-        return """<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
+    preview_code = """<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
 <HTML>
 <!-- Hello World in HTML -->
 <HEAD>
@@ -274,8 +272,7 @@ from NCustomLexer import *
 class XMLLexer(CustomLexer):
     metaname = 'xml'
 
-    def loadPreviewCode(self):
-        return """<<?xml version="1.0" encoding="ISO-8859-1"?>
+    preview_code = """<<?xml version="1.0" encoding="ISO-8859-1"?>
 <?xml-stylesheet type="text/xsl" href="HelloWorld.xsl" ?>
 <!-- Hello World in XML -->
 <text><string>Hello, World</string></text>
@@ -340,8 +337,7 @@ class PythonLexer(LexerBase):
 
         return (' '.join(keyword.kwlist + ['self', 'None', 'True', 'False', 'as']),)
 
-    def loadPreviewCode(self):
-        return """#Comment Blocks!
+    preview_code = """#Comment Blocks!
 class MyClass(MyParent):
     \"\"\" Class example \"\"\"
     def __init__(self):

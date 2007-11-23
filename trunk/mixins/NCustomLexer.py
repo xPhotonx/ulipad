@@ -76,6 +76,7 @@ class CustomLexer(LexerBase):
     comment_pattern = ''
     comment_begin = '#'
     comment_end = ''
+    string_type = 'all' #others can be 'double' and 'single'
     
     def loadToken(self):
         if not self.comment_pattern:
@@ -85,9 +86,15 @@ class CustomLexer(LexerBase):
                 c_p = re.compile(self.comment_pattern, re.DOTALL)
             else:
                 c_p = self.comment_pattern
+        if self.string_type == 'all':
+            s_p = PATTERN_STRING
+        elif self.string_type == 'double':
+            s_p = PATTERN_DOUBLE_STRING
+        else:
+            s_p = PATTERN_STRING
         return TokenList([
             (c_p, STYLE_COMMENT),
-            (PATTERN_STRING, STYLE_STRING),
+            (s_p, STYLE_STRING),
             (PATTERN_NUMBER, STYLE_INTEGER),
             (PATTERN_IDEN, self.is_keyword()),
         ])
