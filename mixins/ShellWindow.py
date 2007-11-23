@@ -45,6 +45,7 @@ class ShellWindow(wx.py.shell.Shell, Mixin.Mixin):
             (140, 'IDPM_COPY', tr('Copy') + '\tCtrl+C', wx.ITEM_NORMAL, 'OnPopupEdit', tr('Copies text from the shell window to the clipboard')),
             (145, 'IDPM_COPY_CLEAR', tr('Copy Without Prompts'), wx.ITEM_NORMAL, 'OnPopupEdit', tr('Copies text without prompts from the shell window to the clipboard')),
             (150, 'IDPM_PASTE', tr('Paste') + '\tCtrl+V', wx.ITEM_NORMAL, 'OnPopupEdit', tr('Pastes text from the clipboard into the shell window')),
+            (155, 'IDPM_PASTE_RUN', tr('Paste and Run') + '\tCtrl+Shift+V', wx.ITEM_NORMAL, 'OnPopupEdit', tr('Pastes text from the clipboard into the shell window and also run it')),
             (160, '', '-', wx.ITEM_SEPARATOR, None, ''),
             (170, 'IDPM_SELECTALL', tr('Select All') + '\tCtrl+A', wx.ITEM_NORMAL, 'OnPopupEdit', tr('Selects all text.')),
             (180, 'IDPM_CLEAR', tr('Clear Shell Window') + '\tCtrl+Alt+R', wx.ITEM_NORMAL, 'OnClearShell', tr('Clears content of shell window.')),
@@ -100,6 +101,7 @@ class ShellWindow(wx.py.shell.Shell, Mixin.Mixin):
         wx.EVT_UPDATE_UI(self, self.IDPM_COPY, self.OnUpdateUI)
         wx.EVT_UPDATE_UI(self, self.IDPM_COPY_CLEAR, self.OnUpdateUI)
         wx.EVT_UPDATE_UI(self, self.IDPM_PASTE, self.OnUpdateUI)
+        wx.EVT_UPDATE_UI(self, self.IDPM_PASTE_RUN, self.OnUpdateUI)
 
     def OnPopUp(self, event):
         other_menus = []
@@ -126,6 +128,8 @@ class ShellWindow(wx.py.shell.Shell, Mixin.Mixin):
             super(ShellWindow, self).Copy()
         elif eid == self.IDPM_PASTE:
             self.Paste()
+        elif eid == self.IDPM_PASTE_RUN:
+            self.PasteAndRun()
         elif eid == self.IDPM_SELECTALL:
             self.SelectAll()
         elif eid == self.IDPM_UNDO:
@@ -139,7 +143,7 @@ class ShellWindow(wx.py.shell.Shell, Mixin.Mixin):
             event.Enable(not self.GetReadOnly() and bool(self.GetSelectedText()))
         elif eid in (self.IDPM_COPY, self.IDPM_COPY_CLEAR):
             event.Enable(bool(self.GetSelectedText()))
-        elif eid == self.IDPM_PASTE:
+        elif eid in (self.IDPM_PASTE, self.IDPM_PASTE_RUN):
             event.Enable(not self.GetReadOnly() and bool(self.CanPaste()))
         elif eid == self.IDPM_UNDO:
             event.Enable(bool(self.CanUndo()))

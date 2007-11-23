@@ -1,4 +1,7 @@
 $Rev$
+[2007/11/23]
+ShellWindow.py      Add Paste and Run menu item in popup menu of shell window
+
 [2007/11/21]
 SvnSupport.py       Fix cann't support filename has space bug
 
