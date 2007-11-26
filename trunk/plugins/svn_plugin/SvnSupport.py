@@ -30,12 +30,14 @@
 #       * Add show unversioned files checkbox
 #       * Add select / deselect all checkbox, support 3Dstates
 
-from modules import common
 import wx
 import os
 import re
 from modules import Globals
 from modules import Casing
+from modules import common
+from modules import meide as ui
+from modules.Debug import error
 
 #commands definition
 ################################################################
@@ -68,44 +70,14 @@ def do(dirwin, command, *args):
         'status':('status', dirwin.OnRefresh),
     }
 
-    m = dirwin.mainframe
-    vc_exe = m.pref.svn_exe
-    if not vc_exe:
-        common.showerror(dirwin, tr('You should set the version control settings\nfirst in Preference Dialog.'))
-        return
+    m = Globals.mainframe
     
-    if not commands.get(command, None):
-        common.showerror(dirwin, tr('Unsupported command [%s]') % command)
-        return
-    
-    #when the commands are finished, it should automatically refresh
     callback = None
+    proxy = Command(dirwin, *args)
     if command == 'export':
-        path = get_path(dirwin.pref.version_control_export_path)
-        dirwin.pref.version_control_export_path = path
-        dirwin.pref.save()
-        if not path:
-            return
-        export_path = os.path.join(path, os.path.basename(args[0]))
-        if os.path.exists(export_path):
-            dlg = wx.MessageDialog(dirwin, tr("The directory is existed, do you want to overwrite it?"), 
-                tr("Export"), wx.YES_NO|wx.ICON_QUESTION)
-            answer = dlg.ShowModal()
-            dlg.Destroy()
-            if answer != wx.ID_YES:
-                return
-            force = '--force'
-        else:
-            force = ''
-            
-        args = args + (force, export_path)
+        proxy.export()
     elif command == 'checkout':
-        args = check_dialog(dirwin)
-        if args:
-            args, path = args
-            def f():
-                dirwin.addpath(os.path.normcase(path))
-            callback = f
+        proxy.checkout()
     elif command == 'commit':
         args = commit_dialog(dirwin, args[0])
         if not args: return
@@ -117,18 +89,82 @@ def do(dirwin, command, *args):
         args = [args[0], newname]
     if not args: return
 
-    command_name, call_func = commands.get(command)
-    if callback:
-        call_func = callback
+#    command_name, call_func = commands.get(command)
+#    if callback:
+#        call_func = callback
         
-    args2 = []
-    for arg in args:
-        if arg.find(' ') != -1:
-            arg = r'"%s"' %arg
-        args2.append(arg)
-    cmd = u'"%s" %s %s' % (vc_exe, command_name, u' '.join(args2))
-    run_command(cmd, call_func)
+#    args2 = []
+#    for arg in args:
+#        if arg.find(' ') != -1:
+#            arg = r'"%s"' %arg
+#        args2.append(arg)
+#    cmd = u'"%s" %s %s' % (vc_exe, command_name, u' '.join(args2))
+#    run_command(client, cmd, call_func)
 
+class Command(object):
+    def __init__(self, dirwin, *args):
+        try:
+            import pysvn
+            client = pysvn.Client()
+        except:
+            common.showerror(dirwin, tr('You should install pysvn module first.\nYou can get it from http://pysvn.tigris.org/'))
+            return
+        
+        self.svn = pysvn
+        self.dirwin = dirwin
+        self.args = args
+        
+    def export(self):
+        dirwin = self.dirwin
+        url = self.args[0]
+        path = get_path(dirwin.pref.version_control_export_path)
+        dirwin.pref.version_control_export_path = path
+        dirwin.pref.save()
+        if not path:
+            return
+        export_path = os.path.join(path, os.path.basename(url))
+        if os.path.exists(export_path):
+            dlg = wx.MessageDialog(dirwin, tr("The directory is existed, do you want to overwrite it?"), 
+                tr("Export"), wx.YES_NO|wx.ICON_QUESTION)
+            answer = dlg.ShowModal()
+            dlg.Destroy()
+            if answer != wx.ID_YES:
+                return
+            force = True
+        else:
+            force = False
+            
+        client = self.svn.Client()
+        try:
+            client.export(url, export_path, force)
+        except:
+            error.traceback()
+            common.showerror(Globals.mainframe, tr('There are something wrong ocurred!'))
+        else:
+            common.note(tr('Successful!'))
+            
+    def checkout(self):
+        dlg = CheckoutDialog()
+        value = None
+        if dlg.ShowModal() == wx.ID_OK:
+            value = dlg.GetValue()
+        dlg.Destroy()
+        if not value: return
+    
+        if value['revision']:
+            r = value['revision']
+        else:
+            r = self.svn.Revision(self.svn.opt_revision_kind.head )
+    
+        client = self.svn.Client()
+        try:
+            client.checkout(value['url'], value['dir'], revision=r)
+        except:
+            error.traceback()
+            common.showerror(Globals.mainframe, tr('There are something wrong ocurred!'))
+        else:
+            common.note(tr('Successful!'))
+                    
 #common functions
 ################################################################
 def convert_text(text):
@@ -146,6 +182,11 @@ def svn_input_decorator(func):
         text = convert_text(text)
         return func(win, text)
     return _func
+
+def get_filename(filename):
+    if filename.find(' ') != -1:
+        filename = r'"%s"' % filename
+    return filename
     
 def run_command(cmd, callback=None):
     from modules.Debug import error
@@ -202,29 +243,6 @@ def rename_dialog(dirwin, path):
         dlg.Destroy()
         return newname
     
-    
-def check_dialog(dirwin):
-    dialog = [
-            ('string', 'url', '', tr('URL of repository:'), None),
-            ('dir', 'dir', dirwin.pref.version_control_checkout_path, tr('Checkout Directory'), None),
-            (False, 'string', 'revision', '', tr('Revision'), None),
-        ]
-    from modules.EasyGuider import EasyDialog
-    dlg = EasyDialog.EasyDialog(Globals.mainframe, title=tr("Checkout"), elements=dialog)
-    values = None
-    if dlg.ShowModal() == wx.ID_OK:
-        values = dlg.GetValue()
-        dirwin.pref.version_control_checkout_path = values['dir']
-        dirwin.pref.save()
-        if values.get('revision', ''):
-            r = '-r ' + values['revision']
-        else:
-            r = ''
-        args = [r, values['url'], values['dir']]
-        dlg.Destroy()
-        return args, values['dir']
-    dlg.Destroy()
-    
 def commit_dialog(dirwin, path):
     dlg = CommitDialog(dirwin, tr('Commit'), path)
     if dlg.ShowModal() == wx.ID_OK:
@@ -238,6 +256,30 @@ def revert_dialog(dirwin, path):
         dlg.Destroy()
         return dlg.GetValue()
     dlg.Destroy()
+
+class CheckoutDialog(wx.Dialog):
+    def __init__(self, title=tr('SVN Settings'), size=(450, -1)):
+        wx.Dialog.__init__(self, Globals.mainframe, -1, title=title, size=size)
+        self.sizer = sizer = ui.VBox(namebinding='widget').create(self).auto_layout()
+        box = sizer.add(ui.VGroup(tr('Repository')))
+        box.add(ui.Label(tr('URL of repository:')))
+        box.add(ui.Text, name='url')
+        box.add(ui.Label(tr('Checkout Directory')))
+        box.add(ui.Dir, name='dir')
+        
+        box = sizer.add(ui.VGroup(tr('Revision')))
+        box1 = box.add(ui.HBox)
+        box1.add(ui.Check(False, tr('Revision'), name='chk_revision')).bind('check', self.OnCheck)
+        box1.add(ui.Text, name='revision').get_widget().Disable()
+        
+        sizer.add(ui.simple_buttons(), flag=wx.ALIGN_CENTER|wx.BOTTOM)
+#        sizer.bind('btnOk', 'click', self.OnOk)
+        self.btnOk.SetDefault()
+        
+        sizer.auto_fit(1)
+        
+    def OnCheck(self, event):
+        self.revision.Enable()
 
 from modules import CheckList
 class CommitDialog(wx.Dialog):

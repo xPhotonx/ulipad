@@ -39,12 +39,8 @@ class SVNSettings(wx.Dialog):
         
         wx.Dialog.__init__(self, parent, -1, title=title, size=size)
         
-        v['svn_exe'] = self.pref.svn_exe
-        
         self.sizer = sizer = ui.VBox(namebinding='widget').create(self).auto_layout()
         box = sizer.add(ui.SimpleGrid)
-        box.add(tr('Subversion client'), ui.OpenFile, name='svn_exe')\
-            .tooltip(tr('Select location of subversion client'))
         box.add(tr('Global ignores'), ui.Text, name='svn_global_ignores')\
             .tooltip(tr('Multiple ignores should be delimeted by space'))
         
@@ -87,7 +83,6 @@ class SVNSettings(wx.Dialog):
         
     def _save_info(self):
         v = self.sizer.GetValue()
-        self.pref.svn_exe = v['svn_exe']
         self.pref.svn_proxy_server = v['server']
         self.pref.svn_proxy_port = v['port']
         self.pref.svn_proxy_password = v['password']

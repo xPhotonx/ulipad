@@ -474,7 +474,7 @@ import keyword
 import types
 
 def default_identifier(win):
-    return keyword.kwlist + [x for x in dir(__builtin__) if isinstance(getattr(__builtin__, x), types.BuiltinFunctionType)] + ['None', 'as', 'True', 'False', 'self', 'file', 'str', 'int', 'unicode', 'list', 'dict', 'tuple', 'bool', 'float', 'object', 'set', 'property']
+    return keyword.kwlist + [x for x in dir(__builtin__) if isinstance(getattr(__builtin__, x), (types.BuiltinFunctionType, type))] + ['None', 'as', 'True', 'False', 'self']
 
 def _get_filter_list(win, word, words):
     if not win.pref.inputass_full_identifier:

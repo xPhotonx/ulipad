@@ -1,4 +1,10 @@
 $Rev$
+[2007/11/26]
+acp/python/import.py    
+                    Improve default identifiers process, add type judgement
+modules/wxctrl/FlatNotebook.py
+                    Upgrade to the lastest version thanks to swordsp
+                    
 [2007/11/23]
 ShellWindow.py      Add Paste and Run menu item in popup menu of shell window
 
