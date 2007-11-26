@@ -31,7 +31,6 @@
 
 
 import wx
-import locale
 import types
 from modules import Mixin
 from modules import common
@@ -148,7 +147,7 @@ def OnKeyDown(win, event):
                 win.CommandArrayPos = -1
 
             if isinstance(text, types.UnicodeType):
-                text = text.encode(locale.getdefaultlocale()[1])
+                text = common.encode_string(text)
             win.outputstream.write(text + '\n')
             win.GotoPos(win.GetLength())
         if keycode == wx.WXK_UP:

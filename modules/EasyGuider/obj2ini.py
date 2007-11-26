@@ -13,6 +13,7 @@
 import types
 import sys
 import locale
+import codecs
 
 def dump(obj, filename, encoding=None):
     encoding = __getdefaultencoding(encoding)
@@ -132,8 +133,10 @@ def __write_var(f, key, var, encoding):
 def __getdefaultencoding(encoding):
     if not encoding:
         encoding = locale.getdefaultlocale()[1]
-    if not encoding:
-        encoding = sys.getfilesystemencoding()
+    try:
+        codecs.lookup(encoding)
+    except:
+        encoding = 'utf-8'
     return encoding
 
 def __uni_prt(a, encoding=None):

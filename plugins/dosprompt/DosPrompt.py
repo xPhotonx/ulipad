@@ -1,10 +1,10 @@
-#       Programmer:     limodou
-#       E-mail:         limodou@gmail.com
-#
-#       Copyleft 2006 limodou
-#
-#       Distributed under the terms of the GPL (GNU Public License)
-#
+#   Programmer:     limodou
+#   E-mail:         limodou@gmail.com
+#   
+#   Copyleft 2006 limodou
+#   
+#   Distributed under the terms of the GPL (GNU Public License)
+#   
 #   NewEdit is free software; you can redistribute it and/or modify
 #   it under the terms of the GNU General Public License as published by
 #   the Free Software Foundation; either version 2 of the License, or
@@ -19,14 +19,11 @@
 #   along with this program; if not, write to the Free Software
 #   Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 #
-#       $Id: mDosPrompt.py,v 1.1 2005/07/31 09:08:14 limodou Exp $
-
-from modules import Mixin
+#   $Id: mDosPrompt.py,v 1.1 2005/07/31 09:08:14 limodou Exp $
+    
 import wx
-import locale
-import types
-import os
-
+from modules import Mixin
+from modules import common
 
 def init(win):
     wx.EVT_IDLE(win, win.OnIdle)
@@ -118,7 +115,7 @@ def OnKeyDown(win, event):
                 win.CommandArrayPos = -1
 
             if isinstance(text, unicode):
-                text = text.encode(locale.getdefaultlocale()[1])
+                text = common.encode_string(text)
             win.commandlen = len(text) + 1
             win.firstread = True
 
@@ -186,7 +183,7 @@ Mixin.setMixin('mainframe', 'OnDosProcessEnded', OnDosProcessEnded)
 def appendtext(win, text):
     win.GotoPos(win.GetLength())
     if not isinstance(text, unicode):
-        text = unicode(text, locale.getdefaultlocale()[1])
+        text = common.decode_string(text)
     win.AddText(text)
     win.GotoPos(win.GetLength())
     win.EmptyUndoBuffer()

@@ -582,11 +582,13 @@ def uni_prt(a, encoding=None):
     return ''.join(s)
 
 def getdefaultencoding(encoding):
+    import codecs
+    
     if not encoding:
         encoding = locale.getdefaultlocale()[1]
-    if not encoding:
-        encoding = sys.getfilesystemencoding()
-    if not encoding:
+    try:
+        codecs.lookup(encoding)
+    except:
         encoding = 'utf-8'
     return encoding
 

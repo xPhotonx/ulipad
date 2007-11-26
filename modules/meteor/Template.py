@@ -211,8 +211,13 @@ class Template:
         return ret
 
     def str_object(self, obj, encoding=None):
+        import codecs
         if not encoding:
             encoding = locale.getdefaultlocale()[1]
+        try:
+            codecs.lookup(encoding)
+        except:
+            encoding = 'utf-8'
         if isinstance(obj, (int, float, bool)):
             return str(obj)
         elif isinstance(obj, str):

@@ -77,7 +77,7 @@ class TextEditor(wx.stc.StyledTextCtrl, Mixin.Mixin, DocumentBase.DocumentBase):
         self.canedit = True
         self.multiview = multiview
 
-        self.defaultlocale = self.app.defaultencoding
+        self.defaultlocale = common.defaultencoding
 
         #editor style
         self.SetMargins(2,2)        #set left and right outer margins to 0 width
