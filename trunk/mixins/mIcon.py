@@ -28,6 +28,8 @@ from modules import common
 def init(win):
     icon = wx.EmptyIcon()
     iconfile = common.uni_work_file('ulipad.ico')
-    icon.LoadFile(iconfile, wx.BITMAP_TYPE_ICO)
-    win.SetIcon(icon)
+#    icon.LoadFile(iconfile, wx.BITMAP_TYPE_ICO)
+    bmp = common.getpngimage(iconfile)
+#    win.SetIcon(icon.CopyFromBitmap(bmp))
+    win.SetIcon(wx.Icon(iconfile, wx.BITMAP_TYPE_ICO))
 Mixin.setPlugin('mainframe', 'init', init)

@@ -3,9 +3,9 @@ import pySonic
 import time
 import threading
 import VolumeDialog
-import locale
 import images
 from modules import Mixin
+from modules import common
 
 def afterinit(win):
     win.m3u=None
@@ -128,8 +128,7 @@ def playmusic(win):
         try:
             win.src=pySonic.Source()
             filename=win.playing['Path']
-            encoding = locale.getdefaultlocale()[1]
-            filename = filename.encode(encoding)
+            filename = common.encode_path(filename)
             win.src.Sound = pySonic.FileStream(filename, 0)
             win.src.Play()
         except:

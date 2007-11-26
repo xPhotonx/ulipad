@@ -170,11 +170,11 @@ class App(Mixin.Mixin):
     def processCommandLineArguments(self):
         #process command line
         try:
-            opts, args = getopt.getopt(sys.argv[1:], "e:vuhnsfm", [])
+            opts, args = getopt.getopt(sys.argv[1:], "e:E:vuhnsfm", [])
         except getopt.GetoptError:
             self.Usage()
             sys.exit(2)
-        self.defaultencoding = common.defaultencoding   #defaultencoding in common.py
+#        self.defaultencoding = common.defaultencoding   #defaultencoding in common.py
 
         self.ddeflag = True
         self.psycoflag = False
@@ -183,7 +183,10 @@ class App(Mixin.Mixin):
 
         for o, a in opts:
             if o == '-e':       #encoding
-                defaultencoding = a
+                common.defaultencoding = a
+                common.defaultfilesystemencoding = a
+            elif o == '-E':       #encoding
+                common.defaultfilesystemencoding = a
             elif o == '-v':     #version
                 self.Version()
                 sys.exit()
@@ -214,6 +217,7 @@ class App(Mixin.Mixin):
         -v Show version information
         -n Disable DDE support
         -e encoding Set default encoding which will be used in UliPad
+        -E encoding Set default system encoding which will be used in UliPad
         -s Enable psyco speed support
         -f Skip last session files
         -m Multi user mode, data file will be saved in user home directory

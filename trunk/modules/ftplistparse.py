@@ -1,7 +1,7 @@
 #ftplistparse
 
-import locale
 import re
+import common
 
 re_ymd = [
         re.compile(r'(?P<ymd>^\d{1,4}.*?\d{1,2}.*?\d{1,2}.*?\s+)'),
@@ -39,10 +39,8 @@ def ftplistparse(lines, Unicode=False, callback=None):
 months = ["jan", "feb", "mar", "apr", "may", "jun", "jul", "aug", "sep", "oct", "nov", "dec"]
 
 def encodestring(s, encoding=None):
-    if not encoding:
-        encoding = locale.getdefaultlocale()[1]
     if encoding:
-        s = unicode(s, encoding)
+        s = common.decode_string(s, encoding)
     return s
 
 def getmonth(month):

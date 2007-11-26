@@ -28,7 +28,10 @@ from modules import makemenu
 from MyUnicodeException import MyUnicodeException
 from modules.Debug import error
 from modules import common
-from modules.wxctrl import FlatNotebook as FNB
+try:
+    import wx.lib.flatnotebook as FNB
+except:
+    from modules.wxctrl import FlatNotebook as FNB
 
 class EditorFactory(FNB.FlatNotebook, Mixin.Mixin):
 

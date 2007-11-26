@@ -819,8 +819,8 @@ from modules import common
 def init(win):
     icon = wx.EmptyIcon()
     iconfile = common.uni_work_file('ulipad.ico')
-    icon.LoadFile(iconfile, wx.BITMAP_TYPE_ICO)
-    win.SetIcon(icon)
+    bmp = common.getpngimage(iconfile)
+    win.SetIcon(wx.Icon(iconfile, wx.BITMAP_TYPE_ICO))
 Mixin.setPlugin('mainframe', 'init', init)
 
 
@@ -3313,7 +3313,6 @@ def remove_leading_spaces(win, text):
 
 
 import wx
-import locale
 import types
 from modules import Mixin
 from modules import common
@@ -3428,7 +3427,7 @@ def OnKeyDown(win, event):
                 win.CommandArrayPos = -1
 
             if isinstance(text, types.UnicodeType):
-                text = text.encode(locale.getdefaultlocale()[1])
+                text = common.encode_string(text)
             win.outputstream.write(text + '\n')
             win.GotoPos(win.GetLength())
         if keycode == wx.WXK_UP:
@@ -4334,8 +4333,6 @@ from modules import common
 
 def pref_init(pref):
     pref.select_encoding = False
-    pref.default_encoding = common.defaultencoding
-    pref.custom_encoding = ''
 Mixin.setPlugin('preference', 'init', pref_init)
 
 encodings = [common.defaultencoding]
@@ -4345,8 +4342,6 @@ if 'utf-8' not in encodings:
 def add_pref(preflist):
     preflist.extend([
         (tr('General'), 160, 'check', 'select_encoding', tr('Show encoding selection dialog when opening or saving file'), None),
-        (tr('General'), 161, 'choice', 'default_encoding', tr('Default document encoding:'), encodings),
-        (tr('General'), 162, 'text', 'custom_encoding', tr("Custom default encoding(if set, it'll be the default):"), None),
     ])
 Mixin.setPlugin('preference', 'add_pref', add_pref)
 

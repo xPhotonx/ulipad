@@ -56,6 +56,14 @@ try:
 except:
     defaultfilesystemencoding = 'ascii'
 
+def unicode_path(path, encoding=defaultfilesystemencoding):
+    """convert path to unicode
+    """
+    return decode_string(path, encoding)
+
+def encode_path(path, encoding=defaultfilesystemencoding):
+    return encode_string(path, encoding)
+
 def unicode_abspath(path):
     """convert path to unicode
     """
@@ -78,6 +86,7 @@ def decode_string(string, encoding=None):
         return unicode(string, encoding)
     else:
         return string
+unicode_string = decode_string
 
 def encode_string(string, encoding=None):
     """convert unicode to string
