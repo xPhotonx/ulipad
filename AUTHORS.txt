@@ -13,3 +13,4 @@ ygao <ygao2004 AT gmail.com>                       Commit many patches
 chaoweilun <chaoweilun@gmail.com>                  Submit Traditional Chinese Translation File
 Tom Eubank <tom@afcon.com>                         Patches and documents
 Tyberius Prime <tyberius_prime@coonabibba.de>      Bug reporter and contribute plugin(dropfile)                             
+swordsp <sparas2006@gmail.com>                     Bug reporter and change suggestion
