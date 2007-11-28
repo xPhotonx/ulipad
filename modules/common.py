@@ -439,4 +439,6 @@ def webopen(filename):
     o = webbrowser.get()
     if hasattr(o, 'args'):
         o.args = [arg.replace('"%s"', '%s') for arg in o.args]
-    o.open('file://'+filename, 1)
+    if not filename.startswith('http://'):
+        o.open('file://'+filename, 1)
+    o.open(filename)

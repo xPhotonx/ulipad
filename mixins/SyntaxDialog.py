@@ -332,7 +332,6 @@ class SyntaxDialog(wx.Dialog):
 
     def OnChkSize(self, event):
         self.obj_ID_SIZE.Enable(self.obj_ID_CHK_SIZE.GetValue())
-        self.obj_id_
         self.update = True
 
     def OnChkFore(self, event):
