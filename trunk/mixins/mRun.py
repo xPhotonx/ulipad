@@ -79,8 +79,8 @@ def RunCommand(win, command, redirect=True, hide=False, input_decorator=None,
         win.messagewindow.callback = callback
         appendtext(win.messagewindow, '> ' + command + '\n')
         
-        win.messagewindow.editpoint = 0
-        win.messagewindow.writeposition = 0
+        win.messagewindow.editpoint = win.messagewindow.GetLength()
+        win.messagewindow.writeposition = win.messagewindow.GetLength()
         win.SetStatusText(tr("Running "), 0)
         try:
             win.messagewindow.process = wx.Process(win)
