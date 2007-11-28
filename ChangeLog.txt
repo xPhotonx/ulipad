@@ -1,6 +1,7 @@
 $Rev$
 [2007/11/28]
 mRun.py             Fix message console postion bug, thanks for swordsp
+FlatNotebook.py     Update to newest version for mac
 
 [2007/11/26]
 acp/python/import.py    
