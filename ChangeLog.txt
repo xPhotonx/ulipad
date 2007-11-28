@@ -1,4 +1,7 @@
 $Rev$
+[2007/11/28]
+mRun.py             Fix message console postion bug, thanks for swordsp
+
 [2007/11/26]
 acp/python/import.py    
                     Improve default identifiers process, add type judgement
