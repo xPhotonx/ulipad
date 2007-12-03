@@ -390,7 +390,7 @@ class EditorFactory(FNB.FlatNotebook, Mixin.Mixin):
         if document:
             wx.CallAfter(document.SetFocus)
         return document
-        
+    
 def setStatus(document, state, bookmarks):
     if isinstance(state, tuple):
         document.restore_state(state)

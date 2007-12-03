@@ -20,6 +20,7 @@
 #   Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307  USA
 #
 #   $Id$
+#   Updated by limodou 2007/12/03 add report and result panel
 
 """
 Runs the PyLint python code checking program on the current file in
@@ -30,11 +31,11 @@ in the Project Home directory. After running PyLint refresh the Project
 Home directory to show the files in the Directory Browser. PyLint 
 must be separately installed.
 """
-from modules import Mixin
 import wx
-import os
-import common
-
+from modules import common
+from modules import Mixin
+from modules import Casing
+from modules.Debug import error
 
 def add_mainframe_menu(menulist):
    """ Add the PyLint item to the Tool menu"""
@@ -44,7 +45,6 @@ def add_mainframe_menu(menulist):
             wx.ITEM_NORMAL, 'OnPylint', tr('Runs the PyLint code checker')),
        ]), ])
 Mixin.setPlugin('mainframe', 'add_menu', add_mainframe_menu)
-
 
 def OnPylint(win, event):
     """
@@ -71,8 +71,44 @@ Would you like to save the file and then re-run PyLint ?"),
             return
         else:
             return
-    projecthome = common.getProjectHome(pyfile)
-    os.chdir(common.encode_string(projecthome))
-    args = ["--files-output=y", pyfile]
-    lint.Run(args)
+        
+    from Report import Report
+#    projecthome = common.getProjectHome(pyfile)
+#    os.chdir(common.encode_string(projecthome))
+#    args = ["--files-output=y", pyfile]
+    win.createPylintSyntaxCheckWindow()
+    if win.pylintsyntaxcheckwindow:
+        win.pylintsyntaxcheckwindow.list.DeleteAllItems()
+        def f():
+            try:
+                common.setmessage(win, 'Pylint syntax checking...')
+                try:
+                    lint.Run([pyfile], Report(win.pylintsyntaxcheckwindow.list))
+                except:
+                    error.track()
+            finally:
+                common.setmessage(win, '')
+                common.note(tr('Pylint syntax checking finished!'))
+                
+        d = Casing.Casing(f)
+        d.start_thread()
 Mixin.setMixin('mainframe', 'OnPylint', OnPylint)
+
+def init(pref):
+    pref.pylint_convention = True
+    pref.pylint_refactor = True
+    pref.pylint_warning = True
+    pref.pylint_error = True
+    pref.pylint_fatal = True
+Mixin.setPlugin('preference', 'init', init)
+
+pylint_syntax_pagename = tr('Pylint Check')
+def createPylintSyntaxCheckWindow(win):
+    if not win.panel.getPage(pylint_syntax_pagename):
+        from CheckPanel import SyntaxCheckWindow
+
+        page = SyntaxCheckWindow(win.panel.createNotebook('bottom'), win)
+        win.panel.addPage('bottom', page, pylint_syntax_pagename)
+    win.pylintsyntaxcheckwindow = win.panel.getPage(pylint_syntax_pagename)
+    win.panel.showPage(pylint_syntax_pagename)
+Mixin.setMixin('mainframe', 'createPylintSyntaxCheckWindow', createPylintSyntaxCheckWindow)

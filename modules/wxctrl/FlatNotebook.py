@@ -4018,7 +4018,7 @@ class PageContainer(wx.Panel):
         where, tabIdx = self.HitTest(event.GetPosition())
         
         # Make sure selected tab has focus
-        self.SetFocus()
+#        self.SetFocus()
 
         if where == FNB_LEFT_ARROW:
             self.RotateLeft()
@@ -4837,7 +4837,6 @@ class PageContainer(wx.Panel):
             event.SetEventType(wxEVT_FLATNOTEBOOK_PAGE_CHANGED)
             event.SetOldSelection(oldSelection)
             self.GetParent().GetEventHandler().ProcessEvent(event)
-            self.SetFocus()
             
 
     def SetImageList(self, imglist):
