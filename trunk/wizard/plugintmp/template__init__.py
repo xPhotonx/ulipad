@@ -3,11 +3,11 @@ from meteor import *
 text = T('''#   Programmer: <#pin_author#>
 #   E-mail:     <#pin_email#>
 #
-#   Copyleft 2006 <#pin_author#>
+#   Copyleft 2009 <#pin_author#>
 #
 #   Distributed under the terms of the GPL (GNU Public License)
 #
-#   NewEdit is free software; you can redistribute it and/or modify
+#   UliPad is free software; you can redistribute it and/or modify
 #   it under the terms of the GNU General Public License as published by
 #   the Free Software Foundation; either version 2 of the License, or
 #   (at your option) any later version.
