@@ -37,10 +37,10 @@ class Report(TextReporter):
         module, obj, line = location[1:]
         if obj:
             obj = ':%s' % obj
-        if self.include_ids:
-            sigle = msg_id
-        else:
-            sigle = msg_id[0]
+#        if self.include_ids:
+#            sigle = msg_id
+#        else:
+        sigle = msg_id[0]
             
         pref = Globals.pref
         flag = False
