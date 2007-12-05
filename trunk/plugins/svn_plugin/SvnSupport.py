@@ -74,8 +74,16 @@ class Command(object):
         self.pref = Globals.pref
         self.path = args[0]
         self.result = None
+        self.cancel = False
+        
+    def _begin(self):
+        self.cancel = False
+        if self.result:
+            self.result.Destory()
+            self.result = None
         
     def export(self, callback=None):
+        self._begin()
         dirwin = self.dirwin
         url = self.path
         path = get_path(dirwin.pref.version_control_export_path)
@@ -96,11 +104,13 @@ class Command(object):
             force = False
             
         def f():
-            client = self.svn.Client()
+            client = self.get_client([])
             client.export(url, export_path, force)
+            
         wrap_run(f, callback)
             
     def checkout(self, callback=None):
+        self._begin()
         dlg = CheckoutDialog()
         value = None
         if dlg.ShowModal() == wx.ID_OK:
@@ -113,19 +123,21 @@ class Command(object):
         else:
             r = self.svn.Revision(self.svn.opt_revision_kind.head )
     
-        self.result = ResultDialog()
+        self.result = ResultDialog(self)
         self.result.Show()
-        
+
         def f():
-            client = self.svn.Client()
-            client.callback_notify  = self.cbk_update
+            client = self.get_client()
             client.checkout(value['url'], value['dir'], revision=r)
-            self.result.finish()
+            if self.result:
+                self.result.finish()
+                
         wrap_run(f, callback)
             
     def list(self, callback=None):
+        self._begin()
         def f():
-            client = self.svn.Client()
+            client = self.get_client([])
             r = client.list(self.path)
             s = []
             fmt = "%(path)-60s %(last_author)-20s %(size)-10s"
@@ -137,8 +149,9 @@ class Command(object):
         wrap_run(f, callback)
         
     def status(self, callback=None):
+        self._begin()
         def f():
-            client = self.svn.Client()
+            client = self.get_client([])
             r = client.status(self.path, ignore=True)
             s = []
             fmt = "%(path)-60s %(text_status)-20s"
@@ -150,10 +163,11 @@ class Command(object):
         wrap_run(f, callback)
         
     def log(self, callback):
+        self._begin()
         def f():
             import time
             
-            client = self.svn.Client()
+            client = self.get_client([])
             r = client.log(self.path)
             s = []
             fmt = ("%(message)s\n" + '-'*70 + 
@@ -170,13 +184,15 @@ class Command(object):
         wrap_run(f, callback)
         
     def diff(self, callback):
+        self._begin()
         def f():
-            client = self.svn.Client()
+            client = self.get_client([])
             r = client.diff(wx.StandardPaths.Get().GetTempDir(), self.path)
             wx.CallAfter(show_in_message_win, r)
         wrap_run(f, callback)
         
     def add(self, callback):
+        self._begin()
         dlg = AddDialog(Globals.mainframe, tr('Add'), self.path)
         values = []
         if dlg.ShowModal() == wx.ID_OK:
@@ -184,17 +200,18 @@ class Command(object):
         dlg.Destroy()
         
         if values:
-            self.result = ResultDialog()
+            self.result = ResultDialog(self)
             self.result.Show()
-            
+
             def f():
-                client = self.svn.Client()
-                client.callback_notify  = self.cbk_notify
+                client = self.get_client()
                 r = client.add(values, False)
-                self.result.finish()
+                if self.result:
+                    self.result.finish()
             wrap_run(f, callback)
             
     def revert(self, callback):
+        self._begin()
         dlg = RevertDialog(tr('Revert'), self.path)
         values = []
         if dlg.ShowModal() == wx.ID_OK:
@@ -202,17 +219,18 @@ class Command(object):
         dlg.Destroy()
         
         if values:
-            self.result = ResultDialog()
+            self.result = ResultDialog(self)
             self.result.Show()
-            
+
             def f():
-                client = self.svn.Client()
-                client.callback_notify  = self.cbk_notify
+                client = self.get_client()
                 r = client.revert(values, False)
-                self.result.finish()
+                if self.result:
+                    self.result.finish()
             wrap_run(f, callback)
             
     def rename(self, callback):
+        self._begin()
         dir = os.path.dirname(self.path)
         dlg = wx.TextEntryDialog(Globals.mainframe, tr('New name'),
             tr('Rename'), os.path.basename(self.path))
@@ -222,28 +240,33 @@ class Command(object):
         dlg.Destroy()
         if newname:
             def f():
-                client = self.svn.Client()
+                client = self.get_lient([])
                 r = client.move(self.path, os.path.join(dir, newname))
             wrap_run(f, callback)
             
     def delete(self, callback):
+        self._begin()
         def f():
-            client = self.svn.Client()
+            client = self.get_client([])
             r = client.remove(self.path)
         wrap_run(f, callback)
         
     def update(self, callback):
-        self.result = ResultDialog()
-        self.result.Show()
+        self._begin()
         
+        self.result = ResultDialog(self)
+        self.result.Show()
+
         def f():
-            client = self.svn.Client()
-            client.callback_notify  = self.cbk_update
+            client = self.get_client()
             r = client.update(self.path)
-            self.result.finish()
+            if self.result:
+                self.result.finish()
+                
         wrap_run(f, callback)
     
     def commit(self, callback):
+        self._begin()
         dlg = CommitDialog(tr('Commit'), self.path)
         values = None
         if dlg.ShowModal() == wx.ID_OK:
@@ -251,41 +274,93 @@ class Command(object):
         dlg.Destroy()
         
         if values['add_files'] + values['files']:
-            self.result = ResultDialog()
+            self.result = ResultDialog(self)
             self.result.Show()
-            
+
             def f():
-                client = self.svn.Client()
-                client.callback_notify  = self.cbk_notify
+                client = self.get_client()
                 if values['add_files']:
                     r = client.add(values['add_files'], False)
                 r = client.checkin(values['add_files'] + values['files'], values['message'])
-                self.result.finish()
+                if self.result:
+                    self.result.finish()
             wrap_run(f, callback)
+            
+    def get_client(self, flag=['notify', 'get_log_message', 'get_login', 'ssl_server_trust_prompt', 'cancel']):
+        client = self.svn.Client()
+        if 'notify' in flag:
+            client.callback_notify  = self.cbk_update
+        if 'get_log_message' in flag:
+            client.callback_get_log_message = self.cbk_get_log_message
+        if 'get_login' in flag:
+            client.callback_get_login = CallFunctionOnMainThread(self.cbk_get_login)
+#            client.callback_get_login = self.cbk_get_login
+        if 'ssl_server_trust_prompt' in flag:
+            client.callback_ssl_server_trust_prompt = CallFunctionOnMainThread(self.cbk_ssl_server_trust_prompt)
+        if 'cancel' in flag:
+            client.callback_cancel = self.cbk_cancel
+        return client
         
     def cbk_update(self, event):
-        print event
-        if event['error']:
-            self.result.add([tr('error'), event['error']])
-        else:
-            action = str(event['action'])
-            if action.startswith('update_'):
-                action = action[7:]
-            if action == 'update':
-                return
-            elif action == 'completed':
-                action = 'completed'
-                path = 'At version %d' % event['revision'].number
+        try:
+            if event['error']:
+                self.result.add([tr('error'), event['error']])
             else:
-                path = event['path']
-            self.result.add([action, path])
+                action = str(event['action'])
+                if action.startswith('update_'):
+                    action = action[7:]
+                elif action.startswith('commit_'):
+                    action = action[7:]
+                    
+                if action == 'update':
+                    return
+                elif action == 'completed':
+                    action = 'completed'
+                    path = 'At version %d' % event['revision'].number
+                else:
+                    path = event['path']
+                self.result.add([action, path])
+        except:
+            error.traceback()
             
-    def cbk_notify(self, event):
-        print event
-        if event['error']:
-            self.result.add([tr('error'), event['error']])
-        else:
-            self.result.add([str(event['action']), event['path']])
+    def cbk_ssl_server_trust_prompt(self, trust_data):
+        realm = trust_data['realm']
+        
+        info_list = []
+        info_list.append(('Hostname', trust_data['hostname']))
+        info_list.append(('Valid From', trust_data['valid_from']))
+        info_list.append(('Valid Until', trust_data['valid_until']))
+        info_list.append(('Issuer Name', trust_data['issuer_dname']))
+        info_list.append(('Finger Print', trust_data['finger_print']))
+        
+        dlg = GetServerTrust(Globals.mainframe, realm, info_list, True)
+        save = False
+        trust = False
+        if dlg.ShowModal() == wx.ID_OK:
+            save = dlg.GetValue()
+            trust = True
+        dlg.Destroy()
+        
+        return trust, trust_data['failures'], save
+    
+    def cbk_get_login(self, realm, username, save):
+        dlg = GetCredentials(Globals.mainframe, realm, username, True)
+        save = False
+        username = ''
+        password = ''
+        ret = False
+        if dlg.ShowModal() == wx.ID_OK:
+            username, password, save = dlg.GetValue()
+            ret = True
+        dlg.Destroy()
+        return ret, username.encode('utf-8'), password.encode('utf-8'), save
+
+    def cbk_get_log_message(self):
+        common.showerror(tr("Log message cann't be empty!"))
+        return False, ''
+    
+    def cbk_cancel(self):
+        return self.cancel
         
 #common functions
 ################################################################
@@ -425,8 +500,8 @@ class AddDialog(wx.Dialog):
             for node in r:
                 files[node['path']] = node['is_versioned']
             if os.path.isfile(self.path) and not files.get(self.path, False):
-                self.path = os.path.dirname(self.path)
                 wx.CallAfter(self.list.addline, [os.path.basename(self.path)], flag=True)
+                self.path = os.path.dirname(self.path)
             else:
                 if not files.get(self.path, False):
                     wx.CallAfter(self.list.addline, ['.'], flag=True)
@@ -645,9 +720,10 @@ class CommitDialog(AddDialog):
         wx.CallAfter(self.load_data, event.IsChecked())
             
 class ResultDialog(wx.Dialog):
-    def __init__(self, title=tr('Result')):
+    def __init__(self, parent, title=tr('Result')):
         wx.Dialog.__init__(self, Globals.mainframe, -1, style = wx.DEFAULT_DIALOG_STYLE, title = title, size=(600, 300))
         
+        self.parent = parent
         self.sizer = box = ui.VBox(namebinding='widget').create(self).auto_layout()
         self.list = CheckList.List(self, columns=[
                 (tr("Action"), 120, 'left'),
@@ -657,6 +733,8 @@ class ResultDialog(wx.Dialog):
         box.add(self.list, proportion=1, flag=wx.ALL|wx.EXPAND, border=5)
         box.add(ui.Label, name='message')
         box.add(ui.simple_buttons(), flag=wx.ALIGN_CENTER|wx.BOTTOM)
+        
+        box.bind('btnCancel', 'click', self.OnCancel)
         box.auto_fit(0)
         self.btnOk.Disable()
         self.btnCancel.Enable()
@@ -670,3 +748,74 @@ class ResultDialog(wx.Dialog):
     def finish(self):
         self.btnCancel.Disable()
         self.btnOk.Enable()
+        
+    def OnCancel(self, event):
+        self.parent.cancel = True
+        event.Skip()
+
+class GetServerTrust(wx.Dialog):
+    def __init__(self, parent, realm, info_list, may_save):
+        wx.Dialog.__init__( self, parent, -1, tr('Trust server %s') % realm )
+
+        self.sizer = sizer = ui.VBox(namebinding='widget').create(self).auto_layout()
+        box = sizer.add(ui.VGroup(tr('Server Certificate')))
+        box1 = box.add(ui.SimpleGrid)
+        for key, value in info_list:
+            box1.add(key, ui.Text(value, style=wx.TE_READONLY))
+         
+        sizer.add(ui.Check(may_save, tr("Always trust this server")), name='save')
+
+        sizer.add(ui.simple_buttons(), flag=wx.ALIGN_CENTER|wx.BOTTOM)
+        sizer.auto_fit(1)
+
+        self.CentreOnParent()
+
+    def GetValue(self):
+        return self.save.GetValue()
+
+class GetCredentials(wx.Dialog):
+    def __init__(self, parent, title, username, may_save):
+        wx.Dialog.__init__(self, parent, -1, title, size=(300, -1))
+
+        self.sizer = sizer = ui.VBox(namebinding='widget').create(self).auto_layout()
+        box = sizer.add(ui.VGroup(tr('Credentials')))
+        box1 = box.add(ui.SimpleGrid)
+        box1.add(tr('Username:'), ui.Text, name='username')
+        box1.add(tr('Password:'), ui.Password, name='password')
+        sizer.add(ui.Check(may_save, tr('Always uses these credentials')), name='save')
+        
+        sizer.add(ui.simple_buttons(), flag=wx.ALIGN_CENTER|wx.BOTTOM)
+        sizer.auto_fit(1)
+        
+        self.CentreOnParent()
+
+    def GetValue(self):
+        return self.username.GetValue(), self.password.GetValue(), self.save.GetValue()
+        
+import threading
+class CallFunctionOnMainThread:
+    def __init__(self, function):
+        self.function = function
+
+        self.cv = threading.Condition()
+        self.result = None
+
+    def __call__(self, *args):
+        self.cv.acquire()
+
+        wx.CallAfter(self._onMainThread, *args)
+
+        self.cv.wait()
+        self.cv.release()
+
+        return self.result
+
+    def _onMainThread(self, *args):
+        try:
+            self.result = self.function(*args)
+        finally:
+            pass
+        
+        self.cv.acquire()
+        self.cv.notify()
+        self.cv.release()
