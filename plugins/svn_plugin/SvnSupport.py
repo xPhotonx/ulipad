@@ -32,74 +32,32 @@
 
 import wx
 import os
-import re
 from modules import Globals
 from modules import Casing
 from modules import common
 from modules import meide as ui
 from modules.Debug import error
-
-#commands definition
-################################################################
-status = {
-    '?': tr('non-versioned'),
-    'M': tr('modified'),
-    'A': tr('added'),
-    'D': tr('deleted'),
-    ' ': tr('normal'),
-    '!': tr('missing'),
-    'I': tr('ignored'),
-    'C': tr('conflict'),
-}
+from modules import CheckList
 
 #export functions
 ################################################################
 def do(dirwin, command, *args):
-    commands = {
-        'update': ('update', dirwin.OnRefresh),
-        'checkout':('checkout', None),
-        'commit':('commit', dirwin.OnRefresh),
-        'list':('list', None),
-        'log':('log', None),
-        'add':('add', dirwin.OnRefresh),
-        'rename':('rename', dirwin.OnRefresh),
-        'delete':('delete', dirwin.OnRefresh),
-        'revert':('revert', dirwin.OnRefresh),
-        'diff':('diff', None),
-        'export':('export', None),
-        'status':('status', dirwin.OnRefresh),
+    callbacks = {
+        'update': dirwin.OnRefresh,
+        'commit':dirwin.OnRefresh,
+        'add':dirwin.OnRefresh,
+        'rename':dirwin.OnRefresh,
+        'delete':dirwin.OnRefresh,
+        'revert':dirwin.OnRefresh,
+        'status':dirwin.OnRefresh,
     }
 
-    m = Globals.mainframe
-    
-    callback = None
     proxy = Command(dirwin, *args)
-    if command == 'export':
-        proxy.export()
-    elif command == 'checkout':
-        proxy.checkout()
-    elif command == 'commit':
-        args = commit_dialog(dirwin, args[0])
-        if not args: return
-    elif command == 'revert':
-        args = revert_dialog(dirwin, args[0])
-    elif command == 'rename':
-        newname = rename_dialog(dirwin, args[0])
-        if not newname: return
-        args = [args[0], newname]
-    if not args: return
-
-#    command_name, call_func = commands.get(command)
-#    if callback:
-#        call_func = callback
-        
-#    args2 = []
-#    for arg in args:
-#        if arg.find(' ') != -1:
-#            arg = r'"%s"' %arg
-#        args2.append(arg)
-#    cmd = u'"%s" %s %s' % (vc_exe, command_name, u' '.join(args2))
-#    run_command(client, cmd, call_func)
+    func = getattr(proxy, command, None)
+    if func:
+        func(callbacks.get(command, None))
+    else:
+        common.showerror(tr("Don't support [%s] command!") % command)
 
 class Command(object):
     def __init__(self, dirwin, *args):
@@ -113,13 +71,16 @@ class Command(object):
         self.svn = pysvn
         self.dirwin = dirwin
         self.args = args
+        self.pref = Globals.pref
+        self.path = args[0]
+        self.result = None
         
-    def export(self):
+    def export(self, callback=None):
         dirwin = self.dirwin
-        url = self.args[0]
+        url = self.path
         path = get_path(dirwin.pref.version_control_export_path)
-        dirwin.pref.version_control_export_path = path
-        dirwin.pref.save()
+        self.pref.version_control_export_path = path
+        self.pref.save()
         if not path:
             return
         export_path = os.path.join(path, os.path.basename(url))
@@ -134,16 +95,12 @@ class Command(object):
         else:
             force = False
             
-        client = self.svn.Client()
-        try:
+        def f():
+            client = self.svn.Client()
             client.export(url, export_path, force)
-        except:
-            error.traceback()
-            common.showerror(Globals.mainframe, tr('There are something wrong ocurred!'))
-        else:
-            common.note(tr('Successful!'))
+        wrap_run(f, callback)
             
-    def checkout(self):
+    def checkout(self, callback=None):
         dlg = CheckoutDialog()
         value = None
         if dlg.ShowModal() == wx.ID_OK:
@@ -156,71 +113,215 @@ class Command(object):
         else:
             r = self.svn.Revision(self.svn.opt_revision_kind.head )
     
-        client = self.svn.Client()
-        try:
+        self.result = ResultDialog()
+        self.result.Show()
+        
+        def f():
+            client = self.svn.Client()
+            client.callback_notify  = self.cbk_update
             client.checkout(value['url'], value['dir'], revision=r)
-        except:
-            error.traceback()
-            common.showerror(Globals.mainframe, tr('There are something wrong ocurred!'))
+            self.result.finish()
+        wrap_run(f, callback)
+            
+    def list(self, callback=None):
+        def f():
+            client = self.svn.Client()
+            r = client.list(self.path)
+            s = []
+            fmt = "%(path)-60s %(last_author)-20s %(size)-10s"
+            s.append(fmt % {'path':'Filename', 'last_author':'Last Author', 'size':'Size'})
+            for node, flag in r:
+                t = fmt % node
+                s.append(t)
+            wx.CallAfter(show_in_message_win, '\n'.join(s))
+        wrap_run(f, callback)
+        
+    def status(self, callback=None):
+        def f():
+            client = self.svn.Client()
+            r = client.status(self.path, ignore=True)
+            s = []
+            fmt = "%(path)-60s %(text_status)-20s"
+            s.append(fmt % {'path':'Filename', 'text_status':'Status'})
+            for node in r:
+                t = fmt % node
+                s.append(t)
+            wx.CallAfter(show_in_message_win, '\n'.join(s))
+        wrap_run(f, callback)
+        
+    def log(self, callback):
+        def f():
+            import time
+            
+            client = self.svn.Client()
+            r = client.log(self.path)
+            s = []
+            fmt = ("%(message)s\n" + '-'*70 + 
+                "\nr%(revision)d | %(author)s | %(date)s\n")
+            for node in r:
+                node['revision'] = node['revision'].number
+                node['date'] = time.strftime("%Y-%m-%d %H:%M:%S", 
+                    time.localtime(node['date']))
+                if not node['author']:
+                    node['author'] = tr('<No Author>')
+                t = fmt % node
+                s.append(t)
+            wx.CallAfter(show_in_message_win, '\n'.join(s))
+        wrap_run(f, callback)
+        
+    def diff(self, callback):
+        def f():
+            client = self.svn.Client()
+            r = client.diff(wx.StandardPaths.Get().GetTempDir(), self.path)
+            wx.CallAfter(show_in_message_win, r)
+        wrap_run(f, callback)
+        
+    def add(self, callback):
+        dlg = AddDialog(Globals.mainframe, tr('Add'), self.path)
+        values = []
+        if dlg.ShowModal() == wx.ID_OK:
+            values = dlg.GetValue()
+        dlg.Destroy()
+        
+        if values:
+            self.result = ResultDialog()
+            self.result.Show()
+            
+            def f():
+                client = self.svn.Client()
+                client.callback_notify  = self.cbk_notify
+                r = client.add(values, False)
+                self.result.finish()
+            wrap_run(f, callback)
+            
+    def revert(self, callback):
+        dlg = RevertDialog(tr('Revert'), self.path)
+        values = []
+        if dlg.ShowModal() == wx.ID_OK:
+            values = dlg.GetValue()
+        dlg.Destroy()
+        
+        if values:
+            self.result = ResultDialog()
+            self.result.Show()
+            
+            def f():
+                client = self.svn.Client()
+                client.callback_notify  = self.cbk_notify
+                r = client.revert(values, False)
+                self.result.finish()
+            wrap_run(f, callback)
+            
+    def rename(self, callback):
+        dir = os.path.dirname(self.path)
+        dlg = wx.TextEntryDialog(Globals.mainframe, tr('New name'),
+            tr('Rename'), os.path.basename(self.path))
+        newname = ''
+        if dlg.ShowModal() == wx.ID_OK:
+            newname = os.path.join(dir, dlg.GetValue())
+        dlg.Destroy()
+        if newname:
+            def f():
+                client = self.svn.Client()
+                r = client.move(self.path, os.path.join(dir, newname))
+            wrap_run(f, callback)
+            
+    def delete(self, callback):
+        def f():
+            client = self.svn.Client()
+            r = client.remove(self.path)
+        wrap_run(f, callback)
+        
+    def update(self, callback):
+        self.result = ResultDialog()
+        self.result.Show()
+        
+        def f():
+            client = self.svn.Client()
+            client.callback_notify  = self.cbk_update
+            r = client.update(self.path)
+            self.result.finish()
+        wrap_run(f, callback)
+    
+    def commit(self, callback):
+        dlg = CommitDialog(tr('Commit'), self.path)
+        values = None
+        if dlg.ShowModal() == wx.ID_OK:
+            values =  dlg.GetValue()
+        dlg.Destroy()
+        
+        if values['add_files'] + values['files']:
+            self.result = ResultDialog()
+            self.result.Show()
+            
+            def f():
+                client = self.svn.Client()
+                client.callback_notify  = self.cbk_notify
+                if values['add_files']:
+                    r = client.add(values['add_files'], False)
+                r = client.checkin(values['add_files'] + values['files'], values['message'])
+                self.result.finish()
+            wrap_run(f, callback)
+        
+    def cbk_update(self, event):
+        print event
+        if event['error']:
+            self.result.add([tr('error'), event['error']])
         else:
-            common.note(tr('Successful!'))
-                    
+            action = str(event['action'])
+            if action.startswith('update_'):
+                action = action[7:]
+            if action == 'update':
+                return
+            elif action == 'completed':
+                action = 'completed'
+                path = 'At version %d' % event['revision'].number
+            else:
+                path = event['path']
+            self.result.add([action, path])
+            
+    def cbk_notify(self, event):
+        print event
+        if event['error']:
+            self.result.add([tr('error'), event['error']])
+        else:
+            self.result.add([str(event['action']), event['path']])
+        
 #common functions
 ################################################################
-def convert_text(text):
-    re_string = re.compile(r'\?\\(\d{3})', re.S|re.M|re.I)
-    def do_sub(m):
-        return chr(int(m.group(1)))
-    if re_string.search(text):
-        text = unicode(re.sub(re_string,do_sub, text), 'utf-8')
+def show_in_message_win(text, clear=True, goto_end=False):
+    win = Globals.mainframe
+    win.createMessageWindow()
+    win.panel.showPage(tr('Message'))
+    if clear:
+        win.messagewindow.SetText('')
+    win.messagewindow.AddText(text)
+    if goto_end:
+        win.messagewindow.GotoPos(win.messagewindow.GetTextLength())
     else:
-        text = common.decode_string(text)
-    return text
+        win.messagewindow.GotoPos(0)
     
-def svn_input_decorator(func):
-    def _func(win, text):
-        text = convert_text(text)
-        return func(win, text)
-    return _func
-
-def get_filename(filename):
-    if filename.find(' ') != -1:
-        filename = r'"%s"' % filename
-    return filename
-    
-def run_command(cmd, callback=None):
-    from modules.Debug import error
+def wrap_run(func, callback=None, begin_msg=tr('Processing...'), end_msg='', finish_msg='Finished!'):
     def f():
+        common.setmessage(begin_msg)
         try:
-            Globals.mainframe.RunCommand(cmd, redirect=True, hide=True, 
-                input_decorator=svn_input_decorator, callback=callback)
-        except:
-            Globals.mainframe.StopCommand()
-            error.traceback()
-    wx.CallAfter(f)
-        
-def pipe_command(cmd, callback):
-    def _run(cmd):
-        s = []
-        for line in os.popen(cmd):
-            s.append(line)
-        text = convert_text(''.join(s))
-        if callback:
-            wx.CallAfter(callback, text)
-    d = Casing.Casing(_run, cmd)
-    d.start_thread()
-  
+            try:
+                func()
+                if callback:
+                    callback()
+            except Exception, e:
+                error.traceback()
+                common.showerror(str(e))
+        finally:
+            common.setmessage(end_msg)
+    Casing.Casing(f).start_thread()
+    
 def get_entries(path):
-    cmd = '"%s" status -Nv %s' % (Globals.mainframe.pref.svn_exe, path)
+    import pysvn
+    client = pysvn.Client()
     entries = {}
-    for line in os.popen(cmd):
-        line = convert_text(line)
-        f = line[0]
-        line = line.strip()
-        filename = line.split()[-1]
-        if filename in ('.', '..'):
-            continue
-        entries[os.path.basename(filename)] = f
+    for line in client.status(path, False, ignore=True):
+        entries[os.path.basename(line['path'])] = str(line['text_status'])
     return entries
 
 #dialogs
@@ -234,178 +335,280 @@ def get_path(path=''):
         dlg.Destroy()
         return dir
     
-def rename_dialog(dirwin, path):
-    dir = os.path.dirname(path)
-    dlg = wx.TextEntryDialog(dirwin, tr('New name'),
-        tr('Rename'), os.path.basename(path))
-    if dlg.ShowModal() == wx.ID_OK:
-        newname = os.path.join(dir, dlg.GetValue())
-        dlg.Destroy()
-        return newname
-    
-def commit_dialog(dirwin, path):
-    dlg = CommitDialog(dirwin, tr('Commit'), path)
-    if dlg.ShowModal() == wx.ID_OK:
-        dlg.Destroy()
-        return dlg.GetValue()
-    dlg.Destroy()
-  
-def revert_dialog(dirwin, path):
-    dlg = RevertDialog(dirwin, tr('Revert'), path)
-    if dlg.ShowModal() == wx.ID_OK:
-        dlg.Destroy()
-        return dlg.GetValue()
-    dlg.Destroy()
+def is_versioned(path):
+    try:
+        import pysvn
+    except:
+        return False
+    client = pysvn.Client()
+    r = client.status(path, False)
+    if len(r) > 0:
+        return r[0]['is_versioned']
+    else:
+        return False
 
 class CheckoutDialog(wx.Dialog):
-    def __init__(self, title=tr('SVN Settings'), size=(450, -1)):
+    def __init__(self, title=tr('Checkout'), size=(450, -1)):
         wx.Dialog.__init__(self, Globals.mainframe, -1, title=title, size=size)
+        
+        self.pref = Globals.pref
         self.sizer = sizer = ui.VBox(namebinding='widget').create(self).auto_layout()
         box = sizer.add(ui.VGroup(tr('Repository')))
         box.add(ui.Label(tr('URL of repository:')))
-        box.add(ui.Text, name='url')
+        box.add(ui.ComboBox('', self.pref.svn_urls), name='url')
         box.add(ui.Label(tr('Checkout Directory')))
-        box.add(ui.Dir, name='dir')
+        box.add(ui.Dir(self.pref.svn_checkout_folder), name='dir')
         
         box = sizer.add(ui.VGroup(tr('Revision')))
         box1 = box.add(ui.HBox)
         box1.add(ui.Check(False, tr('Revision'), name='chk_revision')).bind('check', self.OnCheck)
-        box1.add(ui.Text, name='revision').get_widget().Disable()
+        box1.add(ui.Text('', size=(80, -1)), name='revision').get_widget().Disable()
         
         sizer.add(ui.simple_buttons(), flag=wx.ALIGN_CENTER|wx.BOTTOM)
-#        sizer.bind('btnOk', 'click', self.OnOk)
+        sizer.bind('btnOk', 'click', self.OnOk)
         self.btnOk.SetDefault()
         
         sizer.auto_fit(1)
         
     def OnCheck(self, event):
         self.revision.Enable()
+        
+    def GetValue(self):
+        return self.sizer.GetValue()
+    
+    def OnOk(self, event):
+        url = self.url.GetValue()
+        if url:
+            try:
+                self.pref.svn_urls.remove(url)
+            except:
+                pass
+            self.pref.svn_urls.insert(0, url)
+            del self.pref.svn_urls[30:]
+            self.pref.save()
+        path = self.dir.GetValue()
+        if path:
+            self.pref.svn_checkout_folder = path
+            self.pref.save()
+        event.Skip()
 
-from modules import CheckList
-class CommitDialog(wx.Dialog):
-    filetype = 'all'
-    def __init__(self, parent, title, files):
-        wx.Dialog.__init__(self, parent, -1, style = wx.DEFAULT_DIALOG_STYLE, title = title, size=(600, 400))
-        self.parent = parent
-        self.files = files
+class AddDialog(wx.Dialog):
+    def __init__(self, parent, title, path):
+        wx.Dialog.__init__(self, parent, -1, style = wx.DEFAULT_DIALOG_STYLE, title = title, size=(400, 300))
+        self.path = path
+        
+        self.sizer = box = ui.VBox(namebinding='widget').create(self).auto_layout()
+        self.list = CheckList.CheckList(self, columns=[
+                (tr("File"), 380, 'left'),
+                ], style=wx.LC_REPORT | wx.SUNKEN_BORDER)
+        
+        box.add(self.list, proportion=1, flag=wx.ALL|wx.EXPAND, border=5)
+        self.list.on_check = self.OnCheck
+        
+        #add selection switch checkbox
+        box.add(ui.Check3D(2, tr('Select / deselect All')), name='select').bind('check', self.OnSelect)
+        
+        box.add(ui.simple_buttons(), flag=wx.ALIGN_CENTER|wx.BOTTOM)
+        self.btnOk.SetDefault()
+        
+        self.init()
+
+    def init(self):
+        def f():
+            from SvnSettings import get_global_ignore
+            ignore = [x[1:] for x in get_global_ignore().split()]
+            
+            import pysvn
+            client = pysvn.Client()
+            r = client.status(self.path)
+            files = {}
+            for node in r:
+                files[node['path']] = node['is_versioned']
+            if os.path.isfile(self.path) and not files.get(self.path, False):
+                self.path = os.path.dirname(self.path)
+                wx.CallAfter(self.list.addline, [os.path.basename(self.path)], flag=True)
+            else:
+                if not files.get(self.path, False):
+                    wx.CallAfter(self.list.addline, ['.'], flag=True)
+                _len = len(self.path)
+                for curpath, dirs, fs in os.walk(self.path):
+                    if '.svn' in curpath:
+                        continue
+                    for fname in fs:
+                        ext = os.path.splitext(fname)[1]
+                        if ext in ignore:
+                            continue
+                        filename = os.path.join(curpath, fname)
+                        if not files.get(filename, False):
+                              wx.CallAfter(self.list.addline, [filename[_len+1:]], flag=True)
+
+        wrap_run(f)
+        
+    def GetValue(self):
+        files = []
+        for i in range(self.list.GetItemCount()):
+            if not self.list.getFlag(i):
+                continue
+            f = self.list.getCell(i, 0)
+            if f == '.':
+                f = self.path
+            else:
+                f = os.path.join(self.path, f)
+            files.append(f)
+        return files
+    
+    def check_state(self):
+        count = {True:0, False:0}
+        for i in range(self.list.GetItemCount()):
+            count[self.list.getFlag(i)] += 1
+        if count[True] > 0 and count[False] > 0:
+            self.select.Set3StateValue(wx.CHK_UNDETERMINED)
+        elif count[True] > 0 and count[False] == 0:
+            self.select.Set3StateValue(wx.CHK_CHECKED)
+        else:
+            self.select.Set3StateValue(wx.CHK_UNCHECKED)
+    
+    def OnCheck(self, index, f):
+        self.check_state()
+    
+    def OnSelect(self, event):
+        value = event.GetEventObject().Get3StateValue()
+        if value == wx.CHK_UNCHECKED:
+            self.list.checkAll(False)
+        elif value == wx.CHK_CHECKED:
+            self.list.checkAll(True)
+
+class RevertDialog(AddDialog):
+    def __init__(self, title, path):
+        wx.Dialog.__init__(self, Globals.mainframe, -1, style = wx.DEFAULT_DIALOG_STYLE, title = title, size=(450, 300))
+        self.path = path
+        
+        self.sizer = box = ui.VBox(namebinding='widget').create(self).auto_layout()
+        self.list = CheckList.CheckList(self, columns=[
+                (tr("File"), 300, 'left'),
+                (tr("Text Status"), 100, 'left'),
+                ], style=wx.LC_REPORT | wx.SUNKEN_BORDER)
+        
+        box.add(self.list, proportion=1, flag=wx.ALL|wx.EXPAND, border=5)
+        self.list.on_check = self.OnCheck
+        
+        #add selection switch checkbox
+        box.add(ui.Check3D(2, tr('Select / deselect All')), name='select').bind('check', self.OnSelect)
+        
+        box.add(ui.simple_buttons(), flag=wx.ALIGN_CENTER|wx.BOTTOM)
+        self.btnOk.SetDefault()
+        
+        self.init()
+        
+    def init(self):
+        def f():
+            import pysvn
+            client = pysvn.Client()
+            r = client.status(self.path)
+            if os.path.isfile(self.path):
+                self.path = os.path.dirname(self.path)
+            _len = len(self.path)
+            for node in r:
+                status = str(node['text_status'])
+                if  status in ('modified', 'added', 'deleted'):
+                    fname = node['path'][_len+1:]
+                    if not fname:
+                        fname = '.'
+                    wx.CallAfter(self.list.addline, [fname, status], flag=True)
+    
+        wrap_run(f)
+        
+class CommitDialog(AddDialog):
+    def __init__(self, title, path):
+        wx.Dialog.__init__(self, Globals.mainframe, -1, style = wx.DEFAULT_DIALOG_STYLE, title = title, size=(600, 500))
+        self.pref = Globals.pref
+        self.path = path
         self.fileinfos = {}
         self.filelist = []
-        box = wx.BoxSizer(wx.VERTICAL)
         
-        #add message label and recent messages button
-        title = wx.StaticBox(self, -1, tr("Message"))
-        box1 = wx.StaticBoxSizer(title, wx.VERTICAL)
-        self.ID_HISMSG = wx.NewId()
-        self.btnHisMsg = wx.Button(self, self.ID_HISMSG, tr("Recent Messages"))
-        box1.Add(self.btnHisMsg, 0, wx.LEFT, 5)
-        #add message input box
-        self.text = wx.TextCtrl(self, -1, '', style=wx.TE_MULTILINE)
-        box1.Add(self.text, 1, wx.EXPAND|wx.ALL, 5)
-        box.Add(box1, 1, wx.EXPAND|wx.LEFT|wx.TOP|wx.RIGHT, 5)
+        self.sizer = box = ui.VBox(namebinding='widget').create(self).auto_layout()
+        
+        box1 = box.add(ui.VGroup(tr("Message")))
+        box1.add(ui.Button(tr("Recent Messages"))).bind('click', self.OnHisMsg)
+        box1.add(ui.MultiText, name='message')
 
         #add filenames list
-        self.filenames = CheckList.CheckList(self, columns=[
+        self.list = CheckList.CheckList(self, columns=[
                 (tr("File"), 390, 'left'),
                 (tr("Extension"), 70, 'left'),
                 (tr("Status"), 100, 'left'),
                 ], style=wx.LC_REPORT | wx.SUNKEN_BORDER)
         
-        box.Add(self.filenames, 2, wx.ALL|wx.EXPAND, 5)
-        self.filenames.on_check = self.OnCheck
+        box.add(self.list, proportion=2, flag=wx.EXPAND|wx.ALL, border=5)
+        self.list.on_check = self.OnCheck
         
-        #add selection switch checkbox
-        self.chkShowUnVertion = wx.CheckBox(self, -1, tr('Show unversioned files'))
-        if self.filetype == 'all':
-            self.chkShowUnVertion.SetValue(True)
-        box.Add(self.chkShowUnVertion, 0, wx.LEFT, 5)
-        self.chkSelect = wx.CheckBox(self, -1, tr('Select / deselect All'), 
-            style=wx.CHK_3STATE)
-        box.Add(self.chkSelect, 0, wx.LEFT, 5)
+        box.add(
+            ui.Check(True, tr('Show unversioned files')), 
+            name='chkShowUnVersion').bind('check', self.OnShowUnVersion)
+        box.add(
+            ui.Check3D(False, tr('Select / deselect All')),
+            name='select').bind('check', self.OnSelect)
         
-        #add ok and cancel buttons
-        box2 = wx.BoxSizer(wx.HORIZONTAL)
-        self.btnOK = wx.Button(self, wx.ID_OK, tr("OK"))
-        self.btnOK.SetDefault()
-        box2.Add(self.btnOK, 0, wx.ALIGN_RIGHT|wx.RIGHT, 5)
-        btnCancel = wx.Button(self, wx.ID_CANCEL, tr("Cancel"))
-        box2.Add(btnCancel, 0, wx.ALIGN_LEFT|wx.LEFT, 5)
-        box.Add(box2, 0, wx.ALIGN_CENTER|wx.ALL, 5)
-
-        wx.EVT_BUTTON(self.btnHisMsg, self.ID_HISMSG, self.OnHisMsg)
-        wx.EVT_CHECKBOX(self.chkShowUnVertion, self.chkShowUnVertion.GetId(), self.OnShowUnVersion)
-        wx.EVT_CHECKBOX(self.chkSelect, self.chkSelect.GetId(), self.OnSelect)
-
-        self.SetSizer(box)
-        self.SetAutoLayout(True)
+        box.add(ui.simple_buttons(), flag=wx.ALIGN_CENTER|wx.BOTTOM)
+        self.btnOk.SetDefault()
+        
+        box.auto_fit(0)
         
         wx.CallAfter(self.init)
 
     def GetValue(self):
         add_files = []
         files = []
-        for i in range(self.filenames.GetItemCount()):
-            if not self.filenames.getFlag(i):
+        for i in range(self.list.GetItemCount()):
+            if not self.list.getFlag(i):
                 continue
-            filename, flag = self.fileinfos[self.filenames.GetItemData(i)]
+            filename, flag = self.fileinfos[self.list.GetItemData(i)]
             if flag:
                 files.append(filename)
             else:
                 add_files.append(filename)
-        if add_files:
-            vc_exe = Globals.mainframe.pref.svn_exe
-            cmd_add = u'"%s" add %s' % (vc_exe, u' '.join(add_files))
-            pipe_command(cmd_add)
-            
+
         #save log
-        Globals.pref.svn_log_history.insert(0, self.text.GetValue())
+        self.pref.svn_log_history.insert(0, self.message.GetValue())
         del Globals.pref.svn_log_history[30:]
-        Globals.pref.save()
-        return ['-m "%s"' % self.text.GetValue()] + add_files + files
+        self.pref.save()
+        return {'add_files':add_files, 'files':files, 
+            'message':self.message.GetValue()}
     
     def init(self):
         self.filelist = []
-        def _callback(text):
-            path = os.path.dirname(self.files)
-            length = len(path)
-            for line in text.splitlines():
-                line = line.strip()
-                if not line: continue
-                filename = line[7:]
-                ext = os.path.splitext(filename)[1]
-                if line[0] == '?':
-                    if self.filetype == 'all':
-                        self.filelist.append((False, filename[length+1:], filename, line[0]))
-                else:
-                    self.filelist.append((True, filename[length+1:], filename, line[0]))
+        def f():
+            import pysvn
+            client = pysvn.Client()
+            r = client.status(self.path, ignore=True)
+            if os.path.isfile(self.path):
+                self.path = os.path.dirname(self.path)
+            _len = len(self.path)
+            for node in r:
+                status = str(node['text_status'])
+                fname = node['path'][_len+1:]
+                if not fname:
+                    fname = '.'
+                if status != 'normal':
+                    self.filelist.append((node['is_versioned'], fname, node['path'],
+                        status))
                 
             if not self.filelist:
-                common.showmessage(self, tr("No files need to process."))
+                wx.CallAfter(common.showmessage, tr("No files need to process."))
                 return
             
-            self.load_data(self.filetype == 'all')
-                
-        cmd = '"%s" status %s' % (self.parent.pref.svn_exe, self.files)
-        pipe_command(cmd, _callback)
-        
-    def check_state(self):
-        count = {True:0, False:0}
-        for i in range(self.filenames.GetItemCount()):
-            count[self.filenames.getFlag(i)] += 1
-        if count[True] > 0 and count[False] > 0:
-            self.chkSelect.Set3StateValue(wx.CHK_UNDETERMINED)
-        elif count[True] > 0 and count[False] == 0:
-            self.chkSelect.Set3StateValue(wx.CHK_CHECKED)
-        else:
-            self.chkSelect.Set3StateValue(wx.CHK_UNCHECKED)
+            self.load_data(self.chkShowUnVersion.GetValue())
+            
+        wrap_run(f)
         
     def load_data(self, unversioned=True):
         color = {
-            'A':'#007F05',
-            'M':wx.BLACK,
-            'D':wx.RED,
+            'added':'#007F05',
+            'modified':wx.BLACK,
+            'deleted':wx.RED,
         }
         
-        self.filenames.DeleteAllItems()
+        self.list.DeleteAllItems()
         self.fileinfos = {}
         
         i = 0
@@ -413,17 +616,17 @@ class CommitDialog(wx.Dialog):
             ext = os.path.splitext(fname)[1]
             if flag == False:
                 if unversioned:
-                    index = self.filenames.addline([fname, ext, status.get(f, '')], False)
-                    item = self.filenames.GetItem(index)
+                    index = self.list.addline([fname, ext, f], False)
+                    item = self.list.GetItem(index)
                     item.SetTextColour('#999999')
-                    self.filenames.SetItem(item)
-                    self.fileinfos[self.filenames.GetItemData(index)] = (filename, False)
+                    self.list.SetItem(item)
+                    self.fileinfos[self.list.GetItemData(index)] = (filename, False)
             else:
-                index = self.filenames.insertline(i, [fname, ext, status.get(f, '')], True)
-                item = self.filenames.GetItem(index)
+                index = self.list.insertline(i, [fname, ext, f], True)
+                item = self.list.GetItem(index)
                 item.SetTextColour(color.get(f, wx.BLACK))
-                self.filenames.SetItem(item)
-                self.fileinfos[self.filenames.GetItemData(index)] = (filename, True)
+                self.list.SetItem(item)
+                self.fileinfos[self.list.GetItemData(index)] = (filename, True)
                 i += 1
         self.check_state()
         
@@ -440,62 +643,30 @@ class CommitDialog(wx.Dialog):
         
     def OnShowUnVersion(self, event):
         wx.CallAfter(self.load_data, event.IsChecked())
-        
-    def OnSelect(self, event):
-        value = event.GetEventObject().Get3StateValue()
-        if value == wx.CHK_UNCHECKED:
-            self.filenames.checkAll(False)
-        elif value == wx.CHK_CHECKED:
-            self.filenames.checkAll(True)
             
-    def OnCheck(self, index, f):
-        self.check_state()
-    
-class RevertDialog(CommitDialog):
-    filetype = 'ignore'
-    def __init__(self, parent, title, files):
-        wx.Dialog.__init__(self, parent, -1, style = wx.DEFAULT_DIALOG_STYLE, title = title, size=(600, 300))
-        self.parent = parent
-        self.files = files
-        self.fileinfos = {}
-        self.filelist = []
-        box = wx.BoxSizer(wx.VERTICAL)
-        self.filenames = CheckList.CheckList(self, columns=[
-                (tr("File"), 390, 'left'),
-                (tr("Extension"), 70, 'left'),
-                (tr("Status"), 100, 'left'),
+class ResultDialog(wx.Dialog):
+    def __init__(self, title=tr('Result')):
+        wx.Dialog.__init__(self, Globals.mainframe, -1, style = wx.DEFAULT_DIALOG_STYLE, title = title, size=(600, 300))
+        
+        self.sizer = box = ui.VBox(namebinding='widget').create(self).auto_layout()
+        self.list = CheckList.List(self, columns=[
+                (tr("Action"), 120, 'left'),
+                (tr("Path"), 400, 'left'),
                 ], style=wx.LC_REPORT | wx.SUNKEN_BORDER)
         
-        box.Add(self.filenames, 2, wx.ALL|wx.EXPAND, 5)
-        self.filenames.on_check = self.OnCheck
+        box.add(self.list, proportion=1, flag=wx.ALL|wx.EXPAND, border=5)
+        box.add(ui.Label, name='message')
+        box.add(ui.simple_buttons(), flag=wx.ALIGN_CENTER|wx.BOTTOM)
+        box.auto_fit(0)
+        self.btnOk.Disable()
+        self.btnCancel.Enable()
         
-        #add selection switch checkbox
-        self.chkSelect = wx.CheckBox(self, -1, tr('Select / deselect All'), 
-            style=wx.CHK_3STATE)
-        box.Add(self.chkSelect, 0, wx.LEFT, 5)
+    def update_message(self, message):
+        wx.CallAfter(self.message.SetLabel, message)
         
-        #add ok and cancel buttons
-        box2 = wx.BoxSizer(wx.HORIZONTAL)
-        self.btnOK = wx.Button(self, wx.ID_OK, tr("OK"))
-        self.btnOK.SetDefault()
-        box2.Add(self.btnOK, 0, wx.ALIGN_RIGHT|wx.RIGHT, 5)
-        btnCancel = wx.Button(self, wx.ID_CANCEL, tr("Cancel"))
-        box2.Add(btnCancel, 0, wx.ALIGN_LEFT|wx.LEFT, 5)
-        box.Add(box2, 0, wx.ALIGN_CENTER|wx.BOTTOM, 5)
-    
-        self.SetSizer(box)
-        self.SetAutoLayout(True)
+    def add(self, data):
+        wx.CallAfter(self.list.addline, data)
         
-        wx.EVT_CHECKBOX(self.chkSelect, self.chkSelect.GetId(), self.OnSelect)
-        
-        wx.CallAfter(self.init)
-
-    def GetValue(self):
-        files = []
-        for i in range(self.filenames.GetItemCount()):
-            if not self.filenames.getFlag(i):
-                continue
-            filename, flag = self.fileinfos[self.filenames.GetItemData(i)]
-            files.append(filename)
-        return files
-    
+    def finish(self):
+        self.btnCancel.Disable()
+        self.btnOk.Enable()

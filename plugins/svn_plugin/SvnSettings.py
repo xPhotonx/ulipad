@@ -192,3 +192,24 @@ class SVNSettings(wx.Dialog):
             
         return v
     
+def get_global_ignore():
+    v = GLOBAL_IGNORES
+    if wx.Platform == '__WXMSW__':
+        from modules import winreg
+        try:
+            key = winreg.Key(winreg.HKCU, r'Software\Tigris.org\Subversion\Config\miscellany')
+        except:
+            common.warn(tr("Maybe your subversion doesn't be installed or installed uncorrectly."))
+            raise
+        if 'global-ignores' in key.values:
+            v = key.values['global-ignores'].getvalue()
+    
+    else:
+        path = os.path.join(common.getHomeDir(), '.subversion')
+        if os.path.exists(path):
+            config = os.path.join(path, 'config')
+            servers = os.path.join(path, 'servers')
+            if os.path.exists(config) and os.path.exists(servers):
+                ini = dict4ini.DictIni(config, normal=True)
+                v = ini.miscellany.get('global-ignores', GLOBAL_IGNORES)
+    return v

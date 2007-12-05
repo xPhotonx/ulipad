@@ -28,13 +28,14 @@ from modules import common
 from modules.Debug import error
 
 def pref_init(pref):
-    pref.svn_exe = 'svn'
     pref.svn_log_history = []
     pref.svn_proxy_server = ''
     pref.svn_proxy_port = 0
     pref.svn_proxy_username = ''
     pref.svn_proxy_password = ''
     pref.svn_proxy_timeout = 0
+    pref.svn_urls = []
+    pref.svn_chckout_folder = ''
 Mixin.setPlugin('preference', 'init', pref_init)
 
 def other_popup_menu(dirwin, projectname, menus):
@@ -119,13 +120,12 @@ Mixin.setMixin('dirbrowser', 'OnVC_Settings', OnVC_Settings)
 _image_ids = {}
 def add_image(imagelist, image, imgindex):
     global _image_ids
-    from modules import common
     m = [
-        ('M', common.getpngimage('images/TortoiseModified.gif')),
-        ('A', common.getpngimage('images/TortoiseAdded.gif')),
-        ('!', common.getpngimage('images/TortoiseConflict.gif')),
-        ('D', common.getpngimage('images/TortoiseDeleted.gif')),
-        (' ', common.getpngimage('images/TortoiseInSubVersion.gif')),
+        ('modified', common.getpngimage('images/TortoiseModified.gif')),
+        ('added', common.getpngimage('images/TortoiseAdded.gif')),
+        ('conflicted', common.getpngimage('images/TortoiseConflict.gif')),
+        ('deleted', common.getpngimage('images/TortoiseDeleted.gif')),
+        ('normal', common.getpngimage('images/TortoiseInSubVersion.gif')),
     ]
     
     _image_ids[imgindex] = {}

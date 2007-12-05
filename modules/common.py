@@ -105,31 +105,46 @@ def get_app_filename(mainframe, filename):
     """
     return decode_string(os.path.normcase(os.path.join(mainframe.app.workpath, filename)), defaultfilesystemencoding)
 
-def showerror(win, errmsg):
+def showerror(*args):
     """show error message dialog
 
     win is parent window
     """
-    if not isinstance(errmsg, types.StringTypes):
-        errmsg = str(errmsg)
-    wx.MessageDialog(win, errmsg, tr("Error"), wx.OK | wx.ICON_INFORMATION).ShowModal()
+    if len(args) > 1:
+        win, message = args
+    else:
+        win = Globals.mainframe
+        message = args[0]
+    if not isinstance(message, types.StringTypes):
+        message = str(message)
+    wx.MessageDialog(win, message, tr("Error"), wx.OK | wx.ICON_INFORMATION).ShowModal()
 
-def showmessage(win, message):
+def showmessage(*args):
     """show message dialog
 
     win is parent window
     """
+    if len(args) > 1:
+        win, message = args
+    else:
+        win = Globals.mainframe
+        message = args[0]
     if not isinstance(message, types.StringTypes):
         message = str(message)
     wx.MessageDialog(win, message, tr("Message"), wx.OK | wx.ICON_INFORMATION).ShowModal()
 
-def setmessage(mainframe, message):
+def setmessage(*args):
     """show message in main frame statusbar
 
     mainframe is main frame
     """
 #    GenericDispatch.Dispatch(mainframe, mainframe.SetStatusText, message, 0)
-    wx.CallAfter(mainframe.SetStatusText, message, 0)
+    if len(args) > 1:
+        win, message = args
+    else:
+        win = Globals.mainframe
+        message = args[0]
+    wx.CallAfter(win.SetStatusText, message, 0)
 
 def getHomeDir():
     ''' Try to find user's home directory, otherwise return current directory.'''
