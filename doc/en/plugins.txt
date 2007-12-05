@@ -136,6 +136,34 @@ still exists in plugins folder. You should upgrade to the latest version, and
 check whether the plugins/winpdb is still exists, if it's existed, just remove
 it.
 
+pylint_plugin
+~~~~~~~~~~~~~~~~~~
+
+Using pylint module to check the syntax and convention of current python program.
+
+How to install it?
+=====================
+
+1. Install three package
+
+  * pylint http://www.logilab.org/project/pylint
+  * logilab-common http://www.logilab.org/project/logilab-common
+  * logilab-astng http://www.logilab.org/project/logilab-astng
+
+2. Check the pylint_plugin in [Tool]->[Plugin Manager...]
+
+3. Restart the UliPad
+
+How to run it?
+================
+
+[Tool]->[Pylint]
+
+Then it'll automatically check current python program syntax and convention.
+You'll see a panel appearing in the bottom pane.
+The attatchment is the interface. If you double click on one item,
+then the caret will automatically jump to the line.
+
 `[Return]`_
 
 .. _`[Return]`: index.htm

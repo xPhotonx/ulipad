@@ -335,6 +335,11 @@ ul.auto-toc {
 <li><a class="reference" href="#svn-plugin" id="id21" name="id21">1.20&nbsp;&nbsp;&nbsp;svn_plugin</a></li>
 <li><a class="reference" href="#emacskey" id="id22" name="id22">1.21&nbsp;&nbsp;&nbsp;emacskey</a></li>
 <li><a class="reference" href="#winpdb-discarded" id="id23" name="id23">1.22&nbsp;&nbsp;&nbsp;winpdb (Discarded)</a></li>
+<li><a class="reference" href="#pylint-plugin" id="id24" name="id24">1.23&nbsp;&nbsp;&nbsp;pylint_plugin</a><ul class="auto-toc">
+<li><a class="reference" href="#how-to-install-it" id="id25" name="id25">1.23.1&nbsp;&nbsp;&nbsp;How to install it?</a></li>
+<li><a class="reference" href="#how-to-run-it" id="id26" name="id26">1.23.2&nbsp;&nbsp;&nbsp;How to run it?</a></li>
+</ul>
+</li>
 </ul>
 </li>
 </ul>
@@ -440,7 +445,36 @@ manager dialog, maybe you are using the old version or winpdb plugin folder is
 still exists in plugins folder. You should upgrade to the latest version, and
 check whether the plugins/winpdb is still exists, if it's existed, just remove
 it.</p>
+</div>
+<div class="section">
+<h2><a class="toc-backref" href="#id24" id="pylint-plugin" name="pylint-plugin">1.23&nbsp;&nbsp;&nbsp;pylint_plugin</a></h2>
+<p>Using pylint module to check the syntax and convention of current python program.</p>
+<div class="section">
+<h3><a class="toc-backref" href="#id25" id="how-to-install-it" name="how-to-install-it">1.23.1&nbsp;&nbsp;&nbsp;How to install it?</a></h3>
+<ol class="arabic simple">
+<li>Install three package</li>
+</ol>
+<blockquote>
+<ul class="simple">
+<li>pylint <a class="reference" href="http://www.logilab.org/project/pylint">http://www.logilab.org/project/pylint</a></li>
+<li>logilab-common <a class="reference" href="http://www.logilab.org/project/logilab-common">http://www.logilab.org/project/logilab-common</a></li>
+<li>logilab-astng <a class="reference" href="http://www.logilab.org/project/logilab-astng">http://www.logilab.org/project/logilab-astng</a></li>
+</ul>
+</blockquote>
+<ol class="arabic simple" start="2">
+<li>Check the pylint_plugin in [Tool]-&gt;[Plugin Manager...]</li>
+<li>Restart the UliPad</li>
+</ol>
+</div>
+<div class="section">
+<h3><a class="toc-backref" href="#id26" id="how-to-run-it" name="how-to-run-it">1.23.2&nbsp;&nbsp;&nbsp;How to run it?</a></h3>
+<p>[Tool]-&gt;[Pylint]</p>
+<p>Then it'll automatically check current python program syntax and convention.
+You'll see a panel appearing in the bottom pane.
+The attatchment is the interface. If you double click on one item,
+then the caret will automatically jump to the line.</p>
 <p><a class="reference" href="index.htm">[Return]</a></p>
+</div>
 </div>
 </div>
 </div>
