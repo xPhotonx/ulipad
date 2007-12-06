@@ -33,11 +33,11 @@
 import wx
 import os
 from modules import Globals
-from modules import Casing
 from modules import common
 from modules import meide as ui
-from modules.Debug import error
-from modules import CheckList
+from Dialogs import (AddDialog, RevertDialog, CommitDialog, 
+    ResultDialog, GetServerTrust, GetCredentials, LogMessage)
+from tools import wrap_run, CallFunctionOnMainThread
 
 #export functions
 ################################################################
@@ -132,7 +132,7 @@ class Command(object):
             if self.result:
                 self.result.finish()
                 
-        wrap_run(f, callback)
+        wrap_run(f, callback, result=self.result)
             
     def list(self, callback=None):
         self._begin()
@@ -208,7 +208,7 @@ class Command(object):
                 r = client.add(values, False)
                 if self.result:
                     self.result.finish()
-            wrap_run(f, callback)
+            wrap_run(f, callback, result=self.result)
             
     def revert(self, callback):
         self._begin()
@@ -227,7 +227,7 @@ class Command(object):
                 r = client.revert(values, False)
                 if self.result:
                     self.result.finish()
-            wrap_run(f, callback)
+            wrap_run(f, callback, result=self.result)
             
     def rename(self, callback):
         self._begin()
@@ -263,7 +263,7 @@ class Command(object):
             if self.result:
                 self.result.finish()
                 
-        wrap_run(f, callback)
+        wrap_run(f, callback, result=self.result)
     
     def commit(self, callback):
         self._begin()
@@ -284,17 +284,16 @@ class Command(object):
                 r = client.checkin(values['add_files'] + values['files'], values['message'])
                 if self.result:
                     self.result.finish()
-            wrap_run(f, callback)
+            wrap_run(f, callback, result=self.result)
             
     def get_client(self, flag=['notify', 'get_log_message', 'get_login', 'ssl_server_trust_prompt', 'cancel']):
         client = self.svn.Client()
         if 'notify' in flag:
             client.callback_notify  = self.cbk_update
         if 'get_log_message' in flag:
-            client.callback_get_log_message = self.cbk_get_log_message
+            client.callback_get_log_message = CallFunctionOnMainThread(self.cbk_get_log_message)
         if 'get_login' in flag:
             client.callback_get_login = CallFunctionOnMainThread(self.cbk_get_login)
-#            client.callback_get_login = self.cbk_get_login
         if 'ssl_server_trust_prompt' in flag:
             client.callback_ssl_server_trust_prompt = CallFunctionOnMainThread(self.cbk_ssl_server_trust_prompt)
         if 'cancel' in flag:
@@ -302,26 +301,23 @@ class Command(object):
         return client
         
     def cbk_update(self, event):
-        try:
-            if event['error']:
-                self.result.add([tr('error'), event['error']])
+        if event['error']:
+            self.result.add([tr('error'), event['error']])
+        else:
+            action = str(event['action'])
+            if action.startswith('update_'):
+                action = action[7:]
+            elif action.startswith('commit_'):
+                action = action[7:]
+                
+            if action == 'update':
+                return
+            elif action == 'completed':
+                action = 'completed'
+                path = 'At version %d' % event['revision'].number
             else:
-                action = str(event['action'])
-                if action.startswith('update_'):
-                    action = action[7:]
-                elif action.startswith('commit_'):
-                    action = action[7:]
-                    
-                if action == 'update':
-                    return
-                elif action == 'completed':
-                    action = 'completed'
-                    path = 'At version %d' % event['revision'].number
-                else:
-                    path = event['path']
-                self.result.add([action, path])
-        except:
-            error.traceback()
+                path = event['path']
+            self.result.add([action, path])
             
     def cbk_ssl_server_trust_prompt(self, trust_data):
         realm = trust_data['realm']
@@ -356,7 +352,13 @@ class Command(object):
         return ret, username.encode('utf-8'), password.encode('utf-8'), save
 
     def cbk_get_log_message(self):
-        common.showerror(tr("Log message cann't be empty!"))
+        dlg = LogMessage(Globals.mainframe)
+        message = ''
+        if dlg.ShowModal() == wx.ID_OK:
+            message = dlg.GetValue()
+        dlg.Destroy()
+        if message:
+            return True, message.encode('utf-8')
         return False, ''
     
     def cbk_cancel(self):
@@ -375,21 +377,6 @@ def show_in_message_win(text, clear=True, goto_end=False):
         win.messagewindow.GotoPos(win.messagewindow.GetTextLength())
     else:
         win.messagewindow.GotoPos(0)
-    
-def wrap_run(func, callback=None, begin_msg=tr('Processing...'), end_msg='', finish_msg='Finished!'):
-    def f():
-        common.setmessage(begin_msg)
-        try:
-            try:
-                func()
-                if callback:
-                    callback()
-            except Exception, e:
-                error.traceback()
-                common.showerror(str(e))
-        finally:
-            common.setmessage(end_msg)
-    Casing.Casing(f).start_thread()
     
 def get_entries(path):
     import pysvn
@@ -467,355 +454,4 @@ class CheckoutDialog(wx.Dialog):
             self.pref.save()
         event.Skip()
 
-class AddDialog(wx.Dialog):
-    def __init__(self, parent, title, path):
-        wx.Dialog.__init__(self, parent, -1, style = wx.DEFAULT_DIALOG_STYLE, title = title, size=(400, 300))
-        self.path = path
-        
-        self.sizer = box = ui.VBox(namebinding='widget').create(self).auto_layout()
-        self.list = CheckList.CheckList(self, columns=[
-                (tr("File"), 380, 'left'),
-                ], style=wx.LC_REPORT | wx.SUNKEN_BORDER)
-        
-        box.add(self.list, proportion=1, flag=wx.ALL|wx.EXPAND, border=5)
-        self.list.on_check = self.OnCheck
-        
-        #add selection switch checkbox
-        box.add(ui.Check3D(2, tr('Select / deselect All')), name='select').bind('check', self.OnSelect)
-        
-        box.add(ui.simple_buttons(), flag=wx.ALIGN_CENTER|wx.BOTTOM)
-        self.btnOk.SetDefault()
-        
-        self.init()
 
-    def init(self):
-        def f():
-            from SvnSettings import get_global_ignore
-            ignore = [x[1:] for x in get_global_ignore().split()]
-            
-            import pysvn
-            client = pysvn.Client()
-            r = client.status(self.path)
-            files = {}
-            for node in r:
-                files[node['path']] = node['is_versioned']
-            if os.path.isfile(self.path) and not files.get(self.path, False):
-                wx.CallAfter(self.list.addline, [os.path.basename(self.path)], flag=True)
-                self.path = os.path.dirname(self.path)
-            else:
-                if not files.get(self.path, False):
-                    wx.CallAfter(self.list.addline, ['.'], flag=True)
-                _len = len(self.path)
-                for curpath, dirs, fs in os.walk(self.path):
-                    if '.svn' in curpath:
-                        continue
-                    for fname in fs:
-                        ext = os.path.splitext(fname)[1]
-                        if ext in ignore:
-                            continue
-                        filename = os.path.join(curpath, fname)
-                        if not files.get(filename, False):
-                              wx.CallAfter(self.list.addline, [filename[_len+1:]], flag=True)
-
-        wrap_run(f)
-        
-    def GetValue(self):
-        files = []
-        for i in range(self.list.GetItemCount()):
-            if not self.list.getFlag(i):
-                continue
-            f = self.list.getCell(i, 0)
-            if f == '.':
-                f = self.path
-            else:
-                f = os.path.join(self.path, f)
-            files.append(f)
-        return files
-    
-    def check_state(self):
-        count = {True:0, False:0}
-        for i in range(self.list.GetItemCount()):
-            count[self.list.getFlag(i)] += 1
-        if count[True] > 0 and count[False] > 0:
-            self.select.Set3StateValue(wx.CHK_UNDETERMINED)
-        elif count[True] > 0 and count[False] == 0:
-            self.select.Set3StateValue(wx.CHK_CHECKED)
-        else:
-            self.select.Set3StateValue(wx.CHK_UNCHECKED)
-    
-    def OnCheck(self, index, f):
-        self.check_state()
-    
-    def OnSelect(self, event):
-        value = event.GetEventObject().Get3StateValue()
-        if value == wx.CHK_UNCHECKED:
-            self.list.checkAll(False)
-        elif value == wx.CHK_CHECKED:
-            self.list.checkAll(True)
-
-class RevertDialog(AddDialog):
-    def __init__(self, title, path):
-        wx.Dialog.__init__(self, Globals.mainframe, -1, style = wx.DEFAULT_DIALOG_STYLE, title = title, size=(450, 300))
-        self.path = path
-        
-        self.sizer = box = ui.VBox(namebinding='widget').create(self).auto_layout()
-        self.list = CheckList.CheckList(self, columns=[
-                (tr("File"), 300, 'left'),
-                (tr("Text Status"), 100, 'left'),
-                ], style=wx.LC_REPORT | wx.SUNKEN_BORDER)
-        
-        box.add(self.list, proportion=1, flag=wx.ALL|wx.EXPAND, border=5)
-        self.list.on_check = self.OnCheck
-        
-        #add selection switch checkbox
-        box.add(ui.Check3D(2, tr('Select / deselect All')), name='select').bind('check', self.OnSelect)
-        
-        box.add(ui.simple_buttons(), flag=wx.ALIGN_CENTER|wx.BOTTOM)
-        self.btnOk.SetDefault()
-        
-        self.init()
-        
-    def init(self):
-        def f():
-            import pysvn
-            client = pysvn.Client()
-            r = client.status(self.path)
-            if os.path.isfile(self.path):
-                self.path = os.path.dirname(self.path)
-            _len = len(self.path)
-            for node in r:
-                status = str(node['text_status'])
-                if  status in ('modified', 'added', 'deleted'):
-                    fname = node['path'][_len+1:]
-                    if not fname:
-                        fname = '.'
-                    wx.CallAfter(self.list.addline, [fname, status], flag=True)
-    
-        wrap_run(f)
-        
-class CommitDialog(AddDialog):
-    def __init__(self, title, path):
-        wx.Dialog.__init__(self, Globals.mainframe, -1, style = wx.DEFAULT_DIALOG_STYLE, title = title, size=(600, 500))
-        self.pref = Globals.pref
-        self.path = path
-        self.fileinfos = {}
-        self.filelist = []
-        
-        self.sizer = box = ui.VBox(namebinding='widget').create(self).auto_layout()
-        
-        box1 = box.add(ui.VGroup(tr("Message")))
-        box1.add(ui.Button(tr("Recent Messages"))).bind('click', self.OnHisMsg)
-        box1.add(ui.MultiText, name='message')
-
-        #add filenames list
-        self.list = CheckList.CheckList(self, columns=[
-                (tr("File"), 390, 'left'),
-                (tr("Extension"), 70, 'left'),
-                (tr("Status"), 100, 'left'),
-                ], style=wx.LC_REPORT | wx.SUNKEN_BORDER)
-        
-        box.add(self.list, proportion=2, flag=wx.EXPAND|wx.ALL, border=5)
-        self.list.on_check = self.OnCheck
-        
-        box.add(
-            ui.Check(True, tr('Show unversioned files')), 
-            name='chkShowUnVersion').bind('check', self.OnShowUnVersion)
-        box.add(
-            ui.Check3D(False, tr('Select / deselect All')),
-            name='select').bind('check', self.OnSelect)
-        
-        box.add(ui.simple_buttons(), flag=wx.ALIGN_CENTER|wx.BOTTOM)
-        self.btnOk.SetDefault()
-        
-        box.auto_fit(0)
-        
-        wx.CallAfter(self.init)
-
-    def GetValue(self):
-        add_files = []
-        files = []
-        for i in range(self.list.GetItemCount()):
-            if not self.list.getFlag(i):
-                continue
-            filename, flag = self.fileinfos[self.list.GetItemData(i)]
-            if flag:
-                files.append(filename)
-            else:
-                add_files.append(filename)
-
-        #save log
-        self.pref.svn_log_history.insert(0, self.message.GetValue())
-        del Globals.pref.svn_log_history[30:]
-        self.pref.save()
-        return {'add_files':add_files, 'files':files, 
-            'message':self.message.GetValue()}
-    
-    def init(self):
-        self.filelist = []
-        def f():
-            import pysvn
-            client = pysvn.Client()
-            r = client.status(self.path, ignore=True)
-            if os.path.isfile(self.path):
-                self.path = os.path.dirname(self.path)
-            _len = len(self.path)
-            for node in r:
-                status = str(node['text_status'])
-                fname = node['path'][_len+1:]
-                if not fname:
-                    fname = '.'
-                if status != 'normal':
-                    self.filelist.append((node['is_versioned'], fname, node['path'],
-                        status))
-                
-            if not self.filelist:
-                wx.CallAfter(common.showmessage, tr("No files need to process."))
-                return
-            
-            self.load_data(self.chkShowUnVersion.GetValue())
-            
-        wrap_run(f)
-        
-    def load_data(self, unversioned=True):
-        color = {
-            'added':'#007F05',
-            'modified':wx.BLACK,
-            'deleted':wx.RED,
-        }
-        
-        self.list.DeleteAllItems()
-        self.fileinfos = {}
-        
-        i = 0
-        for flag, fname, filename, f in self.filelist:
-            ext = os.path.splitext(fname)[1]
-            if flag == False:
-                if unversioned:
-                    index = self.list.addline([fname, ext, f], False)
-                    item = self.list.GetItem(index)
-                    item.SetTextColour('#999999')
-                    self.list.SetItem(item)
-                    self.fileinfos[self.list.GetItemData(index)] = (filename, False)
-            else:
-                index = self.list.insertline(i, [fname, ext, f], True)
-                item = self.list.GetItem(index)
-                item.SetTextColour(color.get(f, wx.BLACK))
-                self.list.SetItem(item)
-                self.fileinfos[self.list.GetItemData(index)] = (filename, True)
-                i += 1
-        self.check_state()
-        
-    def OnHisMsg(self, event):
-        dlg = wx.SingleChoiceDialog(
-                self, tr('Select one log'), tr('Log History'),
-                Globals.pref.svn_log_history, 
-                wx.CHOICEDLG_STYLE
-                )
-        
-        if dlg.ShowModal() == wx.ID_OK:
-            self.text.SetValue(dlg.GetStringSelection())
-        dlg.Destroy()
-        
-    def OnShowUnVersion(self, event):
-        wx.CallAfter(self.load_data, event.IsChecked())
-            
-class ResultDialog(wx.Dialog):
-    def __init__(self, parent, title=tr('Result')):
-        wx.Dialog.__init__(self, Globals.mainframe, -1, style = wx.DEFAULT_DIALOG_STYLE, title = title, size=(600, 300))
-        
-        self.parent = parent
-        self.sizer = box = ui.VBox(namebinding='widget').create(self).auto_layout()
-        self.list = CheckList.List(self, columns=[
-                (tr("Action"), 120, 'left'),
-                (tr("Path"), 400, 'left'),
-                ], style=wx.LC_REPORT | wx.SUNKEN_BORDER)
-        
-        box.add(self.list, proportion=1, flag=wx.ALL|wx.EXPAND, border=5)
-        box.add(ui.Label, name='message')
-        box.add(ui.simple_buttons(), flag=wx.ALIGN_CENTER|wx.BOTTOM)
-        
-        box.bind('btnCancel', 'click', self.OnCancel)
-        box.auto_fit(0)
-        self.btnOk.Disable()
-        self.btnCancel.Enable()
-        
-    def update_message(self, message):
-        wx.CallAfter(self.message.SetLabel, message)
-        
-    def add(self, data):
-        wx.CallAfter(self.list.addline, data)
-        
-    def finish(self):
-        self.btnCancel.Disable()
-        self.btnOk.Enable()
-        
-    def OnCancel(self, event):
-        self.parent.cancel = True
-        event.Skip()
-
-class GetServerTrust(wx.Dialog):
-    def __init__(self, parent, realm, info_list, may_save):
-        wx.Dialog.__init__( self, parent, -1, tr('Trust server %s') % realm )
-
-        self.sizer = sizer = ui.VBox(namebinding='widget').create(self).auto_layout()
-        box = sizer.add(ui.VGroup(tr('Server Certificate')))
-        box1 = box.add(ui.SimpleGrid)
-        for key, value in info_list:
-            box1.add(key, ui.Text(value, style=wx.TE_READONLY))
-         
-        sizer.add(ui.Check(may_save, tr("Always trust this server")), name='save')
-
-        sizer.add(ui.simple_buttons(), flag=wx.ALIGN_CENTER|wx.BOTTOM)
-        sizer.auto_fit(1)
-
-        self.CentreOnParent()
-
-    def GetValue(self):
-        return self.save.GetValue()
-
-class GetCredentials(wx.Dialog):
-    def __init__(self, parent, title, username, may_save):
-        wx.Dialog.__init__(self, parent, -1, title, size=(300, -1))
-
-        self.sizer = sizer = ui.VBox(namebinding='widget').create(self).auto_layout()
-        box = sizer.add(ui.VGroup(tr('Credentials')))
-        box1 = box.add(ui.SimpleGrid)
-        box1.add(tr('Username:'), ui.Text, name='username')
-        box1.add(tr('Password:'), ui.Password, name='password')
-        sizer.add(ui.Check(may_save, tr('Always uses these credentials')), name='save')
-        
-        sizer.add(ui.simple_buttons(), flag=wx.ALIGN_CENTER|wx.BOTTOM)
-        sizer.auto_fit(1)
-        
-        self.CentreOnParent()
-
-    def GetValue(self):
-        return self.username.GetValue(), self.password.GetValue(), self.save.GetValue()
-        
-import threading
-class CallFunctionOnMainThread:
-    def __init__(self, function):
-        self.function = function
-
-        self.cv = threading.Condition()
-        self.result = None
-
-    def __call__(self, *args):
-        self.cv.acquire()
-
-        wx.CallAfter(self._onMainThread, *args)
-
-        self.cv.wait()
-        self.cv.release()
-
-        return self.result
-
-    def _onMainThread(self, *args):
-        try:
-            self.result = self.function(*args)
-        finally:
-            pass
-        
-        self.cv.acquire()
-        self.cv.notify()
-        self.cv.release()
