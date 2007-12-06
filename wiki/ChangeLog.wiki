@@ -1,9 +1,52 @@
+#labels Featured
 #Change log of UliPad releases
 
 Current lastest version is 3.7
 
+= 3.8 Version 2007/12/06 =
 
-= 3.7 Version =
+New Features and Changes:
+
+ # Add mako template syntax highlight support
+ # Add new option in preference, [Python]->Automatically save modified file when running python program, if it's checked, it'll automatically save the modified file.
+ # Add Shift+Delete => Cut, Shift+Insert => Paste
+ # Upgrade winpdb to lastest version
+ # Now you can set pythonpath option in config.ini/[default], and ulipad will insert it into the sys.path. pythonpath can be a string or a string list of directory.
+ # Svn support, you should install pysvn first, and also support proxy.
+ # Change long line indicator default is true.
+ # Add doctest support, you can run the doctest of current document in UliPad
+ # Add time stamp info in debug and error file
+ # Replace the shell window popup menu, and add Copy Without Prompts and Paste and Run menu items. And if the result cann't be convert to unicode, then display the result as repr().
+ # Script Manager can find menu name from the script content, you can define it as a comment line, format is: #\s*name:(.*)$
+ # Add Run in Shell menu item in Editor context menu
+ # Add script and shell key binding. Change Shell to External Tool
+ # Change Find in Files dialog to panel
+ # Using meide module to create Preference dialog
+ # Add an option to control if show the docstring in class browser window.
+ # Don't create a tmp file again, directly save the file
+ # Improve Find in Files process with thread
+ # Add some config.ini options support in Preference Dialog
+ # Refactor Find & Replace with pane, but not dialog
+ # Made Open Command Here work in Linux
+ # Add dropfile plugin. thanks Tyberius Prime. Now you can drop files on toolbar, then UliPad will open it. Just like drop files on Directory Browser window.
+ # Add new custom lexer class and refactor related lexer process
+ # Upgrade FlatNotebook.py to lastest version, thanks to swordsp
+ # Improve default identifiers process, add type judgement
+
+Bug fix:
+
+ # Fix print bug, add print line number functionality
+ # Fix snippet template indent bug(when using tab mode, the '\t' in template will be replaced with spaces). And you can press Alt+Q to cancel current snippet.
+ # Fix press Ctrl+B jump position is not correct bug.
+ # Fix that when you change the file type, the icon in directory and dynamic menu don't change bug
+ # Fix line number margin width, and find back End-of-line Marker menu
+ # Fix adding empty directory error
+ # Fix open un-exists file will popup two message dialog bug
+ # Fix line end mix checking bug also including twice prompt dialog bug
+ # Fix webbrowser bug. Thanks Tom Eubank
+ # Fix message console postion bug, thanks for swordsp
+
+= 3.7 Version 2007/08/19 =
 
 New Features and Changes:
 
