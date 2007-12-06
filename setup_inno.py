@@ -78,7 +78,7 @@ def gather_data_files(module, base_dir):
                 s.append(desfname)
     return s
 
-includes = ["modules.EasyGuider.*", "modules.meteor.*"]
+includes = ["modules.EasyGuider.*", "modules.meteor.*", "modules.*"]
 packages = ["docutils"]
 options = {
         "py2exe":
@@ -278,7 +278,7 @@ setup(
         name = "UliPad",
         author = "limodou",
         author_email="limodou@gmail.com",
-        url="http://wiki.woodpecker.org.cn/moin/UliPad",
+        url="http://code.google.com/p/ulipad/",
 
         options = options,
         # The lib directory contains everything except the executables and the python dll.

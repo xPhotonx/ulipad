@@ -72,7 +72,7 @@ def other_popup_menu(dirwin, projectname, menus):
                 (150, 'IDPM_VC_COMMANDS_ADD', tr('&Add'), wx.ITEM_NORMAL, 'OnVC_DoCommand', ''),
                 (160, 'IDPM_VC_COMMANDS_RENAME', tr('&Rename'), wx.ITEM_NORMAL, 'OnVC_DoCommand', ''),
                 (170, 'IDPM_VC_COMMANDS_DELETE', tr('&Delete'), wx.ITEM_NORMAL, 'OnVC_DoCommand', ''),
-                (180, 'IDPM_VC_COMMANDS_REVERSE', tr('&Revert'), wx.ITEM_NORMAL, 'OnVC_DoCommand', ''),
+                (180, 'IDPM_VC_COMMANDS_REVERSE', tr('Re&vert'), wx.ITEM_NORMAL, 'OnVC_DoCommand', ''),
                 (190, '', '-', wx.ITEM_SEPARATOR, None, ''),
                 (200, 'IDPM_VC_COMMANDS_EXPORT', tr('&Export'), wx.ITEM_NORMAL, 'OnVC_DoCommand', ''),
                 (210, '', '-', wx.ITEM_SEPARATOR, None, ''),
