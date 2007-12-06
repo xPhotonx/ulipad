@@ -28,7 +28,7 @@ New Features and Changes:
  # Add some config.ini options support in Preference Dialog
  # Refactor `Find & Replace` with pane, but not dialog
  # Made `Open Command Here` work in Linux
- # Add dropfile plugin. thanks Tyberius Prime. Now you can drop files on toolbar, then UliPad will open it. Just like drop files on Directory Browser window.
+ # Add dropfile plugin. thanks Tyberius Prime. Now you can drop files on toolbar, then `UliPad` will open it. Just like drop files on Directory Browser window.
  # Add new custom lexer class and refactor related lexer process
  # Upgrade `FlatNotebook.py` to lastest version, thanks to swordsp
  # Improve default identifiers process, add type judgement
