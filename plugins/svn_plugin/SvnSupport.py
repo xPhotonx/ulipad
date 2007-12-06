@@ -93,7 +93,7 @@ class Command(object):
             return
         export_path = os.path.join(path, os.path.basename(url))
         if os.path.exists(export_path):
-            dlg = wx.MessageDialog(dirwin, tr("The directory is existed, do you want to overwrite it?"), 
+            dlg = wx.MessageDialog(dirwin, tr("The directory [%s] is existed, \ndo you want to overwrite it?") % export_path, 
                 tr("Export"), wx.YES_NO|wx.ICON_QUESTION)
             answer = dlg.ShowModal()
             dlg.Destroy()
@@ -102,6 +102,9 @@ class Command(object):
             force = True
         else:
             force = False
+            
+        def callback():
+            common.showmessage(tr('Export completed!'))
             
         def f():
             client = self.get_client([])
@@ -151,7 +154,7 @@ class Command(object):
     def status(self, callback=None):
         self._begin()
         def f():
-            client = self.get_client([])
+            client = self.get_client()
             r = client.status(self.path, ignore=True)
             s = []
             fmt = "%(path)-60s %(text_status)-20s"
@@ -167,7 +170,7 @@ class Command(object):
         def f():
             import time
             
-            client = self.get_client([])
+            client = self.get_client()
             r = client.log(self.path)
             s = []
             fmt = ("%(message)s\n" + '-'*70 + 
@@ -371,6 +374,8 @@ def show_in_message_win(text, clear=True, goto_end=False):
     win = Globals.mainframe
     win.createMessageWindow()
     win.panel.showPage(tr('Message'))
+    ro = win.messagewindow.GetReadOnly()
+    win.messagewindow.SetReadOnly(0)
     if clear:
         win.messagewindow.SetText('')
     win.messagewindow.AddText(text)
@@ -378,6 +383,7 @@ def show_in_message_win(text, clear=True, goto_end=False):
         win.messagewindow.GotoPos(win.messagewindow.GetTextLength())
     else:
         win.messagewindow.GotoPos(0)
+    win.messagewindow.SetReadOnly(ro)
     
 def get_entries(path):
     import pysvn
