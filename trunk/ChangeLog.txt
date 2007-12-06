@@ -3,6 +3,11 @@ $Rev$
 DirBrowser.py       Fix add new directory, when opened if there are children nodes,
                     then will not fire after_expanding event bug
 svn_plugin          Migirate svn tool to svn_plugin                    
+mRun.py             If the caret is at the last line of the message window, after
+                    more lines adding to message window, the caret will goto the 
+                    end position, but if the caret is not at the last line, but
+                    middle of the lines, after adding lines, the caret will not
+                    jump to the end.
                     
 [2007/11/28]
 mRun.py             Fix message console postion bug, thanks for swordsp

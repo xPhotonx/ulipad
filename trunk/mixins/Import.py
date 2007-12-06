@@ -3496,7 +3496,6 @@ def OnProcessEnded(win, event):
 Mixin.setMixin('mainframe', 'OnProcessEnded', OnProcessEnded)
 
 def appendtext(win, text):
-    win.GotoPos(win.GetLength())
     if not isinstance(text, unicode):
         try:
             text = unicode(text, common.defaultencoding)
@@ -3507,8 +3506,11 @@ def appendtext(win, text):
                 else:
                     return x
             text = ''.join(map(f, text))
-    win.AddText(text)
-    win.GotoPos(win.GetLength())
+    win.SetReadOnly(0)
+    flag = win.GetCurrentLine() == win.GetLineCount() - 1
+    win.AppendText(text)
+    if flag:
+        win.GotoPos(win.GetLength())
     win.EmptyUndoBuffer()
 input_appendtext = appendtext
 
