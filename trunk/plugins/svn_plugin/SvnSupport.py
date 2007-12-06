@@ -285,7 +285,7 @@ class Command(object):
                 if values['add_files']:
                     client.add(values['add_files'], False)
                 client.checkin(values['add_files'] + values['files'], values['message'])
-                client.update('', False)
+                client.update('.', False)
                 if self.result:
                     self.result.finish()
             wrap_run(f, callback, result=self.result)
