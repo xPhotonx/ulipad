@@ -5,7 +5,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
-"POT-Creation-Date: Fri Sep 21 17:53:29 2007\n"
+"POT-Creation-Date: Thu Dec 06 20:07:44 2007\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -15,245 +15,284 @@ msgstr ""
 "Generated-By: pygettext.py 1.5\n"
 
 
-#: ..\plugins\svn_plugin\SvnSettings.py:30
-msgid "SVN Settings"
-msgstr ""
-
-#: ..\plugins\svn_plugin\SvnSettings.py:43
-msgid "Subversion client"
-msgstr ""
-
-#: ..\plugins\svn_plugin\SvnSettings.py:44
-msgid "Select location of subversion client"
-msgstr ""
-
-#: ..\plugins\svn_plugin\SvnSettings.py:45
-msgid "Global ignores"
-msgstr ""
-
-#: ..\plugins\svn_plugin\SvnSettings.py:46
-msgid "Multiple ignores should be delimeted by space"
-msgstr ""
-
-#: ..\plugins\svn_plugin\SvnSettings.py:48
-msgid "Enable proxy server"
-msgstr ""
-
-#: ..\plugins\svn_plugin\SvnSettings.py:50
-msgid "Proxy settings"
-msgstr ""
-
-#: ..\plugins\svn_plugin\SvnSettings.py:53
-msgid "Server Address"
-msgstr ""
-
-#: ..\plugins\svn_plugin\SvnSettings.py:55
-msgid "Port"
-msgstr ""
-
-#: ..\plugins\svn_plugin\SvnSettings.py:57
-msgid "Username"
-msgstr ""
-
-#: ..\plugins\svn_plugin\SvnSettings.py:59
-msgid "Password"
-msgstr ""
-
-#: ..\plugins\svn_plugin\SvnSettings.py:61
-msgid "Proxy timeout in seconds"
-msgstr ""
-
-#: ..\plugins\svn_plugin\SvnSettings.py:100
-#: ..\plugins\svn_plugin\SvnSettings.py:107
-#: ..\plugins\svn_plugin\SvnSettings.py:134
-#: ..\plugins\svn_plugin\SvnSettings.py:145
-msgid "Maybe your subversion doesn't be installed or installed uncorrectly."
-msgstr ""
-
-#: ..\plugins\svn_plugin\SvnSupport.py:43
-msgid "non-versioned"
-msgstr ""
-
-#: ..\plugins\svn_plugin\SvnSupport.py:44
-msgid "modified"
-msgstr ""
-
-#: ..\plugins\svn_plugin\SvnSupport.py:45
-msgid "added"
-msgstr ""
-
-#: ..\plugins\svn_plugin\SvnSupport.py:46
-msgid "deleted"
-msgstr ""
-
-#: ..\plugins\svn_plugin\SvnSupport.py:47
-msgid "normal"
-msgstr ""
-
-#: ..\plugins\svn_plugin\SvnSupport.py:48
-msgid "missing"
-msgstr ""
-
-#: ..\plugins\svn_plugin\SvnSupport.py:49
-msgid "ignored"
-msgstr ""
-
-#: ..\plugins\svn_plugin\SvnSupport.py:50
-msgid "conflict"
-msgstr ""
-
-#: ..\plugins\svn_plugin\SvnSupport.py:74
-msgid ""
-"You should set the version control settings\n"
-"first in Preference Dialog."
-msgstr ""
-
-#: ..\plugins\svn_plugin\SvnSupport.py:78
-msgid "Unsupported command [%s]"
-msgstr ""
-
-#: ..\plugins\svn_plugin\SvnSupport.py:91
-msgid "The directory is existed, do you want to overwrite it?"
-msgstr ""
-
-#: ..\plugins\svn_plugin\SvnSupport.py:92 ..\plugins\svn_plugin\__init__.py:74
-msgid "Export"
-msgstr ""
-
-#: ..\plugins\svn_plugin\SvnSupport.py:183
-msgid "Select directory:"
-msgstr ""
-
-#: ..\plugins\svn_plugin\SvnSupport.py:191
-msgid "New name"
-msgstr ""
-
-#: ..\plugins\svn_plugin\SvnSupport.py:192
-#: ..\plugins\svn_plugin\__init__.py:70
-msgid "Rename"
-msgstr ""
-
-#: ..\plugins\svn_plugin\SvnSupport.py:201
-msgid "URL of repository:"
-msgstr ""
-
-#: ..\plugins\svn_plugin\SvnSupport.py:202
-msgid "Checkout Directory"
-msgstr ""
-
-#: ..\plugins\svn_plugin\SvnSupport.py:203
-msgid "Revision"
-msgstr ""
-
-#: ..\plugins\svn_plugin\SvnSupport.py:206
-msgid "Checkout"
-msgstr ""
-
-#: ..\plugins\svn_plugin\SvnSupport.py:222
-msgid "Commit"
-msgstr ""
-
-#: ..\plugins\svn_plugin\SvnSupport.py:229
-#: ..\plugins\svn_plugin\__init__.py:72
-msgid "Revert"
-msgstr ""
-
-#: ..\plugins\svn_plugin\SvnSupport.py:247
-msgid "Message"
-msgstr ""
-
-#: ..\plugins\svn_plugin\SvnSupport.py:250
-msgid "Recent Messages"
-msgstr ""
-
-#: ..\plugins\svn_plugin\SvnSupport.py:259
-#: ..\plugins\svn_plugin\SvnSupport.py:415
+#: ..\plugins\svn_plugin\Dialogs.py:39 ..\plugins\svn_plugin\Dialogs.py:125
+#: ..\plugins\svn_plugin\Dialogs.py:174
 msgid "File"
 msgstr ""
 
-#: ..\plugins\svn_plugin\SvnSupport.py:260
-#: ..\plugins\svn_plugin\SvnSupport.py:416
-msgid "Extension"
-msgstr ""
-
-#: ..\plugins\svn_plugin\SvnSupport.py:261
-#: ..\plugins\svn_plugin\SvnSupport.py:417
-#: ..\plugins\svn_plugin\__init__.py:66
-msgid "Status"
-msgstr ""
-
-#: ..\plugins\svn_plugin\SvnSupport.py:268
-msgid "Show unversioned files"
-msgstr ""
-
-#: ..\plugins\svn_plugin\SvnSupport.py:272
-#: ..\plugins\svn_plugin\SvnSupport.py:424
+#: ..\plugins\svn_plugin\Dialogs.py:46 ..\plugins\svn_plugin\Dialogs.py:133
+#: ..\plugins\svn_plugin\Dialogs.py:186
 msgid "Select / deselect All"
 msgstr ""
 
-#: ..\plugins\svn_plugin\SvnSupport.py:278
-#: ..\plugins\svn_plugin\SvnSupport.py:430
-msgid "OK"
+#: ..\plugins\svn_plugin\Dialogs.py:126
+msgid "Text Status"
 msgstr ""
 
-#: ..\plugins\svn_plugin\SvnSupport.py:281
-#: ..\plugins\svn_plugin\SvnSupport.py:433
-msgid "Cancel"
+#: ..\plugins\svn_plugin\Dialogs.py:168
+#: ..\plugins\svn_plugin\SvnSupport.py:376
+msgid "Message"
 msgstr ""
 
-#: ..\plugins\svn_plugin\SvnSupport.py:333
+#: ..\plugins\svn_plugin\Dialogs.py:169
+msgid "Recent Messages"
+msgstr ""
+
+#: ..\plugins\svn_plugin\Dialogs.py:175
+msgid "Extension"
+msgstr ""
+
+#: ..\plugins\svn_plugin\Dialogs.py:176
+msgid "Status"
+msgstr ""
+
+#: ..\plugins\svn_plugin\Dialogs.py:183
+msgid "Show unversioned files"
+msgstr ""
+
+#: ..\plugins\svn_plugin\Dialogs.py:236
 msgid "No files need to process."
 msgstr ""
 
-#: ..\plugins\svn_plugin\SvnSupport.py:383
+#: ..\plugins\svn_plugin\Dialogs.py:274
 msgid "Log History"
 msgstr ""
 
-#: ..\plugins\svn_plugin\SvnSupport.py:383
+#: ..\plugins\svn_plugin\Dialogs.py:274
 msgid "Select one log"
 msgstr ""
 
-#: ..\plugins\svn_plugin\__init__.py:46
-msgid "SVN Checkout"
+#: ..\plugins\svn_plugin\Dialogs.py:287
+msgid "Result"
 msgstr ""
 
-#: ..\plugins\svn_plugin\__init__.py:47
-msgid "SVN Commands"
+#: ..\plugins\svn_plugin\Dialogs.py:293
+msgid "Action"
 msgstr ""
 
-#: ..\plugins\svn_plugin\__init__.py:52
-msgid "Settings..."
+#: ..\plugins\svn_plugin\Dialogs.py:294
+msgid "Path"
 msgstr ""
 
-#: ..\plugins\svn_plugin\__init__.py:59
-msgid "SVN Update"
+#: ..\plugins\svn_plugin\Dialogs.py:322
+msgid "Trust server %s"
 msgstr ""
 
-#: ..\plugins\svn_plugin\__init__.py:60
-msgid "SVN Commit"
+#: ..\plugins\svn_plugin\Dialogs.py:325
+msgid "Server Certificate"
 msgstr ""
 
-#: ..\plugins\svn_plugin\__init__.py:64
-msgid "List"
+#: ..\plugins\svn_plugin\Dialogs.py:330
+msgid "Always trust this server"
 msgstr ""
 
-#: ..\plugins\svn_plugin\__init__.py:65
-msgid "Show log"
+#: ..\plugins\svn_plugin\Dialogs.py:345
+msgid "Credentials"
 msgstr ""
 
-#: ..\plugins\svn_plugin\__init__.py:67
-msgid "Diff"
+#: ..\plugins\svn_plugin\Dialogs.py:347
+msgid "Username:"
 msgstr ""
 
-#: ..\plugins\svn_plugin\__init__.py:69
+#: ..\plugins\svn_plugin\Dialogs.py:348
+msgid "Password:"
+msgstr ""
+
+#: ..\plugins\svn_plugin\Dialogs.py:349
+msgid "Always uses these credentials"
+msgstr ""
+
+#: ..\plugins\svn_plugin\Dialogs.py:361
+msgid "Input Log Message"
+msgstr ""
+
+#: ..\plugins\svn_plugin\SvnSettings.py:33
+msgid "SVN Settings"
+msgstr ""
+
+#: ..\plugins\svn_plugin\SvnSettings.py:44
+msgid "Global ignores"
+msgstr ""
+
+#: ..\plugins\svn_plugin\SvnSettings.py:45
+msgid "Multiple ignores should be delimeted by space"
+msgstr ""
+
+#: ..\plugins\svn_plugin\SvnSettings.py:47
+msgid "Enable proxy server"
+msgstr ""
+
+#: ..\plugins\svn_plugin\SvnSettings.py:49
+msgid "Proxy settings"
+msgstr ""
+
+#: ..\plugins\svn_plugin\SvnSettings.py:52
+msgid "Server Address"
+msgstr ""
+
+#: ..\plugins\svn_plugin\SvnSettings.py:54
+msgid "Port"
+msgstr ""
+
+#: ..\plugins\svn_plugin\SvnSettings.py:56
+msgid "Username"
+msgstr ""
+
+#: ..\plugins\svn_plugin\SvnSettings.py:58
+msgid "Password"
+msgstr ""
+
+#: ..\plugins\svn_plugin\SvnSettings.py:60
+msgid "Proxy timeout in seconds"
+msgstr ""
+
+#: ..\plugins\svn_plugin\SvnSettings.py:98
+#: ..\plugins\svn_plugin\SvnSettings.py:105
+#: ..\plugins\svn_plugin\SvnSettings.py:137
+#: ..\plugins\svn_plugin\SvnSettings.py:153
+#: ..\plugins\svn_plugin\SvnSettings.py:164
+#: ..\plugins\svn_plugin\SvnSettings.py:202
+msgid "Maybe your subversion doesn't be installed or installed uncorrectly."
+msgstr ""
+
+#: ..\plugins\svn_plugin\SvnSupport.py:60
+msgid "Don't support [%s] command!"
+msgstr ""
+
+#: ..\plugins\svn_plugin\SvnSupport.py:68
+msgid ""
+"You should install pysvn module first.\n"
+"You can get it from http://pysvn.tigris.org/"
+msgstr ""
+
+#: ..\plugins\svn_plugin\SvnSupport.py:96
+msgid ""
+"The directory [%s] is existed, \n"
+"do you want to overwrite it?"
+msgstr ""
+
+#: ..\plugins\svn_plugin\SvnSupport.py:97
+msgid "Export"
+msgstr ""
+
+#: ..\plugins\svn_plugin\SvnSupport.py:107
+msgid "Export completed!"
+msgstr ""
+
+#: ..\plugins\svn_plugin\SvnSupport.py:183
+msgid "<No Author>"
+msgstr ""
+
+#: ..\plugins\svn_plugin\SvnSupport.py:199
 msgid "Add"
 msgstr ""
 
-#: ..\plugins\svn_plugin\__init__.py:71
-msgid "Delete"
+#: ..\plugins\svn_plugin\SvnSupport.py:218
+msgid "Revert"
 msgstr ""
 
-#: ..\plugins\svn_plugin\__init__.py:197
+#: ..\plugins\svn_plugin\SvnSupport.py:238
+msgid "New name"
+msgstr ""
+
+#: ..\plugins\svn_plugin\SvnSupport.py:239
+msgid "Rename"
+msgstr ""
+
+#: ..\plugins\svn_plugin\SvnSupport.py:273
+msgid "Commit"
+msgstr ""
+
+#: ..\plugins\svn_plugin\SvnSupport.py:309
+msgid "error"
+msgstr ""
+
+#: ..\plugins\svn_plugin\SvnSupport.py:401
+msgid "Select directory:"
+msgstr ""
+
+#: ..\plugins\svn_plugin\SvnSupport.py:420
+msgid "Checkout"
+msgstr ""
+
+#: ..\plugins\svn_plugin\SvnSupport.py:425
+msgid "Repository"
+msgstr ""
+
+#: ..\plugins\svn_plugin\SvnSupport.py:426
+msgid "URL of repository:"
+msgstr ""
+
+#: ..\plugins\svn_plugin\SvnSupport.py:428
+msgid "Checkout Directory"
+msgstr ""
+
+#: ..\plugins\svn_plugin\SvnSupport.py:431
+#: ..\plugins\svn_plugin\SvnSupport.py:433
+msgid "Revision"
+msgstr ""
+
+#: ..\plugins\svn_plugin\__init__.py:49
+msgid "SVN Checkout"
+msgstr ""
+
+#: ..\plugins\svn_plugin\__init__.py:50
+msgid "SVN Commands"
+msgstr ""
+
+#: ..\plugins\svn_plugin\__init__.py:55
+msgid "Settings..."
+msgstr ""
+
+#: ..\plugins\svn_plugin\__init__.py:62
+msgid "SVN Update"
+msgstr ""
+
+#: ..\plugins\svn_plugin\__init__.py:63
+msgid "SVN Commit"
+msgstr ""
+
+#: ..\plugins\svn_plugin\__init__.py:67
+msgid "&List"
+msgstr ""
+
+#: ..\plugins\svn_plugin\__init__.py:68
+msgid "Show l&og"
+msgstr ""
+
+#: ..\plugins\svn_plugin\__init__.py:69
+msgid "&Status"
+msgstr ""
+
+#: ..\plugins\svn_plugin\__init__.py:70
+msgid "Di&ff"
+msgstr ""
+
+#: ..\plugins\svn_plugin\__init__.py:72
+msgid "&Add"
+msgstr ""
+
+#: ..\plugins\svn_plugin\__init__.py:73
+msgid "&Rename"
+msgstr ""
+
+#: ..\plugins\svn_plugin\__init__.py:74
+msgid "&Delete"
+msgstr ""
+
+#: ..\plugins\svn_plugin\__init__.py:75
+msgid "Re&vert"
+msgstr ""
+
+#: ..\plugins\svn_plugin\__init__.py:77
+msgid "&Export"
+msgstr ""
+
+#: ..\plugins\svn_plugin\__init__.py:199
 msgid "Dir Browser"
+msgstr ""
+
+#: ..\plugins\svn_plugin\tools.py:29
+msgid "Processing..."
 msgstr ""
 

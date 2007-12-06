@@ -5,8 +5,8 @@ It is writtened in Python + wxPython.
 
 The lastest software version is :
 
- * Python 2.4.2 
- * wxPython 2.6.1.0+ Unicode Version 
+ * Python 2.4.4 
+ * wxPython 2.8.3.0+ Unicode Version 
 
 Mission:
 
