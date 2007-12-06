@@ -120,7 +120,8 @@ replace, simple template creation.
 svn_plugin
 ~~~~~~~~~~~~~~~
 
-Subversion version control support.
+Subversion version control support. You should install pysvn module first.
+You can find pysvn at http://pysvn.tigris.org/ 
 
 emacskey
 ~~~~~~~~~~~
