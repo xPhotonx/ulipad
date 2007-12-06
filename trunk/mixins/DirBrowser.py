@@ -502,6 +502,7 @@ class DirBrowser(wx.Panel, Mixin.Mixin):
             self.addpathnodes(self.get_node_filename(item), item)
             self.callplugin('after_expanding', self, item)
         else:
+            self.callplugin('after_expanding', self, item)
             event.Skip()
 
     def OnRightDown(self, event):
