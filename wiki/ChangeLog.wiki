@@ -1,7 +1,7 @@
 #labels Featured
 #Change log of UliPad releases
 
-Current lastest version is 3.7
+Current lastest version is 3.8
 
 = 3.8 Version 2007/12/06 =
 
