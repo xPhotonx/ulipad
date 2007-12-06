@@ -205,7 +205,7 @@ class Command(object):
 
             def f():
                 client = self.get_client()
-                r = client.add(values, False)
+                client.add(values, False)
                 if self.result:
                     self.result.finish()
             wrap_run(f, callback, result=self.result)
@@ -224,7 +224,7 @@ class Command(object):
 
             def f():
                 client = self.get_client()
-                r = client.revert(values, False)
+                client.revert(values, False)
                 if self.result:
                     self.result.finish()
             wrap_run(f, callback, result=self.result)
@@ -241,14 +241,14 @@ class Command(object):
         if newname:
             def f():
                 client = self.get_lient([])
-                r = client.move(self.path, os.path.join(dir, newname))
+                client.move(self.path, os.path.join(dir, newname))
             wrap_run(f, callback)
             
     def delete(self, callback):
         self._begin()
         def f():
             client = self.get_client([])
-            r = client.remove(self.path)
+            client.remove(self.path)
         wrap_run(f, callback)
         
     def update(self, callback):
@@ -259,7 +259,7 @@ class Command(object):
 
         def f():
             client = self.get_client()
-            r = client.update(self.path)
+            client.update(self.path)
             if self.result:
                 self.result.finish()
                 
@@ -273,15 +273,16 @@ class Command(object):
             values =  dlg.GetValue()
         dlg.Destroy()
         
-        if values['add_files'] + values['files']:
+        if values and values['add_files'] + values['files']:
             self.result = ResultDialog(self)
             self.result.Show()
 
             def f():
                 client = self.get_client()
                 if values['add_files']:
-                    r = client.add(values['add_files'], False)
-                r = client.checkin(values['add_files'] + values['files'], values['message'])
+                    client.add(values['add_files'], False)
+                client.checkin(values['add_files'] + values['files'], values['message'])
+                client.update('', False)
                 if self.result:
                     self.result.finish()
             wrap_run(f, callback, result=self.result)

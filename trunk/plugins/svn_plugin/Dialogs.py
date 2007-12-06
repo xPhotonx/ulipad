@@ -206,11 +206,13 @@ class CommitDialog(AddDialog):
                 add_files.append(filename)
 
         #save log
-        self.pref.svn_log_history.insert(0, self.message.GetValue())
-        del Globals.pref.svn_log_history[30:]
-        self.pref.save()
+        message = self.message.GetValue().strip()
+        if message:
+            self.pref.svn_log_history.insert(0, message)
+            del self.pref.svn_log_history[30:]
+            self.pref.save()
         return {'add_files':add_files, 'files':files, 
-            'message':self.message.GetValue()}
+            'message':message}
     
     def init(self):
         self.filelist = []
@@ -270,12 +272,12 @@ class CommitDialog(AddDialog):
     def OnHisMsg(self, event):
         dlg = wx.SingleChoiceDialog(
                 self, tr('Select one log'), tr('Log History'),
-                Globals.pref.svn_log_history, 
+                self.pref.svn_log_history, 
                 wx.CHOICEDLG_STYLE
                 )
         
         if dlg.ShowModal() == wx.ID_OK:
-            self.text.SetValue(dlg.GetStringSelection())
+            self.message.SetValue(dlg.GetStringSelection())
         dlg.Destroy()
         
     def OnShowUnVersion(self, event):
