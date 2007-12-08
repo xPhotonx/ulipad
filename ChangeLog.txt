@@ -1,4 +1,9 @@
 $Rev$
+[2007/12/08]
+DirBrowser.py mDirBrowser.py
+                    Remember the last add path folder
+                    
+-------------------------------------- 3.8 -----------------------------
 [2007/12/06]
 DirBrowser.py       Fix add new directory, when opened if there are children nodes,
                     then will not fire after_expanding event bug
