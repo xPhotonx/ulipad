@@ -5876,6 +5876,7 @@ def pref_init(pref):
     pref.recent_dir_paths_num = 10
     pref.last_dir_paths = []
     pref.open_last_dir_as_startup = True
+    pref.dirbrowser_last_addpath = os.getcwd()
     if wx.Platform == '__WXMSW__':
         cmdline = os.environ['ComSpec']
         pref.command_line = cmdline

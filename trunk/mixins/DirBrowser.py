@@ -242,10 +242,14 @@ class DirBrowser(wx.Panel, Mixin.Mixin):
                 wx.EVT_MENU(self, id, self.OnAddPath)
 
     def OnAddNewPath(self, event):
-        dlg = wx.DirDialog(self, tr("Select directory:"), defaultPath=os.getcwd(), style=wx.DD_NEW_DIR_BUTTON)
+        dlg = wx.DirDialog(self, tr("Select directory:"), defaultPath=self.pref.dirbrowser_last_addpath, style=wx.DD_NEW_DIR_BUTTON)
+        path = ''
         if dlg.ShowModal() == wx.ID_OK:
             path = dlg.GetPath()
-            dlg.Destroy()
+            self.pref.dirbrowser_last_addpath = path
+            self.pref.save()
+        dlg.Destroy()
+        if path:
             self.addpath(path)
 
     def OnAddPath(self, event):

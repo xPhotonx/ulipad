@@ -99,6 +99,7 @@ New Features and Changes:
 #. Add new custom lexer class and refactor related lexer process
 #. Upgrade FlatNotebook.py to lastest version, thanks to swordsp
 #. Improve default identifiers process, add type judgement
+#. Add pylint plugin
 
 Bug fix:
 
