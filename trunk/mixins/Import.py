@@ -6219,17 +6219,20 @@ class InputAssistantAction(AsyncAction.AsyncAction):
 
 class Analysis(AsyncAction.AsyncAction):
     def do_action(self, obj):
+        win = Globals.mainframe
         if not self.empty:
             return
         try:
-            if Globals.mainframe.closeflag:
+            if win.closeflag:
                 return
-            if obj != Globals.mainframe.document:
+            if not win.document:
+                return
+            if obj != win.document:
                 return
             i = get_inputassistant_obj(obj)
             i.call_analysis(self)
         except:
-            Globals.mainframe.input_assistant = None
+            win.input_assistant = None
             error.traceback()
 
 def main_init(win):
