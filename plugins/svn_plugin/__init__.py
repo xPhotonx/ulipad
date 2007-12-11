@@ -35,7 +35,7 @@ def pref_init(pref):
     pref.svn_proxy_password = ''
     pref.svn_proxy_timeout = 0
     pref.svn_urls = []
-    pref.svn_chckout_folder = ''
+    pref.svn_checkout_folder = ''
 Mixin.setPlugin('preference', 'init', pref_init)
 
 def other_popup_menu(dirwin, projectname, menus):
