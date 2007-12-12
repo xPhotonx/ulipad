@@ -1,4 +1,15 @@
 $Rev$
+-------------------------------------- 3.9 -----------------------------
+[2007/12/12]
+common.py           Fix webopen twice open bug
+
+-------------------------------------- 3.8.1 -----------------------------
+[2007/12/12]
+UliPad.py           Remove profile invoke
+
+[2007/12/11]
+SvnSupport.py       fix checkout folder spell mistake bug
+
 [2007/12/08]
 DirBrowser.py mDirBrowser.py
                     Remember the last add path folder

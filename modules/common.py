@@ -456,4 +456,5 @@ def webopen(filename):
         o.args = [arg.replace('"%s"', '%s') for arg in o.args]
     if not filename.startswith('http://'):
         o.open('file://'+filename, 1)
-    o.open(filename)
+    else:
+        o.open(filename)
