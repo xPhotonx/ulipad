@@ -5245,7 +5245,7 @@ if wx.Platform == '__WXMSW__':
             filename = os.path.basename(sys.argv[0])
             f, ext = os.path.splitext(filename)
             if ext == '.exe':
-                command = '"%s" %%L' % os.path.normpath(common.uni_work_file(filename))
+                command = '"%s" "%%L"' % os.path.normpath(common.uni_work_file(filename))
             else:
                 path = os.path.normpath(common.uni_work_file('%s.pyw' % f))
                 execute = sys.executable.replace('python.exe', 'pythonw.exe')
