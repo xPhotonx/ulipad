@@ -1,6 +1,7 @@
 import Queue
 import threading, thread
 import time
+import Globals
 
 class AsyncAction(threading.Thread):
     def __init__(self, timestep=.1):
@@ -34,7 +35,7 @@ class AsyncAction(threading.Thread):
     def run(self):
         try:
             while not self.stop:
-                if not self.q.empty() and not self.running:
+                if Globals.app.wxApp.Active and not self.q.empty() and not self.running:
                     self.lock.acquire()
                     last = None
                     while 1:
