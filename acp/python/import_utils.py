@@ -157,6 +157,9 @@ def getConstructor(object):
 
 def import_document(win, syncvar):
     root = win.syntax_info
+    if not root:
+        return
+    
     lineno = win.GetCurrentLine() + 1
     result = root.get_imports(lineno)
     pout('import_document')
@@ -190,12 +193,15 @@ def autoComplete(win, word=None, syncvar=None):
             return words
     
 def getAutoCompleteList(win, command='', syncvar=None):
-    if not hasattr(win, 'syntax_info') or not win.syntax_info:
-        return []
+#    if not hasattr(win, 'syntax_info') or not win.syntax_info:
+#        return []
 
-    root = win.syntax_info
-    r_idens = _get_filter_list(win, command, root.idens)
-
+    if hasattr(win, 'syntax_info') and win.syntax_info:
+        root = win.syntax_info
+        r_idens = _get_filter_list(win, command, root.idens)
+    else:
+        r_idens = []
+        
     pout('-'*50)
     pout('getAutoCompleteList', command)
 
@@ -230,6 +236,8 @@ def guessWordObject(win, command, striplast=True, syncvar=None):
     lineno = win.GetCurrentLine() + 1
     attributes = command.split('.')
     if command == 'self.':    #process self.
+        if not root:
+            return flag, object
         cls = root.guess_class(lineno)
         if cls:
             return 'source', cls
@@ -238,9 +246,10 @@ def guessWordObject(win, command, striplast=True, syncvar=None):
         del attributes[0]
         attributes[0] = key
     else:
-        result = root.guess_type(lineno, command)
-        if result:
-            attributes = [command]
+        if root:
+            result = root.guess_type(lineno, command)
+            if result:
+                attributes = [command]
         
     if syncvar and not syncvar.empty:
         raise StopException
@@ -249,7 +258,10 @@ def guessWordObject(win, command, striplast=True, syncvar=None):
     firstword = attributes[0]
     del attributes[0]
     pout(INDENT, 'attributes:', attributes, 'firstword:', firstword)
-    result = root.guess_type(lineno, firstword)
+    if root:
+        result = root.guess_type(lineno, firstword)
+    else:
+        result = None
     pout(INDENT, 'guess [%s] result:' % firstword, result)
     
     if syncvar and not syncvar.empty:
@@ -278,7 +290,10 @@ def guessWordObject(win, command, striplast=True, syncvar=None):
     else:
         if firstword.startswith('self.'):
             word = firstword.split('.', 1)[1]
-            cls = root.guess_class(lineno)
+            if root:
+                cls = root.guess_class(lineno)
+            else:
+                cls = None
             
             if syncvar and not syncvar.empty:
                 raise StopException
@@ -370,8 +385,8 @@ def getObject(win, word, syncvar=None):
     
 def getClassAttributes(win, cls, syncvar):
     s = set([])
-    if cls:
-        root = win.syntax_info
+    root = win.syntax_info
+    if cls and root:
         s = set(cls.locals)
         for b in cls.bases:
             if syncvar and not syncvar.empty:
@@ -391,7 +406,6 @@ def getClassAttributes(win, cls, syncvar):
 
 def try_get_obj_type(win, t, v, lineno):
     pout(INDENT, "try_get_obj_type", t, v, lineno)
-    root = win.syntax_info
     flag = 'obj'
     node = None
     if t in ('class', 'function'):
@@ -427,6 +441,9 @@ def try_get_obj_attribute(win, firstword, flag, object, attributes):
                     if not object:
                         break
         else:
+            if not root:
+                return flag, None
+            
             o = attributes[0]
             del attributes[0]
             r = object.get_local_name(o)
@@ -504,7 +521,10 @@ def _get_filter_list(win, word, words):
 
 def get_locals(win, lineno, word, syncvar):
     root = win.syntax_info
-    r_idens = _get_filter_list(win, word, root.idens)
+    if root:
+        r_idens = _get_filter_list(win, word, root.idens)
+    else:
+        r_idens = []
     if '.' in word:
         if word.endswith('.'):
 #            word = word[:-1]
@@ -514,7 +534,10 @@ def get_locals(win, lineno, word, syncvar):
             length = len(ext)
         return length, getAutoCompleteList(win, word)
     else:
-        r = root.get_locals(lineno)
+        if root:
+            r = root.get_locals(lineno)
+        else:
+            r = []
         d = {}
         for i in r + default_identifier(win):
             if syncvar and not syncvar.empty:

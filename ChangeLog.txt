@@ -1,4 +1,7 @@
 $Rev$
+[2007/12/18]
+canvas_test_plugin  Add Canvas Test plugin, you can directly test DC api
+
 -------------------------------------- 3.9 -----------------------------
 [2007/12/12]
 common.py           Fix webopen twice open bug

@@ -538,7 +538,7 @@ Mixin.setPlugin('mainframe', 'afterinit', afterinit)
 
 def on_mainframe_updateui(win, event):
     eid = event.GetId()
-    if hasattr(win, 'document') and win.document:
+    if hasattr(win, 'document') and win.document and win.document.edittype == 'edit':
         if eid in [win.IDM_EDIT_CUT, win.IDM_EDIT_COPY]:
             event.Enable(len(win.document.GetSelectedText()) > 0)
         elif eid == win.IDM_EDIT_PASTE:
@@ -1061,13 +1061,15 @@ import wx
 from modules import Mixin
 
 def on_key_up(win, event):
-    win.mainframe.SetStatusText(tr("Line: %d") % (win.GetCurrentLine()+1), 1)
-    win.mainframe.SetStatusText(tr("Col: %d") % (win.GetColumn(win.GetCurrentPos())+1), 2)
+    if win.edittype == 'edit':
+        win.mainframe.SetStatusText(tr("Line: %d") % (win.GetCurrentLine()+1), 1)
+        win.mainframe.SetStatusText(tr("Col: %d") % (win.GetColumn(win.GetCurrentPos())+1), 2)
 Mixin.setPlugin('editor', 'on_key_up', on_key_up)
 
 def on_mouse_up(win, event):
-    win.mainframe.SetStatusText(tr("Line: %d") % (win.GetCurrentLine()+1), 1)
-    win.mainframe.SetStatusText(tr("Col: %d") % (win.GetColumn(win.GetCurrentPos())+1), 2)
+    if win.edittype == 'edit':
+        win.mainframe.SetStatusText(tr("Line: %d") % (win.GetCurrentLine()+1), 1)
+        win.mainframe.SetStatusText(tr("Col: %d") % (win.GetColumn(win.GetCurrentPos())+1), 2)
 Mixin.setPlugin('editor', 'on_mouse_up', on_mouse_up)
 
 def on_document_enter(win, document):
@@ -3248,7 +3250,8 @@ def add_tool_list(toollist, toolbaritems):
 Mixin.setPlugin('pythonfiletype', 'add_tool_list', add_tool_list)
 
 def afterclosewindow(win):
-    win.document.panel.showWindow('LEFT', False)
+    if hasattr(win.document, 'panel') and hasattr(win.document.panel, 'showWindow'):
+        win.document.panel.showWindow('LEFT', False)
 Mixin.setPlugin('mainframe', 'afterclosewindow', afterclosewindow)
 
 def on_jump_definition(editor, word):
@@ -6199,12 +6202,6 @@ class InputAssistantAction(AsyncAction.AsyncAction):
         else:
             action, win, args = obj
         try:
-            if Globals.mainframe.closeflag:
-                return
-            if not hasattr(Globals.mainframe, 'document'):
-                return
-            if win != Globals.mainframe.document:
-                return
             i = get_inputassistant_obj(win)
             win.lock.acquire()
             if action == 'default':
@@ -6223,12 +6220,6 @@ class Analysis(AsyncAction.AsyncAction):
         if not self.empty:
             return
         try:
-            if win.closeflag:
-                return
-            if not win.document:
-                return
-            if obj != win.document:
-                return
             i = get_inputassistant_obj(obj)
             i.call_analysis(self)
         except:

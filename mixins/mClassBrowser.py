@@ -217,7 +217,8 @@ def add_tool_list(toollist, toolbaritems):
 Mixin.setPlugin('pythonfiletype', 'add_tool_list', add_tool_list)
 
 def afterclosewindow(win):
-    win.document.panel.showWindow('LEFT', False)
+    if hasattr(win.document, 'panel') and hasattr(win.document.panel, 'showWindow'):
+        win.document.panel.showWindow('LEFT', False)
 Mixin.setPlugin('mainframe', 'afterclosewindow', afterclosewindow)
 
 #add identifier jump

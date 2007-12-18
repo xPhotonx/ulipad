@@ -25,13 +25,15 @@ import wx
 from modules import Mixin
 
 def on_key_up(win, event):
-    win.mainframe.SetStatusText(tr("Line: %d") % (win.GetCurrentLine()+1), 1)
-    win.mainframe.SetStatusText(tr("Col: %d") % (win.GetColumn(win.GetCurrentPos())+1), 2)
+    if win.edittype == 'edit':
+        win.mainframe.SetStatusText(tr("Line: %d") % (win.GetCurrentLine()+1), 1)
+        win.mainframe.SetStatusText(tr("Col: %d") % (win.GetColumn(win.GetCurrentPos())+1), 2)
 Mixin.setPlugin('editor', 'on_key_up', on_key_up)
 
 def on_mouse_up(win, event):
-    win.mainframe.SetStatusText(tr("Line: %d") % (win.GetCurrentLine()+1), 1)
-    win.mainframe.SetStatusText(tr("Col: %d") % (win.GetColumn(win.GetCurrentPos())+1), 2)
+    if win.edittype == 'edit':
+        win.mainframe.SetStatusText(tr("Line: %d") % (win.GetCurrentLine()+1), 1)
+        win.mainframe.SetStatusText(tr("Col: %d") % (win.GetColumn(win.GetCurrentPos())+1), 2)
 Mixin.setPlugin('editor', 'on_mouse_up', on_mouse_up)
 
 def on_document_enter(win, document):

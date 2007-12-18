@@ -319,12 +319,12 @@ class InputAssistantAction(AsyncAction.AsyncAction):
         else:
             action, win, args = obj
         try:
-            if Globals.mainframe.closeflag:
-                return
-            if not hasattr(Globals.mainframe, 'document'):
-                return
-            if win != Globals.mainframe.document:
-                return
+#            if Globals.mainframe.closeflag:
+#                return
+#            if not hasattr(Globals.mainframe, 'document'):
+#                return
+#            if win != Globals.mainframe.document:
+#                return
             i = get_inputassistant_obj(win)
             win.lock.acquire()
             if action == 'default':
@@ -343,12 +343,12 @@ class Analysis(AsyncAction.AsyncAction):
         if not self.empty:
             return
         try:
-            if win.closeflag:
-                return
-            if not win.document:
-                return
-            if obj != win.document:
-                return
+#            if win.closeflag:
+#                return
+#            if not win.document:
+#                return
+#            if obj != win.document:
+#                return
             i = get_inputassistant_obj(obj)
             i.call_analysis(self)
         except:

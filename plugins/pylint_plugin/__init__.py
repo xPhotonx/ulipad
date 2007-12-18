@@ -41,7 +41,7 @@ def add_mainframe_menu(menulist):
    """ Add the PyLint item to the Tool menu"""
    menulist.extend([('IDM_TOOL',
        [
-           (180, 'IDM_TOOL_PYLINT', 'PyLint',
+           (190, 'IDM_TOOL_PYLINT', 'PyLint',
             wx.ITEM_NORMAL, 'OnPylint', tr('Runs the PyLint code checker')),
        ]), ])
 Mixin.setPlugin('mainframe', 'add_menu', add_mainframe_menu)
