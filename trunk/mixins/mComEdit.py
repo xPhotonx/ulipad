@@ -149,7 +149,7 @@ Mixin.setPlugin('mainframe', 'afterinit', afterinit)
 
 def on_mainframe_updateui(win, event):
     eid = event.GetId()
-    if hasattr(win, 'document') and win.document:
+    if hasattr(win, 'document') and win.document and win.document.edittype == 'edit':
         if eid in [win.IDM_EDIT_CUT, win.IDM_EDIT_COPY]:
             event.Enable(len(win.document.GetSelectedText()) > 0)
         elif eid == win.IDM_EDIT_PASTE:

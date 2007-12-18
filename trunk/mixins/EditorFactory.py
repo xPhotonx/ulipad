@@ -310,7 +310,10 @@ class EditorFactory(FNB.FlatNotebook, Mixin.Mixin):
     def getDocuments(self):
         s = []
         for i in range(self.GetPageCount()):
-            s.append(self.GetPage(i).document)
+            try:
+                s.append(self.GetPage(i).document)
+            except:
+                pass
         return s
 
     def showPageTitle(self, ctrl):
