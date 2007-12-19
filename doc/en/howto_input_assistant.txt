@@ -10,7 +10,7 @@ write some rules in an acp(Auto Completion Pattern) file. The acp file is an
 ini-like file, and it can be used to deal with dict4ini module. You can find this
 module in UliPad's `modules` folder, and more details about it you can see Dict4Ini_ .
 
-.. _Dict4Ini: http://wiki.woodpecker.org.cn/moin/Dict4Ini
+.. _Dict4Ini: http://code.google.com/p/dict4ini
 
 In an acp file, you can do many things, here is the details about the format
 of it:
