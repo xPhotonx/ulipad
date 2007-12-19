@@ -1,4 +1,7 @@
 $Rev$
+[2007/12/19]
+php.acp             add php.acp thanks for 魏振 <etggy@163.com>
+
 [2007/12/18]
 canvas_test_plugin  Add Canvas Test plugin, you can directly test DC api
 
