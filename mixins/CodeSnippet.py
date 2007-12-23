@@ -24,6 +24,7 @@
 import os
 import wx
 import copy
+import re
 from modules import common
 from modules import makemenu
 from modules import Mixin
@@ -411,9 +412,43 @@ class CodeSnippetWindow(wx.Panel, Mixin.Mixin):
         item = event.GetItem()
         if not item.IsOk(): return
         if self.is_node(item):
-            self.callplugin('on_selected', self, 
-                self.get_node_data(item)['element'].text)
-
+            text = self.get_element(item).text
+            if text:
+                doc = Globals.mainframe.editctrl.getCurDoc()
+                elements = []
+                
+                def dosup(self, matchobj, elements=elements):
+                    text = matchobj.groups()[0]
+                    v = text.split(',')
+                    result = ''
+                    values = {}
+                    for i in v:
+                        s = i.split('=')
+                        values[s[0].strip()] = s[1].strip()
+                    elements.append((values.get('type', 'string'), values['name'], values.get('default', ''), values.get('description', values['name']), None))
+                
+                    return '<#' + values['name'] + '#>'
+                
+                r = re.compile("<#{(.*?)}#>")
+                text = re.sub(r, dosup, text)
+                if elements:
+                    from modules.EasyGuider import EasyDialog
+                    dlg = EasyDialog.EasyDialog(self, title=tr("Code Template"), elements=self.elements)
+                    values = None
+                    if dlg.ShowModal() == wx.ID_OK:
+                        values = dlg.GetValue()
+                    dlg.Destroy()
+                    if values:
+                        from modules.meteor import render
+                        text = render(text, values, type='string')
+                    else:
+                        return
+                    
+                if not self.mainframe.Indent_paste(doc, text):
+                    doc.AddText(text)
+                
+            wx.CallAfter(doc.SetFocus)
+            
     def OnExpanding(self, event):
         item = event.GetItem()
         if not item.IsOk(): return
