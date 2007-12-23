@@ -94,6 +94,9 @@ class MyCode(wx.Panel):
             common.getpngimage('images/classbrowserrefresh.gif'))
         box.add(self.btnRefresh)
         self.code = TextEditor(self, None, 'canvas test', 'texteditor', True)
+        self.code.cansavefileflag = False
+        self.code.needcheckfile = False
+        self.code.savesession = False
         sizer.add(self.code, proportion=1, flag=wx.EXPAND|wx.ALL, border=3)
         sizer.auto_fit(0)
         

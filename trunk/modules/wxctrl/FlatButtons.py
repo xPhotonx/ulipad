@@ -36,7 +36,6 @@ class FlatBitmapButton(GenBitmapButton):
         self.SetBestSize(None)
         self.Bind(wx.EVT_ENTER_WINDOW, self.ButtonOnMouseEnter)
         self.Bind(wx.EVT_LEAVE_WINDOW, self.ButtonOnMouseLeave)
-        
 
     def SetBestSize(self, size=None):
         size = (23, 22)

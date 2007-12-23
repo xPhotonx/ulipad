@@ -84,7 +84,7 @@ class OutlineBrowser(wx.Panel, Mixin.Mixin):
 #        wx.EVT_LEFT_DCLICK(self.tree, self.OnDoubleClick)
 #        wx.EVT_TREE_ITEM_EXPANDING(self.tree, self.tree.GetId(), self.OnExpanding)
         wx.EVT_LEFT_DOWN(self.tree, self.OnLeftDown)
-        self.tree.Bind(wx.EVT_TREE_ITEM_GETTOOLTIP, self.OnGetToolTip)
+        wx.EVT_TREE_ITEM_GETTOOLTIP(self.tree, self.tree.GetId(), self.OnGetToolTip)
         self.tooltip_func = None
 
         #add init process

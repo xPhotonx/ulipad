@@ -325,6 +325,7 @@ class InputAssistantAction(AsyncAction.AsyncAction):
 #                return
 #            if win != Globals.mainframe.document:
 #                return
+            if not win: return
             i = get_inputassistant_obj(win)
             win.lock.acquire()
             if action == 'default':
@@ -349,6 +350,7 @@ class Analysis(AsyncAction.AsyncAction):
 #                return
 #            if obj != win.document:
 #                return
+            if not obj: return
             i = get_inputassistant_obj(obj)
             i.call_analysis(self)
         except:

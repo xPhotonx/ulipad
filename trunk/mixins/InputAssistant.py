@@ -789,6 +789,8 @@ class InputAssistant(Mixin.Mixin):
     
     def call_locals(self, line, word, syncvar):
         try:
+            if not self.editor:
+                return
             for f in self.editor.input_locals:
                 r = f(self.editor, line, word, syncvar)
                 if r:
@@ -800,6 +802,8 @@ class InputAssistant(Mixin.Mixin):
 
     def call_analysis(self, syncvar):
         try:
+            if not self.editor:
+                return
             for f in self.editor.input_analysis:
                 r = f(self.editor, syncvar)
         except StopException:

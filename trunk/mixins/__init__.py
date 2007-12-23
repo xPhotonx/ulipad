@@ -149,4 +149,7 @@
 #import mConfig
 #import mDocumentArea
 
+## 3.9
+#import mCodeSnippet
+
 import Import
