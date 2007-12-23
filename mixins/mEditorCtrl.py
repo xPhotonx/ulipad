@@ -282,7 +282,7 @@ def savepreference(mainframe, pref):
 Mixin.setPlugin('prefdialog', 'savepreference', savepreference)
 
 def findDocument(document):
-    if hasattr(document, 'multiview') and document.multiview:
+    if hasattr(document, 'multiview') and document.multiview and hasattr(document, 'document'):
         return document.document
     else:
         return document

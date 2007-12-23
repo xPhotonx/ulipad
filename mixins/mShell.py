@@ -39,8 +39,7 @@ Mixin.setPlugin('editor', 'init', editor_init)
 def editor_updateui(win, event):
     eid = event.GetId()
     if eid == win.IDPM_COPY_RUN:
-        doc = win.editctrl.getCurDoc()
-        event.Enable(bool(doc.hasSelection()))
+        event.Enable(bool(win.hasSelection()))
 Mixin.setPlugin('editor', 'on_update_ui', editor_updateui)
 
 def OnEditorCopyRun(win, event):

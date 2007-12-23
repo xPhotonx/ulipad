@@ -364,7 +364,7 @@ def savepreference(mainframe, pref):
 Mixin.setPlugin('prefdialog', 'savepreference', savepreference)
 
 def findDocument(document):
-    if hasattr(document, 'multiview') and document.multiview:
+    if hasattr(document, 'multiview') and document.multiview and hasattr(document, 'document'):
         return document.document
     else:
         return document
@@ -1033,6 +1033,8 @@ def pref_init(pref):
 Mixin.setPlugin('preference', 'init', pref_init)
 
 def on_modified(win, event):
+    if hasattr(win, 'multiview') and win.multiview:
+        return
     type = event.GetModificationType()
     for flag in (wx.stc.STC_MOD_INSERTTEXT, wx.stc.STC_MOD_DELETETEXT):
         if flag & type:
@@ -6202,6 +6204,7 @@ class InputAssistantAction(AsyncAction.AsyncAction):
         else:
             action, win, args = obj
         try:
+            if not win: return
             i = get_inputassistant_obj(win)
             win.lock.acquire()
             if action == 'default':
@@ -6220,6 +6223,7 @@ class Analysis(AsyncAction.AsyncAction):
         if not self.empty:
             return
         try:
+            if not obj: return
             i = get_inputassistant_obj(obj)
             i.call_analysis(self)
         except:
@@ -7106,7 +7110,8 @@ def OnOpenViewBottom(win, event):
 Mixin.setMixin('editctrl', 'OnOpenViewBottom', OnOpenViewBottom)
 
 def is_multiview(page, document):
-    if hasattr(page, 'multiview') and page.multiview and page.document is document:
+    if (hasattr(page, 'multiview') and page.multiview and
+            hasattr(page, 'document') and page.document is document):
         return True
     else:
         return False
@@ -7939,8 +7944,7 @@ Mixin.setPlugin('editor', 'init', editor_init)
 def editor_updateui(win, event):
     eid = event.GetId()
     if eid == win.IDPM_COPY_RUN:
-        doc = win.editctrl.getCurDoc()
-        event.Enable(bool(doc.hasSelection()))
+        event.Enable(bool(win.hasSelection()))
 Mixin.setPlugin('editor', 'on_update_ui', editor_updateui)
 
 def OnEditorCopyRun(win, event):
@@ -8019,6 +8023,137 @@ class DocumentArea(wx.Panel, Mixin.Mixin):
         self.sizer = ui.VBox(0).create(self).auto_layout()
         obj = self.execplugin('init', self)
         self.sizer.add(obj, proportion=1, flag=wx.EXPAND)
+
+
+
+
+#-----------------------  mCodeSnippet.py ------------------
+
+import wx
+from modules import Mixin
+from modules import Globals
+from modules import common
+
+def add_mainframe_menu(menulist):
+    menulist.extend([
+        ('IDM_TOOL',
+        [
+            (125, 'IDM_WINDOW_CODESNIPPET', tr('Code Snippet'), wx.ITEM_NORMAL, 'OnWindowCodeSnippet', tr('Opens code snippet window.'))
+        ]),
+    ])
+Mixin.setPlugin('mainframe', 'add_menu', add_mainframe_menu)
+
+def add_notebook_menu(popmenulist):
+    popmenulist.extend([(None,
+        [
+            (200, 'IDPM_CODESNIPPETWINDOW', tr('Open Code Snippet Window'), wx.ITEM_NORMAL, 'OnCodeSnippetWindow', tr('Opens code snippet window.')),
+        ]),
+    ])
+Mixin.setPlugin('notebook', 'add_menu', add_notebook_menu)
+
+def add_images(images):
+    images.update({
+        'close': 'images/folderclose.gif',
+        'open': 'images/folderopen.gif',
+        'item': 'images/file.gif',
+        })
+Mixin.setPlugin('codesnippet', 'add_images', add_images)
+
+def add_image(imagelist, imageids, name, image):
+    if name not in ('close', 'open'):
+        return
+
+    m = [
+        ('modified', common.getpngimage('images/TortoiseModified.gif')),
+    ]
+
+    for f, imgfile in m:
+        bmp = common.merge_bitmaps(image, imgfile)
+        index = imagelist.Add(bmp)
+        imageids[name+f] = index
+Mixin.setPlugin('codesnippet', 'add_image', add_image)
+
+
+def createCodeSnippetWindow(win):
+    from modules import common
+    try:
+        import xml.etree.ElementTree
+    except:
+        import elementtree.ElementTree
+
+    page = win.panel.getPage(tr('Code Snippet'))
+    if not page:
+        from CodeSnippet import CodeSnippetWindow
+
+        page = CodeSnippetWindow(win.panel.createNotebook('left'), win)
+        win.panel.addPage('left', page, tr('Code Snippet'))
+    return page
+Mixin.setMixin('mainframe', 'createCodeSnippetWindow', createCodeSnippetWindow)
+
+def OnWindowCodeSnippet(win, event):
+    if win.createCodeSnippetWindow():
+        win.panel.showPage(tr('Code Snippet'))
+Mixin.setMixin('mainframe', 'OnWindowCodeSnippet', OnWindowCodeSnippet)
+
+def OnCodeSnippetWindow(win, event):
+    if win.mainframe.createCodeSnippetWindow():
+        win.panel.showPage(tr('Code Snippet'))
+Mixin.setMixin('notebook', 'OnCodeSnippetWindow', OnCodeSnippetWindow)
+
+def close_page(page, name):
+    if name == tr('Code Snippet'):
+        win = Globals.mainframe
+        for pagename, panelname, notebook, page in win.panel.getPages():
+            if hasattr(page, 'code_snippet') and page.code_snippet:
+                ret = win.panel.closePage(page, savestatus=False)
+                break
+Mixin.setPlugin('notebook', 'close_page', close_page)
+
+def on_close(win, event):
+    if event.CanVeto():
+        win = Globals.mainframe
+        snippet = win.panel.getPage(tr('Code Snippet'))
+        return not snippet.canClose()
+Mixin.setPlugin('mainframe', 'on_close', on_close)
+
+def pref_init(pref):
+    pref.snippet_recents = []
+    pref.snippet_lastdir = ''
+    pref.snippet_files = []
+Mixin.setPlugin('preference', 'init', pref_init)
+
+def createCodeSnippetEditWindow(win):
+    snippet = None
+    for pagename, panelname, notebook, page in win.panel.getPages():
+        if hasattr(page, 'code_snippet') and page.code_snippet:
+            snippet = page
+            break
+    if not snippet:
+        from mixins.Editor import TextEditor
+        snippet = TextEditor(win.panel.createNotebook('bottom'), None, 'Snippet', 'texteditor', True)
+        #.document is important
+        snippet.document = snippet
+        snippet.cansavefileflag = False
+        snippet.needcheckfile = False
+        snippet.savesession = False
+        snippet.code_snippet = True
+        win.panel.addPage('bottom', snippet, tr('Snippet'))
+    if snippet:
+        win.panel.showPage(snippet)
+        return snippet
+Mixin.setMixin('mainframe', 'createCodeSnippetEditWindow', createCodeSnippetEditWindow)
+
+def on_modified(win, event):
+    if hasattr(win, 'code_snippet') and win.code_snippet:
+        if not win.snippet_obj.changing:
+            win.snippet_obj.update_node(win.snippet_obj.tree.GetSelection(), newcontent=win.GetText())
+Mixin.setPlugin('editor', 'on_modified', on_modified)
+
+def on_selected(win, text):
+    doc = Globals.mainframe.editctrl.getCurDoc()
+    doc.AddText(text)
+    wx.CallAfter(doc.SetFocus)
+Mixin.setPlugin('codesnippet', 'on_selected', on_selected)
 
 
 

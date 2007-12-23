@@ -247,7 +247,7 @@ class LexerBase(Mixin.Mixin):
             self._syntaxitems[name] = SyntaxItem(name, dispname, wx_const, defaultstylestring)
             self._syntaxnames.append(name)
         else:
-            error.error(tr('The name [%s] is already existed in lexer [%s]' % (name, self.name)))
+            error.error(tr('The name [%s] is already existed in lexer [%s]') % (name, self.name))
 
     def getSyntaxItems(self):
         return self._syntaxitems
@@ -310,7 +310,7 @@ class LexerBase(Mixin.Mixin):
                         self._syntaxnames.append(_id)
                         break
                     else:
-                        error.error(tr('The name [%s] is already existed in lexer [%s]' % (name, self.name)))
+                        error.error(tr('The name [%s] is already existed in lexer [%s]') % (name, self.name))
                     
                     i += 1
                 

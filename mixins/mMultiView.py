@@ -115,7 +115,8 @@ def OnOpenViewBottom(win, event):
 Mixin.setMixin('editctrl', 'OnOpenViewBottom', OnOpenViewBottom)
 
 def is_multiview(page, document):
-    if hasattr(page, 'multiview') and page.multiview and page.document is document:
+    if (hasattr(page, 'multiview') and page.multiview and 
+            hasattr(page, 'document') and page.document is document):
         return True
     else:
         return False

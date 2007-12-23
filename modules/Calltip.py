@@ -52,7 +52,7 @@ class MyCallTip(wx.ScrolledWindow):
         self.text.Wrap(int(cw*0.5))
         w, h = self.text.GetBestSize()
         fw = w + 30
-        fh = min(ch*0.5, h) + 30
+        fh = min(ch*0.5, h) + 10
         self.SetSize((fw, fh))
         self.SetScrollbars(0, 20, 0, (h+19)/20)
         x, y = self.parent.PointFromPosition(pos)

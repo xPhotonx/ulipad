@@ -159,6 +159,8 @@ def pref_init(pref):
 Mixin.setPlugin('preference', 'init', pref_init)
 
 def on_modified(win, event):
+    if hasattr(win, 'multiview') and win.multiview:
+        return
     type = event.GetModificationType()
     for flag in (wx.stc.STC_MOD_INSERTTEXT, wx.stc.STC_MOD_DELETETEXT):
         if flag & type:

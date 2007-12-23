@@ -1,4 +1,8 @@
 $Rev$
+[2007/12/23]
+CodeSnippet.py mCodeSnippet.py
+                    Add new snippet
+                    
 [2007/12/19]
 php.acp             add php.acp thanks for 魏振 <etggy@163.com>
 
