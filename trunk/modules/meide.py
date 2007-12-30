@@ -22,7 +22,6 @@
 #
 #   $Id$
 
-import os
 import wx
 
 DEBUG = False
@@ -350,6 +349,9 @@ class Element(object):
         kwargs.update(kw)
         return kwargs
 
+    def _get_proportion(self):
+        return self.proportion
+    
 class ValidateMixin(object):
     """
     A mixin class can be used to process validate.
@@ -555,6 +557,7 @@ class LayoutBase(Element, LayoutValidateMixin):
         self.created = True
         if self.auto_layout_flag:
             self.auto_layout()
+        self._init()
         return self
     
     def _create_element(self, name, element, args, i):
@@ -610,9 +613,9 @@ class LayoutBase(Element, LayoutValidateMixin):
         """
         if hasattr(obj, 'attr_size') and obj.attr_size and hasattr(obj, 'proportion'):
             #vertical direction decide the proportion, assume the sizer is vertical
-            if obj.attr_size[1] == -1 and obj.proportion[1] == -1:
+            if obj.attr_size[1] == -1 and obj._get_proportion()[1] == -1:
                 return 1
-        elif hasattr(obj, 'proportion') and obj.proportion[1] == -1:
+        elif obj._get_proportion()[1] == -1:
             return 1
         return 0
     
@@ -624,9 +627,9 @@ class LayoutBase(Element, LayoutValidateMixin):
         """
         if hasattr(obj, 'attr_size') and obj.attr_size and hasattr(obj, 'proportion'):
             #vertical direction decide the proportion, assume the sizer is vertical
-            if obj.attr_size[0] == -1 and obj.proportion[0] == -1:
+            if obj.attr_size[0] == -1 and obj._get_proportion()[0] == -1:
                 return wx.EXPAND
-        elif hasattr(obj, 'proportion') and obj.proportion[0] == -1:
+        elif obj._get_proportion()[0] == -1:
             return wx.EXPAND
         return 0
     
@@ -634,6 +637,9 @@ class LayoutBase(Element, LayoutValidateMixin):
         for name, v in value.items():
             obj = self.find(name)
             if obj and hasattr(obj, 'has_value') and obj.has_value:
+                if callable(v):
+                    v = v()
+                v = obj._validate_value(v)
                 obj.SetValue(v)
             
     def GetValue(self):
@@ -795,6 +801,9 @@ class LayoutBase(Element, LayoutValidateMixin):
             layout, element = v
             return layout.get_sizer().IsShown(element.get_obj())
         
+    def _init(self):
+        pass
+        
 class HBox(LayoutBase):
     """
     Just like wx.BoxSizer(wx.HORIZONTAL)
@@ -811,17 +820,17 @@ class HBox(LayoutBase):
     
     def _guess_proportion(self, obj):
         if hasattr(obj, 'attr_size') and obj.attr_size and hasattr(obj, 'proportion'):
-            if obj.attr_size[0] == -1 and obj.proportion[0] == -1:
+            if obj.attr_size[0] == -1 and obj._get_proportion()[0] == -1:
                 return 1
-        elif hasattr(obj, 'proportion') and obj.proportion[0] == -1:
+        elif obj._get_proportion()[0] == -1:
             return 1
         return 0
     
     def _guess_expand(self, obj):
         if hasattr(obj, 'attr_size') and obj.attr_size and hasattr(obj, 'proportion'):
-            if obj.attr_size[1] == -1 and obj.proportion[1] == -1:
+            if obj.attr_size[1] == -1 and obj._get_proportion()[1] == -1:
                 return wx.EXPAND
-        elif hasattr(obj, 'proportion') and obj.proportion[1] == -1:
+        elif obj._get_proportion()[1] == -1:
             return wx.EXPAND
         return 0
     
@@ -866,7 +875,7 @@ class Grid(LayoutBase):
     
     proportion = (-1, 0)
     
-    def __init__(self, vgap=2, hgap=2, padding=4, growablecol=None, *args, **kwargs):
+    def __init__(self, vgap=2, hgap=2, padding=4, growablecol=None, growablerow=None, *args, **kwargs):
         """
         vgap and hgap are the same as GridBagSizer
         growablecol is used to indicate which col could be automatically growable.
@@ -876,16 +885,63 @@ class Grid(LayoutBase):
         self.vgap = vgap
         self.hgap = hgap
         self.growablecol = growablecol
+        self.growablerow = growablerow
+        if self.growablecol is None:
+            self.growablecol = []
+        elif isinstance(self.growablecol, int):
+            self.growablecol = [self.growablecol]
+        if self.growablerow is None:
+            self.growablerow = []
+        elif isinstance(self.growablerow, int):
+            self.growablerow = [self.growablerow]
+        
+    def _get_proportion(self):
+        if self.growablerow:
+            return self.proportion[0], -1
+        return self.proportion
         
     def _create_sizer(self, win):
         sizer = wx.GridBagSizer(self.vgap, self.hgap)
-        if self.growablecol is not None:
-            if isinstance(self.growablecol, (list, tuple)):
-                for i in self.growablecol:
-                    sizer.AddGrowableCol(i)
-            else:
-                sizer.AddGrowableCol(self.growablecol)
         return sizer
+    
+    def _init(self):
+        self.add_growable_col(self.growablecol)
+        self.add_growable_row(self.growablerow)
+        
+    def add_growable_col(self, col):
+        if self.created:
+            sizer = self.get_sizer()
+            if col is not None:
+                if isinstance(col, (list, tuple)):
+                    for i in col:
+                        sizer.AddGrowableCol(i)
+                else:
+                    sizer.AddGrowableCol(col)
+        if isinstance(col, (list, tuple)):
+            for i in col:
+                if i not in self.growablecol:
+                    self.growablecol.append(i)
+        else:
+            if col not in self.growablecol:
+                self.growablecol.append(col)
+        
+    def add_growable_row(self, row):
+        if self.created:
+            sizer = self.get_sizer()
+            if row is not None:
+                if isinstance(row, (list, tuple)):
+                    for i in row:
+                        sizer.AddGrowableRow(i)
+                else:
+                    sizer.AddGrowableRow(row)
+        if isinstance(row, (list, tuple)):
+            for i in row:
+                if i not in self.growablerow:
+                    self.growablerow.append(i)
+        else:
+            if row not in self.growablerow:
+                self.growablerow.append(row)
+        
     
     def add(self, pos, element, name='', proportion=None, flag=None, border=None, span=None):
         """
@@ -1155,10 +1211,14 @@ class ValueElement(EasyElement, ValidateMixin):
             value = self._get_default_value()
         else:
             #support lazy value calculate
+#            if callable(self.value):
+#                value = self.value()
+#            else:
+#                value = self._validate_value(self.value)
+            value = self.value
             if callable(self.value):
                 value = self.value()
-            else:
-                value = self._validate_value(self.value)
+            value = self._validate_value(value)
             
         self.SetValue(value)
         
@@ -1281,7 +1341,7 @@ class SingleChoice(ValueElement):
     def _get_default_value(self):
         return self.value_dict[self.value_list[0]]
     
-class MulitChoice(ValueElement):
+class MultiChoice(ValueElement):
     klass = 'CheckListBox'
     proportion = (-1, -1)
     default_value = []
@@ -1339,10 +1399,11 @@ class Date(ValueElement):
     def _validate_value(self, value):
         import time, datetime
         
+        date = value
         if isinstance(value, str):
             d = time.strptime(value, "%Y-%m-%d")
             date = wx.DateTimeFromTimeT(time.mktime(d))
-        elif isinstance(value, datetime.datetime):
+        elif isinstance(value, (datetime.datetime, datetime.date)):
             date = wx.DateTimeFromTimeT(time.mktime(value.timetuple()))
         return date
     
@@ -1374,6 +1435,8 @@ class Time(ValueElement):
     
     def _validate_value(self, value):
         import time, datetime
+        
+        date = value
         if isinstance(value, str):
             d = time.strptime(value, "%H:%M:%S")
             date = wx.DateTimeFromTimeT(time.mktime(d))

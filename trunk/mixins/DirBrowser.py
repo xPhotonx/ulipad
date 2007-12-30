@@ -59,7 +59,7 @@ class DirBrowser(wx.Panel, Mixin.Mixin):
             (140, 'IDPM_ADDFILE', tr('Create File'), wx.ITEM_NORMAL, 'OnAddFile', ''),
             (150, 'IDPM_RENAME', tr('Rename'), wx.ITEM_NORMAL, 'OnRename', ''),
             (160, 'IDPM_DELETE', tr('Delete')+'\tDel', wx.ITEM_NORMAL, 'OnDelete', ''),
-            (170, 'IDPM_REFRESH', tr('&Refresh'), wx.ITEM_NORMAL, 'OnRefresh', ''),
+            (170, 'IDPM_REFRESH', tr('&Refresh')+'\tF5', wx.ITEM_NORMAL, 'OnRefresh', ''),
             (180, '', '-', wx.ITEM_SEPARATOR, None, ''),
             (190, 'IDPM_IGNORETHIS', tr('Ignore This'), wx.ITEM_NORMAL, 'OnIgnoreThis', ''),
             (200, 'IDPM_IGNORETHISTYPE', tr('Ignore This Type'), wx.ITEM_NORMAL, 'OnIgnoreThisType', ''),
@@ -330,8 +330,8 @@ class DirBrowser(wx.Panel, Mixin.Mixin):
                         self.insertnode(parent, node, path, filename, item_index, None, self.getid(), self.FILE_NODE)
                         flag = True
                         break
-                else:
-                    break
+#                else:
+#                    break
             else:
                 if self.isFile(node):
                     break
@@ -953,6 +953,8 @@ class DirBrowser(wx.Panel, Mixin.Mixin):
         shift = event.ShiftDown()
         if key == wx.WXK_DELETE:
             wx.CallAfter(self.OnDelete, None)
+        elif key == wx.WXK_F5:
+            wx.CallAfter(self.OnRefresh, None)
         else:
             event.Skip()
             

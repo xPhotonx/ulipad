@@ -1,4 +1,10 @@
 $Rev$
+[2007/12/25]
+DirBrowser.py       Add F5(Refresh) support.
+mPyRun.py           Binding F5 to editor but not MainFrame
+CodeSnippet.py mCodeSnippet.py
+                    Improve xml reading with threading, and change the tooltip
+
 [2007/12/23]
 CodeSnippet.py mCodeSnippet.py
                     Add new snippet
