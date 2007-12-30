@@ -115,7 +115,8 @@ def on_close(win, event):
     if event.CanVeto():
         win = Globals.mainframe
         snippet = win.panel.getPage(tr('Code Snippet'))
-        return not snippet.canClose()
+        if snippet:
+            return not snippet.canClose()
 Mixin.setPlugin('mainframe', 'on_close', on_close)
 
 def pref_init(pref):

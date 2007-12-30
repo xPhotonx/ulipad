@@ -25,17 +25,19 @@ import os
 import wx
 import copy
 import re
+import datetime
 from modules import common
 from modules import makemenu
 from modules import Mixin
 from modules import Globals
 from modules.Debug import error
+from modules import Casing
 from modules.wxctrl import FlatButtons
 import modules.meide as ui
 try:
-    from xml.etree.ElementTree import ElementTree, Element
+    from xml.etree.ElementTree import ElementTree, Element, SubElement
 except:
-    from elementtree.ElementTree import ElementTree, Element
+    from elementtree.ElementTree import ElementTree, Element, SubElement
 try:
     import xml.etree.TreeBuilder as XMLWriter
 except:
@@ -333,7 +335,7 @@ class CodeSnippetWindow(wx.Panel, Mixin.Mixin):
         elif eid in (self.IDPM_PASTE, self.IDPM_PASTE_BEFORE):
             event.Enable(self.can_paste())
         elif eid == self.IDPM_PREFERENCES:
-            event.Enable(self.is_node(item))
+            event.Enable(self.is_root(item) or self.is_node(item))
         self.callplugin('on_update_ui', self, event)
 
     def can_paste(self):
@@ -352,8 +354,23 @@ class CodeSnippetWindow(wx.Panel, Mixin.Mixin):
         item = event.GetItem()
         if self.is_ok(item):
             if self.is_root(item):
-                data = self.get_node_data(item)
-                event.SetToolTip(data['filename'])
+                e = self.get_node_data(item)['etree']
+                values = {}
+                values['filename'] = self.get_node_data(item)['filename']
+                values['title'] = self.get_title(item)
+                values['author'] = self.get_element_text(e, 'snippet/properties/author')
+                values['version'] = self.get_element_text(e, 'snippet/properties/version')
+                values['date'] = self.get_element_text(e, 'snippet/properties/date', datetime.datetime.now())
+                values['description'] = self.get_element_text(e, 'snippet/properties/description')
+                
+                text = tr('''Filename: %(filename)s
+Title   : %(title)s
+Author  : %(author)s
+Version : %(version)s
+Date    : %(date)s
+Description: 
+    %(description)s''') % values
+                event.SetToolTip(text)
         
     def addnode(self, node, caption, imagenormal, imageexpand=None, 
             _id=None, data=None, pos='sub'):
@@ -770,42 +787,46 @@ class CodeSnippetWindow(wx.Panel, Mixin.Mixin):
             self.pref.snippet_recents = self.pref.snippet_recents[:30]
             self.pref.save()
             
-            self.tree.Freeze()
-            self.read_snippet_file(filename, type, expand)
-            self.tree.Thaw()
+            def f():
+                self.read_snippet_file(filename, type, expand)
+            d = Casing.Casing(f)
+            d.start_thread()
             
-            self._save_files()
         self.callplugin('after_addsnippetfile', self)
     
     def read_snippet_file(self, filename, type, expand):
         try:
             e = ElementTree(file=filename)
-            title = e.find('snippet/properties/title')
-            nodes = e.find('snippet/content')
-            data = {'type':'root', 'filename':filename, 'element':nodes, 
-                'etree':e, 'caption':title.text}
-            node = self.add_new_folder(self.root, title.text, data, modified=False)
             
-            def add_nodes(root, nodes):
-                for n in nodes:
-                    if n.tag == 'node':
-                        obj = self.add_new_node(root, n.attrib['caption'], data={'element':n}, modified=False)
-                    elif n.tag == 'folder':
-                        obj = self.add_new_folder(root, n.attrib['caption'], data={'element':n}, modified=False)
-                        add_nodes(obj, n.getchildren())
-                if expand:
-                    self.tree.Expand(root)
-                        
-            add_nodes(node, nodes)
-            wx.CallAfter(self.tree.SelectItem, node)
-            if type == 'new':
-                wx.CallAfter(self.tree.EditLabel, node)
+            def f():
                 
-            return True
+                title = e.find('snippet/properties/title')
+                nodes = e.find('snippet/content')
+                data = {'type':'root', 'filename':filename, 'element':nodes, 
+                    'etree':e, 'caption':title.text}
+                node = self.add_new_folder(self.root, title.text, data, modified=False)
+                
+                def add_nodes(root, nodes):
+                    for n in nodes:
+                        if n.tag == 'node':
+                            obj = self.add_new_node(root, n.attrib['caption'], data={'element':n}, modified=False)
+                        elif n.tag == 'folder':
+                            obj = self.add_new_folder(root, n.attrib['caption'], data={'element':n}, modified=False)
+                            add_nodes(obj, n.getchildren())
+                    if expand:
+                        self.tree.Expand(root)
+                            
+                add_nodes(node, nodes)
+                wx.CallAfter(self.tree.SelectItem, node)
+                if type == 'new':
+                    wx.CallAfter(self.tree.EditLabel, node)
+                    
+                self._save_files()
+            
+            wx.CallAfter(f)
         except:
             error.traceback()
             common.showerror(tr("There are some errors as openning the Snippet file"))
-            return False
     
     def OnRecentSnippet(self, event):
         eid = event.GetId()
@@ -1075,24 +1096,101 @@ class CodeSnippetWindow(wx.Panel, Mixin.Mixin):
             self.delete_node(src)
         return node
 
+    def get_title(self, node):
+        root = self.get_root_node(node)
+        data = self.get_node_data(root)
+        title = data['etree'].find('snippet/properties/title')
+        return title.text
+        
+    def set_title(self, node, title):
+        root = self.get_root_node(node)
+        data = self.get_node_data(root)
+        t = data['etree'].find('snippet/properties/title')
+        t.text = title
+        self.tree.SetItemText(node, title)
+        self.set_modify(node)
+        
+    def get_element_text(self, etree, path, default=''):
+        node = etree.find(path)
+        if node is None:
+            return default
+        else:
+            return node.text
+        
+    def set_element_text(self, node, etree, path, text):
+        paths = filter(None, path.split('/'))
+        s = ''
+        root = etree.getroot()
+        for p in paths:
+            s += '/' + p
+            e = etree.find(s)
+            if e is None:
+                e = SubElement(root, p)
+            root = e
+        e.text = text
+        self.set_modify(node)
+        
     def OnPreferences(self, event):
         item = self.tree.GetSelection()
         if not self.is_ok(item): return
-        win = Globals.mainframe
-        items = [lexer.name for lexer in win.lexers.lexobjs]
-        dlg = wx.SingleChoiceDialog(win, tr('Select a syntax highlight'), tr('Syntax Highlight'), items, wx.CHOICEDLG_STYLE)
-        language = self.get_element(item).attrib.get('language', 'python')
-        try:
-            index = items.index(language)
-        except:
-            index = 0
-        dlg.SetSelection(index)
-        if dlg.ShowModal() == wx.ID_OK:
-            lexer = win.lexers.lexobjs[dlg.GetSelection()]
-            self.get_element(item).attrib['language'] = lexer.name
-            self.set_modify(item)
-            doc = self.get_snippet_document()
-            if doc:
-                lexer.colourize(doc)
-        dlg.Destroy()
+    
+        if self.is_node(item):
+            win = Globals.mainframe
+            items = [lexer.name for lexer in win.lexers.lexobjs]
+            dlg = wx.SingleChoiceDialog(win, tr('Select a syntax highlight'), tr('Syntax Highlight'), items, wx.CHOICEDLG_STYLE)
+            language = self.get_element(item).attrib.get('language', 'python')
+            try:
+                index = items.index(language)
+            except:
+                index = 0
+            dlg.SetSelection(index)
+            if dlg.ShowModal() == wx.ID_OK:
+                lexer = win.lexers.lexobjs[dlg.GetSelection()]
+                self.get_element(item).attrib['language'] = lexer.name
+                self.set_modify(item)
+                doc = self.get_snippet_document()
+                if doc:
+                    lexer.colourize(doc)
+            dlg.Destroy()
+        elif self.is_root(item):
+            values = {}
+            e = self.get_node_data(item)['etree']
+            values['title'] = self.get_title(item)
+            values['author'] = self.get_element_text(e, 'snippet/properties/author')
+            values['version'] = self.get_element_text(e, 'snippet/properties/version')
+            values['date'] = self.get_element_text(e, 'snippet/properties/date', datetime.datetime.now())
+            values['description'] = self.get_element_text(e, 'snippet/properties/description')
+            dlg = PropertyDialog(self, -1, values=values)
+            values = None
+            if dlg.ShowModal() == wx.ID_OK:
+                values = dlg.GetValue()
+            dlg.Destroy()
+            if values:
+                if self.get_title(item) != values['title']:
+                    self.set_title(item, values['title'])
+                self.set_element_text(item, e, 'snippet/properties/author', values['author'])
+                self.set_element_text(item, e, 'snippet/properties/version', values['version'])
+                self.set_element_text(item, e, 'snippet/properties/date', values['date'].strftime('%Y-%m-%d'))
+                self.set_element_text(item, e, 'snippet/properties/description', values['description'])
         
+class PropertyDialog(wx.Dialog):
+    def __init__(self, parent, id=-1, title=tr('Property'), size=(400, 300), values=None):
+        wx.Dialog.__init__(self, parent, id, title=title, size=size)
+        
+        self.sizer = ui.VBox(namebinding='widget').create(self).auto_layout()
+        grid = self.sizer.add(ui.SimpleGrid)
+        grid.add(tr('Title'), ui.Text, name='title')
+        grid.add(tr('Author'), ui.Text, name='author')
+        grid.add(tr('Version'), ui.Text, name='version')
+        grid.add(tr('Date'), ui.Date, name='date')
+        grid.add(tr('Description'), ui.MultiText('', size=(-1, 60)), name='description', span=True)
+        
+        self.sizer.add(ui.simple_buttons(), flag=wx.ALIGN_CENTER|wx.BOTTOM)
+        self.btnOk.SetDefault()
+        
+        if values:
+            self.sizer.SetValue(values)
+        self.sizer.auto_fit(1)
+        
+    def GetValue(self):
+        return self.sizer.GetValue()

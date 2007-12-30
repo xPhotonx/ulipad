@@ -3979,7 +3979,7 @@ def add_pyftype_menu(menulist):
     menulist.extend([('IDM_PYTHON', #parent menu id
         [
             (120, '', '-', wx.ITEM_SEPARATOR, None, ''),
-            (130, 'IDM_PYTHON_RUN', tr('Run')+u'\tF5', wx.ITEM_NORMAL, 'OnPythonRun', tr('Run python program')),
+            (130, 'IDM_PYTHON_RUN', tr('Run')+u'\tE=F5', wx.ITEM_NORMAL, 'OnPythonRun', tr('Run python program')),
             (140, 'IDM_PYTHON_SETARGS', tr('Set Arguments...'), wx.ITEM_NORMAL, 'OnPythonSetArgs', tr('Set python program command line arugments')),
             (150, 'IDM_PYTHON_END', tr('Stop Program'), wx.ITEM_NORMAL, 'OnPythonEnd', tr('Stop current python program.')),
             (155, 'IDM_PYTHON_DOCTEST', tr('Run Doctests'), wx.ITEM_NORMAL, 'OnPythonDoctests', tr('Run doctests in current document.')),
@@ -8113,7 +8113,8 @@ def on_close(win, event):
     if event.CanVeto():
         win = Globals.mainframe
         snippet = win.panel.getPage(tr('Code Snippet'))
-        return not snippet.canClose()
+        if snippet:
+            return not snippet.canClose()
 Mixin.setPlugin('mainframe', 'on_close', on_close)
 
 def pref_init(pref):
