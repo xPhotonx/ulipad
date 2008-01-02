@@ -31,6 +31,8 @@ def init_accelerator(win, accellist, editoraccellist):
     keylist = {}
     for mid, v in accellist.items():
         keys, func = v
+        if not keys:
+            continue
         if not keys in keylist:
             keylist[keys] = (mid, 'main')
         else:

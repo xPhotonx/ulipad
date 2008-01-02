@@ -288,7 +288,8 @@ class DirBrowser(wx.Panel, Mixin.Mixin):
             return [], []
         if not files:
             return [], []
-        r = [(x, os.path.isdir(os.path.join(path, x))) for x in files if not self.validate(x)]
+        r = [(x, os.path.isdir(os.path.join(path, x))) for x in files if not 
+            self.validate(os.path.join(path, x))]
         if not r: return [], []
         dirs = []
         files = []
@@ -725,7 +726,7 @@ class DirBrowser(wx.Panel, Mixin.Mixin):
             ini = common.get_config_file_obj()
             ini.ignore.matches = self.filter
             ini.save()
-            self.tree.Delete(item)
+            self.OnRefresh()
 
     def OnIgnoreThisType(self, event):
         item = self.tree.GetSelection()
@@ -737,10 +738,7 @@ class DirBrowser(wx.Panel, Mixin.Mixin):
             ini = common.get_config_file_obj()
             ini.ignore.matches = self.filter
             ini.save()
-            item = self.tree.GetItemParent(item)
-            path = self.get_node_filename(item)
-            self.tree.DeleteChildren(item)
-            #self.addpathnodes(path, item)
+            self.OnRefresh()
 
     def getCurrentProjectName(self):
         item = self.tree.GetSelection()
