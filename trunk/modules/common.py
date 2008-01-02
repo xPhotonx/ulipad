@@ -389,7 +389,7 @@ if wx.Platform == '__WXMSW__':
               'size' : 11,
               'lnsize' : 10,
              }
-else:
+elif wx.Platform == '__WXGTK__':
     faces = { 'times': 'Times',
               'mono' : 'Courier 10 Pitch',
               'helv' : 'Helvetica',
@@ -397,6 +397,15 @@ else:
               'size' : 12,
               'lnsize' : 10,
              }
+else:
+    faces = { 'times': 'Times',
+              'mono' : 'Monaco',
+              'helv' : 'Helvetica',
+              'other': 'new century schoolbook',
+              'size' : 12,
+              'lnsize' : 10,
+             }
+    
 
 def merge_bitmaps(image1, image2):
     #prepare blank bitmap
