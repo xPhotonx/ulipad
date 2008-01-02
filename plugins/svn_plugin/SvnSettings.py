@@ -93,7 +93,11 @@ class SVNSettings(wx.Dialog):
         if wx.Platform == '__WXMSW__':
             from modules import winreg
             try:
-                key = winreg.Key(winreg.HKCU, r'Software\Tigris.org\Subversion\Config\miscellany')
+                _key = winreg.Key(winreg.HKCU, r'Software\Tigris.org\Subversion\Config')
+                if 'miscellany' not in _key:
+                    key = _key.add('miscellany')
+                else:
+                    key = _key['miscellany']
             except:
                 common.warn(tr("Maybe your subversion doesn't be installed or installed uncorrectly."))
                 raise
@@ -148,7 +152,11 @@ class SVNSettings(wx.Dialog):
         if wx.Platform == '__WXMSW__':
             from modules import winreg
             try:
-                key = winreg.Key(winreg.HKCU, r'Software\Tigris.org\Subversion\Config\miscellany')
+                _key = winreg.Key(winreg.HKCU, r'Software\Tigris.org\Subversion\Config')
+                if 'miscellany' not in _key:
+                    key = _key.add('miscellany')
+                else:
+                    key = _key['miscellany']
             except:
                 common.warn(tr("Maybe your subversion doesn't be installed or installed uncorrectly."))
                 raise
@@ -197,7 +205,11 @@ def get_global_ignore():
     if wx.Platform == '__WXMSW__':
         from modules import winreg
         try:
-            key = winreg.Key(winreg.HKCU, r'Software\Tigris.org\Subversion\Config\miscellany')
+            _key = winreg.Key(winreg.HKCU, r'Software\Tigris.org\Subversion\Config')
+            if 'miscellany' not in _key:
+                key = _key.add('miscellany')
+            else:
+                key = _key['miscellany']
         except:
             common.warn(tr("Maybe your subversion doesn't be installed or installed uncorrectly."))
             raise

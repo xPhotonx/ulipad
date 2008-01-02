@@ -1,4 +1,9 @@
 $Rev$
+[2008/01/02]
+mWindow.py mHotKey.py
+                    Fix custom hotkey error
+SvnSettings.py      Fix svn bug
+
 [2007/12/25]
 DirBrowser.py       Add F5(Refresh) support.
 mPyRun.py           Binding F5 to editor but not MainFrame
