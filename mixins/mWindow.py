@@ -49,9 +49,9 @@ Mixin.setPlugin('mainframe', 'add_menu', add_mainframe_menu)
 def OnWindowLeft(win, event):
     flag = not win.panel.LeftIsVisible
 
-    if flag:
-        win.createSnippetWindow()
-
+#    if flag:
+#        win.createSnippetWindow()
+#
     win.panel.showWindow('left', flag)
 Mixin.setMixin('mainframe', 'OnWindowLeft', OnWindowLeft)
 
