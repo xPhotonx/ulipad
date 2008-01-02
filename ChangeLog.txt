@@ -3,6 +3,7 @@ $Rev$
 mWindow.py mHotKey.py
                     Fix custom hotkey error
 SvnSettings.py      Fix svn bug
+DirBrowser.py       Fix ignore bug
 
 [2007/12/25]
 DirBrowser.py       Add F5(Refresh) support.
