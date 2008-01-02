@@ -5123,9 +5123,6 @@ Mixin.setPlugin('mainframe', 'add_menu', add_mainframe_menu)
 def OnWindowLeft(win, event):
     flag = not win.panel.LeftIsVisible
 
-    if flag:
-        win.createSnippetWindow()
-
     win.panel.showWindow('left', flag)
 Mixin.setMixin('mainframe', 'OnWindowLeft', OnWindowLeft)
 
@@ -5629,24 +5626,58 @@ def is_htmlview(page, document):
 
 from modules import Mixin
 from modules import common
+from modules.Debug import error
 
 def init_accelerator(win, accellist, editoraccellist):
     ini = common.get_config_file_obj(onelevel=True)
 
+    keylist = {}
+    for mid, v in accellist.items():
+        keys, func = v
+        if not keys in keylist:
+            keylist[keys] = (mid, 'main')
+        else:
+            error.error('There is already %s defined! Please check.' % keys)
+
+    for mid, v in editoraccellist.items():
+        keys, func = v
+        if not keys in keylist:
+            keylist[keys] = (mid, 'editor')
+        else:
+            error.error('There is already %s defined! Please check.' % keys)
+
     #mid can be a mainframe menu ID or a mainframe function name
     #which should only has one parameter
     for mid, hotkey in ini.main_hotkey.items():
-        if editoraccellist.has_key(mid):
+        _id, _t = keylist.get(hotkey, ('', ''))
+        if _id:
+            if _t == 'main':
+                keys, func = accellist[_id]
+                accellist[_id] = ('', func)
+            else:
+                keys, func = editoraccellist[_id]
+                editoraccellist[_id] = ('', func)
+
+        if mid in editoraccellist:
             keys, func = editoraccellist[mid]
             del editoraccellist[mid]
             accellist[mid] = (hotkey, func)
-        elif accellist.has_key(mid):
+        elif mid in accellist:
             keys, func = accellist[mid]
             accellist[mid] = (hotkey, func)
 
     #mid can be a editor menu ID or a editor function name
     #which should only has one parameter
     for mid, hotkey in ini.editor_hotkey.items():
+        _id, _t = keylist.get(hotkey, ('', ''))
+        if _id:
+            if _t == 'main':
+                keys, func = accellist[_id]
+                accellist[_id] = ('', func)
+            else:
+                keys, func = editoraccellist[_id]
+                editoraccellist[_id] = ('', func)
+
         if accellist.has_key(mid):
             keys, func = accellist[mid]
             del accellist[mid]
