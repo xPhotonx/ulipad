@@ -418,12 +418,11 @@ class DirBrowser(wx.Panel, Mixin.Mixin):
         import fnmatch
         flag = False
 
-        self.filter = ['.*', '*.pyc', '*.bak']
+        self.filter = ['*/.*', '*.pyc', '*.bak']
         ini = common.get_config_file_obj()
 
         if ini.ignore.matches:
             self.filter = ini.ignore.matches
-        ini.save()
 
         for p in self.filter:
             flag |= fnmatch.fnmatch(path, p)
