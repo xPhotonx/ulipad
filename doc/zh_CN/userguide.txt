@@ -265,7 +265,7 @@ Bug fix:
 #. 增加一个edittype的属性用来表示是否是编辑器环境，原documenttype只是用来标识不同的文档类型
 #. 修正当DEBUG=False时仍然可以创建debug.txt和error.txt的问题
 #. 修正当输入焦点消失时，弹出的列表窗口和Calltip不消失的Bug
-#. 修正缩近粘贴的bug。修正列拷贝在文件尾时少一行的错误
+#. 修正缩进粘贴的bug。修正列拷贝在文件尾时少一行的错误
 #. 将mAutoComplete转到Input Assistant模块中
 #. 将检查文件缺省值设为True
 #. 修正打开上次窗口位置大小不正确的bug
@@ -292,7 +292,7 @@ Bug fix:
 #. 增强Python文件中.自动完成功能。在from和import中支持.的自动属性选择功能
 #. 增加列块拷贝的支持。在选择前先要按alt，就可以选对列块了
 #. 增加列模式，按Alt+C进行切换。在列模式下可以输入一个字符，自动在其它行出现
-#. 增加对Python文件的缩近拷贝的支持，可以在参数设置中关掉些功能
+#. 增加对Python文件的缩进拷贝的支持，可以在参数设置中关掉些功能
 #. 增加在自动检查需要装入文件时是否需要确认的选项
 #. 增强自动完成，可以支持控制字符组合了，不过菜单的组合键会先执行
 #. 增加对当前文档单独设置ACP文件的功能
@@ -317,11 +317,11 @@ Bug fix:
 #. 修正判断Python文件编码不正确的Bug
 #. 修正语法配置文件读取时中文字体名未做转码的bug
 #. 修正正则表达式替换不精确的bug
-#. 修正自动检测缩近符不正确的bug
+#. 修正自动检测缩进符不正确的bug
 #. 修正在编辑html的js代码时总有波浪线的bug
 #. 修正新打开文件时，光标停留与原来不太一致
 #. 修正当按回车时，如果移到可视区下面，则看不到的bug
-#. 转换项目中的Tab缩近全部改为4个空格缩近
+#. 转换项目中的Tab缩进全部改为4个空格缩进
 #. 去掉关于对话框中的版本revision号
 
 3.2版本
@@ -368,7 +368,7 @@ Bug fix:
 
 1. 解决pyw的多线程运行阻塞的问题
 2. 修正模块信息显示出错的问题
-3. 在执行Tab与空格切换的菜单后自动调整缩近符
+3. 在执行Tab与空格切换的菜单后自动调整缩进符
 4. 更新image有效性的判断处理
 5. 修正ftp目录分析的一个bug
 6. 调整文档切换时菜单的动态生成，及语法切换的问题，减少不必要的更新
@@ -417,9 +417,9 @@ Bug fix:
 8. 修正保存时标题条的星号不改变的bug
 9. 修改按Ctrl+Tab键时切换时光标不进入编辑窗口的bug
 10. 修正按钮的高度
-11. 修正切换自动缩近符菜单bug
+11. 修正切换自动缩进符菜单bug
 12. 将修改设为一次性操作，使用BeginUndoAction()和EndUndoAction()
-13. 修正无法选择自动缩近和使用制表符缩近菜单
+13. 修正无法选择自动缩进和使用制表符缩进菜单
 14. 调整配置文件可以从UliPad安装目录和conf目录下读取
 
 
@@ -547,7 +547,7 @@ Bug fix:
 
 新增：
 
-1. 自动判断文件的缩近符，自动进行调整
+1. 自动判断文件的缩进符，自动进行调整
 2. 增加Blog编辑功能插件
 
 修改：
@@ -586,7 +586,7 @@ Blog插件是自选安装的，因此，在正式的安装包中不带。需要�
 
 新增：
 
-1. 增加上下文缩近
+1. 增加上下文缩进
 2. 增加简单项目管理功能
 3. 增加是否显示光标所在行功能
 4. 增加一个启动或禁止psyco模块的使用的命令行选项 -s，缺省为不启用
@@ -897,19 +897,19 @@ Trim Trailing Spaces(去除尾部空白)
   去除行尾的空白。
 
 Leading Spaces to Tabs(前导空白转换为制表符)
-  将行首的空白转换为按缩近要求的制表符。
+  将行首的空白转换为按缩进要求的制表符。
 
 Leading Tabs to Spaces(前导制表符转为空格)
-  将行首的制表符转换为按缩近要求的空格。
+  将行首的制表符转换为按缩进要求的空格。
 
 All Tabs to Spaces(所有制表符转为空格)(2.0新增)
-  将所有的制表符转换为按缩近要求的空格。
+  将所有的制表符转换为按缩进要求的空格。
 
-Increase Indent(增加缩近)
-  增加文本的缩近。
+Increase Indent(增加缩进)
+  增加文本的缩进。
 
-Decrease Indent(减少缩近)
-  减少文本的缩近。
+Decrease Indent(减少缩进)
+  减少文本的缩进。
 
 Line Comment(行注释)
   在选中文本的前面加上注释符。执行时会弹出对话框要求你输入注释符。
@@ -965,8 +965,8 @@ View(视图)
 Tabs And Spaces(制表符和空白)
   显示或隐藏制表符和空白。制表符和空格一般是不可见的，如果切换为显示，则空格显示为一个点，制表符显示为一个箭头。
 
-Indentation Guides(缩近指示)
-  显示或隐藏缩近指示。如果显示，则相同的缩近会有一根虚线连在一起。
+Indentation Guides(缩进指示)
+  显示或隐藏缩进指示。如果显示，则相同的缩进会有一根虚线连在一起。
 
 Right Edge Indicator(右边界指示)
   显示或隐藏左边界指示线。如果显示，则在设定的列处有一根线。它可以帮助你确定一行是否太长。
@@ -1025,8 +1025,8 @@ Document(文档)
 Word-wrap(自动折行)
   设置/取消自动折行。当设置自动折行时，当文字一行过长，会根据窗口大小自动换到下一行。
 
-Auto Indent(自动缩近)
-  设置/取消自动缩近。当设置自动缩近时，按下回车键，新的一行会自动保持上一行的缩近。如果取消些功能，则按下回车键时，插入点总是在一行的第1列位置。
+Auto Indent(自动缩进)
+  设置/取消自动缩进。当设置自动缩进时，按下回车键，新的一行会自动保持上一行的缩进。如果取消些功能，则按下回车键时，插入点总是在一行的第1列位置。
 
 Change encoding...(改变保存编码)(2.5版新增)
   改变当前文档的编码，在保存时将使用此编码。对于转换远程文件的编码特别有用。
@@ -1157,7 +1157,7 @@ Whitespace is visible on startup
   选中则启动UliPad时，空格和制表符是可见的。
 
 Indentation guides is visible on startup
-  选中则缩近指示在启动UliPad时是可见的。
+  选中则缩进指示在启动UliPad时是可见的。
 
 Long line indicator is visible on startup
   长行指示(右边界)在启动UliPad时是可见的。
@@ -1169,10 +1169,10 @@ Tab width
   一个制表符相当于多少个空格，缺省为4个
 
 Auto indent
-  自动缩近。设置保存后与执行菜单功能相同。
+  自动缩进。设置保存后与执行菜单功能相同。
 
 Use Tabs
-  缩近是否使用制表符，选中则使用制表符，未选中则使用空格。
+  缩进是否使用制表符，选中则使用制表符，未选中则使用空格。
 
 Auto detect UTF-8 encoding
   自动检测文件编码是否为utf-8，如果是则自动进行相应的编码转换。
@@ -1238,8 +1238,8 @@ Show class browser window as open python source file
   在打开Python源文件时显示类浏览窗口
 
 Use context sensitive indent(2.5新增)
-  使用上下文敏感缩近。比如：当输入函数定义，或语句块开始时，当最后为':'时，会在下一行自动
-  增加一个缩近位。当输入行有return, break, continue时会自动减少一个缩进位。
+  使用上下文敏感缩进。比如：当输入函数定义，或语句块开始时，当最后为':'时，会在下一行自动
+  增加一个缩进位。当输入行有return, break, continue时会自动减少一个缩进位。
 
 Enable Calltip(2.8新增)
   允许函数提示功能
@@ -1338,8 +1338,8 @@ Ctrl+Alt+E						(M)Enlarge Selection(扩大选择)
 Ctrl+F							(M)Find...(查找)
 Ctrl+G							(M)Go to Line...(行号跳转)
 Ctrl+H							(M)Replace...(替换)
-Ctrl+I或Tab						(M)Increase Indent(增加缩近)
-Ctrl+Shift+I或Shift+Tab			(M)Decrease Indent(减少缩近)
+Ctrl+I或Tab						(M)Increase Indent(增加缩进)
+Ctrl+Shift+I或Shift+Tab			(M)Decrease Indent(减少缩进)
 Ctrl+J							(M)Duplicate Current Line(复制当前行)
 Ctrl+L							(M)Duplicate Previous Line(复制前一个句子)
 Ctrl+Shift+L					(M)Duplicate Previous Line(复制后一个句子)

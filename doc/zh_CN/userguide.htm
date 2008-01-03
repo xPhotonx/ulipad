@@ -632,7 +632,7 @@ and dynamic menu don't change bug</li>
 <li>增加一个edittype的属性用来表示是否是编辑器环境，原documenttype只是用来标识不同的文档类型</li>
 <li>修正当DEBUG=False时仍然可以创建debug.txt和error.txt的问题</li>
 <li>修正当输入焦点消失时，弹出的列表窗口和Calltip不消失的Bug</li>
-<li>修正缩近粘贴的bug。修正列拷贝在文件尾时少一行的错误</li>
+<li>修正缩进粘贴的bug。修正列拷贝在文件尾时少一行的错误</li>
 <li>将mAutoComplete转到Input Assistant模块中</li>
 <li>将检查文件缺省值设为True</li>
 <li>修正打开上次窗口位置大小不正确的bug</li>
@@ -659,7 +659,7 @@ and dynamic menu don't change bug</li>
 <li>增强Python文件中.自动完成功能。在from和import中支持.的自动属性选择功能</li>
 <li>增加列块拷贝的支持。在选择前先要按alt，就可以选对列块了</li>
 <li>增加列模式，按Alt+C进行切换。在列模式下可以输入一个字符，自动在其它行出现</li>
-<li>增加对Python文件的缩近拷贝的支持，可以在参数设置中关掉些功能</li>
+<li>增加对Python文件的缩进拷贝的支持，可以在参数设置中关掉些功能</li>
 <li>增加在自动检查需要装入文件时是否需要确认的选项</li>
 <li>增强自动完成，可以支持控制字符组合了，不过菜单的组合键会先执行</li>
 <li>增加对当前文档单独设置ACP文件的功能</li>
@@ -684,11 +684,11 @@ and dynamic menu don't change bug</li>
 <li>修正判断Python文件编码不正确的Bug</li>
 <li>修正语法配置文件读取时中文字体名未做转码的bug</li>
 <li>修正正则表达式替换不精确的bug</li>
-<li>修正自动检测缩近符不正确的bug</li>
+<li>修正自动检测缩进符不正确的bug</li>
 <li>修正在编辑html的js代码时总有波浪线的bug</li>
 <li>修正新打开文件时，光标停留与原来不太一致</li>
 <li>修正当按回车时，如果移到可视区下面，则看不到的bug</li>
-<li>转换项目中的Tab缩近全部改为4个空格缩近</li>
+<li>转换项目中的Tab缩进全部改为4个空格缩进</li>
 <li>去掉关于对话框中的版本revision号</li>
 </ol>
 </div>
@@ -734,7 +734,7 @@ and dynamic menu don't change bug</li>
 <ol class="arabic simple">
 <li>解决pyw的多线程运行阻塞的问题</li>
 <li>修正模块信息显示出错的问题</li>
-<li>在执行Tab与空格切换的菜单后自动调整缩近符</li>
+<li>在执行Tab与空格切换的菜单后自动调整缩进符</li>
 <li>更新image有效性的判断处理</li>
 <li>修正ftp目录分析的一个bug</li>
 <li>调整文档切换时菜单的动态生成，及语法切换的问题，减少不必要的更新</li>
@@ -783,9 +783,9 @@ and dynamic menu don't change bug</li>
 <li>修正保存时标题条的星号不改变的bug</li>
 <li>修改按Ctrl+Tab键时切换时光标不进入编辑窗口的bug</li>
 <li>修正按钮的高度</li>
-<li>修正切换自动缩近符菜单bug</li>
+<li>修正切换自动缩进符菜单bug</li>
 <li>将修改设为一次性操作，使用BeginUndoAction()和EndUndoAction()</li>
-<li>修正无法选择自动缩近和使用制表符缩近菜单</li>
+<li>修正无法选择自动缩进和使用制表符缩进菜单</li>
 <li>调整配置文件可以从UliPad安装目录和conf目录下读取</li>
 </ol>
 </div>
@@ -910,7 +910,7 @@ and dynamic menu don't change bug</li>
 <h2><a class="toc-backref" href="#id59" id="id21" name="id21">6.13&nbsp;&nbsp;&nbsp;2.6.1版本</a></h2>
 <p>新增：</p>
 <ol class="arabic simple">
-<li>自动判断文件的缩近符，自动进行调整</li>
+<li>自动判断文件的缩进符，自动进行调整</li>
 <li>增加Blog编辑功能插件</li>
 </ol>
 <p>修改：</p>
@@ -945,7 +945,7 @@ and dynamic menu don't change bug</li>
 <h2><a class="toc-backref" href="#id61" id="id23" name="id23">6.15&nbsp;&nbsp;&nbsp;2.5版本</a></h2>
 <p>新增：</p>
 <ol class="arabic simple">
-<li>增加上下文缩近</li>
+<li>增加上下文缩进</li>
 <li>增加简单项目管理功能</li>
 <li>增加是否显示光标所在行功能</li>
 <li>增加一个启动或禁止psyco模块的使用的命令行选项 -s，缺省为不启用</li>
@@ -1218,15 +1218,15 @@ b一样的效果。因此为了正确选中文本，请将插入点置于a位置
 <dt>Trim Trailing Spaces(去除尾部空白)</dt>
 <dd>去除行尾的空白。</dd>
 <dt>Leading Spaces to Tabs(前导空白转换为制表符)</dt>
-<dd>将行首的空白转换为按缩近要求的制表符。</dd>
+<dd>将行首的空白转换为按缩进要求的制表符。</dd>
 <dt>Leading Tabs to Spaces(前导制表符转为空格)</dt>
-<dd>将行首的制表符转换为按缩近要求的空格。</dd>
+<dd>将行首的制表符转换为按缩进要求的空格。</dd>
 <dt>All Tabs to Spaces(所有制表符转为空格)(2.0新增)</dt>
-<dd>将所有的制表符转换为按缩近要求的空格。</dd>
-<dt>Increase Indent(增加缩近)</dt>
-<dd>增加文本的缩近。</dd>
-<dt>Decrease Indent(减少缩近)</dt>
-<dd>减少文本的缩近。</dd>
+<dd>将所有的制表符转换为按缩进要求的空格。</dd>
+<dt>Increase Indent(增加缩进)</dt>
+<dd>增加文本的缩进。</dd>
+<dt>Decrease Indent(减少缩进)</dt>
+<dd>减少文本的缩进。</dd>
 <dt>Line Comment(行注释)</dt>
 <dd>在选中文本的前面加上注释符。执行时会弹出对话框要求你输入注释符。</dd>
 <dt>Line Uncomment(去掉行注释)</dt>
@@ -1273,8 +1273,8 @@ b一样的效果。因此为了正确选中文本，请将插入点置于a位置
 <dl class="docutils">
 <dt>Tabs And Spaces(制表符和空白)</dt>
 <dd>显示或隐藏制表符和空白。制表符和空格一般是不可见的，如果切换为显示，则空格显示为一个点，制表符显示为一个箭头。</dd>
-<dt>Indentation Guides(缩近指示)</dt>
-<dd>显示或隐藏缩近指示。如果显示，则相同的缩近会有一根虚线连在一起。</dd>
+<dt>Indentation Guides(缩进指示)</dt>
+<dd>显示或隐藏缩进指示。如果显示，则相同的缩进会有一根虚线连在一起。</dd>
 <dt>Right Edge Indicator(右边界指示)</dt>
 <dd>显示或隐藏左边界指示线。如果显示，则在设定的列处有一根线。它可以帮助你确定一行是否太长。</dd>
 <dt>End-Of-Line Marker(行结束符)</dt>
@@ -1319,8 +1319,8 @@ b一样的效果。因此为了正确选中文本，请将插入点置于a位置
 <dl class="docutils">
 <dt>Word-wrap(自动折行)</dt>
 <dd>设置/取消自动折行。当设置自动折行时，当文字一行过长，会根据窗口大小自动换到下一行。</dd>
-<dt>Auto Indent(自动缩近)</dt>
-<dd>设置/取消自动缩近。当设置自动缩近时，按下回车键，新的一行会自动保持上一行的缩近。如果取消些功能，则按下回车键时，插入点总是在一行的第1列位置。</dd>
+<dt>Auto Indent(自动缩进)</dt>
+<dd>设置/取消自动缩进。当设置自动缩进时，按下回车键，新的一行会自动保持上一行的缩进。如果取消些功能，则按下回车键时，插入点总是在一行的第1列位置。</dd>
 <dt>Change encoding...(改变保存编码)(2.5版新增)</dt>
 <dd>改变当前文档的编码，在保存时将使用此编码。对于转换远程文件的编码特别有用。</dd>
 <dt>Syntax Highlight...(语法高亮)(2.3新增)</dt>
@@ -1441,7 +1441,7 @@ GetCurrentPos()                 取得插入点的位置
 <dt>Whitespace is visible on startup</dt>
 <dd>选中则启动UliPad时，空格和制表符是可见的。</dd>
 <dt>Indentation guides is visible on startup</dt>
-<dd>选中则缩近指示在启动UliPad时是可见的。</dd>
+<dd>选中则缩进指示在启动UliPad时是可见的。</dd>
 <dt>Long line indicator is visible on startup</dt>
 <dd>长行指示(右边界)在启动UliPad时是可见的。</dd>
 <dt>Long line indicator column</dt>
@@ -1449,9 +1449,9 @@ GetCurrentPos()                 取得插入点的位置
 <dt>Tab width</dt>
 <dd>一个制表符相当于多少个空格，缺省为4个</dd>
 <dt>Auto indent</dt>
-<dd>自动缩近。设置保存后与执行菜单功能相同。</dd>
+<dd>自动缩进。设置保存后与执行菜单功能相同。</dd>
 <dt>Use Tabs</dt>
-<dd>缩近是否使用制表符，选中则使用制表符，未选中则使用空格。</dd>
+<dd>缩进是否使用制表符，选中则使用制表符，未选中则使用空格。</dd>
 <dt>Auto detect UTF-8 encoding</dt>
 <dd>自动检测文件编码是否为utf-8，如果是则自动进行相应的编码转换。</dd>
 <dt>Auto word-wrap</dt>
@@ -1502,8 +1502,8 @@ GetCurrentPos()                 取得插入点的位置
 <dt>Show class browser window as open python source file</dt>
 <dd>在打开Python源文件时显示类浏览窗口</dd>
 <dt>Use context sensitive indent(2.5新增)</dt>
-<dd>使用上下文敏感缩近。比如：当输入函数定义，或语句块开始时，当最后为':'时，会在下一行自动
-增加一个缩近位。当输入行有return, break, continue时会自动减少一个缩进位。</dd>
+<dd>使用上下文敏感缩进。比如：当输入函数定义，或语句块开始时，当最后为':'时，会在下一行自动
+增加一个缩进位。当输入行有return, break, continue时会自动减少一个缩进位。</dd>
 <dt>Enable Calltip(2.8新增)</dt>
 <dd>允许函数提示功能</dd>
 <dt>Enable auto completion(2.8新增)</dt>
@@ -1646,10 +1646,10 @@ GetCurrentPos()                 取得插入点的位置
 <td>(M)Replace...(替换)</td>
 </tr>
 <tr><td>Ctrl+I或Tab</td>
-<td>(M)Increase Indent(增加缩近)</td>
+<td>(M)Increase Indent(增加缩进)</td>
 </tr>
 <tr><td>Ctrl+Shift+I或Shift+Tab</td>
-<td>(M)Decrease Indent(减少缩近)</td>
+<td>(M)Decrease Indent(减少缩进)</td>
 </tr>
 <tr><td>Ctrl+J</td>
 <td>(M)Duplicate Current Line(复制当前行)</td>
