@@ -1370,6 +1370,7 @@ Mixin.setPlugin('editor', 'afteropenfile', afteropenfile)
 import wx.stc
 from modules import Mixin
 from modules import common
+from modules import Globals
 
 def add_mainframe_menu(menulist):
     menulist.extend([ ('IDM_EDIT',
@@ -1504,7 +1505,7 @@ def OnFormatChop(win, event):
     win.mainframe.OnEditFormatChop(event)
 Mixin.setMixin('editor', 'OnFormatChop', OnFormatChop)
 
-def get_document_comment_chars(mainframe):
+def get_document_comment_chars(editor):
     chars = {
         'c':'//',
         'python':'#',
@@ -1514,7 +1515,6 @@ def get_document_comment_chars(mainframe):
         'js':'//',
         'default':'#',
     }
-    editor = mainframe.document
     lang = editor.languagename
     x = common.get_config_file_obj(values={'comment_chars':chars})
     cchar = ''
@@ -1524,14 +1524,15 @@ def get_document_comment_chars(mainframe):
         if x.comment_chars.has_key('default'):
             cchar = x.comment_chars.default
     if not cchar:
-        cchar = mainframe.pref.last_comment_chars
+        cchar = Globals.pref.last_comment_chars
     return cchar
+Mixin.setMixin('editor', 'get_document_comment_chars', get_document_comment_chars)
 
 def OnEditFormatComment(win, event):
     if win.pref.show_comment_chars_dialog:
         from modules import Entry
 
-        dlg = Entry.MyTextEntry(win, tr("Comment..."), tr("Comment Char:"), get_document_comment_chars(win))
+        dlg = Entry.MyTextEntry(win, tr("Comment..."), tr("Comment Char:"), get_document_comment_chars(win.document))
         answer = dlg.ShowModal()
         if answer == wx.ID_OK:
             commentchar = dlg.GetValue()
@@ -1540,7 +1541,7 @@ def OnEditFormatComment(win, event):
         else:
             return
     else:
-        commentchar = get_document_comment_chars(win)
+        commentchar = get_document_comment_chars(win.document)
     win.pref.last_comment_chars = commentchar
     win.pref.save()
     win.document.BeginUndoAction()
@@ -1558,7 +1559,7 @@ def OnEditFormatUncomment(win, event):
     if win.pref.show_comment_chars_dialog:
         from modules import Entry
 
-        dlg = Entry.MyTextEntry(win, tr("Comment..."), tr("Comment Char:"), get_document_comment_chars(win))
+        dlg = Entry.MyTextEntry(win, tr("Comment..."), tr("Comment Char:"), get_document_comment_chars(win.document))
         answer = dlg.ShowModal()
         if answer == wx.ID_OK:
             commentchar = dlg.GetValue()
@@ -1567,7 +1568,7 @@ def OnEditFormatUncomment(win, event):
         else:
             return
     else:
-        commentchar = get_document_comment_chars(win)
+        commentchar = get_document_comment_chars(win.document)
     win.pref.last_comment_chars = commentchar
     win.pref.save()
     win.document.BeginUndoAction()
@@ -8189,6 +8190,103 @@ def on_selected(win, text):
     wx.CallAfter(doc.SetFocus)
 Mixin.setPlugin('codesnippet', 'on_selected', on_selected)
 
+
+
+
+#-----------------------  mIndentMove.py ------------------
+
+import wx
+from modules import Mixin
+
+def on_key_down(editor, event):
+    ctrl = event.ControlDown()
+    shift = event.ShiftDown()
+    alt = event.AltDown()
+
+    if not shift and not ctrl and alt:
+        if event.GetKeyCode() == wx.WXK_LEFT:
+            editor.move_parent_indent()
+            return True
+        elif event.GetKeyCode() == wx.WXK_UP:
+            editor.move_prev_indent()
+            return True
+        elif event.GetKeyCode() == wx.WXK_DOWN:
+            editor.move_next_indent()
+            return True
+        elif event.GetKeyCode() == wx.WXK_RIGHT:
+            editor.move_child_indent()
+            return True
+Mixin.setPlugin('editor', 'on_key_down', on_key_down)
+
+def move_parent_indent(editor):
+    line = editor.GetCurrentLine()
+    indent = editor.GetLineIndentation(line)
+    line -= 1
+    comment_chars = editor.get_document_comment_chars()
+    while line > -1:
+        text = editor.GetLine(line).strip()
+        if text and not text.startswith(comment_chars):
+            i = editor.GetLineIndentation(line)
+            if i < indent:
+                editor.GotoLine(line)
+                break
+
+        line -= 1
+Mixin.setMixin('editor', 'move_parent_indent', move_parent_indent)
+
+def move_prev_indent(editor):
+    line = editor.GetCurrentLine()
+    indent = editor.GetLineIndentation(line)
+    line -= 1
+    comment_chars = editor.get_document_comment_chars()
+    while line > -1:
+        text = editor.GetLine(line).strip()
+        if text and not text.startswith(comment_chars):
+            i = editor.GetLineIndentation(line)
+            if i == indent:
+                editor.GotoLine(line)
+                break
+            elif i < indent:
+                break
+
+        line -= 1
+Mixin.setMixin('editor', 'move_prev_indent', move_prev_indent)
+
+def move_next_indent(editor):
+    line = editor.GetCurrentLine()
+    indent = editor.GetLineIndentation(line)
+    line += 1
+    comment_chars = editor.get_document_comment_chars()
+    while line < editor.GetLineCount():
+        text = editor.GetLine(line).strip()
+        if text and not text.startswith(comment_chars):
+            i = editor.GetLineIndentation(line)
+            if i == indent:
+                editor.GotoLine(line)
+                break
+            elif i < indent:
+                break
+
+        line += 1
+Mixin.setMixin('editor', 'move_next_indent', move_next_indent)
+
+def move_child_indent(editor):
+    line = editor.GetCurrentLine()
+    indent = editor.GetLineIndentation(line)
+    line += 1
+    comment_chars = editor.get_document_comment_chars()
+    while line < editor.GetLineCount():
+        text = editor.GetLine(line).strip()
+        if text and not text.startswith(comment_chars):
+            i = editor.GetLineIndentation(line)
+            if i > indent:
+                editor.GotoLine(line)
+                break
+            else:
+                break
+
+        line += 1
+Mixin.setMixin('editor', 'move_child_indent', move_child_indent)
 
 
 

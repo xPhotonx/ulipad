@@ -24,6 +24,7 @@
 import wx.stc
 from modules import Mixin
 from modules import common
+from modules import Globals
 
 def add_mainframe_menu(menulist):
     menulist.extend([ ('IDM_EDIT',
@@ -158,7 +159,7 @@ def OnFormatChop(win, event):
     win.mainframe.OnEditFormatChop(event)
 Mixin.setMixin('editor', 'OnFormatChop', OnFormatChop)
 
-def get_document_comment_chars(mainframe):
+def get_document_comment_chars(editor):
     chars = {
         'c':'//',
         'python':'#',
@@ -168,7 +169,6 @@ def get_document_comment_chars(mainframe):
         'js':'//',
         'default':'#',
     }
-    editor = mainframe.document
     lang = editor.languagename
     x = common.get_config_file_obj(values={'comment_chars':chars})
     cchar = ''
@@ -178,14 +178,15 @@ def get_document_comment_chars(mainframe):
         if x.comment_chars.has_key('default'):
             cchar = x.comment_chars.default
     if not cchar:
-        cchar = mainframe.pref.last_comment_chars
+        cchar = Globals.pref.last_comment_chars
     return cchar
+Mixin.setMixin('editor', 'get_document_comment_chars', get_document_comment_chars)
 
 def OnEditFormatComment(win, event):
     if win.pref.show_comment_chars_dialog:
         from modules import Entry
 
-        dlg = Entry.MyTextEntry(win, tr("Comment..."), tr("Comment Char:"), get_document_comment_chars(win))
+        dlg = Entry.MyTextEntry(win, tr("Comment..."), tr("Comment Char:"), get_document_comment_chars(win.document))
         answer = dlg.ShowModal()
         if answer == wx.ID_OK:
             commentchar = dlg.GetValue()
@@ -194,7 +195,7 @@ def OnEditFormatComment(win, event):
         else:
             return
     else:
-        commentchar = get_document_comment_chars(win)
+        commentchar = get_document_comment_chars(win.document)
     win.pref.last_comment_chars = commentchar
     win.pref.save()
     win.document.BeginUndoAction()
@@ -212,7 +213,7 @@ def OnEditFormatUncomment(win, event):
     if win.pref.show_comment_chars_dialog:
         from modules import Entry
 
-        dlg = Entry.MyTextEntry(win, tr("Comment..."), tr("Comment Char:"), get_document_comment_chars(win))
+        dlg = Entry.MyTextEntry(win, tr("Comment..."), tr("Comment Char:"), get_document_comment_chars(win.document))
         answer = dlg.ShowModal()
         if answer == wx.ID_OK:
             commentchar = dlg.GetValue()
@@ -221,7 +222,7 @@ def OnEditFormatUncomment(win, event):
         else:
             return
     else:
-        commentchar = get_document_comment_chars(win)
+        commentchar = get_document_comment_chars(win.document)
     win.pref.last_comment_chars = commentchar
     win.pref.save()
     win.document.BeginUndoAction()
