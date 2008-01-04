@@ -1,4 +1,7 @@
 $Rev$
+[2008/01/04]
+mFormat.py mIndentMove.py
+                    Add indent cursor move functionality
 [2008/01/02]
 mWindow.py mHotKey.py
                     Fix custom hotkey error
