@@ -3059,7 +3059,6 @@ Mixin.setMixin('mainframe', 'OnHelpMyBlog', OnHelpMyBlog)
 #-----------------------  mClassBrowser.py ------------------
 
 import wx
-import os.path
 from modules import Mixin
 from modules import Globals
 from modules.Debug import error
@@ -3067,7 +3066,8 @@ from modules.Debug import error
 def pref_init(pref):
     pref.python_classbrowser_show = False
     pref.python_classbrowser_refresh_as_save = True
-    pref.python_classbrowser_show_docstring = True
+    pref.python_classbrowser_show_docstring = False
+    pref.python_classbrowser_sort = True
 Mixin.setPlugin('preference', 'init', pref_init)
 
 def add_pref(preflist):
@@ -3075,6 +3075,7 @@ def add_pref(preflist):
         ('Python', 100, 'check', 'python_classbrowser_show', tr('Show class browser window when opening python source file'), None),
         ('Python', 105, 'check', 'python_classbrowser_refresh_as_save', tr('Refresh class browser window when saving python source file'), None),
         ('Python', 106, 'check', 'python_classbrowser_show_docstring', tr('Show docstring when cursor moving on a node of class browser tree'), None),
+        ('Python', 107, 'check', 'python_classbrowser_sort', tr('Sort identifiers by alphabet in class browser'), None),
     ])
 Mixin.setPlugin('preference', 'add_pref', add_pref)
 
@@ -3141,19 +3142,19 @@ Mixin.setPlugin('pythonfiletype', 'on_leave', on_leave)
 
 def add_images(images):
     s = [
-        ('CLASS_OPEN', 'minus.gif'),
-        ('CLASS_CLOSE', 'plus.gif'),
-        ('METHOD', 'method.gif'),
-        ('MODULE', 'module.gif'),
-        ('VARIABLE', 'vars.gif'),
+        ('MODULE', 'images/module.gif'),
+        ('VARIABLE', 'images/vars.gif'),
+        ('METHOD', 'images/method.gif'),
+        ('CLASS_OPEN', 'images/minus.gif'),
+        ('CLASS_CLOSE', 'images/plus.gif'),
         ]
-    for name, f in s:
-        images[name] = os.path.join(Globals.workpath, 'images/%s' % f)
+    images.extend(s)
 Mixin.setPlugin('outlinebrowser', 'add_images', add_images)
 
 c = lambda x,y:cmp(x[0].upper(), y[0].upper())
 
 def parsetext(win, editor):
+    pref = Globals.pref
     if editor.edittype == 'edit' and editor.languagename == 'python':
         if not hasattr(editor, 'syntax_info') or not editor.syntax_info:
             from modules import PyParse
@@ -3161,42 +3162,61 @@ def parsetext(win, editor):
         else:
             nodes = editor.syntax_info
 
-        #add doc_nodes to editor
-        editor.doc_nodes = {}
+    #add doc_nodes to editor
+    editor.doc_nodes = {}
 
-        imports = nodes.get_imports(1)
-        if imports:
-            for importline, lineno in imports:
-                win.addnode(None, importline, win.get_image_id('MODULE'), None, lineno)
-        functions = nodes.find('function')
-        #process locals
-        addlocals(win, nodes, nodes, None)
-        if functions:
-            funcs = [(x.name, x.info, x.lineno, x.docstring) for x in functions.values]
+    imports = nodes.get_imports(1)
+    if imports:
+        for i, v in enumerate(imports):
+            importline, lineno = v
+            win.replacenode(None, i, importline, win.get_image_id('MODULE'), None,
+                {'data':lineno}, win.get_image_id('MODULE'),
+                sorttype=pref.python_classbrowser_sort)
+    functions = nodes.find('function')
+    #process locals
+    addlocals(win, nodes, nodes, None)
+    if functions:
+        funcs = [(x.name, x.info, x.lineno, x.docstring) for x in functions.values]
+        if pref.python_classbrowser_sort:
             funcs.sort(c)
-            for name, info, lineno, docstring in funcs:
-                _id, obj = win.addnode(None, info, win.get_image_id('METHOD'), None,  lineno)
-                editor.doc_nodes[_id] = docstring
-        classes = nodes.find('class')
-        if classes:
-            clses = [(x.name, x.info, x.lineno, x) for x in classes.values]
+        for i, v in enumerate(funcs):
+            name, info, lineno, docstring = v
+            _id, obj = win.replacenode(None, i, info, win.get_image_id('METHOD'),
+                None,  {'data':lineno}, win.get_image_id('METHOD'),
+                sorttype=pref.python_classbrowser_sort)
+            editor.doc_nodes[_id] = docstring
+    classes = nodes.find('class')
+    if classes:
+        clses = [(x.name, x.info, x.lineno, x) for x in classes.values]
+        if pref.python_classbrowser_sort:
             clses.sort(c)
-            for name, info, lineno, obj in clses:
-                #process classes and functions
-                _id, node = win.addnode(None, name, win.get_image_id('CLASS_CLOSE'), win.get_image_id('CLASS_OPEN'), lineno)
-                editor.doc_nodes[_id] = obj.docstring
-                #process locals
-                addlocals(win, nodes, obj, node)
-                objs = [(x.name, x.type, x.info, x.lineno, x) for x in obj.values]
+        for i, v in enumerate(clses):
+            name, info, lineno, obj = v
+            #process classes and functions
+            _id, node = win.replacenode(None, i, name, win.get_image_id('CLASS_CLOSE'),
+                win.get_image_id('CLASS_OPEN'), {'data':lineno},
+                win.get_image_id('CLASS_CLOSE'), sorttype=pref.python_classbrowser_sort)
+            editor.doc_nodes[_id] = obj.docstring
+            #process locals
+            addlocals(win, nodes, obj, node)
+            objs = [(x.name, x.type, x.info, x.lineno, x) for x in obj.values]
+            if pref.python_classbrowser_sort:
                 objs.sort(c)
-                for oname, otype, oinfo, olineno, oo in objs:
-                    imagetype = None
-                    if otype == 'class' or otype == 'function':
-                        _id, obj = win.addnode(node, oinfo, win.get_image_id('METHOD'), None,  olineno)
-                        editor.doc_nodes[_id] = oo.docstring
+            for i, v in enumerate(objs):
+                oname, otype, oinfo, olineno, oo = v
+                imagetype = None
+                if otype == 'class' or otype == 'function':
+                    _id, obj = win.replacenode(node, i, oinfo, win.get_image_id('METHOD'),
+                        None,  {'data':olineno}, win.get_image_id('METHOD'),
+                        sorttype=pref.python_classbrowser_sort)
+                    editor.doc_nodes[_id] = oo.docstring
+
+
 Mixin.setPlugin('outlinebrowser', 'parsetext', parsetext)
 
 def addlocals(win, root, node, treenode):
+    pref = Globals.pref
+
     s = []
     names = []
     for i in range(len(node.locals)):
@@ -3228,9 +3248,13 @@ def addlocals(win, root, node, treenode):
                 info = name + ' : ' + t
             s.append((info, lineno))
 
-    s.sort(c)
-    for info, lineno in s:
-        win.addnode(treenode, info , win.get_image_id('VARIABLE'), None,  lineno)
+    if pref.python_classbrowser_sort:
+        s.sort(c)
+    for i, v in enumerate(s):
+        info, lineno = v
+        win.replacenode(treenode, i, info , win.get_image_id('VARIABLE'), None,
+            {'data':lineno}, win.get_image_id('VARIABLE'),
+            sorttype=pref.python_classbrowser_sort)
 
 def new_window(win, document, panel):
     from OutlineBrowser import OutlineBrowser
@@ -3241,14 +3265,12 @@ Mixin.setPlugin('textpanel', 'new_window', new_window)
 def add_tool_list(toollist, toolbaritems):
     toollist.extend([
         (2000, 'classbrowser'),
-        (2010, 'classbrowserrefresh'),
         (2050, '|'),
     ])
 
     #order, IDname, imagefile, short text, long text, func
     toolbaritems.update({
         'classbrowser':(wx.ITEM_CHECK, 'IDM_PYTHON_CLASSBROWSER', 'images/classbrowser.gif', tr('class browser'), tr('Class browser'), 'OnPythonClassBrowser'),
-        'classbrowserrefresh':(wx.ITEM_NORMAL, 'IDM_PYTHON_CLASSBROWSER_REFRESH', 'images/classbrowserrefresh.gif', tr('class browser refresh'), tr('Class browser refresh'), 'OnPythonClassBrowserRefresh'),
     })
 Mixin.setPlugin('pythonfiletype', 'add_tool_list', add_tool_list)
 

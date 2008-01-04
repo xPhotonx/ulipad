@@ -2,6 +2,10 @@ $Rev$
 [2008/01/04]
 mFormat.py mIndentMove.py
                     Add indent cursor move functionality
+mClassBrowser.py OutlineBrowser.py
+                    Improve python class browser
+CodeSnippet.py      Fix InsertItemBefore bug
+
 [2008/01/02]
 mWindow.py mHotKey.py
                     Fix custom hotkey error
