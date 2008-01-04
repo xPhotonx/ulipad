@@ -189,6 +189,14 @@ class DragTreeCtrl(wx.TreeCtrl):
                 children.extend(self.GetItemChildren(child, True))
             child, cookie = self.GetNextChild(item, cookie)
         return children
+    
+    def GetItemIndex(self, item):
+        count = 0
+        while 1:
+            item = self.GetPrevSibling(item)
+            if not item.IsOk():
+                return count
+            count += 1
 
     def IsValidDropTarget(self, dropTarget):
         if dropTarget and self._dragItem: 
@@ -378,7 +386,7 @@ Description:
         if pos == 'sub':
             obj = self.tree.AppendItem(node, caption)
         elif pos == 'before':
-            obj = self.tree.InsertItemBefore(parent, node, caption)
+            obj = self.tree.InsertItemBefore(parent, self.tree.GetItemIndex(node), caption)
         elif pos == 'after':
             obj = self.tree.InsertItem(parent, node, caption)
         else:

@@ -25,6 +25,8 @@ import wx
 from modules import common
 from modules import makemenu
 from modules import Mixin
+import modules.meide as ui
+from modules.wxctrl import FlatButtons
 
 class OutlineBrowser(wx.Panel, Mixin.Mixin):
 
@@ -42,20 +44,18 @@ class OutlineBrowser(wx.Panel, Mixin.Mixin):
         
         self.activeflag = False
 
-        psizer = wx.BoxSizer(wx.VERTICAL)
-        psizer.Add(self, 1, wx.EXPAND)
-        self.parent.SetSizer(psizer)
-        self.parent.SetAutoLayout(True)
-
-        self.sizer = wx.BoxSizer(wx.VERTICAL)
-
+        self.sizer = ui.VBox(namebinding='widget').create(self).auto_layout()
+        self.btnRefresh = FlatButtons.FlatBitmapButton(self, -1, 
+            common.getpngimage('images/classbrowserrefresh.gif'))
+        self.sizer.add(self.btnRefresh).bind('click', self.OnRefresh)
+        
         self.imagelist = wx.ImageList(16, 16)
 
         #add share image list
-        self.imagefilenames = {}
+        self.imagefilenames = []
         self.imageids = {}
         self.callplugin('add_images', self.imagefilenames)
-        for name, imagefile in self.imagefilenames.items():
+        for name, imagefile in self.imagefilenames:
             self.add_image(name, imagefile)
 
         style = wx.TR_SINGLE|wx.TR_HIDE_ROOT|wx.TR_HAS_BUTTONS|wx.TR_TWIST_BUTTONS
@@ -65,19 +65,19 @@ class OutlineBrowser(wx.Panel, Mixin.Mixin):
             style = style | wx.TR_NO_LINES
 
         self.tree = wx.TreeCtrl(self, -1, style = style)
-        self.tree.SetImageList(self.imagelist)
+        self.tree.AssignImageList(self.imagelist)
 
-        self.sizer.Add(self.tree, 1, wx.EXPAND)
+        self.sizer.add(self.tree, proportion=1, flag=wx.EXPAND)
         self.root = self.tree.AddRoot('OutlineBrowser')
 
         self.nodes = {}
         self.ID = 1
 
 #        wx.EVT_TREE_SEL_CHANGING(self.tree, self.tree.GetId(), self.OnChanging)
-        wx.EVT_TREE_SEL_CHANGED(self.tree, self.tree.GetId(), self.OnChanged)
+#        wx.EVT_TREE_SEL_CHANGED(self.tree, self.tree.GetId(), self.OnChanged)
 #        wx.EVT_TREE_BEGIN_LABEL_EDIT(self.tree, self.tree.GetId(), self.OnBeginChangeLabel)
 #        wx.EVT_TREE_END_LABEL_EDIT(self.tree, self.tree.GetId(), self.OnChangeLabel)
-        wx.EVT_TREE_ITEM_ACTIVATED(self.tree, self.tree.GetId(), self.OnSelected)
+        wx.EVT_TREE_ITEM_ACTIVATED(self.tree, self.tree.GetId(), self.OnChanged)
 #        wx.EVT_TREE_ITEM_RIGHT_CLICK(self.tree, self.tree.GetId(), self.OnRClick)
 #        wx.EVT_RIGHT_UP(self.tree, self.OnRClick)
         wx.EVT_TREE_DELETE_ITEM(self.tree, self.tree.GetId(), self.OnDeleteItem)
@@ -85,33 +85,130 @@ class OutlineBrowser(wx.Panel, Mixin.Mixin):
 #        wx.EVT_TREE_ITEM_EXPANDING(self.tree, self.tree.GetId(), self.OnExpanding)
         wx.EVT_LEFT_DOWN(self.tree, self.OnLeftDown)
         wx.EVT_TREE_ITEM_GETTOOLTIP(self.tree, self.tree.GetId(), self.OnGetToolTip)
+        wx.EVT_LEFT_DCLICK(self.tree, self.OnDoubleClick)
         self.tooltip_func = None
 
         #add init process
         self.callplugin('init', self)
 
-        self.SetSizer(self.sizer)
-        self.SetAutoLayout(True)
+#        self.SetSizer(self.sizer)
+#        self.SetAutoLayout(True)
+        self.sizer.auto_fit(0)
 
         self.popmenus = None
 
     def OnUpdateUI(self, event):
         self.callplugin('on_update_ui', self, event)
+        
+    def iter_children(self, parent=None, recursively=True):
+        if not parent:
+            parent = self.root
+            
+        child, cookie = self.tree.GetFirstChild(parent)
+        while child:
+            yield child
+            if recursively:
+                for node in self.iter_children(child, True):
+                    yield node
+            child, cookie = self.tree.GetNextChild(parent, cookie)
 
     def show(self):
         self.activeflag = True
-        self.tree.Freeze()
-        self.tree.DeleteChildren(self.root)
+#        self.tree.Freeze()
+
+        childrens = []
+        for node in self.iter_children(self.root, True):
+            data = self.get_node(node)
+            data['flag'] = True
+            self.set_node(node, data)
+            childrens.append(node)
 
         #call plugin
         self.callplugin('parsetext', self, self.editor)
-        self.tree.Thaw()
+
+        while childrens:
+            node = childrens.pop(0)
+            data = self.get_node(node)
+            if data.get('flag', False) == True:
+                self.tree.Delete(node)
+
+#        self.tree.Thaw()
+                
         self.activeflag = False
 
-    def addnode(self, parent, caption, imagenormal, imageexpand=None, data=None):
+    def replacenode(self, parent, index, caption, imagenormal, imageexpand=None, 
+        data=None, matchimage=None, sorttype=True):
+        '''
+        sorttype = 1 alphabet
+        sorttype = 2 lineno
+        '''
         if not parent:
             parent = self.root
-        obj = self.tree.AppendItem(parent, caption)
+
+        u_caption = caption.upper()
+        lineno = data['data']
+        status = 0
+        if self.tree.GetChildrenCount(parent) == 0:
+            flag = 'append'
+            item = parent
+        else:
+            for i, node in enumerate(self.iter_children(parent, False)):
+                flag = 'after'
+                item = node
+                img_index = self.tree.GetItemImage(node)
+                if status ==0 and img_index < matchimage:
+                    continue
+                elif status == 0 and img_index == matchimage:
+                    status = 1
+                elif status == 0 and img_index > matchimage:
+                    flag = 'before'
+                    item = i
+                    break
+                elif status == 1 and img_index != matchimage:
+                    flag = 'before'
+                    item = i
+                    break
+                
+                if sorttype:
+                    node_caption = self.tree.GetItemText(node).upper()
+                    if node_caption == u_caption:
+                        flag = 'replace'
+                        item = node
+                        break
+                    elif node_caption > u_caption:
+                        flag = 'before'
+                        item = i
+                        break
+                    
+#            elif sorttype == 2:
+#                if line == lineno:
+#              
+#            if self.tree.GetItemText(node) == caption:
+#                flag = True
+#                item = node
+#                break
+
+#        if item is self.root:
+#            print flag, 'root', caption
+#        else:
+#            print flag, self.tree.GetItemText(item), caption
+        if flag == 'replace':
+            self.set_node(item, data)
+            return self.tree.GetPyData(item), item
+        else:
+            return self.addnode(parent, item, caption, imagenormal, imageexpand, data, 
+                flag)
+            
+    def addnode(self, parent, item, caption, imagenormal, imageexpand=None, data=None, pos='append'):
+        if not parent:
+            parent = self.root
+        if pos == 'append':
+            obj = self.tree.AppendItem(parent, caption)
+        elif pos == 'before':
+            obj = self.tree.InsertItemBefore(parent, item, caption)
+        elif pos == 'after':
+            obj = self.tree.InsertItem(parent, item, caption)
+                
         _id = self.getid()
         self.tree.SetPyData(obj, _id)
         self.nodes[_id] = data
@@ -123,16 +220,16 @@ class OutlineBrowser(wx.Panel, Mixin.Mixin):
             self.tree.Expand(parent)
         return _id, obj
 
-    def get_cur_node(self):
-        item = self.tree.GetSelection()
+    def set_node(self, item, data):
         if not self.is_ok(item): return
         _id = self.tree.GetPyData(item)
-        return item, self.nodes.get(_id, None)
-
+        self.nodes[_id] = data
+        
     def get_node(self, item):
         if not self.is_ok(item): return
         _id = self.tree.GetPyData(item)
-        return self.nodes.get(_id, None)
+        data = self.nodes.get(_id, None)
+        return data
 
     def getid(self):
         _id = self.ID
@@ -198,20 +295,6 @@ class OutlineBrowser(wx.Panel, Mixin.Mixin):
         parent = self.tree.GetItemParent(item)
         return parent == self.root
 
-    def OnDoubleClick(self, event):
-        pt = event.GetPosition()
-        item, flags = self.tree.HitTest(pt)
-        if flags in (wx.TREE_HITTEST_NOWHERE, wx.TREE_HITTEST_ONITEMRIGHT,
-            wx.TREE_HITTEST_ONITEMLOWERPART, wx.TREE_HITTEST_ONITEMUPPERPART):
-            for item in self.getTopObjects():
-                self.tree.Collapse(item)
-        else:
-            if self.tree.GetChildrenCount(item) == 0:
-                if not self.callplugin('on_expanding', self, item):
-                    event.Skip()
-            else:
-                event.Skip()
-
     def OnLeftDown(self, event):
         pt = event.GetPosition();
         item, flags = self.tree.HitTest(pt)
@@ -221,11 +304,6 @@ class OutlineBrowser(wx.Panel, Mixin.Mixin):
                     wx.CallAfter(self.tree.Collapse, item)
                 else:
                     wx.CallAfter(self.tree.Expand, item)
-                return
-        if self.is_ok(item):
-            if item == self.tree.GetSelection():
-                self.tree.SelectItem(self.tree.GetSelection(), False)
-                wx.CallAfter(self.tree.SelectItem, item, True)
                 return
         event.Skip()
 
@@ -245,7 +323,7 @@ class OutlineBrowser(wx.Panel, Mixin.Mixin):
 
     def OnChanged(self, event):
         item = event.GetItem()
-        lineno = self.get_node(item)
+        lineno = self.get_node(item)['data']
         if self.editor and not self.activeflag:
             wx.CallAfter(self.editor.goto, lineno-5)
             wx.CallAfter(self.editor.goto, lineno+10)
@@ -269,8 +347,6 @@ class OutlineBrowser(wx.Panel, Mixin.Mixin):
         return self.imageids.get(name, -1)
 
     def add_image(self, name, imagefile):
-        if not self.imagefilenames.has_key(name):
-            self.imagefilenames[name] = imagefile
         if not self.imageids.has_key(name):
             image = common.getpngimage(imagefile)
             self.imageids[name] = self.imagelist.Add(image)
@@ -284,3 +360,17 @@ class OutlineBrowser(wx.Panel, Mixin.Mixin):
     def OnGetToolTip(self, event):
         if self.tooltip_func:
             self.tooltip_func(self, event)
+    
+    def OnRefresh(self, event):
+        self.show()
+        
+    def OnDoubleClick(self, event):
+        pt = event.GetPosition()
+        item, flags = self.tree.HitTest(pt)
+        if flags in (wx.TREE_HITTEST_NOWHERE, wx.TREE_HITTEST_ONITEMRIGHT,
+            wx.TREE_HITTEST_ONITEMLOWERPART, wx.TREE_HITTEST_ONITEMUPPERPART):
+            for item in self.getTopObjects():
+                self.tree.Collapse(item)
+        else:
+            event.Skip()
+    
