@@ -126,6 +126,7 @@ class OutlineBrowser(wx.Panel, Mixin.Mixin):
         #call plugin
         self.callplugin('parsetext', self, self.editor)
 
+        childrens.reverse()
         while childrens:
             node = childrens.pop(0)
             data = self.get_node(node)
