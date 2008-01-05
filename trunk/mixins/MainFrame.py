@@ -142,7 +142,7 @@ class MainFrame(wx.Frame, Mixin.Mixin):
                         from modules import PCInfo
                         myRam = PCInfo.memInfo()
 #                        ramStr = "空闲: %dM/%dM 缓存: %dM" % (myRam['freeRam'], myRam['totalRam'], myRam['cachedRam'])
-                        ramStr = "%dM" % (myRam['freeRam'], myRam['totalRam'], myRam['cachedRam'])
+                        ramStr = "%(freeRam)dM" % myRam
                         wx.CallAfter(self.SetStatusText, ramStr, 5)
                     self.callplugin('on_idle', self)
                     time.sleep(0.5)
