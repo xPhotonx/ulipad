@@ -3075,7 +3075,6 @@ def add_pref(preflist):
         ('Python', 100, 'check', 'python_classbrowser_show', tr('Show class browser window when opening python source file'), None),
         ('Python', 105, 'check', 'python_classbrowser_refresh_as_save', tr('Refresh class browser window when saving python source file'), None),
         ('Python', 106, 'check', 'python_classbrowser_show_docstring', tr('Show docstring when cursor moving on a node of class browser tree'), None),
-        ('Python', 107, 'check', 'python_classbrowser_sort', tr('Sort identifiers by alphabet in class browser'), None),
     ])
 Mixin.setPlugin('preference', 'add_pref', add_pref)
 

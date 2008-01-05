@@ -136,6 +136,14 @@ class MainFrame(wx.Frame, Mixin.Mixin):
                 else:
                     if wx.Platform == '__WXMSW__':
                         wx.CallAfter(self.SetStatusText, "%dM" % (wx.GetFreeMemory()/1024/1024), 5)
+                    # Add one more column to the statusbar to show Mem info on Linux Platform
+                    #
+                    elif wx.Platform == '__WXGTK__':
+                        from modules import PCInfo
+                        myRam = PCInfo.memInfo()
+#                        ramStr = "空闲: %dM/%dM 缓存: %dM" % (myRam['freeRam'], myRam['totalRam'], myRam['cachedRam'])
+                        ramStr = "%dM" % (myRam['freeRam'], myRam['totalRam'], myRam['cachedRam'])
+                        wx.CallAfter(self.SetStatusText, ramStr, 5)
                     self.callplugin('on_idle', self)
                     time.sleep(0.5)
         except:

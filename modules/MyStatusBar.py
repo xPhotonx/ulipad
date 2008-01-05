@@ -30,6 +30,9 @@ class MyStatusBar(wx.StatusBar):
         if wx.Platform == '__WXMSW__':
             self.SetFieldsCount(6)
             self.SetStatusWidths([-1, 70, 60, 40, 60, 45])
+        elif wx.Platform == '__WXGTK__':
+            self.SetFieldsCount(6)
+            self.SetStatusWidths([-1, 70, 60, 40, 60, 220])
         else:
             self.SetFieldsCount(5)
             self.SetStatusWidths([-1, 70, 60, 40, 60])

@@ -1,4 +1,8 @@
 $Rev$
+[2008/01/05]
+PCInfo.py MainFrame.py MyStatusBar.py
+                    Add linux platform memory display on the statusbar
+                    
 [2008/01/04]
 mFormat.py mIndentMove.py
                     Add indent cursor move functionality
