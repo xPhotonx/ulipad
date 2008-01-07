@@ -146,6 +146,9 @@ class OutlineBrowser(wx.Panel, Mixin.Mixin):
         if not parent:
             parent = self.root
 
+        if not isinstance(caption, unicode):
+            caption = unicode(caption, self.editor.locale)
+            
         u_caption = caption.upper()
         lineno = data['data']
         status = 0

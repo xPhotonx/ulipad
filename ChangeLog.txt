@@ -1,4 +1,7 @@
 $Rev$
+[2008/01/07]
+OutlineBrowser.py   Fix unicode convert bug
+
 [2008/01/05]
 PCInfo.py MainFrame.py MyStatusBar.py
                     Add linux platform memory display on the statusbar
