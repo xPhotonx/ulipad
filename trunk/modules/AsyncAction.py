@@ -10,8 +10,9 @@ class AsyncAction(threading.Thread):
         self.setDaemon(True)
         self.lock = thread.allocate_lock()
         self.stop = False
-        self.step = timestep
         self.running = False
+        self.timestep = timestep
+        self.last = None
         
     def put(self, obj):
         self.q.put(obj)
@@ -37,23 +38,26 @@ class AsyncAction(threading.Thread):
             while not self.stop:
                 if Globals.app.wxApp.Active and not self.q.empty() and not self.running:
                     self.lock.acquire()
-                    last = None
                     while 1:
                         try:
                             obj = self.q.get_nowait()
-                            last = obj
+                            if obj:
+                                self.last = obj
                         except:
                             break
                     self.lock.release()
-                    if last:
-                        if not self.running:
-                            self.running = True
-                            try:
-                                self.do_action(last)
-                            except:
-                                pass
-                            self.running = False
-                time.sleep(self.step)
+                if self.last:
+                    if not self.running:
+                        self.running = True
+                        try:
+                            if self.do_action(self.last):
+                                self.last = None
+                        except:
+#                            import traceback
+#                            traceback.print_exc()
+                            pass
+                        self.running = False
+                time.sleep(self.timestep)
         except:
             pass
             

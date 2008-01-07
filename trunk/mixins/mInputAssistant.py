@@ -25,6 +25,7 @@ import wx
 import sets
 import os
 import glob
+import time
 from modules import Mixin
 from modules.Debug import error
 from modules import Globals
@@ -104,7 +105,8 @@ def get_inputassistant_obj(win):
     return i
 
 def after_char(win, event):
-    win.mainframe.auto_routin_ac_action.put(('normal', win, (event, True)))
+    win.mainframe.auto_routin_ac_action.put({'type':'normal', 'win':win, 
+        'event':event, 'on_char_flag':True, 'timestamp':time.time()})
 Mixin.setPlugin('editor', 'after_char', after_char)
 
 def on_key_down(win, event):
@@ -131,13 +133,14 @@ def on_key_down(win, event):
     
     if key == wx.WXK_BACK and not event.AltDown() and not event.ControlDown() and not event.ShiftDown():
         if win.pref.input_assistant and win.pref.inputass_identifier:
-            win.mainframe.auto_routin_ac_action.put(('default', win))
+            win.mainframe.auto_routin_ac_action.put({'type':'default', 'win':win, 'event':event, 'timestamp':time.time()})
     return False
 Mixin.setPlugin('editor', 'on_key_down', on_key_down)
 
 def on_key_down(win, event):
     if win.pref.input_assistant:
-        win.mainframe.auto_routin_ac_action.put(('normal', win, (event, False)))
+        win.mainframe.auto_routin_ac_action.put({'type':'normal', 'win':win, 
+            'event':event, 'on_char_flag':False, 'timestamp':time.time()})
     return False
 Mixin.setPlugin('editor', 'on_key_down', on_key_down, nice=10)
 
@@ -148,6 +151,7 @@ def pref_init(pref):
     pref.inputass_identifier = True
     pref.inputass_full_identifier = True
     pref.inputass_func_parameter_autocomplete = True
+    pref.inputass_typing_rate = 500
 Mixin.setPlugin('preference', 'init', pref_init)
 
 def add_pref(preflist):
@@ -158,6 +162,7 @@ def add_pref(preflist):
         (tr('Input Assistant'), 130, 'check', 'inputass_identifier', tr("Enable auto prompt identifiers"), None),
         (tr('Input Assistant'), 140, 'check', 'inputass_full_identifier', tr("Enable full identifiers search"), None),
         (tr('Input Assistant'), 150, 'check', 'inputass_func_parameter_autocomplete', tr("Enable function parameter autocomplete"), None),
+        (tr('Input Assistant'), 160, 'int', 'inputass_typing_rate', tr("Skip Input Assistant when typing rate faster than this milisecond"), None),
     ])
 Mixin.setPlugin('preference', 'add_pref', add_pref)
 
@@ -313,11 +318,14 @@ class InputAssistantAction(AsyncAction.AsyncAction):
     def do_action(self, obj):
         if not self.empty:
             return
-        if len(obj) == 2:
-            action, win = obj
-            args = None
-        else:
-            action, win, args = obj
+        
+        pref = Globals.pref
+        
+        action = obj['type']
+        win = obj['win']
+        if time.time() - obj['timestamp'] < float(pref.inputass_typing_rate)/1000:
+            return
+        
         try:
 #            if Globals.mainframe.closeflag:
 #                return
@@ -331,9 +339,10 @@ class InputAssistantAction(AsyncAction.AsyncAction):
             if action == 'default':
                 i.run_default(win, self)
             else:
-                event, on_char_flag = args
+                event, on_char_flag = obj['event'], obj['on_char_flag']
                 i.run(win, event, on_char_flag, self)
             win.lock.release()
+            return True
         except:
             Globals.mainframe.input_assistant = None
             error.traceback()
@@ -353,6 +362,7 @@ class Analysis(AsyncAction.AsyncAction):
             if not obj: return
             i = get_inputassistant_obj(obj)
             i.call_analysis(self)
+            return True
         except:
             win.input_assistant = None
             error.traceback()
@@ -360,6 +370,6 @@ class Analysis(AsyncAction.AsyncAction):
 def main_init(win):
     win.auto_routin_analysis = Analysis(.1)
     win.auto_routin_analysis.start()
-    win.auto_routin_ac_action = InputAssistantAction(.5)
+    win.auto_routin_ac_action = InputAssistantAction(0.05)
     win.auto_routin_ac_action.start()
 Mixin.setPlugin('mainframe', 'init', main_init)
