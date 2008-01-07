@@ -444,7 +444,7 @@ class TextEditor(wx.stc.StyledTextCtrl, Mixin.Mixin, DocumentBase.DocumentBase):
         if not self.execplugin('on_char', self, event):
             event.Skip()
         
-        eve = self.clone_key_event(event)    
+        eve = self.clone_key_event(event)
 #        wx.CallAfter(self.process_onchar_chain, eve)
 #        self.process_onchar_chain(eve)
         self.execplugin('after_char', self, eve)
