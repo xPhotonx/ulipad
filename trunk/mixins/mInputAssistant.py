@@ -25,7 +25,6 @@ import wx
 import sets
 import os
 import glob
-import time
 from modules import Mixin
 from modules.Debug import error
 from modules import Globals
@@ -106,7 +105,7 @@ def get_inputassistant_obj(win):
 
 def after_char(win, event):
     win.mainframe.auto_routin_ac_action.put({'type':'normal', 'win':win, 
-        'event':event, 'on_char_flag':True, 'timestamp':time.time()})
+        'event':event, 'on_char_flag':True})
 Mixin.setPlugin('editor', 'after_char', after_char)
 
 def on_key_down(win, event):
@@ -133,14 +132,14 @@ def on_key_down(win, event):
     
     if key == wx.WXK_BACK and not event.AltDown() and not event.ControlDown() and not event.ShiftDown():
         if win.pref.input_assistant and win.pref.inputass_identifier:
-            win.mainframe.auto_routin_ac_action.put({'type':'default', 'win':win, 'event':event, 'timestamp':time.time()})
+            win.mainframe.auto_routin_ac_action.put({'type':'default', 'win':win, 'event':event})
     return False
 Mixin.setPlugin('editor', 'on_key_down', on_key_down)
 
 def on_key_down(win, event):
     if win.pref.input_assistant:
         win.mainframe.auto_routin_ac_action.put({'type':'normal', 'win':win, 
-            'event':event, 'on_char_flag':False, 'timestamp':time.time()})
+            'event':event, 'on_char_flag':False})
     return False
 Mixin.setPlugin('editor', 'on_key_down', on_key_down, nice=10)
 
@@ -323,9 +322,6 @@ class InputAssistantAction(AsyncAction.AsyncAction):
         
         action = obj['type']
         win = obj['win']
-        if time.time() - obj['timestamp'] < float(pref.inputass_typing_rate)/1000:
-            return
-        
         try:
 #            if Globals.mainframe.closeflag:
 #                return
@@ -368,8 +364,8 @@ class Analysis(AsyncAction.AsyncAction):
             error.traceback()
         
 def main_init(win):
-    win.auto_routin_analysis = Analysis(.1)
+    win.auto_routin_analysis = Analysis(.2)
     win.auto_routin_analysis.start()
-    win.auto_routin_ac_action = InputAssistantAction(0.05)
+    win.auto_routin_ac_action = InputAssistantAction(float(win.pref.inputass_typing_rate)/1000)
     win.auto_routin_ac_action.start()
 Mixin.setPlugin('mainframe', 'init', main_init)
