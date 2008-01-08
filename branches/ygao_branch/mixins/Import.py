@@ -6253,6 +6253,8 @@ def on_modified(win, event):
 Mixin.setPlugin('editor', 'on_modified', on_modified)
 
 from modules import AsyncAction
+from mixins import InputAssistant
+
 class InputAssistantAction(AsyncAction.AsyncAction):
     def do_action(self, obj):
         if not self.empty:
@@ -6262,6 +6264,16 @@ class InputAssistantAction(AsyncAction.AsyncAction):
 
         action = obj['type']
         win = obj['win']
+        # skip some keys,don't delay thems
+        # skip template trigger and control key.
+        keys = InputAssistant.KEYS.values()
+        key = obj['event'].GetKeyCode()
+        if chr(key) in keys or key <= 32 or key >= 127:
+            pass
+        else:
+            if time.time() - obj['timestamp'] < float(pref.inputass_typing_rate)/1000:
+                return
+
         try:
             if not win: return
             i = get_inputassistant_obj(win)
@@ -6292,7 +6304,7 @@ class Analysis(AsyncAction.AsyncAction):
             error.traceback()
 
 def main_init(win):
-    win.auto_routin_analysis = Analysis(.2)
+    win.auto_routin_analysis = Analysis(.1)
     win.auto_routin_analysis.start()
     win.auto_routin_ac_action = InputAssistantAction(float(win.pref.inputass_typing_rate)/1000)
     win.auto_routin_ac_action.start()
