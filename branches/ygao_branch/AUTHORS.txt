@@ -1,0 +1,19 @@
+This is a contributing authors list. Thanks a lot:
+
+Claudio Grondi <claudio.grondi AT freenet.de>      Give a good name 'UliPad'. and big help on Column Mode, Ruler functionality
+Dick Moores <rdmoores AT gmail.com>                Proposal many suggestions
+Mario Lacunza <mlacunza AT gmail.com>              Commit Spanish translation file and proposal many suggestions
+Ye Naiquan <Naiquan.Ye AT marintek.sintef.no>      Commit Patch
+Cheng XiaoSan <chengxiaosan AT gmail.com>          Report bugs and proposal suggestions
+nmweizi <nmweizi AT 163.com>                       Report bugs and commit Patch
+Mkdir <ivan.pirog AT gmail.com>                    Report bugs and commit Patch
+Aleksey <Kapkaev AT yandex.ru>                     Report bugs and commit Patch
+yeyesho li <yeyesho AT gmail.com>                  Give advice to NoteBook
+ygao <ygao2004 AT gmail.com>                       Commit many patches
+chaoweilun <chaoweilun@gmail.com>                  Submit Traditional Chinese Translation File
+Tom Eubank <tom@afcon.com>                         Patches and documents
+Tyberius Prime <tyberius_prime@coonabibba.de>      Bug reporter and contribute plugin(dropfile)                             
+swordsp <sparas2006@gmail.com>                     Bug reporter and change suggestion
+mikem <mjmaher@iol.ie>                             Commit pylint_plugin
+魏振 <etggy@163.com>                               Provide php.acp
+Hawker                                             Linux memory display patch
