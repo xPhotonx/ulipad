@@ -242,9 +242,12 @@ def guessWordObject(win, command, striplast=True, syncvar=None):
         if cls:
             return 'source', cls
     elif command.startswith('self.'):   #process self.a. then treat self.a as a var
-        key = attributes[0] + '.' + attributes[1]
-        del attributes[0]
-        attributes[0] = key
+        if len(attributes) == 2:    #self.xxx
+            pass
+        else:
+            key = attributes[0] + '.' + attributes[1]
+            del attributes[0]
+            attributes[0] = key
     else:
         if root:
             result = root.guess_type(lineno, command)
