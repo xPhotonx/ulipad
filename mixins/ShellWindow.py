@@ -78,12 +78,6 @@ class ShellWindow(wx.py.shell.Shell, Mixin.Mixin):
         edit.FACES['mono'] = fontname
         edit.FACES['size'] = fontsize
 
-        for key in ShellWindow.imagelist.keys():
-            f = ShellWindow.imagelist[key]
-            ShellWindow.imagelist[key] = common.getpngimage(f)
-        
-        self.popmenu = makemenu.makepopmenu(self, ShellWindow.popmenulist, ShellWindow.imagelist)
-        
         wx.py.shell.Shell.__init__(self, parent, -1, InterpClass=NEInterpreter)
 
         #disable popup
@@ -93,15 +87,21 @@ class ShellWindow(wx.py.shell.Shell, Mixin.Mixin):
         self.mainframe = mainframe
         wx.EVT_KILL_FOCUS(self, self.OnKillFocus)
         
+        for key in ShellWindow.imagelist.keys():
+            f = ShellWindow.imagelist[key]
+            ShellWindow.imagelist[key] = common.getpngimage(f)
+        
+        self.popmenu = makemenu.makepopmenu(self, ShellWindow.popmenulist, ShellWindow.imagelist)
+        
         wx.EVT_RIGHT_DOWN(self, self.OnPopUp)
         
-        wx.EVT_UPDATE_UI(self, self.IDPM_UNDO, self.OnUpdateUI)
-        wx.EVT_UPDATE_UI(self, self.IDPM_REDO, self.OnUpdateUI)
-        wx.EVT_UPDATE_UI(self, self.IDPM_CUT, self.OnUpdateUI)
-        wx.EVT_UPDATE_UI(self, self.IDPM_COPY, self.OnUpdateUI)
-        wx.EVT_UPDATE_UI(self, self.IDPM_COPY_CLEAR, self.OnUpdateUI)
-        wx.EVT_UPDATE_UI(self, self.IDPM_PASTE, self.OnUpdateUI)
-        wx.EVT_UPDATE_UI(self, self.IDPM_PASTE_RUN, self.OnUpdateUI)
+        wx.EVT_UPDATE_UI(self, self.IDPM_UNDO, self._OnUpdateUI)
+        wx.EVT_UPDATE_UI(self, self.IDPM_REDO, self._OnUpdateUI)
+        wx.EVT_UPDATE_UI(self, self.IDPM_CUT, self._OnUpdateUI)
+        wx.EVT_UPDATE_UI(self, self.IDPM_COPY, self._OnUpdateUI)
+        wx.EVT_UPDATE_UI(self, self.IDPM_COPY_CLEAR, self._OnUpdateUI)
+        wx.EVT_UPDATE_UI(self, self.IDPM_PASTE, self._OnUpdateUI)
+        wx.EVT_UPDATE_UI(self, self.IDPM_PASTE_RUN, self._OnUpdateUI)
 
     def OnPopUp(self, event):
         other_menus = []
@@ -137,7 +137,7 @@ class ShellWindow(wx.py.shell.Shell, Mixin.Mixin):
         elif eid == self.IDPM_REDO:
             self.Redo()
     
-    def OnUpdateUI(self, event):
+    def _OnUpdateUI(self, event):
         eid = event.GetId()
         if eid == self.IDPM_CUT:
             event.Enable(not self.GetReadOnly() and bool(self.GetSelectedText()))
