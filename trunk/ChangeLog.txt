@@ -1,4 +1,9 @@
 $Rev$
+[2008/01/09]
+ShellWindow.py      Fix popup menu creation too late, so the UpdateUI will raise exception
+Editor.py           Also change popup menu creation position
+HtmlPage.py         Fix GTK platform display bug
+
 [2008/01/07]
 OutlineBrowser.py   Fix unicode convert bug
 

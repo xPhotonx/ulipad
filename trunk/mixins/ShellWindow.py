@@ -78,16 +78,16 @@ class ShellWindow(wx.py.shell.Shell, Mixin.Mixin):
         edit.FACES['mono'] = fontname
         edit.FACES['size'] = fontsize
 
-        wx.py.shell.Shell.__init__(self, parent, -1, InterpClass=NEInterpreter)
-
-        #disable popup
-        self.UsePopUp(0)
-        
         for key in ShellWindow.imagelist.keys():
             f = ShellWindow.imagelist[key]
             ShellWindow.imagelist[key] = common.getpngimage(f)
         
         self.popmenu = makemenu.makepopmenu(self, ShellWindow.popmenulist, ShellWindow.imagelist)
+        
+        wx.py.shell.Shell.__init__(self, parent, -1, InterpClass=NEInterpreter)
+
+        #disable popup
+        self.UsePopUp(0)
         
         self.parent = parent
         self.mainframe = mainframe
