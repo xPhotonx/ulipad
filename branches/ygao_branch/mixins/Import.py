@@ -6255,7 +6255,7 @@ def on_modified(win, event):
                 win.modified_line = modified_line
                 win.mainframe.auto_routin_analysis.put(win)
             else:
-                if  win.model.modified_line == modified_line:
+                if  win.modified_line == modified_line:
                     pass
                 else:
                     win.modified_line = modified_line
