@@ -2,7 +2,17 @@ $Rev$
 [2008/01/09]
 ShellWindow.py      Fix popup menu creation too late, so the UpdateUI will raise exception
 Editor.py           Also change popup menu creation position
-HtmlPage.py         Fix GTK platform display bug
+HtmlPage.py         Fix GTK platform display
+AsyncAction.py mInputassistant.py
+                    Improve AsyncAction.py using block mode and timeout parameter, so
+                    it'll natural implement the timeout delay process after press a key.
+                    And this will simplify the code. Also comment the on_key_down function, 
+                    which invoke the win.mainframe.auto_routin_ac_action.put, because
+                    on_key_down is triggered by pressing control keystroke, so I think
+                    it's unnecessary. Also add ygao's if you type in the same line
+                    from last modified, and don't do analysis work. But I also judged if
+                    it's a multiline operation, if True, then it'll still trigger the
+                    analysis process.
 
 [2008/01/07]
 OutlineBrowser.py   Fix unicode convert bug

@@ -5975,6 +5975,7 @@ import wx
 import sets
 import os
 import glob
+import time
 from modules import Mixin
 from modules.Debug import error
 from modules import Globals
@@ -6001,6 +6002,7 @@ def editor_init(win):
     win.syntax_info = None
     win.auto_routin = None
     win.snippet = None
+    win.modified_line = None
 
 Mixin.setPlugin('editor', 'init', editor_init)
 
@@ -6082,12 +6084,6 @@ def on_key_down(win, event):
     return False
 Mixin.setPlugin('editor', 'on_key_down', on_key_down)
 
-def on_key_down(win, event):
-    if win.pref.input_assistant:
-        win.mainframe.auto_routin_ac_action.put({'type':'normal', 'win':win,
-            'event':event, 'on_char_flag':False})
-    return False
-Mixin.setPlugin('editor', 'on_key_down', on_key_down, nice=10)
 
 def pref_init(pref):
     pref.input_assistant = True
@@ -6096,7 +6092,7 @@ def pref_init(pref):
     pref.inputass_identifier = True
     pref.inputass_full_identifier = True
     pref.inputass_func_parameter_autocomplete = True
-    pref.inputass_typing_rate = 500
+    pref.inputass_typing_rate = 400
 Mixin.setPlugin('preference', 'init', pref_init)
 
 def add_pref(preflist):
@@ -6248,8 +6244,14 @@ def on_modified(win, event):
     type = event.GetModificationType()
     for flag in (wx.stc.STC_MOD_INSERTTEXT, wx.stc.STC_MOD_DELETETEXT):
         if flag & type:
-            win.mainframe.auto_routin_analysis.put(win)
-            return
+            modified_line = win.LineFromPosition(event.GetPosition())
+            if  win.modified_line is None:
+                win.modified_line = modified_line
+                win.mainframe.auto_routin_analysis.put(win)
+            else:
+                if  win.modified_line != modified_line or event.GetLinesAdded() != 0:
+                    win.modified_line = modified_line
+                    win.mainframe.auto_routin_analysis.put(win)
 Mixin.setPlugin('editor', 'on_modified', on_modified)
 
 from modules import AsyncAction
@@ -6264,6 +6266,7 @@ class InputAssistantAction(AsyncAction.AsyncAction):
         win = obj['win']
         try:
             if not win: return
+            print 'input_assistant', time.time()
             i = get_inputassistant_obj(win)
             win.lock.acquire()
             if action == 'default':
@@ -6284,6 +6287,7 @@ class Analysis(AsyncAction.AsyncAction):
             return
         try:
             if not obj: return
+            print 'analysis', time.time()
             i = get_inputassistant_obj(obj)
             i.call_analysis(self)
             return True

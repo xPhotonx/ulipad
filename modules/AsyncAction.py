@@ -1,22 +1,18 @@
 import Queue
-import threading, thread
+import threading
 import time
-import Globals
 
 class AsyncAction(threading.Thread):
-    def __init__(self, timestep=.1, interval=0.05):
+    def __init__(self, timestep=.1):
         super(AsyncAction, self).__init__()
         self.q = Queue.Queue(0)
         self.setDaemon(True)
-        self.lock = thread.allocate_lock()
         self.stop = False
-        self.running = False
         self.timestep = timestep
         self.last = None
-        self.interval = interval
         
     def put(self, obj):
-        self.q.put((obj, time.time()))
+        self.q.put(obj)
         
     def stop(self):
         self.stop = True
@@ -26,41 +22,31 @@ class AsyncAction(threading.Thread):
     empty = property(_empty)
     
     def clear(self):
-        self.lock.acquire()
         while 1:
             try:
                 obj = self.q.get_nowait()
             except:
                 break
-        self.lock.release()
         
     def run(self):
         try:
             while not self.stop:
-                if Globals.app.wxApp.Active and not self.q.empty() and not self.running:
-                    self.lock.acquire()
-                    while 1:
-                        try:
-                            obj = self.q.get_nowait()
-                            if obj:
-                                self.last = obj
-                        except:
+                self.last = None
+                while 1:
+                    try:
+                        obj = self.q.get(True, self.timestep)
+                        self.last = obj
+                    except:
+                        if self.last:
                             break
-                    self.lock.release()
+
                 if self.last:
-                    if not self.running:
-                        if time.time() - self.last[1] < self.timestep:
-                            continue
-                        self.running = True
-                        try:
-                            self.do_action(self.last[0])
-                            self.last = None
-                        except:
-#                            import traceback
-#                            traceback.print_exc()
-                            pass
-                        self.running = False
-                time.sleep(self.interval)
+                    try:
+                        self.do_action(self.last)
+                        self.last = None
+                    except:
+                        pass
+
         except:
             pass
             
