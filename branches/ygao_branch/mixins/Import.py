@@ -5975,6 +5975,7 @@ import wx
 import sets
 import os
 import glob
+import time
 from modules import Mixin
 from modules.Debug import error
 from modules import Globals
@@ -6001,6 +6002,7 @@ def editor_init(win):
     win.syntax_info = None
     win.auto_routin = None
     win.snippet = None
+    win.modified_line = None
 
 Mixin.setPlugin('editor', 'init', editor_init)
 
@@ -6052,7 +6054,7 @@ def get_inputassistant_obj(win):
 
 def after_char(win, event):
     win.mainframe.auto_routin_ac_action.put({'type':'normal', 'win':win,
-        'event':event, 'on_char_flag':True})
+        'event':event, 'on_char_flag':True, 'timestamp':time.time()})
 Mixin.setPlugin('editor', 'after_char', after_char)
 
 def on_key_down(win, event):
@@ -6078,14 +6080,14 @@ def on_key_down(win, event):
 
     if key == wx.WXK_BACK and not event.AltDown() and not event.ControlDown() and not event.ShiftDown():
         if win.pref.input_assistant and win.pref.inputass_identifier:
-            win.mainframe.auto_routin_ac_action.put({'type':'default', 'win':win, 'event':event})
+            win.mainframe.auto_routin_ac_action.put({'type':'default', 'win':win, 'event':event, 'timestamp':time.time()})
     return False
 Mixin.setPlugin('editor', 'on_key_down', on_key_down)
 
 def on_key_down(win, event):
     if win.pref.input_assistant:
         win.mainframe.auto_routin_ac_action.put({'type':'normal', 'win':win,
-            'event':event, 'on_char_flag':False})
+            'event':event, 'on_char_flag':False, 'timestamp':time.time()})
     return False
 Mixin.setPlugin('editor', 'on_key_down', on_key_down, nice=10)
 
@@ -6248,8 +6250,16 @@ def on_modified(win, event):
     type = event.GetModificationType()
     for flag in (wx.stc.STC_MOD_INSERTTEXT, wx.stc.STC_MOD_DELETETEXT):
         if flag & type:
-            win.mainframe.auto_routin_analysis.put(win)
-            return
+            modified_line = win.LineFromPosition(event.GetPosition())
+            if  win.modified_line is None:
+                win.modified_line = modified_line
+                win.mainframe.auto_routin_analysis.put(win)
+            else:
+                if  win.model.modified_line == modified_line:
+                    pass
+                else:
+                    win.modified_line = modified_line
+                    win.mainframe.auto_routin_analysis.put(win)
 Mixin.setPlugin('editor', 'on_modified', on_modified)
 
 from modules import AsyncAction
@@ -6306,7 +6316,7 @@ class Analysis(AsyncAction.AsyncAction):
 def main_init(win):
     win.auto_routin_analysis = Analysis(.1)
     win.auto_routin_analysis.start()
-    win.auto_routin_ac_action = InputAssistantAction(float(win.pref.inputass_typing_rate)/1000)
+    win.auto_routin_ac_action = InputAssistantAction(0.05)
     win.auto_routin_ac_action.start()
 Mixin.setPlugin('mainframe', 'init', main_init)
 

@@ -53,6 +53,7 @@ def editor_init(win):
     win.syntax_info = None
     win.auto_routin = None
     win.snippet = None
+    win.modified_line = None
 #    win.dont_analysis = False
     
 #    win.lock = thread.allocate_lock()
@@ -309,8 +310,16 @@ def on_modified(win, event):
     type = event.GetModificationType()
     for flag in (wx.stc.STC_MOD_INSERTTEXT, wx.stc.STC_MOD_DELETETEXT):
         if flag & type:
-            win.mainframe.auto_routin_analysis.put(win)
-            return
+            modified_line = win.LineFromPosition(event.GetPosition())
+            if  win.modified_line is None:
+                win.modified_line = modified_line
+                win.mainframe.auto_routin_analysis.put(win)
+            else:
+                if  win.model.modified_line == modified_line:
+                    pass
+                else:
+                    win.modified_line = modified_line
+                    win.mainframe.auto_routin_analysis.put(win)
 Mixin.setPlugin('editor', 'on_modified', on_modified)
 
 from modules import AsyncAction
