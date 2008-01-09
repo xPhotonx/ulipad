@@ -241,9 +241,9 @@ class DefaultHtmlWindow(html.HtmlWindow, HtmlWindowBase):
         self.parent = parent
         HtmlWindowBase.__init__(self, parent, filename)
         html.HtmlWindow.__init__(self, parent, -1, style=wx.NO_FULL_REPAINT_ON_RESIZE)
-        if "gtk2" in wx.PlatformInfo:
-            self.NormalizeFontSizes()
-
+#       comment according issue 12
+#        if "gtk2" in wx.PlatformInfo:
+#            self.NormalizeFontSizes()
 
 class IEHtmlWindow(HtmlWindowBase):
     def __init__(self, parent, filename=''):
