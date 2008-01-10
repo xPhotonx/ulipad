@@ -24,21 +24,35 @@
 import meide as ui
 import wx
 
-class MyTextEntry(ui.SimpleDialog):
+class MyTextEntry(wx.Dialog):
     def __init__(self, parent, title, message, defaultvalue='', fit=2, size=wx.DefaultSize):
-        box = ui.SimpleGrid(namebinding='element')
+        wx.Dialog.__init__(self, parent, -1, title=title, size=size)
+        
+        self.sizer = sizer = ui.VBox(namebinding='widget').create(self).auto_layout()
+        box = sizer.add(ui.SimpleGrid)
         box.add(message, ui.Text(defaultvalue), name='text')
-        super(MyTextEntry, self).__init__(parent, box, title, fit=fit, size=size)
+        
+        sizer.add(ui.simple_buttons(), flag=wx.ALIGN_CENTER|wx.BOTTOM)
+        self.btnOk.SetDefault()
+
+        self.sizer.auto_fit(fit)
 
     def GetValue(self):
         return self.text.GetValue()
 
-class MyFileEntry(ui.SimpleDialog):
+class MyFileEntry(wx.Dialog):
     def __init__(self, parent, title, message, defaultvalue='', fit=1, size=wx.DefaultSize):
-        box = ui.SimpleGrid(namebinding='element')
+        wx.Dialog.__init__(self, parent, -1, title=title, size=size)
+        
+        self.sizer = sizer = ui.VBox(namebinding='widget').create(self).auto_layout()
+        box = sizer.add(ui.SimpleGrid)
         box.add(message, ui.OpenFile(defaultvalue), name='filename')
-        super(MyFileEntry, self).__init__(parent, box, title, fit=fit, size=size)
+        
+        sizer.add(ui.simple_buttons(), flag=wx.ALIGN_CENTER|wx.BOTTOM)
+        self.btnOk.SetDefault()
+
+        self.sizer.auto_fit(fit)
 
     def GetValue(self):
         return self.filename.GetValue()
-    
+
