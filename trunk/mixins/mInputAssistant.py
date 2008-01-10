@@ -134,12 +134,12 @@ def on_key_down(win, event):
     return False
 Mixin.setPlugin('editor', 'on_key_down', on_key_down)
 
-def on_key_down(win, event):
+def on_first_keydown(win, event):
     if win.pref.input_assistant:
         win.mainframe.auto_routin_ac_action.put({'type':'normal', 'win':win, 
             'event':event, 'on_char_flag':False})
     return False
-Mixin.setPlugin('editor', 'on_key_down', on_key_down, nice=10)
+Mixin.setPlugin('editor', 'on_first_keydown', on_first_keydown, nice=1)
 
 def pref_init(pref):
     pref.input_assistant = True
