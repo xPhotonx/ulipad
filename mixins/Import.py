@@ -5975,7 +5975,6 @@ import wx
 import sets
 import os
 import glob
-import time
 from modules import Mixin
 from modules.Debug import error
 from modules import Globals
@@ -6003,7 +6002,6 @@ def editor_init(win):
     win.auto_routin = None
     win.snippet = None
     win.modified_line = None
-
 Mixin.setPlugin('editor', 'init', editor_init)
 
 def _replace_text(win, start, end, text):
@@ -6084,6 +6082,12 @@ def on_key_down(win, event):
     return False
 Mixin.setPlugin('editor', 'on_key_down', on_key_down)
 
+def on_first_keydown(win, event):
+    if win.pref.input_assistant:
+        win.mainframe.auto_routin_ac_action.put({'type':'normal', 'win':win,
+            'event':event, 'on_char_flag':False})
+    return False
+Mixin.setPlugin('editor', 'on_first_keydown', on_first_keydown, nice=1)
 
 def pref_init(pref):
     pref.input_assistant = True
@@ -6266,7 +6270,6 @@ class InputAssistantAction(AsyncAction.AsyncAction):
         win = obj['win']
         try:
             if not win: return
-            print 'input_assistant', time.time()
             i = get_inputassistant_obj(win)
             win.lock.acquire()
             if action == 'default':
@@ -6287,7 +6290,6 @@ class Analysis(AsyncAction.AsyncAction):
             return
         try:
             if not obj: return
-            print 'analysis', time.time()
             i = get_inputassistant_obj(obj)
             i.call_analysis(self)
             return True
