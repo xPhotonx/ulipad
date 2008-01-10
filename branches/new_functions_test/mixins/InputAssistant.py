@@ -980,44 +980,44 @@ def _getWord(win, whole=None, pos=None, line=None):
 
 
 def replace_special_placeholder(placeholder,win):
-	"""
-	Replaces a variable/'special placeholder' with it's value.
+    """
+    Replaces a variable/'special placeholder' with it's value.
 
-	"""
-	if placeholder == "${day}":
-		from time import localtime
-		thetime = localtime()
-		return pad_zero(thetime[2])
-	if placeholder == "${month}":
-		from time import localtime
-		thetime = localtime()
-		return pad_zero(thetime[1])
-	if placeholder == "${year}":
-		from time import localtime
-		thetime = localtime()
-		return pad_zero(thetime[0])
-	if placeholder == "${date}":
-		from time import localtime
-		thetime = localtime()
-		return "%s:%s:%s" % (pad_zero(thetime[0]), pad_zero(thetime[1]), pad_zero(thetime[2]))
-	if placeholder == "${time}":
-		from time import localtime
-		thetime = localtime()
-		return "%s:%s:%s" % (pad_zero(thetime[3]), pad_zero(thetime[4]), pad_zero(thetime[5]))
-	if placeholder == "${timestring}":
-		from time import ctime
-		return ctime()
-	if placeholder == "${timestamp}":
-		from time import localtime
-		thetime = localtime()
-		return "[%s-%s-%s] %s:%s:%s" % (thetime[0], pad_zero(thetime[1]), pad_zero(thetime[2]), pad_zero(thetime[3]), pad_zero(thetime[4]), pad_zero(thetime[5]))
-	if placeholder == "${author}":
-		return win.pref.personal_username
+    """
+    if placeholder == "${day}":
+        from time import localtime
+        thetime = localtime()
+        return pad_zero(thetime[2])
+    if placeholder == "${month}":
+        from time import localtime
+        thetime = localtime()
+        return pad_zero(thetime[1])
+    if placeholder == "${year}":
+        from time import localtime
+        thetime = localtime()
+        return pad_zero(thetime[0])
+    if placeholder == "${date}":
+        from time import localtime
+        thetime = localtime()
+        return "%s:%s:%s" % (pad_zero(thetime[0]), pad_zero(thetime[1]), pad_zero(thetime[2]))
+    if placeholder == "${time}":
+        from time import localtime
+        thetime = localtime()
+        return "%s:%s:%s" % (pad_zero(thetime[3]), pad_zero(thetime[4]), pad_zero(thetime[5]))
+    if placeholder == "${timestring}":
+        from time import ctime
+        return ctime()
+    if placeholder == "${timestamp}":
+        from time import localtime
+        thetime = localtime()
+        return "[%s-%s-%s] %s:%s:%s" % (thetime[0], pad_zero(thetime[1]), pad_zero(thetime[2]), pad_zero(thetime[3]), pad_zero(thetime[4]), pad_zero(thetime[5]))
+    if placeholder == "${author}":
+        return win.pref.personal_username
 
 def pad_zero(num):
-	if num < 10:
-		return "0" + str(num)
-	return str(num)
+    if num < 10:
+        return "0" + str(num)
+    return str(num)
 
 
 
