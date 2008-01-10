@@ -28,7 +28,20 @@ def get_calltip(win, word, syncvar):
         if flag == 'obj':
             signature = getargspec(win,object)
             doc = object.__doc__
-            return filter(None, [signature, doc])
+            notice = None
+            win.calltip_obj = object
+            source = None
+            sep = None
+            if  win.pref.inputass_calltip_including_source_code:
+
+                try:
+                    source = inspect.getsource(object)
+                    if  source:
+                        sep = "---------------source code-----------------"
+                        notice = "(*** Double click here try to open source file in Ulipad ***)"
+                except:
+                    pass
+            return filter(None, [signature, doc, sep, source, notice])
         else:
             if object.type == 'function':
                 return '\n'.join([object.info, object.docstring])

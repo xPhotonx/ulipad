@@ -32,6 +32,7 @@ from modules import Globals
 from modules import common
 from modules import dict4ini
 
+from InputAssistant import _getWord, StopException, CALLTIP_AUTOCOMPLETE
 CALLTIP_AUTOCOMPLETE = 2
 
 def mainframe_init(win):
@@ -152,6 +153,7 @@ def pref_init(pref):
     pref.inputass_identifier = True
     pref.inputass_full_identifier = True
     pref.inputass_func_parameter_autocomplete = True
+    pref.inputass_calltip_including_source_code = False
     pref.inputass_typing_rate = 500
 Mixin.setPlugin('preference', 'init', pref_init)
 
@@ -163,7 +165,8 @@ def add_pref(preflist):
         (tr('Input Assistant'), 130, 'check', 'inputass_identifier', tr("Enable auto prompt identifiers"), None),
         (tr('Input Assistant'), 140, 'check', 'inputass_full_identifier', tr("Enable full identifiers search"), None),
         (tr('Input Assistant'), 150, 'check', 'inputass_func_parameter_autocomplete', tr("Enable function parameter autocomplete"), None),
-        (tr('Input Assistant'), 160, 'int', 'inputass_typing_rate', tr("Skip Input Assistant when typing rate faster than this milisecond"), None),
+        (tr('Input Assistant'), 160, 'check', 'inputass_calltip_including_source_code', tr("Enable calltip content including source code"), None),
+        (tr('Input Assistant'), 170, 'int',   'inputass_typing_rate', tr("skip input assistant when typing rate faster than this "), None),
     ])
 Mixin.setPlugin('preference', 'add_pref', add_pref)
 
@@ -297,6 +300,167 @@ def on_key_down(win, event):
 ##        statusbar.show_panel('tips: '+text, color='#AAFFAA', font=wx.Font(10, wx.TELETYPE, wx.NORMAL, wx.BOLD, True))
         
 Mixin.setPlugin('editor', 'on_key_down', on_key_down, Mixin.HIGH, 1)
+
+class Dump():
+    def __init__(self):
+        self.empty = True
+
+TT = Dump()
+
+def call_calltip(win, word, brace_left, curpos):
+    for f in win.input_calltip:
+        try:
+            r = f(win,word,TT)
+            if r:
+                if isinstance(r, (str, unicode)):
+                    r = [r]
+                tip = '\n\n'.join(list(filter(None, r)) + [tr('(Press ESC to close)')])
+                if win.calltip.active and CALLTIP_AUTOCOMPLETE:
+                    win.calltip.cancel()
+                t = tip.replace('\r\n','\n')
+                win.calltip_type = CALLTIP_AUTOCOMPLETE
+                win.calltip_stack[brace_left] = t
+                win.calltip_current = brace_left
+                win.calltip.show(curpos, t)
+                return 
+        except StopException:
+            pass
+        except:
+            error.traceback()
+
+def on_key_up(win, event):
+    # note: by ygao 2007/05/11
+    # typing between "(" and ")",calltip will popup  
+    if  win.languagename != "python":
+        return
+    key = None
+    if  isinstance(event, wx.KeyEvent):
+        # prevent calltip starting again 
+        key = event.GetKeyCode()
+        if  key == wx.WXK_ESCAPE:
+            return
+    curpos = win.GetCurrentPos()
+    line = win.GetCurrentLine()
+    if  isinstance(event, wx.MouseEvent):
+        if  event.AltDown():
+            full_word = _getWord(win, whole=True, pos=curpos, line=line)
+            call_calltip(win,full_word, None, curpos)
+            event.Skip()
+            return False
+    startPos = win.PositionFromLine(line)
+    endPos = win.GetLineEndPosition(line)
+    brace_left = win.FindText(startPos, endPos, '(')
+    if  31 < key < 127:
+        if  brace_left != -1:
+            brace_right = win.BraceMatch(brace_left)
+        
+            if  not len(win.calltip_stack):   
+
+                if  brace_left  < curpos <= brace_right:
+                    word = _getWord(win, whole=True, pos=brace_left, line=line)
+                    call_calltip(win,word, brace_left, curpos)
+            else:
+                brace_left = win.FindText(curpos, startPos, '(')
+                if  brace_left == -1:
+                    return
+                klist = win.calltip_stack.keys()
+                klist.sort()
+                brace_left_min = min(klist)
+                brace_right_max = win.BraceMatch(brace_left_min)
+                word = None
+                if  brace_left_min  < curpos <= brace_right_max:# and win.calltip_stack.get(brace_left, None):
+                    word = _getWord(win, whole=True, pos=brace_left+1, line=line)
+                    if  brace_left <> win.calltip_current:
+                        call_calltip(win,word, brace_left, curpos)
+##    if win.calltip.active and win.calltip_type == CALLTIP_AUTOCOMPLETE and len(win.calltip_stack):
+    if  len(win.calltip_stack):
+        klist = win.calltip_stack.keys()
+        klist.sort()
+        brace_left = min(klist)
+        if not isinstance(brace_left,int):
+            del klist[:]
+            return
+        brace_right = win.BraceMatch(brace_left)
+        if  brace_right == -1:
+            return
+        if  curpos < brace_left + 1 or curpos > brace_right:
+            win.calltip.cancel()
+            del win.function_parameter[:]
+            win.calltip_stack.clear()
+        elif brace_left  < curpos <= brace_right:
+            klist.reverse()
+            for order in range(len(klist)):
+                left = klist[order]
+                right = win.BraceMatch(left)
+                if  left < curpos <= right:
+                    if  left <> win.calltip_current:
+                        t = win.calltip_stack[left]
+                        win.calltip.show(curpos, t)
+                        win.calltip_current = left
+                        break
+                    else:
+                        if  win.calltip.active:
+                            break
+                        else:
+                            t = win.calltip_stack[left]
+                            win.calltip.show(curpos, t)
+                            win.calltip_current = left
+                            break
+                            
+                            
+##    startPos = win.PositionFromLine(line)
+##    endPos = win.GetLineEndPosition(line)
+##    brace_left = win.FindText(startPos, endPos, '(')
+##    syncvar = Casing.SyncVar()
+##    syncvar.empty = True
+##    
+##    def call_calltip(self, word, syncvar, brace_left):
+##        for f in self.input_calltip:
+##            try:
+##                r = f(self, word, syncvar)
+##                if r:
+##                    if isinstance(r, (str, unicode)):
+##                        r = [r]
+##                    tip = '\n\n'.join(list(filter(None, r)) + [tr('(Press ESC to close)')])
+##                    if win.calltip.active and CALLTIP_AUTOCOMPLETE:
+##                        win.calltip.cancel()
+##                    t = tip.replace('\r\n','\n')
+##                    win.calltip_type = CALLTIP_AUTOCOMPLETE
+##                    win.calltip_stack[brace_left] = t
+##                    win.calltip_current = brace_left
+##                    win.calltip.show(curpos, t)
+##                    return 
+##            except StopException:
+##                pass
+##            except:
+##                error.traceback()
+##    if  brace_left != -1:
+##        brace_right = win.BraceMatch(brace_left)
+##        if  brace_left  < curpos <= brace_right:
+##            word = _getWord(win, whole=True, pos=curpos, line=line)
+##
+##            print >>sys.__stdout__,22,word
+##            return call_calltip(win,word, syncvar, brace_left)
+##    else:
+##        print >>sys.__stdout__,111111
+##    result = win.FindText(startPos, endPos, full_word)
+##    print >>sys.__stdout__,15,result
+##    win.calltip.cancel()
+##    if  result:
+##        print >>sys.__stdout__,12      
+##        pos = result + len(full_word)
+##        if  pos == win.calltip_current:
+##            print >>sys.__stdout__,14
+##            return
+##        else:
+##            if  win.calltip.active:
+##                print >>sys.__stdout__,13
+##                win.calltip.cancel()
+##    return call_calltip(win,full_word, syncvar, pos)            
+            
+            
+Mixin.setPlugin('editor', 'on_key_up', on_key_up)
+Mixin.setPlugin('editor', 'on_mouse_up', on_key_up)
 
 def leaveopenfile(win, filename):
     if win.pref.input_assistant:
