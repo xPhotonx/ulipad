@@ -6300,7 +6300,7 @@ class Analysis(AsyncAction.AsyncAction):
 def main_init(win):
     win.auto_routin_analysis = Analysis(.2)
     win.auto_routin_analysis.start()
-    win.auto_routin_ac_action = InputAssistantAction(float(win.pref.inputass_typing_rate)/1000)
+    win.auto_routin_ac_action = InputAssistantAction("InputAssistantAction")
     win.auto_routin_ac_action.start()
 Mixin.setPlugin('mainframe', 'init', main_init)
 

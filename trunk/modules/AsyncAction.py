@@ -1,7 +1,7 @@
 import Queue
 import threading
 import time
-
+from modules import Globals
 class AsyncAction(threading.Thread):
     def __init__(self, timestep=.1):
         super(AsyncAction, self).__init__()
@@ -34,7 +34,10 @@ class AsyncAction(threading.Thread):
                 self.last = None
                 while 1:
                     try:
-                        obj = self.q.get(True, self.timestep)
+                        if  self.timestep == "InputAssistantAction":
+                            obj = self.q.get(True, float(Globals.mainframe.pref.inputass_typing_rate)/1000)
+                        else:
+                            obj = self.q.get(True, self.timestep)
                         self.last = obj
                     except:
                         if self.last:
