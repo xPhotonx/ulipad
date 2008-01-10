@@ -1,6 +1,7 @@
 $Rev$
 [2008/01/10]
 EditorFactory.py    Add FNB.FNB_DROPDOWN_TABS_LIST style to EditorCtrl
+Entry.py            Using new SetFocus method of meide
 
 [2008/01/09]
 ShellWindow.py      Fix popup menu creation too late, so the UpdateUI will raise exception
