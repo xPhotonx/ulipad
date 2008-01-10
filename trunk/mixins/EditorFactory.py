@@ -59,7 +59,9 @@ class EditorFactory(FNB.FlatNotebook, Mixin.Mixin):
             style = 0
         else:
             style = FNB.FNB_BOTTOM
-        FNB.FlatNotebook.__init__(self, parent, -1, style=style|FNB.FNB_SMART_TABS|FNB.FNB_VC8|FNB.FNB_X_ON_TAB|FNB.FNB_NO_X_BUTTON)
+        FNB.FlatNotebook.__init__(self, parent, -1, 
+            style=style|FNB.FNB_SMART_TABS|FNB.FNB_VC8|FNB.FNB_X_ON_TAB|
+                FNB.FNB_NO_X_BUTTON|FNB.FNB_DROPDOWN_TABS_LIST)
         self.id = self.GetId()
 
 

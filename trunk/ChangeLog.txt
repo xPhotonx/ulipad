@@ -1,4 +1,7 @@
 $Rev$
+[2008/01/10]
+EditorFactory.py    Add FNB.FNB_DROPDOWN_TABS_LIST style to EditorCtrl
+
 [2008/01/09]
 ShellWindow.py      Fix popup menu creation too late, so the UpdateUI will raise exception
 Editor.py           Also change popup menu creation position
