@@ -29,6 +29,8 @@ class MyTextEntry(ui.SimpleDialog):
         box = ui.SimpleGrid(namebinding='element')
         box.add(message, ui.Text(defaultvalue), name='text')
         super(MyTextEntry, self).__init__(parent, box, title, fit=fit, size=size)
+        
+        self.layout.SetFocus()
 
     def GetValue(self):
         return self.text.GetValue()
@@ -39,6 +41,8 @@ class MyFileEntry(ui.SimpleDialog):
         box.add(message, ui.OpenFile(defaultvalue), name='filename')
         super(MyFileEntry, self).__init__(parent, box, title, fit=fit, size=size)
 
+        self.layout.SetFocus()
+        
     def GetValue(self):
         return self.filename.GetValue()
     
