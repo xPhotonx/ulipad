@@ -939,11 +939,17 @@ def convert_key(s):
             key = ord(i)
     return f, key
 
-def _getWord(win, whole=None):
-    pos=win.GetCurrentPos()
+def _getWord(win, whole=None, pos=None, line=None):
+    if  pos is None:
+        pos=win.GetCurrentPos()
+    else:
+        pos = pos
     if win.getChar(pos-1) == '(':
         pos -= 1
-    line = win.GetCurrentLine()
+    if  line is None:
+        line = win.GetCurrentLine()
+    else:
+        line = line
     linePos=win.PositionFromLine(line)
     txt = win.GetLine(line)
     start=win.WordStartPosition(pos,1)
