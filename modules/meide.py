@@ -57,6 +57,7 @@ def create(win, layout, fit=1, namebinding=None):
     fit == 0 will not change the window size
         == 1 will change height size to best size
         == 2 will change width and height both size to best size
+    focus is which bounded control you want to set focus on
     """
     layout.create(win, namebinding)
     win.SetSizer(layout.obj)
@@ -254,7 +255,8 @@ class Element(object):
         """
         if self.created:
             self._bind_event(event_name, func)
-        for i, (eve_name, func) in enumerate(self.events):
+        for i, v in enumerate(self.events):
+            eve_name, func = v
             if eve_name == event_name:
                 del self.events[i]
                 break
@@ -351,6 +353,11 @@ class Element(object):
 
     def _get_proportion(self):
         return self.proportion
+    
+    def SetFocus(self):
+        control = self.get_widget()
+        if hasattr(control, 'SetFocus'):
+            control.SetFocus()
     
 class ValidateMixin(object):
     """
@@ -674,7 +681,8 @@ class LayoutBase(Element, LayoutValidateMixin):
         if self.created:
             self._bind_event(name, event_name, func)
         
-        for i, (n, eve_name, func) in enumerate(self.events):
+        for i, v in enumerate(self.events):
+            n, eve_name, func = v
             if n == name and eve_name == event_name:
                 del self.events[i]
                 break
@@ -787,7 +795,8 @@ class LayoutBase(Element, LayoutValidateMixin):
             del layout.elements[name]
             del layout.elements_args[name]
             layout.orders.remove(name)
-            for i, (n, eve, func) in enumerate(layout.events[:]):
+            for i, v in enumerate(layout.events[:]):
+                n, eve, func = v
                 if n == name:
                     del layout.events[i] 
             return obj
@@ -803,6 +812,24 @@ class LayoutBase(Element, LayoutValidateMixin):
         
     def _init(self):
         pass
+    
+    def SetFocus(self, focus_ctrl_name=None):
+        control = None
+        if focus_ctrl_name:
+            control = self.find(focus_ctrl_name)
+        else:
+            def get_first_focus_ctrl(layout):
+                for name in layout.orders:
+                    obj = layout.elements[name]
+                    if isinstance(obj, LayoutBase):
+                        return get_first_focus_ctrl(obj)
+                    elif hasattr(obj.get_widget(), 'SetFocus'):
+                        return obj
+            control = get_first_focus_ctrl(self)
+        if control:
+            control = control.get_widget()
+            if hasattr(control, 'SetFocus'):
+                control.SetFocus()
         
 class HBox(LayoutBase):
     """
