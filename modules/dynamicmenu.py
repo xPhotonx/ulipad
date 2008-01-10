@@ -50,7 +50,10 @@ def menuInsert(win, menulist):
     insertmlist = makemenu.mergemenu(menulist)
     m = sortmenu(insertmlist)
 #    win.menubar.Freeze()
-    insertmenu(mlist, insertmlist, m, win)
+    a = {}
+    a.update(accel)
+    a.update(editoraccel)
+    insertmenu(mlist, insertmlist, m, win, a)
 #    win.menubar.Thaw()
     
     return accel, editoraccel
@@ -102,6 +105,7 @@ def insertmenu(mlist, insertmlist, sortedmenukey, win, accel=None, imagelist=Non
             for     order, idname, caption, kind, func, message in insertmlist[key]:
                 id = Id.makeid(win, idname)
                 menu = makemenu.makesubmenu(insertmlist, win, idname, accel, imagelist)
+                makemenu.setmenutext(win, accel)
                 win.menubar.Insert(findpos(mlist, key, idname), menu, caption)
                 win.menuitems[idname] = menu
             removekey(insertmlist, keys, key)
