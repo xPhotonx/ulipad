@@ -41,6 +41,9 @@ class DUMY_CLASS:pass
 assistant = {}
 assistant_objs = {}
 KEYS = {'<space>':' ', '<equal>':'=', '<div>':'/', '<square>':'['}
+special_placeholders = ("${time}", "${timestring}", "${timestamp}",
+                    "${date}", "${day}", "${month}", "${year}", "${author}")
+
 CALLTIP_AUTOCOMPLETE = 2
 class StopException(Exception):pass
 
@@ -866,6 +869,12 @@ class InputAssistant(Mixin.Mixin):
         cur_pos = -1
         refline = win.GetCurrentLine()
         for t in text:
+            # thanks to Scribes ,I port this feature  2008:01:10 by ygao
+            global special_placeholders
+            for i in range(len(special_placeholders)):
+                pos = t.encode('utf-8').find(special_placeholders[i])
+                if  pos > -1:
+                    t = t.replace(special_placeholders[i], replace_special_placeholder(special_placeholders[i],win))
             pos = t.encode('utf-8').find('!^')
             if pos > -1:
                 t = t.replace('!^', '')
@@ -970,6 +979,45 @@ def _getWord(win, whole=None, pos=None, line=None):
     return txt[start-linePos:end-linePos]
 
 
+def replace_special_placeholder(placeholder,win):
+	"""
+	Replaces a variable/'special placeholder' with it's value.
+
+	"""
+	if placeholder == "${day}":
+		from time import localtime
+		thetime = localtime()
+		return pad_zero(thetime[2])
+	if placeholder == "${month}":
+		from time import localtime
+		thetime = localtime()
+		return pad_zero(thetime[1])
+	if placeholder == "${year}":
+		from time import localtime
+		thetime = localtime()
+		return pad_zero(thetime[0])
+	if placeholder == "${date}":
+		from time import localtime
+		thetime = localtime()
+		return "%s:%s:%s" % (pad_zero(thetime[0]), pad_zero(thetime[1]), pad_zero(thetime[2]))
+	if placeholder == "${time}":
+		from time import localtime
+		thetime = localtime()
+		return "%s:%s:%s" % (pad_zero(thetime[3]), pad_zero(thetime[4]), pad_zero(thetime[5]))
+	if placeholder == "${timestring}":
+		from time import ctime
+		return ctime()
+	if placeholder == "${timestamp}":
+		from time import localtime
+		thetime = localtime()
+		return "[%s-%s-%s] %s:%s:%s" % (thetime[0], pad_zero(thetime[1]), pad_zero(thetime[2]), pad_zero(thetime[3]), pad_zero(thetime[4]), pad_zero(thetime[5]))
+	if placeholder == "${author}":
+		return win.pref.personal_username
+
+def pad_zero(num):
+	if num < 10:
+		return "0" + str(num)
+	return str(num)
 
 
 
