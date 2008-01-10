@@ -447,6 +447,8 @@ class TextEditor(wx.stc.StyledTextCtrl, Mixin.Mixin, DocumentBase.DocumentBase):
         eve = self.clone_key_event(event)
 #        wx.CallAfter(self.process_onchar_chain, eve)
 #        self.process_onchar_chain(eve)
+        prev_time = event.GetTimestamp()
+        eve.time_stamp = prev_time    
         self.execplugin('after_char', self, eve)
         self.have_focus = False
         
