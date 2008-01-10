@@ -408,56 +408,7 @@ def on_key_up(win, event):
                             break
                             
                             
-##    startPos = win.PositionFromLine(line)
-##    endPos = win.GetLineEndPosition(line)
-##    brace_left = win.FindText(startPos, endPos, '(')
-##    syncvar = Casing.SyncVar()
-##    syncvar.empty = True
-##    
-##    def call_calltip(self, word, syncvar, brace_left):
-##        for f in self.input_calltip:
-##            try:
-##                r = f(self, word, syncvar)
-##                if r:
-##                    if isinstance(r, (str, unicode)):
-##                        r = [r]
-##                    tip = '\n\n'.join(list(filter(None, r)) + [tr('(Press ESC to close)')])
-##                    if win.calltip.active and CALLTIP_AUTOCOMPLETE:
-##                        win.calltip.cancel()
-##                    t = tip.replace('\r\n','\n')
-##                    win.calltip_type = CALLTIP_AUTOCOMPLETE
-##                    win.calltip_stack[brace_left] = t
-##                    win.calltip_current = brace_left
-##                    win.calltip.show(curpos, t)
-##                    return 
-##            except StopException:
-##                pass
-##            except:
-##                error.traceback()
-##    if  brace_left != -1:
-##        brace_right = win.BraceMatch(brace_left)
-##        if  brace_left  < curpos <= brace_right:
-##            word = _getWord(win, whole=True, pos=curpos, line=line)
-##
-##            print >>sys.__stdout__,22,word
-##            return call_calltip(win,word, syncvar, brace_left)
-##    else:
-##        print >>sys.__stdout__,111111
-##    result = win.FindText(startPos, endPos, full_word)
-##    print >>sys.__stdout__,15,result
-##    win.calltip.cancel()
-##    if  result:
-##        print >>sys.__stdout__,12      
-##        pos = result + len(full_word)
-##        if  pos == win.calltip_current:
-##            print >>sys.__stdout__,14
-##            return
-##        else:
-##            if  win.calltip.active:
-##                print >>sys.__stdout__,13
-##                win.calltip.cancel()
-##    return call_calltip(win,full_word, syncvar, pos)            
-            
+
             
 Mixin.setPlugin('editor', 'on_key_up', on_key_up)
 Mixin.setPlugin('editor', 'on_mouse_up', on_key_up)
@@ -479,9 +430,7 @@ def on_modified(win, event):
                 win.modified_line = modified_line
                 win.mainframe.auto_routin_analysis.put(win)
             else:
-                if  win.modified_line == modified_line:
-                    pass
-                else:
+                if  win.modified_line != modified_line or event.GetLinesAdded() != 0:
                     win.modified_line = modified_line
                     win.mainframe.auto_routin_analysis.put(win)
 Mixin.setPlugin('editor', 'on_modified', on_modified)
