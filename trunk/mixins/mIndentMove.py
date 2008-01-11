@@ -23,6 +23,17 @@
 
 import wx
 from modules import Mixin
+from modules import Globals
+
+def pref_init(pref):
+    pref.document_move_next_indent_selection = True
+Mixin.setPlugin('preference', 'init', pref_init)
+
+def add_pref(preflist):
+    preflist.extend([
+        (tr('Document'), 300, 'check', 'document_move_next_indent_selection', tr('Always select from start of line when moving down to next matching indent'), None),
+    ])
+Mixin.setPlugin('preference', 'add_pref', add_pref)
 
 def on_key_down(editor, event):
     ctrl = event.ControlDown()
@@ -50,9 +61,11 @@ def move_parent_indent(editor):
     line -= 1
     comment_chars = editor.get_document_comment_chars()
     while line > -1:
-        text = editor.GetLine(line).strip()
-        if text and not text.startswith(comment_chars):
+        line_text = editor.GetLine(line)
+        text = line_text.strip()
+        if text and not line_text.startswith(comment_chars):
             i = editor.GetLineIndentation(line)
+            editor.GotoLine(line)
             if i < indent:
                 editor.GotoLine(line)
                 break
@@ -66,8 +79,9 @@ def move_prev_indent(editor):
     line -= 1
     comment_chars = editor.get_document_comment_chars()
     while line > -1:
-        text = editor.GetLine(line).strip()
-        if text and not text.startswith(comment_chars):
+        line_text = editor.GetLine(line)
+        text = line_text.strip()
+        if text and not line_text.startswith(comment_chars):
             i = editor.GetLineIndentation(line)
             if i == indent:
                 editor.GotoLine(line)
@@ -80,15 +94,23 @@ Mixin.setMixin('editor', 'move_prev_indent', move_prev_indent)
 
 def move_next_indent(editor):
     line = editor.GetCurrentLine()
+    if editor.GetSelectionStart() < editor.GetCurrentPos():
+        startpos = editor.GetSelectionStart()
+    else:
+        startpos = editor.FindColumn(line, 0)
     indent = editor.GetLineIndentation(line)
     line += 1
     comment_chars = editor.get_document_comment_chars()
     while line < editor.GetLineCount():
-        text = editor.GetLine(line).strip()
-        if text and not text.startswith(comment_chars):
+        line_text = editor.GetLine(line)
+        text = line_text.strip()
+        if text and not line_text.startswith(comment_chars):
             i = editor.GetLineIndentation(line)
             if i == indent:
                 editor.GotoLine(line)
+                if Globals.pref.document_move_next_indent_selection:
+                    editor.SetSelectionStart(startpos)
+                    editor.SetSelectionEnd(editor.GetCurrentPos())
                 break
             elif i < indent:
                 break
@@ -102,8 +124,9 @@ def move_child_indent(editor):
     line += 1
     comment_chars = editor.get_document_comment_chars()
     while line < editor.GetLineCount():
-        text = editor.GetLine(line).strip()
-        if text and not text.startswith(comment_chars):
+        line_text = editor.GetLine(line)
+        text = line_text.strip()
+        if text and not line_text.startswith(comment_chars):
             i = editor.GetLineIndentation(line)
             if i > indent:
                 editor.GotoLine(line)
