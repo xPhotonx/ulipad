@@ -5,6 +5,8 @@ mako_plugin/dirbrowserext.py makotmp.acp
 unicodetext.py      Fix utf-16 convertion bug
 mIndentMove.py      When moving next indent position, select the text #issue 15
 FlatNotebook.py     Fix if set DROP_DOWN_TABS_LIST style, right arrow will disappear bug
+MainFrame.py mAutoCheck.py
+                    Change auto file check and disable memory display
 
 [2008/01/10]
 EditorFactory.py    Add FNB.FNB_DROPDOWN_TABS_LIST style to EditorCtrl
