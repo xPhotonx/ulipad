@@ -1,8 +1,7 @@
 import Queue
 import threading
 import time
-from modules import Globals
-KEYS = [' ','=','/','[']
+
 class AsyncAction(threading.Thread):
     def __init__(self, timestep=.1):
         super(AsyncAction, self).__init__()
@@ -33,22 +32,9 @@ class AsyncAction(threading.Thread):
         try:
             while not self.stop:
                 self.last = None
-                self.prev = 1000
                 while 1:
                     try:
-                        if  self.timestep == "InputAssistantAction":
-                            obj = self.q.get(True, float(Globals.mainframe.pref.inputass_typing_rate)/1000)
-                            if obj['on_char_flag']:
-                                tt = obj['event'].time_stamp - self.prev < Globals.mainframe.pref.inputass_typing_rate
-                                self.prev = obj['event'].time_stamp
-                                key = obj['event'].GetKeyCode()
-                                if chr(key) in KEYS and tt:
-                                    self.last = obj
-                                    break
-                                else:
-                                    pass
-                        else:
-                            obj = self.q.get(True, self.timestep)
+                        obj = self.q.get(True, self.timestep)
                         self.last = obj
                     except:
                         if self.last:
