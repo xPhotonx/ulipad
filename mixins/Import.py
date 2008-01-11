@@ -2332,13 +2332,7 @@ def Expand(win, line, doExpand, force=False, visLevels=0, level=-1):
 
 #-----------------------  mCheckBrace.py ------------------
 
-import wx
-import wx.stc
 from modules import Mixin
-
-def editor_init(win):
-    wx.EVT_UPDATE_UI(win, win.GetId(), win.OnUpdateUI)
-Mixin.setPlugin('editor', 'init', editor_init)
 
 def on_editor_updateui(win, event):
     # check for matching braces
