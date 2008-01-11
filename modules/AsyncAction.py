@@ -40,7 +40,7 @@ class AsyncAction(threading.Thread):
                         if  self.timestep == "InputAssistantAction":
                             obj = self.q.get(True, float(Globals.mainframe.pref.inputass_typing_rate)/1000)
                             if obj['on_char_flag']:
-                                tt = obj['event'].time_stamp - self.prev < Globals.mainframe.pref.inputass_typing_rate
+                                tt = obj['event'].time_stamp - self.prev < Globals.mainframe.pref.inputass_typing_rate - Globals.mainframe.pref.inputass_typing_rate/5
                                 self.prev = obj['event'].time_stamp
                                 key = obj['event'].GetKeyCode()
                                 if chr(key) in KEYS and tt:
@@ -48,7 +48,7 @@ class AsyncAction(threading.Thread):
                                     break
                                 elif chr(key) in KEYS and (not tt):
                                     try:
-                                        obj1 = self.q.get(True, float(Globals.mainframe.pref.inputass_typing_rate*3)/1000)
+                                        obj1 = self.q.get(True, float(Globals.mainframe.pref.inputass_typing_rate*2)/1000)
                                         self.last = obj1
                                     except:
                                         self.last = obj
