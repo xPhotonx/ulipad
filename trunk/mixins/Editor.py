@@ -63,14 +63,6 @@ class TextEditor(wx.stc.StyledTextCtrl, Mixin.Mixin, DocumentBase.DocumentBase):
 
         DocumentBase.DocumentBase.__init__(self, parent, filename, documenttype)
 
-        #make popup menu
-        #@add_menu menulist
-        self.callplugin_once('add_menu', TextEditor.popmenulist)
-        #@add_menu_image_list imagelist
-        self.callplugin_once('add_menu_image_list', TextEditor.imagelist)
-        
-        self.popmenu = makemenu.makepopmenu(self, TextEditor.popmenulist, TextEditor.imagelist)
-        
         wx.stc.StyledTextCtrl.__init__(self, parent, -1, size=(0, 0))
 
         self.parent = parent
@@ -131,6 +123,16 @@ class TextEditor(wx.stc.StyledTextCtrl, Mixin.Mixin, DocumentBase.DocumentBase):
         #disable popup
         self.UsePopUp(0)
 
+        #make popup menu
+        #@add_menu menulist
+        self.callplugin_once('add_menu', TextEditor.popmenulist)
+        #@add_menu_image_list imagelist
+        self.callplugin_once('add_menu_image_list', TextEditor.imagelist)
+
+#        self.popmenu = makemenu.makepopmenu(self, TextEditor.popmenulist, TextEditor.imagelist)
+        makemenu.bind_popup_menu_ids(self, TextEditor.popmenulist)
+        self.popmenu = None
+        
         wx.stc.EVT_STC_MODIFIED(self, self.GetId(), self.OnModified)
         wx.stc.EVT_STC_MARGINCLICK(self, self.GetId(), self.OnMarginClick)
         wx.EVT_KEY_DOWN(self, self.OnKeyDown)
@@ -143,6 +145,7 @@ class TextEditor(wx.stc.StyledTextCtrl, Mixin.Mixin, DocumentBase.DocumentBase):
         wx.EVT_KILL_FOCUS(self, self.OnKillFocus)
         wx.EVT_SET_FOCUS(self, self.OnSetFocus)
         wx.stc.EVT_STC_USERLISTSELECTION(self, self.GetId(), self.OnUserListSelection)
+        wx.EVT_UPDATE_UI(self, self.GetId(), self.OnUpdateUI)
         
         if ''.join(map(str, wx.VERSION[:3])) >= '2830':
             wx.stc.EVT_STC_AUTOCOMP_SELECTION(self, self.GetId(), self.OnAutoCompletion)
