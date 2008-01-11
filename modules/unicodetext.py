@@ -37,7 +37,7 @@ def unicodetext(text, defaultencoding='utf-8'):
         begin = 3
         encoding = 'utf-8'
     if text.startswith('\xFF\xFE'):
-        begin = 3
+        begin = 2
         encoding = 'utf-16'
 
     if not encoding:
