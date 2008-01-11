@@ -8312,10 +8312,8 @@ def move_prev_indent(editor):
         text = line_text.strip()
         if text and not line_text.startswith(comment_chars):
             i = editor.GetLineIndentation(line)
-            if i == indent:
+            if i <= indent:
                 editor.GotoLine(line)
-                break
-            elif i < indent:
                 break
 
         line -= 1
@@ -8335,16 +8333,25 @@ def move_next_indent(editor):
         text = line_text.strip()
         if text and not line_text.startswith(comment_chars):
             i = editor.GetLineIndentation(line)
-            if i == indent:
+            if i <= indent:
                 editor.GotoLine(line)
                 if Globals.pref.document_move_next_indent_selection:
                     editor.SetSelectionStart(startpos)
                     editor.SetSelectionEnd(editor.GetCurrentPos())
-                break
-            elif i < indent:
-                break
+                return
 
         line += 1
+
+    if editor.GetCurrentLine() < editor.GetLineCount() - 1:
+        editor.GotoLine(line)
+        if Globals.pref.document_move_next_indent_selection:
+            editor.SetSelectionStart(startpos)
+            editor.SetSelectionEnd(editor.GetCurrentPos())
+    else:
+        editor.GotoPos(editor.GetTextLength())
+        if Globals.pref.document_move_next_indent_selection:
+            editor.SetSelectionStart(startpos)
+            editor.SetSelectionEnd(editor.GetTextLength())
 Mixin.setMixin('editor', 'move_next_indent', move_next_indent)
 
 def move_child_indent(editor):
