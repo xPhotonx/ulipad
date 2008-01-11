@@ -21,23 +21,18 @@
 #
 #   $Id$
 
-import wx
-import os
 from modules import common
-from modules.Debug import error
 from modules import Mixin
-from modules import Casing
-from modules import Globals
 
 project_names = ['mako']
 Mixin.setMixin('dirbrowser', 'project_names', project_names)
 
 def set_project(ini, projectnames):
     if 'mako' in projectnames:
-        common.set_acp_highlight(ini, '.mko', ['html.acp', 'mako_html.acp'], 'makotmp')
+        common.set_acp_highlight(ini, '.mko', ['html.acp', 'makohtml.acp'], 'makotmp')
 Mixin.setPlugin('dirbrowser', 'set_project', set_project)
 
 def remove_project(ini, projectnames):
     if 'mako' in projectnames:
-        common.remove_acp_highlight(ini, '.mko', ['html.acp', 'mako_html.acp'], 'makotmp')
+        common.remove_acp_highlight(ini, '.mko', ['html.acp', 'makohtml.acp'], 'makotmp')
 Mixin.setPlugin('dirbrowser', 'remove_project', remove_project)
