@@ -1,11 +1,14 @@
 $Rev$
+[2008/01/11]
+mako_plugin/dirbrowserext.py makotmp.acp
+                    Fix mako tag auto complete bug #issue 14
+unicodetext.py      Fix utf-16 convertion bug
+mIndentMove.py      When moving next indent position, select the text #issue 15
+
 [2008/01/10]
 EditorFactory.py    Add FNB.FNB_DROPDOWN_TABS_LIST style to EditorCtrl
 Entry.py            Using new SetFocus method of meide
 dynamicmenu.py      Fix editor shortcuts key caption error
-mako_plugin/dirbrowserext.py makotmp.acp
-                    Fix mako tag auto complete bug #issue 14
-unicodetext.py      Fix utf-16 convertion bug
 
 [2008/01/09]
 ShellWindow.py      Fix popup menu creation too late, so the UpdateUI will raise exception
