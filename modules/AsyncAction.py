@@ -51,6 +51,7 @@ class AsyncAction(threading.Thread):
                                         obj1 = self.q.get(True, float(Globals.mainframe.pref.inputass_typing_rate*2)/1000)
                                         self.last = obj1
                                     except:
+                                        #no key typing,trigger tmplater expand
                                         self.last = obj
                                         if self.last:
                                             break
