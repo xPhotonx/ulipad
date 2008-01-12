@@ -21,13 +21,7 @@
 #
 #       $Id: mCheckBrace.py 1621 2006-10-18 06:07:01Z limodou $
 
-import wx
-import wx.stc
 from modules import Mixin
-
-def editor_init(win):
-    wx.EVT_UPDATE_UI(win, win.GetId(), win.OnUpdateUI)
-Mixin.setPlugin('editor', 'init', editor_init)
 
 def on_editor_updateui(win, event):
     # check for matching braces

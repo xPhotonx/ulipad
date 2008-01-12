@@ -88,6 +88,25 @@ def makepopmenu(win, popmenu, imagelist=None):
     menu = makesubmenu(mlist, win, None, None, imagelist)
     return menu
 
+def bind_id_to_menu(mlist, win, pid=None):
+    if pid not in mlist:
+        return
+    
+    for m in mlist[pid]:
+        order, idname, caption, kind, func, message = m
+        if mlist.has_key(idname):
+            id = Id.makeid(win, idname)
+            bind_id_to_menu(mlist, win, idname)
+        else:
+            if kind == wx.ITEM_SEPARATOR:
+                pass
+            else:
+                id = Id.makeid(win, idname)
+
+def bind_popup_menu_ids(win, menu):
+    mlist = mergemenu(menu)
+    bind_id_to_menu(mlist, win)
+    
 def makemenu(win, menulist, accel=None, editoraccel=None, imagelist=None):
     menuBar = wx.MenuBar()
     win.menuitems = {}
