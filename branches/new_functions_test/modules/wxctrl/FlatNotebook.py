@@ -1377,7 +1377,7 @@ class FNBRenderer:
         if style & FNB_DROPDOWN_TABS_LIST and style & FNB_NO_X_BUTTON and style & FNB_NO_NAV_BUTTONS:
             return 22
 
-        # '<>x'
+        # '<>v'
         if style & FNB_DROPDOWN_TABS_LIST and style & FNB_NO_X_BUTTON and not style & FNB_NO_NAV_BUTTONS:
             return 53
         

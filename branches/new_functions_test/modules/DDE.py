@@ -19,14 +19,14 @@
 #   along with this program; if not, write to the Free Software
 #   Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 #
-
+#   $Id$
 
 import asynchat
 import asyncore
 import socket
 from modules import common
 
-ADDR = '127.0.0.1'
+HOST = '127.0.0.1'
 PORT = 50000
 
 class DDEServer(asyncore.dispatcher):
@@ -49,7 +49,7 @@ class Receiver(asynchat.async_chat):
         self.set_terminator('\r\n\r\n')
         self.server = server
         self.buffer = []
-    try:
+
     def collect_incoming_data(self, data):
         self.buffer.append(data)
         
@@ -74,7 +74,7 @@ def run(host=HOST, port=PORT):
     d = Casing.Casing(asyncore.loop, 1)
     d.start_thread()
     return server
-    try:
+
 def stop():
     if server:
         server.close()

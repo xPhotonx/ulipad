@@ -10,7 +10,7 @@ ${<space> = !^ }
 <% = page,include,def,namespace,inherit,call,doc,text
 
 [autore]
-<(\S+)[^>]*(?<!/)> = \0!^</\1>
+<(\w+)[^>]*(?<!/)> = \0!^</\1>
 
 [autore_append]
 (?i)<%page[^>]*?\s+cached<equal> = '"${1:True}"${0}'

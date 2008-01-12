@@ -115,7 +115,7 @@ class MainFrame(wx.Frame, Mixin.Mixin):
 
 #        d = Casing.Casing(self.OnIdle)
 #        d.start_thread()
-        
+#        
     def afterinit(self):
         self.callplugin('afterinit', self)
 
