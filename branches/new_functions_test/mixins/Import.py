@@ -6306,6 +6306,8 @@ def on_key_up(win, event):
                 klist.sort()
                 brace_left_min = min(klist)
                 brace_right_max = win.BraceMatch(brace_left_min)
+                if  brace_right_max == -1:
+                    return
                 word = None
                 if  brace_left_min  < curpos <= brace_right_max:# and win.calltip_stack.get(brace_left, None):
                     word = _getWord(win, whole=True, pos=brace_left+1, line=line)
@@ -6368,6 +6370,8 @@ def on_modified(win, event):
                 win.mainframe.auto_routin_analysis.put(win)
             else:
                 if  win.modified_line != modified_line or event.GetLinesAdded() != 0:
+                    import sys
+                    print>>sys.__stdout__,modified_line
                     win.modified_line = modified_line
                     win.mainframe.auto_routin_analysis.put(win)
 Mixin.setPlugin('editor', 'on_modified', on_modified)
@@ -8109,6 +8113,7 @@ Mixin.setPlugin('preference', 'init', pref_init)
 
 import wx
 from modules import Mixin
+from modules import Globals
 
 def add_editor_menu(popmenulist):
     popmenulist.extend([ (None, #parent menu id
@@ -8167,6 +8172,13 @@ def afterinit(win):
     wx.EVT_UPDATE_UI(win, win.IDM_EDIT_COPY_RUN, win.OnUpdateUI)
 Mixin.setPlugin('mainframe', 'afterinit', afterinit)
 
+def on_close(win, event):
+    if event.CanVeto():
+        win = Globals.mainframe
+        shell = win.panel.getPage(tr('Shell'))
+        if shell:
+            return shell.OnClose(event)
+Mixin.setPlugin('mainframe', 'on_close', on_close)
 
 
 

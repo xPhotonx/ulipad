@@ -37,9 +37,35 @@ Mixin.setPlugin('preference', 'add_pref', add_pref)
 def pref_init(pref):
     pref.auto_check  = True
     pref.auto_check_confirm = True
+    pref.auto_check_interval = 3    #second
 Mixin.setPlugin('preference', 'init', pref_init)
 
+class Autocheck(AsyncAction.AsyncAction):
+    def do_action(self, obj):
+        if not self.empty:
+            return
+        try:
+            win = Globals.mainframe
+            _check(win)
+        except:
+            pass
+
+def main_init(win):
+    win.auto_check_files = Autocheck(1)
+    win.auto_check_files.start()
+    win.auto_last_checkpoint = 0
+Mixin.setPlugin('mainframe', 'init', main_init)
+
 def on_idle(win):
+    if not win.auto_last_checkpoint:
+        win.auto_last_checkpoint = time.time()
+    else:
+        if time.time() - win.auto_last_checkpoint > win.pref.auto_check_interval:
+            win.auto_check_files.put(True)
+            win.auto_last_checkpoint = time.time()
+Mixin.setPlugin('mainframe', 'on_idle', on_idle)
+    
+def _check(win):
     if win.pref.auto_check:
         for document in win.editctrl.getDocuments():
             if win.closeflag: return
@@ -59,7 +85,6 @@ def on_idle(win):
                         wx.CallAfter(fn)
                         win.editctrl.filetimes[document.filename] = getModifyTime(document.filename)
                         return
-Mixin.setPlugin('mainframe', 'on_idle', on_idle)
 
 def editctrl_init(win):
     win.filetimes = {}

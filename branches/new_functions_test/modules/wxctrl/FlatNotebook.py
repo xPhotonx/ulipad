@@ -1303,7 +1303,7 @@ class FNBRenderer:
         rect = pc.GetClientRect()
         clientWidth = rect.width
         
-        if style & FNB_NO_X_BUTTON:
+        if style & FNB_NO_X_BUTTON and (style & FNB_DROPDOWN_TABS_LIST != FNB_DROPDOWN_TABS_LIST):
             return clientWidth - 38
         else:
             return clientWidth - 54
@@ -1317,7 +1317,7 @@ class FNBRenderer:
         rect = pc.GetClientRect()
         clientWidth = rect.width
         
-        if style & FNB_NO_X_BUTTON:
+        if style & FNB_NO_X_BUTTON and (style & FNB_DROPDOWN_TABS_LIST != FNB_DROPDOWN_TABS_LIST):
             return clientWidth - 22
         else:
             return clientWidth - 38
@@ -1326,7 +1326,15 @@ class FNBRenderer:
     def GetDropArrowButtonPos(self, pageContainer):
         """ Returns the drop down button position in the navigation area. """
 
-        return self.GetRightButtonPos(pageContainer)
+        pc = pageContainer
+        style = pc.GetParent().GetWindowStyleFlag()
+        rect = pc.GetClientRect()
+        clientWidth = rect.width
+
+        if style & FNB_DROPDOWN_TABS_LIST != FNB_DROPDOWN_TABS_LIST:
+            return clientWidth
+        else:
+            return clientWidth - 22
 
 
     def GetXPos(self, pageContainer):
@@ -1366,9 +1374,13 @@ class FNBRenderer:
             return 22 + 16
 
         # 'v'
-        if style & FNB_DROPDOWN_TABS_LIST and style & FNB_NO_X_BUTTON:
+        if style & FNB_DROPDOWN_TABS_LIST and style & FNB_NO_X_BUTTON and style & FNB_NO_NAV_BUTTONS:
             return 22
 
+        # '<>x'
+        if style & FNB_DROPDOWN_TABS_LIST and style & FNB_NO_X_BUTTON and not style & FNB_NO_NAV_BUTTONS:
+            return 53
+        
         # '<>x'
         return 53
 
@@ -4076,6 +4088,7 @@ class PageContainer(wx.Panel):
         fullrect = self.GetClientRect()
         btnLeftPos = render.GetLeftButtonPos(self)
         btnRightPos = render.GetRightButtonPos(self)
+        btnDropdownPos = render.GetDropArrowButtonPos(self)
         btnXPos = render.GetXPos(self)
         
         tabIdx = -1
@@ -4087,12 +4100,13 @@ class PageContainer(wx.Panel):
         if rect.Contains(pt):
             return (style & FNB_NO_X_BUTTON and [FNB_NOWHERE] or [FNB_X])[0], tabIdx
 
-        rect = wx.Rect(btnRightPos, 8, 16, 16)
+        rect = wx.Rect(btnDropdownPos, 8, 16, 16)
         if style & FNB_DROPDOWN_TABS_LIST:
             rect = wx.Rect(render.GetDropArrowButtonPos(self), 8, 16, 16)
             if rect.Contains(pt):
                 return FNB_DROP_DOWN_ARROW, tabIdx
 
+        rect = wx.Rect(btnRightPos, 8, 16, 16)
         if rect.Contains(pt):
             return (style & FNB_NO_NAV_BUTTONS and [FNB_NOWHERE] or [FNB_RIGHT_ARROW])[0], tabIdx
 

@@ -109,12 +109,12 @@ class MainFrame(wx.Frame, Mixin.Mixin):
         self.callplugin('beforeinit', self)
         self.callplugin('init', self)
         self.callplugin('show', self)
-#        wx.EVT_IDLE(self, self.OnIdle)
+        wx.EVT_IDLE(self, self.OnIdle)
         wx.EVT_CLOSE(self, self.OnClose)
         wx.EVT_ACTIVATE(self, self.OnActive)
 
-        d = Casing.Casing(self.OnIdle)
-        d.start_thread()
+#        d = Casing.Casing(self.OnIdle)
+#        d.start_thread()
         
     def afterinit(self):
         self.callplugin('afterinit', self)
@@ -127,27 +127,28 @@ class MainFrame(wx.Frame, Mixin.Mixin):
         if Globals.app.wxApp.Active:
             self.callplugin('on_update_ui', self, event)
 
-    def OnIdle(self):
-        try:
-            while not self.closeflag:
-                if not self.app.wxApp.Active:
-                    self.callplugin('on_idle_non_active', self)
-                    time.sleep(0.1)
-                else:
-                    if wx.Platform == '__WXMSW__':
-                        wx.CallAfter(self.SetStatusText, "%dM" % (wx.GetFreeMemory()/1024/1024), 5)
-                    # Add one more column to the statusbar to show Mem info on Linux Platform
-                    #
-                    elif wx.Platform == '__WXGTK__':
-                        from modules import PCInfo
-                        myRam = PCInfo.memInfo()
-#                        ramStr = "空闲: %dM/%dM 缓存: %dM" % (myRam['freeRam'], myRam['totalRam'], myRam['cachedRam'])
-                        ramStr = "%(freeRam)dM" % myRam
-                        wx.CallAfter(self.SetStatusText, ramStr, 5)
-                    self.callplugin('on_idle', self)
-                    time.sleep(0.5)
-        except:
-            pass
+    def OnIdle(self, event):
+        self.callplugin('on_idle', self)
+#        try:
+#            while not self.closeflag:
+#                if not self.app.wxApp.Active:
+#                    self.callplugin('on_idle_non_active', self)
+#                    time.sleep(0.1)
+#                else:
+#                    if wx.Platform == '__WXMSW__':
+#                        wx.CallAfter(self.SetStatusText, "%dM" % (wx.GetFreeMemory()/1024/1024), 5)
+#                    # Add one more column to the statusbar to show Mem info on Linux Platform
+#                    #
+#                    elif wx.Platform == '__WXGTK__':
+#                        from modules import PCInfo
+#                        myRam = PCInfo.memInfo()
+##                        ramStr = "空闲: %dM/%dM 缓存: %dM" % (myRam['freeRam'], myRam['totalRam'], myRam['cachedRam'])
+#                        ramStr = "%(freeRam)dM" % myRam
+#                        wx.CallAfter(self.SetStatusText, ramStr, 5)
+#                    self.callplugin('on_idle', self)
+#                    time.sleep(0.5)
+#        except:
+#            pass
 
     def OnClose(self, event):
         if not self.execplugin('on_close', self, event):
