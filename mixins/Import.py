@@ -4503,7 +4503,6 @@ def openfiles(win, files):
         doc = None
         firstdoc = None
         for filename in files:
-            filename = common.decode_string(filename)
             doc = win.editctrl.new(filename, delay=True)
             if not firstdoc:
                 firstdoc = doc
@@ -6329,6 +6328,10 @@ def main_init(win):
     win.auto_routin_ac_action = InputAssistantAction(float(win.pref.inputass_typing_rate)/1000)
     win.auto_routin_ac_action.start()
 Mixin.setPlugin('mainframe', 'init', main_init)
+
+def savepreference(mainframe, pref):
+    Globals.mainframe.auto_routin_ac_action.timestep = float(Globals.pref.inputass_typing_rate)/1000
+Mixin.setPlugin('prefdialog', 'savepreference', savepreference)
 
 
 
