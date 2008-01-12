@@ -25,7 +25,10 @@ __doc__ = 'Auto check if the file is modified'
 
 import wx
 import os
+import time
 from modules import Mixin
+from modules import AsyncAction
+from modules import Globals
 
 def add_pref(preflist):
     preflist.extend([

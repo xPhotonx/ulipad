@@ -1,7 +1,7 @@
 #   Programmer: limodou
 #   E-mail:     limodou@gmail.com
 #
-#   Copyleft 2006 limodou
+#   Copyleft 2009 limodou
 #
 #   Distributed under the terms of the GPL (GNU Public License)
 #
@@ -19,87 +19,83 @@
 #   along with this program; if not, write to the Free Software
 #   Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 #
-#   $Id: DDE.py 2006 2007-02-26 06:26:47Z limodou $
 
-from socket import *
-import threading
-from Debug import error
-import wx
-import common
+
+import asynchat
+import asyncore
+import socket
+from modules import common
 
 ADDR = '127.0.0.1'
 PORT = 50000
 
+class DDEServer(asyncore.dispatcher):
+    def __init__(self, host=HOST, port=PORT):
+        asyncore.dispatcher.__init__(self)
+        self.clients = []
+        self.create_socket(socket.AF_INET, socket.SOCK_STREAM)
+        self.set_reuse_addr()
+        self.bind((host, port))
+        self.listen(2)
+
+    def handle_accept(self):
+        client = Receiver(self, self.accept())
+        self.clients.append(client)
+
+class Receiver(asynchat.async_chat):
+    def __init__(self, server, (conn, addr)):
+        self.addr = addr
+        asynchat.async_chat.__init__ (self, conn)
+        self.set_terminator('\r\n\r\n')
+        self.server = server
+        self.buffer = []
+    try:
+    def collect_incoming_data(self, data):
+        self.buffer.append(data)
+        
+    def found_terminator(self):
+        files  = ''.join(self.buffer)
+        
+        import wx
+        import Globals
+        wx.CallAfter(Globals.app.frame.openfiles, unicode(files, 'utf-8').splitlines())
+
+    def handle_close (self):
+        if self.server.clients.count(self) > 0:
+            self.server.clients.remove(self)
+        self.close()
+
 server = None
-g_port = PORT
+def run(host=HOST, port=PORT):
+    global server
 
-def init(port):
-    global g_port
-
-    if port == 0:
-        port = PORT
-    g_port = port
-    server = socket(AF_INET, SOCK_STREAM)
-    server.setsockopt(SOL_SOCKET, SO_REUSEADDR, 1)
-    try:
-        server.bind((ADDR, port))
-    except:
-        traceback.print_exc()
-        server = None
-        return server
+    server = DDEServer(host, port)
+    from modules import Casing
+    d = Casing.Casing(asyncore.loop, 1)
+    d.start_thread()
     return server
-
-def start(server, app=None):
-    server.listen(1)
-#    print 'server starting'
-    while True:
-        conn = server.accept()[0]
-        try:
-            data = conn.recv(256)
-            if data:
-                data = data.decode('utf-8')
-                lines = data.splitlines()
-                cmd = lines[0]
-                if cmd == 'data':
- #                   print 'data'
-                    if app:
-                        wx.CallAfter(app.frame.openfiles, lines[1:])
-                elif cmd == 'stop':
-  #                  print 'stop'
-                    break
-        except SystemExit:
-            break
-        except:
-            error.traceback()
-            pass
-
-
-def sendraw(cmd, data):
     try:
-        sendSock = socket(AF_INET, SOCK_STREAM)
-        sendSock.connect((ADDR, g_port))
+def stop():
+    if server:
+        server.close()
+        
+def senddata(data, host=HOST, port=PORT):
+    try:
+        sendSock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+        sendSock.connect((host, port))
         if isinstance(data, str):
             data = unicode(data, common.defaultfilesystemencoding)
         data = data.encode('utf-8')
-        sendSock.send(cmd+'\n'+data)
+        sendSock.send(data+'\r\n\r\n')
         sendSock.close()
         return True
     except:
-#        error.traceback()
         return False
 
-def stop():
-    sendraw('stop', '')
-
-def senddata(data):
-    return sendraw('data', data)
-
-def run(app=None, port=PORT):
-    server = init(port)
-    if server:
-        t = threading.Thread(target=start, args=(server, app,), name='dde')
-        t.setDaemon(True)
-        t.start()
-        return True
+if __name__ == '__main__':
+    import sys
+    if sys.argv[1] == 'server':
+        DDEServer()
+        asyncore.loop()
     else:
-        return False
+        senddata('a.text')
