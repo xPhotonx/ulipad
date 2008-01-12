@@ -4487,10 +4487,10 @@ def app_init(app, filenames):
     if app.ddeflag:
         x = common.get_config_file_obj()
         port = x.server.get('port', 0)
-        if DDE.senddata('\n'.join(filenames)):
+        if DDE.senddata('\r\n'.join(filenames), port=port):
             sys.exit(0)
         else:
-            DDE.run(app, port)
+            DDE.run(port=port)
 Mixin.setPlugin('app', 'dde', app_init, Mixin.HIGH, 0)
 
 def afterclosewindow(win):
@@ -4501,12 +4501,16 @@ Mixin.setPlugin('mainframe', 'afterclosewindow', afterclosewindow)
 def openfiles(win, files):
     if files:
         doc = None
+        firstdoc = None
         for filename in files:
-            doc = win.editctrl.new(filename)
+            filename = common.decode_string(filename)
+            doc = win.editctrl.new(filename, delay=True)
+            if not firstdoc:
+                firstdoc = doc
         win.Show()
         win.Raise()
-        if doc:
-            doc.SetFocus()
+        if firstdoc:
+            win.editctrl.switch(firstdoc)
 Mixin.setMixin('mainframe', 'openfiles', openfiles)
 
 

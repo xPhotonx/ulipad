@@ -1,4 +1,8 @@
 $Rev$
+[2008/01/12]
+DDE.py mDDESupport.py
+                    Change DDE to asyncore and asynchat framework
+                    
 [2008/01/11]
 mako_plugin/dirbrowserext.py makotmp.acp
                     Fix mako tag auto complete bug #issue 14
