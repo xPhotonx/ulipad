@@ -35,10 +35,11 @@ import Globals
 import datetime
 
 class Debug:
-    def __init__(self, filename=os.path.abspath('debug.txt'), debug=None):
+    def __init__(self, filename=os.path.abspath('debug.txt'), flag=None):
         self.filename = filename
+        self.flag = flag
         self.reset(filename)
-        self.debug = debug
+        
 
     def _time(self):
         return datetime.datetime.now().isoformat()[11:-3]
@@ -92,10 +93,10 @@ class Debug:
     def is_debug(self):
         if not DEBUG:
             return False
-        if self.debug is None:
+        if self.flag is None:
             return DEBUG
         else:
-            return self.debug
+            return self.flag
 
 debug = None
 error = None
