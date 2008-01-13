@@ -1,15 +1,12 @@
 import Queue
 import threading
 import time
-from modules import Globals
-KEYS = [' ','=','/','[']
 class AsyncAction(threading.Thread):
-    def __init__(self, timestep=.1):
+    def __init__(self):
         super(AsyncAction, self).__init__()
         self.q = Queue.Queue(0)
         self.setDaemon(True)
         self.stop = False
-        self.timestep = timestep
         self.last = None
         
     def put(self, obj):
@@ -33,30 +30,9 @@ class AsyncAction(threading.Thread):
         try:
             while not self.stop:
                 self.last = None
-                self.prev = 1000
-                obj = None
                 while 1:
                     try:
-                        if  self.timestep == "InputAssistantAction":
-                            obj = self.q.get(True, float(Globals.mainframe.pref.inputass_typing_rate)/1000)
-                            if obj['on_char_flag']:
-                                tt = obj['event'].time_stamp - self.prev < Globals.mainframe.pref.inputass_typing_rate - Globals.mainframe.pref.inputass_typing_rate/5
-                                self.prev = obj['event'].time_stamp
-                                key = obj['event'].GetKeyCode()
-                                if chr(key) in KEYS and tt:
-                                    self.last = obj
-                                    break
-                                elif chr(key) in KEYS and (not tt):
-                                    try:
-                                        obj1 = self.q.get(True, float(Globals.mainframe.pref.inputass_typing_rate*2)/1000)
-                                        self.last = obj1
-                                    except:
-                                        #no key typing,trigger tmplater expand
-                                        self.last = obj
-                                        if self.last:
-                                            break
-                        else:
-                            obj = self.q.get(True, self.timestep)
+                        obj = self.q.get(True, self.do_timeout())
                         self.last = obj
                     except:
                         if self.last:
@@ -71,7 +47,14 @@ class AsyncAction(threading.Thread):
 
         except:
             pass
-            
+        
+    def do_timeout(self):
+        '''
+        if you want to change thread timeout value,overwrite this method.
+        
+        '''        
+        return 0.1
+    
     def do_action(self, obj):
         '''
         you should judge if not self.empty to quit the process, because
@@ -89,7 +72,7 @@ if __name__ == '__main__':
                 return
             print 'pppppp', obj
             
-    a = Test(1)
+    a = Test()
     a.start()
     for i in range(100):
         a.put(i)

@@ -363,6 +363,8 @@ def on_key_up(win, event):
                 klist.sort()
                 brace_left_min = min(klist)
                 brace_right_max = win.BraceMatch(brace_left_min)
+                if  brace_right_max == -1:
+                    return
                 word = None
                 if  brace_left_min  < curpos <= brace_right_max:# and win.calltip_stack.get(brace_left, None):
                     word = _getWord(win, whole=True, pos=brace_left+1, line=line)
@@ -427,12 +429,63 @@ def on_modified(win, event):
                 win.mainframe.auto_routin_analysis.put(win)
             else:
                 if  win.modified_line != modified_line or event.GetLinesAdded() != 0:
+                    import sys
+                    print>>sys.__stdout__,modified_line
                     win.modified_line = modified_line
                     win.mainframe.auto_routin_analysis.put(win)
 Mixin.setPlugin('editor', 'on_modified', on_modified)
 
 from modules import AsyncAction
+KEYS = [' ','=','/','[']
 class InputAssistantAction(AsyncAction.AsyncAction):
+    
+    
+    def run(self):
+        pref = Globals.pref
+        try:
+            while not self.stop:
+                self.last = None
+                self.prev = 1000
+                obj = None
+                while 1:
+                    try:
+                        obj = self.q.get(True, self.do_timeout())
+                        self.last = obj
+                        if obj['on_char_flag']:
+                            tt = obj['event'].time_stamp - self.prev < pref.inputass_typing_rate - pref.inputass_typing_rate/5
+                            self.prev = obj['event'].time_stamp
+                            key = obj['event'].GetKeyCode()
+                            if chr(key) in KEYS and tt:
+                                self.last = obj
+                                break
+                            elif chr(key) in KEYS and (not tt):
+                                try:
+                                    obj1 = self.q.get(True, float(pref.inputass_typing_rate*2)/1000)
+                                    self.last = obj1
+                                    break
+                                except:
+                                    #no key typing,trigger tmplater expand
+                                    self.last = obj
+                                    if self.last:
+                                        break
+                    except:
+                        if self.last:
+                            break
+
+                if self.last:
+                    try:
+                        self.do_action(self.last)
+                        self.last = None
+                    except:
+                        pass
+
+        except:
+            pass
+
+    
+    def do_timeout(self):
+        return float(Globals.pref.inputass_typing_rate)/1000    
+    
     def do_action(self, obj):
         if not self.empty:
             return
@@ -457,6 +510,11 @@ class InputAssistantAction(AsyncAction.AsyncAction):
             error.traceback()
         
 class Analysis(AsyncAction.AsyncAction):
+    
+
+    def do_timeout(self):
+        return 0.2
+        
     def do_action(self, obj):
         win = Globals.mainframe
         if not self.empty:
@@ -471,8 +529,9 @@ class Analysis(AsyncAction.AsyncAction):
             error.traceback()
         
 def main_init(win):
-    win.auto_routin_analysis = Analysis(.2)
+    win.auto_routin_analysis = Analysis()
     win.auto_routin_analysis.start()
-    win.auto_routin_ac_action = InputAssistantAction("InputAssistantAction")
+    win.auto_routin_ac_action = InputAssistantAction()
     win.auto_routin_ac_action.start()
 Mixin.setPlugin('mainframe', 'init', main_init)
+
