@@ -44,6 +44,10 @@ def pref_init(pref):
 Mixin.setPlugin('preference', 'init', pref_init)
 
 class Autocheck(AsyncAction.AsyncAction):
+    
+    def do_timeout(self):
+        return Globals.pref.auto_check_interval
+        
     def do_action(self, obj):
         if not self.empty:
             return
@@ -54,7 +58,7 @@ class Autocheck(AsyncAction.AsyncAction):
             pass
 
 def main_init(win):
-    win.auto_check_files = Autocheck(1)
+    win.auto_check_files = Autocheck()
     win.auto_check_files.start()
     win.auto_last_checkpoint = 0
 Mixin.setPlugin('mainframe', 'init', main_init)

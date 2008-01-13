@@ -2332,13 +2332,7 @@ def Expand(win, line, doExpand, force=False, visLevels=0, level=-1):
 
 #-----------------------  mCheckBrace.py ------------------
 
-import wx
-import wx.stc
 from modules import Mixin
-
-def editor_init(win):
-    wx.EVT_UPDATE_UI(win, win.GetId(), win.OnUpdateUI)
-Mixin.setPlugin('editor', 'init', editor_init)
 
 def on_editor_updateui(win, event):
     # check for matching braces
@@ -3867,7 +3861,10 @@ __doc__ = 'Auto check if the file is modified'
 
 import wx
 import os
+import time
 from modules import Mixin
+from modules import AsyncAction
+from modules import Globals
 
 def add_pref(preflist):
     preflist.extend([
@@ -3879,9 +3876,39 @@ Mixin.setPlugin('preference', 'add_pref', add_pref)
 def pref_init(pref):
     pref.auto_check  = True
     pref.auto_check_confirm = True
+    pref.auto_check_interval = 3    #second
 Mixin.setPlugin('preference', 'init', pref_init)
 
+class Autocheck(AsyncAction.AsyncAction):
+
+    def do_timeout(self):
+        return Globals.pref.auto_check_interval
+
+    def do_action(self, obj):
+        if not self.empty:
+            return
+        try:
+            win = Globals.mainframe
+            _check(win)
+        except:
+            pass
+
+def main_init(win):
+    win.auto_check_files = Autocheck()
+    win.auto_check_files.start()
+    win.auto_last_checkpoint = 0
+Mixin.setPlugin('mainframe', 'init', main_init)
+
 def on_idle(win):
+    if not win.auto_last_checkpoint:
+        win.auto_last_checkpoint = time.time()
+    else:
+        if time.time() - win.auto_last_checkpoint > win.pref.auto_check_interval:
+            win.auto_check_files.put(True)
+            win.auto_last_checkpoint = time.time()
+Mixin.setPlugin('mainframe', 'on_idle', on_idle)
+
+def _check(win):
     if win.pref.auto_check:
         for document in win.editctrl.getDocuments():
             if win.closeflag: return
@@ -3901,7 +3928,6 @@ def on_idle(win):
                         wx.CallAfter(fn)
                         win.editctrl.filetimes[document.filename] = getModifyTime(document.filename)
                         return
-Mixin.setPlugin('mainframe', 'on_idle', on_idle)
 
 def editctrl_init(win):
     win.filetimes = {}
@@ -4465,10 +4491,10 @@ def app_init(app, filenames):
     if app.ddeflag:
         x = common.get_config_file_obj()
         port = x.server.get('port', 0)
-        if DDE.senddata('\n'.join(filenames)):
+        if DDE.senddata('\r\n'.join(filenames), port=port):
             sys.exit(0)
         else:
-            DDE.run(app, port)
+            DDE.run(port=port)
 Mixin.setPlugin('app', 'dde', app_init, Mixin.HIGH, 0)
 
 def afterclosewindow(win):
@@ -4479,12 +4505,15 @@ Mixin.setPlugin('mainframe', 'afterclosewindow', afterclosewindow)
 def openfiles(win, files):
     if files:
         doc = None
+        firstdoc = None
         for filename in files:
-            doc = win.editctrl.new(filename)
+            doc = win.editctrl.new(filename, delay=True)
+            if not firstdoc:
+                firstdoc = doc
         win.Show()
         win.Raise()
-        if doc:
-            doc.SetFocus()
+        if firstdoc:
+            win.editctrl.switch(firstdoc)
 Mixin.setMixin('mainframe', 'openfiles', openfiles)
 
 
@@ -6377,7 +6406,56 @@ def on_modified(win, event):
 Mixin.setPlugin('editor', 'on_modified', on_modified)
 
 from modules import AsyncAction
+KEYS = [' ','=','/','[']
 class InputAssistantAction(AsyncAction.AsyncAction):
+
+
+    def run(self):
+        pref = Globals.pref
+        try:
+            while not self.stop:
+                self.last = None
+                self.prev = 1000
+                obj = None
+                while 1:
+                    try:
+                        obj = self.q.get(True, self.do_timeout())
+                        self.last = obj
+                        if obj['on_char_flag']:
+                            tt = obj['event'].time_stamp - self.prev < pref.inputass_typing_rate - pref.inputass_typing_rate/5
+                            self.prev = obj['event'].time_stamp
+                            key = obj['event'].GetKeyCode()
+                            if chr(key) in KEYS and tt:
+                                self.last = obj
+                                break
+                            elif chr(key) in KEYS and (not tt):
+                                try:
+                                    obj1 = self.q.get(True, float(pref.inputass_typing_rate*2)/1000)
+                                    self.last = obj1
+                                    break
+                                except:
+                                    #no key typing,trigger tmplater expand
+                                    self.last = obj
+                                    if self.last:
+                                        break
+                    except:
+                        if self.last:
+                            break
+
+                if self.last:
+                    try:
+                        self.do_action(self.last)
+                        self.last = None
+                    except:
+                        pass
+
+        except:
+            pass
+
+
+    def do_timeout(self):
+        return float(Globals.pref.inputass_typing_rate)/1000
+
     def do_action(self, obj):
         if not self.empty:
             return
@@ -6402,6 +6480,11 @@ class InputAssistantAction(AsyncAction.AsyncAction):
             error.traceback()
 
 class Analysis(AsyncAction.AsyncAction):
+
+
+    def do_timeout(self):
+        return 0.2
+
     def do_action(self, obj):
         win = Globals.mainframe
         if not self.empty:
@@ -6416,11 +6499,12 @@ class Analysis(AsyncAction.AsyncAction):
             error.traceback()
 
 def main_init(win):
-    win.auto_routin_analysis = Analysis(.2)
+    win.auto_routin_analysis = Analysis()
     win.auto_routin_analysis.start()
-    win.auto_routin_ac_action = InputAssistantAction("InputAssistantAction")
+    win.auto_routin_ac_action = InputAssistantAction()
     win.auto_routin_ac_action.start()
 Mixin.setPlugin('mainframe', 'init', main_init)
+
 
 
 
@@ -8114,7 +8198,6 @@ Mixin.setPlugin('preference', 'init', pref_init)
 import wx
 from modules import Mixin
 from modules import Globals
-
 def add_editor_menu(popmenulist):
     popmenulist.extend([ (None, #parent menu id
         [
@@ -8356,6 +8439,17 @@ Mixin.setPlugin('codesnippet', 'on_selected', on_selected)
 
 import wx
 from modules import Mixin
+from modules import Globals
+
+def pref_init(pref):
+    pref.document_move_next_indent_selection = True
+Mixin.setPlugin('preference', 'init', pref_init)
+
+def add_pref(preflist):
+    preflist.extend([
+        (tr('Document'), 300, 'check', 'document_move_next_indent_selection', tr('Always select from start of line when moving down to next matching indent'), None),
+    ])
+Mixin.setPlugin('preference', 'add_pref', add_pref)
 
 def on_key_down(editor, event):
     ctrl = event.ControlDown()
@@ -8383,9 +8477,11 @@ def move_parent_indent(editor):
     line -= 1
     comment_chars = editor.get_document_comment_chars()
     while line > -1:
-        text = editor.GetLine(line).strip()
-        if text and not text.startswith(comment_chars):
+        line_text = editor.GetLine(line)
+        text = line_text.strip()
+        if text and not line_text.startswith(comment_chars):
             i = editor.GetLineIndentation(line)
+            editor.GotoLine(line)
             if i < indent:
                 editor.GotoLine(line)
                 break
@@ -8399,13 +8495,12 @@ def move_prev_indent(editor):
     line -= 1
     comment_chars = editor.get_document_comment_chars()
     while line > -1:
-        text = editor.GetLine(line).strip()
-        if text and not text.startswith(comment_chars):
+        line_text = editor.GetLine(line)
+        text = line_text.strip()
+        if text and not line_text.startswith(comment_chars):
             i = editor.GetLineIndentation(line)
-            if i == indent:
+            if i <= indent:
                 editor.GotoLine(line)
-                break
-            elif i < indent:
                 break
 
         line -= 1
@@ -8413,20 +8508,37 @@ Mixin.setMixin('editor', 'move_prev_indent', move_prev_indent)
 
 def move_next_indent(editor):
     line = editor.GetCurrentLine()
+    if editor.GetSelectionStart() < editor.GetCurrentPos():
+        startpos = editor.GetSelectionStart()
+    else:
+        startpos = editor.FindColumn(line, 0)
     indent = editor.GetLineIndentation(line)
     line += 1
     comment_chars = editor.get_document_comment_chars()
     while line < editor.GetLineCount():
-        text = editor.GetLine(line).strip()
-        if text and not text.startswith(comment_chars):
+        line_text = editor.GetLine(line)
+        text = line_text.strip()
+        if text and not line_text.startswith(comment_chars):
             i = editor.GetLineIndentation(line)
-            if i == indent:
+            if i <= indent:
                 editor.GotoLine(line)
-                break
-            elif i < indent:
-                break
+                if Globals.pref.document_move_next_indent_selection:
+                    editor.SetSelectionStart(startpos)
+                    editor.SetSelectionEnd(editor.GetCurrentPos())
+                return
 
         line += 1
+
+    if editor.GetCurrentLine() < editor.GetLineCount() - 1:
+        editor.GotoLine(line)
+        if Globals.pref.document_move_next_indent_selection:
+            editor.SetSelectionStart(startpos)
+            editor.SetSelectionEnd(editor.GetCurrentPos())
+    else:
+        editor.GotoPos(editor.GetTextLength())
+        if Globals.pref.document_move_next_indent_selection:
+            editor.SetSelectionStart(startpos)
+            editor.SetSelectionEnd(editor.GetTextLength())
 Mixin.setMixin('editor', 'move_next_indent', move_next_indent)
 
 def move_child_indent(editor):
@@ -8435,8 +8547,9 @@ def move_child_indent(editor):
     line += 1
     comment_chars = editor.get_document_comment_chars()
     while line < editor.GetLineCount():
-        text = editor.GetLine(line).strip()
-        if text and not text.startswith(comment_chars):
+        line_text = editor.GetLine(line)
+        text = line_text.strip()
+        if text and not line_text.startswith(comment_chars):
             i = editor.GetLineIndentation(line)
             if i > indent:
                 editor.GotoLine(line)
