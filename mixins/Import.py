@@ -74,6 +74,14 @@ def OnOptionPreference(win, event):
     dlg.ShowModal()
 Mixin.setMixin('mainframe', 'OnOptionPreference', OnOptionPreference)
 
+def add_pref_page(pages_order):
+    pages_order.update({
+        tr('General'):100,
+        tr('Document'):110,
+    }
+    )
+Mixin.setPlugin('preference', 'add_pref_page', add_pref_page)
+
 
 
 #-----------------------  mMainSubFrame.py ------------------
@@ -347,7 +355,7 @@ Mixin.setPlugin('preference', 'init', pref_init)
 
 def add_pref(preflist):
     preflist.extend([
-        (tr('Document'), 290, 'choice', 'notebook_direction', tr('Document tabs direction'), [tr('Top'), tr('Bottom')])
+        (tr('Document'), 170, 'choice', 'notebook_direction', tr('Document tabs direction'), [tr('Top'), tr('Bottom')])
     ])
 Mixin.setPlugin('preference', 'add_pref', add_pref)
 
@@ -1000,11 +1008,6 @@ def OnSearchFindPrev(win, event):
     win.finder.find(1)
 Mixin.setMixin('mainframe', 'OnSearchFindPrev', OnSearchFindPrev)
 
-def add_pref(preflist):
-    preflist.extend([
-        (tr('General'), 120, 'num', 'max_number', tr('Max number of saved items:'), None)
-    ])
-Mixin.setPlugin('preference', 'add_pref', add_pref)
 
 def pref_init(pref):
     pref.max_number  = 20
@@ -1102,7 +1105,7 @@ Mixin.setPlugin('editor', 'init', beforeinit)
 
 def add_pref(preflist):
     preflist.extend([
-        (tr('Document'), 190, 'choice', 'default_eol_mode', tr('Default line ending used in document:'), eolmess)
+        (tr('Document'), 140, 'choice', 'default_eol_mode', tr('Default line ending used in document:'), eolmess)
     ])
 Mixin.setPlugin('preference', 'add_pref', add_pref)
 
@@ -1280,13 +1283,27 @@ def pref_init(pref):
     pref.startup_show_linenumber = True
 Mixin.setPlugin('preference', 'init', pref_init)
 
+tab_startup = tr('Document') + '/' + tr('Startup')
+tab_view = tr('Document') + '/' + tr('View')
+tab_edit = tr('Document') + '/' + tr('Edit')
+tab_backend = tr('Document') + '/' + tr('Backend')
+def add_pref_page(pages_order):
+    pages_order.update({
+        tab_startup:100,
+        tab_view:110,
+        tab_edit:120,
+        tab_backend:130,
+    }
+    )
+Mixin.setPlugin('preference', 'add_pref_page', add_pref_page)
+
 def add_pref(preflist):
     preflist.extend([
-        (tr('Document'), 110, 'check', 'startup_show_tabs', tr('Whitespace is visible on startup'), None),
-        (tr('Document'), 115, 'check', 'startup_show_indent_guide', tr('Indentation guides are visible on startup'), None),
-        (tr('Document'), 120, 'check', 'startup_show_longline', tr('Long line indicator is visible on startup'), None),
-        (tr('Document'), 125, 'check', 'startup_show_linenumber', tr('Show line number on startup'), None),
-        (tr('Document'), 130, 'num', 'edge_column_width', tr('Long line indicator column'), None),
+        (tab_startup, 110, 'check', 'startup_show_tabs', tr('Whitespace is visible on startup'), None),
+        (tab_startup, 120, 'check', 'startup_show_indent_guide', tr('Indentation guides are visible on startup'), None),
+        (tab_startup, 130, 'check', 'startup_show_longline', tr('Long line indicator is visible on startup'), None),
+        (tab_startup, 140, 'check', 'startup_show_linenumber', tr('Show line number on startup'), None),
+        (tr('Document'), 100, 'num', 'edge_column_width', tr('Long line indicator column'), None),
     ])
 Mixin.setPlugin('preference', 'add_pref', add_pref)
 
@@ -1472,10 +1489,11 @@ def pref_init(pref):
     pref.show_comment_chars_dialog = False
 Mixin.setPlugin('preference', 'init', pref_init)
 
+tab_edit = tr('Document')+'/'+tr('Edit')
 def add_pref(preflist):
     preflist.extend([
-        (tr('Document'), 140, 'num', 'tabwidth', tr('Tab width:'), None),
-        (tr('Document'), 145, 'check', 'show_comment_chars_dialog', tr('Show comment character dialog when adding comment'), None),
+        (tr('Document'), 110, 'num', 'tabwidth', tr('Tab width'), None),
+        (tab_edit, 160, 'check', 'show_comment_chars_dialog', tr('Show comment character dialog when adding comment'), None),
     ])
 Mixin.setPlugin('preference', 'add_pref', add_pref)
 
@@ -1876,9 +1894,9 @@ Mixin.setPlugin('preference', 'init', pref_init)
 
 def add_pref(preflist):
     preflist.extend([
-        (tr('Document'), 150, 'check', 'autoindent', tr('Auto indent'), None),
-        (tr('Document'), 160, 'check', 'usetabs', tr('Use Tabs'), None),
-        (tr('Document'), 170, 'check', 'wordwrap', tr('Auto word-wrap'), None),
+        (tr('Document')+'/'+tr('Edit'), 100, 'check', 'autoindent', tr('Auto indent'), None),
+        (tr('Document')+'/'+tr('Edit'), 110, 'check', 'usetabs', tr('Use Tabs'), None),
+        (tr('Document')+'/'+tr('Edit'), 120, 'check', 'wordwrap', tr('Auto word-wrap'), None),
     ])
 Mixin.setPlugin('preference', 'add_pref', add_pref)
 
@@ -2030,7 +2048,7 @@ Mixin.setPlugin('preference', 'init', pref_init)
 
 def add_pref(preflist):
     preflist.extend([
-        (tr('Document'), 170, 'check', 'auto_detect_utf8', tr('Auto detect UTF-8 encoding'), None),
+        (tr('Document')+'/'+tr('Edit'), 130, 'check', 'auto_detect_utf8', tr('Auto detect UTF-8 encoding'), None),
     ])
 Mixin.setPlugin('preference', 'add_pref', add_pref)
 
@@ -2204,7 +2222,7 @@ Mixin.setPlugin('preference', 'init', pref_init)
 
 def add_pref(preflist):
     preflist.extend([
-        (tr('Document'), 180, 'check', 'use_folder', tr('Show code folding margin'), None),
+        (tr('Document'), 130, 'check', 'use_folder', tr('Show code folding margin'), None),
     ])
 Mixin.setPlugin('preference', 'add_pref', add_pref)
 
@@ -2420,7 +2438,7 @@ Mixin.setPlugin('preference', 'init', pref_init)
 
 def add_pref(preflist):
     preflist.extend([
-        (tr('General'), 130, 'check', 'load_session', tr('Auto load the files of last session'), None),
+        (tr('General'), 100, 'check', 'load_session', tr('Auto load the files of last session'), None),
     ])
 Mixin.setPlugin('preference', 'add_pref', add_pref)
 
@@ -2614,7 +2632,7 @@ Mixin.setPlugin('preference', 'init', pref_init)
 
 def add_pref(preflist):
     preflist.extend([
-        (tr('General'), 140, 'check', 'save_current_status', tr('Saves current status when exit the program'), None),
+        (tr('General'), 110, 'check', 'save_current_status', tr('Saves current status when exit the program'), None),
     ])
 Mixin.setPlugin('preference', 'add_pref', add_pref)
 
@@ -2684,7 +2702,7 @@ Mixin.setPlugin('preference', 'init', pref_init)
 
 def add_pref(preflist):
     preflist.extend([
-        (tr('General'), 150, 'check', 'duplicate_extend_mode', tr("Use duplication extend mode ('.' will be treated as word char)"), None)
+        (tr('Document')+'/'+tr('Edit'), 140, 'check', 'duplicate_extend_mode', tr("Use duplication extend mode ('.' will be treated as word char)"), None)
     ])
 Mixin.setPlugin('preference', 'add_pref', add_pref)
 
@@ -3834,7 +3852,7 @@ from modules import common
 
 def add_pref(preflist):
     preflist.extend([
-        (tr('Document'), 200, 'check', 'auto_make_bak', tr('Auto make backup of file at opening of file'), None)
+        (tr('Document')+'/'+tr('Backend'), 100, 'check', 'auto_make_bak', tr('Auto make backup of file at opening of file'), None)
     ])
 Mixin.setPlugin('preference', 'add_pref', add_pref)
 
@@ -3868,8 +3886,8 @@ from modules import Globals
 
 def add_pref(preflist):
     preflist.extend([
-        (tr('Document'), 210, 'check', 'auto_check', tr('Auto check if some opened files were modified by others'), None),
-        (tr('Document'), 220, 'check', 'auto_check_confirm', tr('Require confirmation before a file is auto-reloaded'), None)
+        (tr('Document')+'/'+tr('Backend'), 110, 'check', 'auto_check', tr('Auto check if some opened files were modified by others'), None),
+        (tr('Document')+'/'+tr('Backend'), 120, 'check', 'auto_check_confirm', tr('Require confirmation before a file is auto-reloaded'), None)
     ])
 Mixin.setPlugin('preference', 'add_pref', add_pref)
 
@@ -4392,7 +4410,7 @@ if 'utf-8' not in encodings:
 
 def add_pref(preflist):
     preflist.extend([
-        (tr('General'), 160, 'check', 'select_encoding', tr('Show encoding selection dialog when opening or saving file'), None),
+        (tr('General'), 120, 'check', 'select_encoding', tr('Show encoding selection dialog when opening or saving file'), None),
     ])
 Mixin.setPlugin('preference', 'add_pref', add_pref)
 
@@ -4584,8 +4602,8 @@ Mixin.setMixin('mainframe', 'OnDocumentSyntaxHighlight', OnDocumentSyntaxHighlig
 
 def add_pref(preflist):
     preflist.extend([
-        (tr('General'), 170, 'choice', 'default_lexer', tr('Default syntax highlight'), LexerFactory.lexnames),
-        (tr('General'), 180, 'check', 'caret_line_visible', tr('Show caret line'), None),
+        (tr('General'), 130, 'choice', 'default_lexer', tr('Default syntax highlight'), LexerFactory.lexnames),
+        (tr('Document'), 120, 'check', 'caret_line_visible', tr('Show caret line'), None),
     ])
 Mixin.setPlugin('preference', 'add_pref', add_pref)
 
@@ -4645,7 +4663,7 @@ Mixin.setMixin('prefdialog', 'OnSyntax', OnSyntax)
 
 def add_pref(preflist):
     preflist.extend([
-        (tr('Document'), 280, 'button', 'document_syntax', tr('Setup document syntax highlight'), 'OnSyntax'),
+        (tr('Document'), 160, 'button', 'document_syntax', tr('Setup document syntax highlight'), 'OnSyntax'),
     ])
 Mixin.setPlugin('preference', 'add_pref', add_pref)
 
@@ -4875,7 +4893,7 @@ Mixin.setPlugin('preference', 'init', pref_init)
 
 def add_pref(preflist):
     preflist.extend([
-        (tr('General'), 250, 'check', 'paste_auto_indent', tr('Auto indent when pasting text block'), None)
+        (tr('Document')+'/'+tr('Edit'), 150, 'check', 'paste_auto_indent', tr('Auto indent when pasting text block'), None)
     ])
 Mixin.setPlugin('preference', 'add_pref', add_pref)
 
@@ -5530,7 +5548,7 @@ Mixin.setPlugin('preference', 'init', pref_init)
 
 def add_pref(preflist):
     preflist.extend([
-        (tr('Document'), 240, 'choice', 'converted_output', tr('Choose where converted text is to be output:'), [tr('In html window'), tr('In message window'), tr('Replace selected text')]),
+        (tr('Document'), 150, 'choice', 'converted_output', tr('Choose where converted text is to be output:'), [tr('In html window'), tr('In message window'), tr('Replace selected text')]),
     ])
 Mixin.setPlugin('preference', 'add_pref', add_pref)
 
@@ -5848,7 +5866,7 @@ from modules import Mixin
 
 def add_pref(preflist):
     preflist.extend([
-        (tr('General'), 190, 'check', 'splash_on_startup', tr('Show splash window on startup'), None),
+        (tr('General'), 140, 'check', 'splash_on_startup', tr('Show splash window on startup'), None),
     ])
 Mixin.setPlugin('preference', 'add_pref', add_pref)
 
@@ -5958,7 +5976,7 @@ Mixin.setMixin('notebook', 'OnDirBrowserWindow', OnDirBrowserWindow)
 
 def pref_init(pref):
     pref.recent_dir_paths = []
-    pref.recent_dir_paths_num = 10
+    pref.recent_dir_paths_num = 20
     pref.last_dir_paths = []
     pref.open_last_dir_as_startup = True
     pref.dirbrowser_last_addpath = os.getcwd()
@@ -5971,9 +5989,8 @@ Mixin.setPlugin('preference', 'init', pref_init)
 
 def add_pref(preflist):
     preflist.extend([
-        (tr('General'), 115, 'num', 'recent_dir_paths_num', tr('Max number of recent browse directories:'), None),
-        (tr('General'), 240, 'check', 'open_last_dir_as_startup', tr('Open last directory browser upon startup'), None),
-        (tr('General'), 241, 'openfile', 'command_line', tr('Command line of Open Command Window Here'), None),
+        (tr('General'), 150, 'check', 'open_last_dir_as_startup', tr('Open last directory browser upon startup'), None),
+        (tr('General'), 160, 'openfile', 'command_line', tr('Command line of Open Command Window Here'), {'span':True}),
     ])
 Mixin.setPlugin('preference', 'add_pref', add_pref)
 
@@ -6614,7 +6631,7 @@ Mixin.setPlugin('preference', 'init', pref_init)
 
 def add_pref(preflist):
     preflist.extend([
-        (tr('Document'), 270, 'check', 'auto_todo', tr('Auto show TODO window when opening file containing a TODO'), None),
+        (tr('Document'), 180, 'check', 'auto_todo', tr('Auto show TODO window when opening file containing a TODO'), None),
     ])
 Mixin.setPlugin('preference', 'add_pref', add_pref)
 
@@ -6736,7 +6753,7 @@ Mixin.setPlugin('preference', 'init', pref_init)
 
 def add_pref(preflist):
     preflist.extend([
-        (tr('General'), 260, 'check', 'clear_message', tr('Auto clear message window content when running program'), None)
+        (tr('General'), 170, 'check', 'clear_message', tr('Auto clear message window content when running program'), None)
     ])
 Mixin.setPlugin('preference', 'add_pref', add_pref)
 
@@ -8267,7 +8284,7 @@ Mixin.setPlugin('preference', 'init', pref_init)
 
 def add_pref(preflist):
     preflist.extend([
-        (tr('Document'), 300, 'check', 'document_move_next_indent_selection', tr('Always select from start of line when moving down to next matching indent'), None),
+        (tr('Document')+'/'+tr('Edit'), 170, 'check', 'document_move_next_indent_selection', tr('Always select from start of line when moving down to next matching indent'), None),
     ])
 Mixin.setPlugin('preference', 'add_pref', add_pref)
 

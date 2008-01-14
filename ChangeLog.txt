@@ -1,4 +1,8 @@
 $Rev$
+[2008/01/14]
+PrefDialog.py mPreference.py
+                    Change preference dialog from notebook to treebook
+                    
 [2008/01/12]
 DDE.py mDDESupport.py
                     Change DDE to asyncore and asynchat framework

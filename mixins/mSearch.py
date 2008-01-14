@@ -126,11 +126,11 @@ def OnSearchFindPrev(win, event):
     win.finder.find(1)
 Mixin.setMixin('mainframe', 'OnSearchFindPrev', OnSearchFindPrev)
 
-def add_pref(preflist):
-    preflist.extend([
-        (tr('General'), 120, 'num', 'max_number', tr('Max number of saved items:'), None)
-    ])
-Mixin.setPlugin('preference', 'add_pref', add_pref)
+#def add_pref(preflist):
+#    preflist.extend([
+#        (tr('General'), 120, 'num', 'max_number', tr('Max number of saved items:'), None)
+#    ])
+#Mixin.setPlugin('preference', 'add_pref', add_pref)
 
 def pref_init(pref):
     pref.max_number  = 20
