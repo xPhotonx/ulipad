@@ -28,6 +28,10 @@ from modules import Mixin
 from modules.Debug import error
 from modules import common
 from modules import meide as ui
+try:
+    import set
+except:
+    from sets import Set as set
 
 CONFIG_PREFIX = '_config_'
 
@@ -123,17 +127,20 @@ class PrefDialog(wx.Dialog, Mixin.Mixin):
         self.value_set = []
         self.pages = {}
         self.pagenames = {}
+        self.values = {}
 
         self.parent = parent
         self.pref = self.parent.pref
         self.default_pref = Preference.Preference()
         
-        self.box = box = ui.VBox()
+        self.box = box = ui.VBox(namebinding='widget')
         self.treebook = TreeBookPanel(self, -1)
         self.addPages(self.treebook)
         
         box.add(self.treebook, proportion=1, flag=wx.EXPAND|wx.ALL)
 
+        box.add(wx.StaticLine(self), flag=wx.EXPAND|wx.ALL)
+        
         buttons = [(tr('Ok'), wx.ID_OK, 'btnOk'), 
             (tr('Cancel'), wx.ID_CANCEL, 'btnCancel'),
             (tr('Apply'), wx.ID_APPLY, 'btnApply')]
@@ -145,9 +152,12 @@ class PrefDialog(wx.Dialog, Mixin.Mixin):
         
         self.callplugin('initpreference', self)
         ui.create(self, box, 0)
-        box.find('btnOk').get_obj().SetDefault()
+        self.btnOk.SetDefault()
         
         self.treebook.select()
+        self.values = self.get_values()
+        
+        wx.EVT_UPDATE_UI(self, self.btnApply.GetId(), self.OnUpdateApply)
         
     def addPages(self, treebook):
         for v in self.pref.preflist:
@@ -173,7 +183,7 @@ class PrefDialog(wx.Dialog, Mixin.Mixin):
         self.pagenames[pagename] = sys.maxint
         if pagename not in self.pages:
             page = wx.ScrolledWindow(self.treebook, -1)
-            page.SetBackgroundColour('white')
+#            page.SetBackgroundColour('white')
             page.EnableScrolling(False, True)
             page.SetScrollbars(10, 10, 30, 30)
             self.pages[pagename] = page
@@ -216,9 +226,9 @@ class PrefDialog(wx.Dialog, Mixin.Mixin):
         return p
         
     def addItem(self, page, kind, prefname, prefvalue, message, extern):
-        if self.execplugin("additem", self, page, kind, prefname, prefvalue, message, extern):
-            return
-        
+#        if self.execplugin("additem", self, page, kind, prefname, prefvalue, message, extern):
+#            return
+#        
         obj = None
         label = message
         kwargs = None
@@ -275,11 +285,15 @@ class PrefDialog(wx.Dialog, Mixin.Mixin):
         self.OnApply(event)
         event.Skip()
         
-    def OnApply(self, event):
+    def get_values(self):
         values = {}
-        config = []
         for b in self.value_set:
             values.update(b.GetValue())
+        return values
+    
+    def OnApply(self, event):
+        values = self.get_values()
+        config = []
         for name, v in values.items():
             #if a name starts with CONFIG_PREFIX, so this value should be saved
             #in config.ini file, but not preference file
@@ -294,6 +308,29 @@ class PrefDialog(wx.Dialog, Mixin.Mixin):
             section, key = name[len(CONFIG_PREFIX):].split('_')
             self.ini[section][key] = v
         self.ini.save()
-
+        
+        self.values = values
         #self.parent = mainframe
         self.callplugin('savepreference', self.parent, self.parent.pref)
+
+    def OnUpdateApply(self, event):
+        values = self.get_values()
+        a = set(self._plain_value(self.values))
+        b = set(self._plain_value(values))
+        self.btnApply.Enable(bool(a-b))
+        
+    def _plain_value(self, v):
+        if isinstance(v, (list, tuple)):
+            s = []
+            for i in v:
+                s.append(self._plain_value(i))
+            return s
+        elif isinstance(v, dict):
+            s = []
+            for k, _v in v.items():
+                s.append((self._plain_value(k), self._plain_value(_v)))
+            s.sort()
+            return s
+        else:
+            return v
+                
