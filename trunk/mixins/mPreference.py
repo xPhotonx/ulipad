@@ -50,3 +50,11 @@ def OnOptionPreference(win, event):
     dlg = PrefDialog.PrefDialog(win)
     dlg.ShowModal()
 Mixin.setMixin('mainframe', 'OnOptionPreference', OnOptionPreference)
+
+def add_pref_page(pages_order):
+    pages_order.update({
+        tr('General'):100,
+        tr('Document'):110,
+    }
+    )
+Mixin.setPlugin('preference', 'add_pref_page', add_pref_page)

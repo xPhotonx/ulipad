@@ -31,7 +31,7 @@ Mixin.setPlugin('preference', 'init', pref_init)
 
 def add_pref(preflist):
     preflist.extend([
-        (tr('Document'), 180, 'check', 'use_folder', tr('Show code folding margin'), None),
+        (tr('Document'), 130, 'check', 'use_folder', tr('Show code folding margin'), None),
     ])
 Mixin.setPlugin('preference', 'add_pref', add_pref)
 

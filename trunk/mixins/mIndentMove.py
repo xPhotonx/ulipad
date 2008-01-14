@@ -31,7 +31,7 @@ Mixin.setPlugin('preference', 'init', pref_init)
 
 def add_pref(preflist):
     preflist.extend([
-        (tr('Document'), 300, 'check', 'document_move_next_indent_selection', tr('Always select from start of line when moving down to next matching indent'), None),
+        (tr('Document')+'/'+tr('Edit'), 170, 'check', 'document_move_next_indent_selection', tr('Always select from start of line when moving down to next matching indent'), None),
     ])
 Mixin.setPlugin('preference', 'add_pref', add_pref)
 

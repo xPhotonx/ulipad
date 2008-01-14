@@ -36,7 +36,7 @@ Mixin.setPlugin('preference', 'init', pref_init)
 
 def add_pref(preflist):
     preflist.extend([
-        (tr('General'), 140, 'check', 'save_current_status', tr('Saves current status when exit the program'), None),
+        (tr('General'), 110, 'check', 'save_current_status', tr('Saves current status when exit the program'), None),
     ])
 Mixin.setPlugin('preference', 'add_pref', add_pref)
 

@@ -100,8 +100,8 @@ Mixin.setMixin('mainframe', 'OnDocumentSyntaxHighlight', OnDocumentSyntaxHighlig
 
 def add_pref(preflist):
     preflist.extend([
-        (tr('General'), 170, 'choice', 'default_lexer', tr('Default syntax highlight'), LexerFactory.lexnames),
-        (tr('General'), 180, 'check', 'caret_line_visible', tr('Show caret line'), None),
+        (tr('General'), 130, 'choice', 'default_lexer', tr('Default syntax highlight'), LexerFactory.lexnames),
+        (tr('Document'), 120, 'check', 'caret_line_visible', tr('Show caret line'), None),
     ])
 Mixin.setPlugin('preference', 'add_pref', add_pref)
 

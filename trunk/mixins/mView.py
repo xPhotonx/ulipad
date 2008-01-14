@@ -92,13 +92,27 @@ def pref_init(pref):
     pref.startup_show_linenumber = True
 Mixin.setPlugin('preference', 'init', pref_init)
 
+tab_startup = tr('Document') + '/' + tr('Startup')
+tab_view = tr('Document') + '/' + tr('View')
+tab_edit = tr('Document') + '/' + tr('Edit')
+tab_backend = tr('Document') + '/' + tr('Backend')
+def add_pref_page(pages_order):
+    pages_order.update({
+        tab_startup:100,
+        tab_view:110,
+        tab_edit:120,
+        tab_backend:130,
+    }
+    )
+Mixin.setPlugin('preference', 'add_pref_page', add_pref_page)
+
 def add_pref(preflist):
     preflist.extend([
-        (tr('Document'), 110, 'check', 'startup_show_tabs', tr('Whitespace is visible on startup'), None),
-        (tr('Document'), 115, 'check', 'startup_show_indent_guide', tr('Indentation guides are visible on startup'), None),
-        (tr('Document'), 120, 'check', 'startup_show_longline', tr('Long line indicator is visible on startup'), None),
-        (tr('Document'), 125, 'check', 'startup_show_linenumber', tr('Show line number on startup'), None),
-        (tr('Document'), 130, 'num', 'edge_column_width', tr('Long line indicator column'), None),
+        (tab_startup, 110, 'check', 'startup_show_tabs', tr('Whitespace is visible on startup'), None),
+        (tab_startup, 120, 'check', 'startup_show_indent_guide', tr('Indentation guides are visible on startup'), None),
+        (tab_startup, 130, 'check', 'startup_show_longline', tr('Long line indicator is visible on startup'), None),
+        (tab_startup, 140, 'check', 'startup_show_linenumber', tr('Show line number on startup'), None),
+        (tr('Document'), 100, 'num', 'edge_column_width', tr('Long line indicator column'), None),
     ])
 Mixin.setPlugin('preference', 'add_pref', add_pref)
 

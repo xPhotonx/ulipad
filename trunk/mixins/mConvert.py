@@ -235,7 +235,7 @@ Mixin.setPlugin('preference', 'init', pref_init)
 
 def add_pref(preflist):
     preflist.extend([
-        (tr('Document'), 240, 'choice', 'converted_output', tr('Choose where converted text is to be output:'), [tr('In html window'), tr('In message window'), tr('Replace selected text')]),
+        (tr('Document'), 150, 'choice', 'converted_output', tr('Choose where converted text is to be output:'), [tr('In html window'), tr('In message window'), tr('Replace selected text')]),
     ])
 Mixin.setPlugin('preference', 'add_pref', add_pref)
 
