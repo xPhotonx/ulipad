@@ -340,6 +340,9 @@ class InputAssistantAction(AsyncAction.AsyncAction):
         except:
             Globals.mainframe.input_assistant = None
             error.traceback()
+            
+    def get_timestep(self):
+        return float(Globals.pref.inputass_typing_rate)/1000
         
 class Analysis(AsyncAction.AsyncAction):
     def do_action(self, obj):
@@ -361,7 +364,3 @@ def main_init(win):
     win.auto_routin_ac_action = InputAssistantAction(float(win.pref.inputass_typing_rate)/1000)
     win.auto_routin_ac_action.start()
 Mixin.setPlugin('mainframe', 'init', main_init)
-
-def savepreference(mainframe, pref):
-    Globals.mainframe.auto_routin_ac_action.timestep = float(Globals.pref.inputass_typing_rate)/1000
-Mixin.setPlugin('prefdialog', 'savepreference', savepreference)

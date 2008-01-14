@@ -34,7 +34,7 @@ class AsyncAction(threading.Thread):
                 self.last = None
                 while 1:
                     try:
-                        obj = self.q.get(True, self.timestep)
+                        obj = self.q.get(True, self.get_timestep)
                         self.last = obj
                     except:
                         if self.last:
@@ -57,6 +57,9 @@ class AsyncAction(threading.Thread):
         one should ba cancelled
         '''
         pass
+    
+    def get_timestep(self):
+        return self.timestep
     
 if __name__ == '__main__':
     class Test(AsyncAction):
