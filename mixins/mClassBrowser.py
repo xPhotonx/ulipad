@@ -257,8 +257,7 @@ def on_jump_definition(editor, word):
         result = nodes.search_name(lineno, word)
         if result:
             t, v, line = result
-            editor.GotoLine(line-1)
-            editor.EnsureCaretVisible()
+            editor.goto(line)
 Mixin.setPlugin('editor', 'on_jump_definition', on_jump_definition)
 
 def on_get_tool_tip(win, event):

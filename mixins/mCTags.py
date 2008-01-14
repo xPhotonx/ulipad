@@ -132,13 +132,11 @@ def jump_to_file(win, d, f, m):
                 line = doc.GetLine(i)
                 if line.startswith(m):
                     wx.CallAfter(doc.SetFocus)
-                    wx.CallAfter(doc.GotoLine, i)
-                    wx.CallAfter(doc.EnsureCaretVisible)
+                    wx.CallAfter(doc.goto, i-1)
                     return True
         elif m.isdigit():
             wx.CallAfter(doc.SetFocus)
-            wx.CallAfter(doc.GotoLine, int(m))
-            wx.CallAfter(doc.EnsureCaretVisible)
+            wx.CallAfter(doc.GotoLine, int(m)-1)
             return True
     return False
         

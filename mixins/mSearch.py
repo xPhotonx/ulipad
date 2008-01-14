@@ -151,7 +151,7 @@ def OnSearchGotoLine(win, event):
         except:
             return
         else:
-            document.GotoLine(line-1)
+            document.goto(line)
 Mixin.setMixin('mainframe', 'OnSearchGotoLine', OnSearchGotoLine)
 
 def pref_init(pref):

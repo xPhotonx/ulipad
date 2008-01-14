@@ -5,7 +5,8 @@ PrefDialog.py mPreference.py
 AsyncAction.py mInputAssistant.py
                     Refactor the AsyncAction class, and add get_timestep() method. 
                     Reference to ygao's implemention
-                    
+Editor.py, *        Fix if lines are folded, when goto hiding lines will no effect bug. 
+                   
 [2008/01/12]
 DDE.py mDDESupport.py
                     Change DDE to asyncore and asynchat framework

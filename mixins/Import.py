@@ -1028,7 +1028,7 @@ def OnSearchGotoLine(win, event):
         except:
             return
         else:
-            document.GotoLine(line-1)
+            document.goto(line)
 Mixin.setMixin('mainframe', 'OnSearchGotoLine', OnSearchGotoLine)
 
 def pref_init(pref):
@@ -3301,8 +3301,7 @@ def on_jump_definition(editor, word):
         result = nodes.search_name(lineno, word)
         if result:
             t, v, line = result
-            editor.GotoLine(line-1)
-            editor.EnsureCaretVisible()
+            editor.goto(line)
 Mixin.setPlugin('editor', 'on_jump_definition', on_jump_definition)
 
 def on_get_tool_tip(win, event):
@@ -7523,13 +7522,11 @@ def jump_to_file(win, d, f, m):
                 line = doc.GetLine(i)
                 if line.startswith(m):
                     wx.CallAfter(doc.SetFocus)
-                    wx.CallAfter(doc.GotoLine, i)
-                    wx.CallAfter(doc.EnsureCaretVisible)
+                    wx.CallAfter(doc.goto, i-1)
                     return True
         elif m.isdigit():
             wx.CallAfter(doc.SetFocus)
-            wx.CallAfter(doc.GotoLine, int(m))
-            wx.CallAfter(doc.EnsureCaretVisible)
+            wx.CallAfter(doc.GotoLine, int(m)-1)
             return True
     return False
 
@@ -8317,9 +8314,9 @@ def move_parent_indent(editor):
         text = line_text.strip()
         if text and not line_text.startswith(comment_chars):
             i = editor.GetLineIndentation(line)
-            editor.GotoLine(line)
+            editor.goto(line-1)
             if i < indent:
-                editor.GotoLine(line)
+                editor.goto(line-1)
                 break
 
         line -= 1
@@ -8331,12 +8328,12 @@ def move_prev_indent(editor):
     line -= 1
     comment_chars = editor.get_document_comment_chars()
     while line > -1:
-        line_text = editor.GetLine(line)
+        line_text = editor.goto(line-1)
         text = line_text.strip()
         if text and not line_text.startswith(comment_chars):
             i = editor.GetLineIndentation(line)
             if i <= indent:
-                editor.GotoLine(line)
+                editor.goto(line-1)
                 break
 
         line -= 1
@@ -8366,7 +8363,7 @@ def move_next_indent(editor):
         line += 1
 
     if editor.GetCurrentLine() < editor.GetLineCount() - 1:
-        editor.GotoLine(line)
+        editor.goto(line-1)
         if Globals.pref.document_move_next_indent_selection:
             editor.SetSelectionStart(startpos)
             editor.SetSelectionEnd(editor.GetCurrentPos())
@@ -8388,7 +8385,7 @@ def move_child_indent(editor):
         if text and not line_text.startswith(comment_chars):
             i = editor.GetLineIndentation(line)
             if i > indent:
-                editor.GotoLine(line)
+                editor.goto(line-1)
                 break
             else:
                 break

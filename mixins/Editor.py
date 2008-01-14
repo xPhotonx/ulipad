@@ -670,6 +670,7 @@ class TextEditor(wx.stc.StyledTextCtrl, Mixin.Mixin, DocumentBase.DocumentBase):
         if lineno:
             lineno -= 1
             self.GotoLine(lineno)
+            self.EnsureVisible(lineno)
             self.EnsureCaretVisible()
 
     def OnPopUp(self, event):
