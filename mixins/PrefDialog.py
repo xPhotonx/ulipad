@@ -44,7 +44,6 @@ class TreeBookPanel(wx.Panel):
         
         self.sizer = sizer = ui.HBox(namebinding='widget').create(self).auto_layout()
         sizer.add(ui.Tree(size=(treewidth, -1), style=wx.TR_HAS_BUTTONS
-                               | wx.TR_EDIT_LABELS
                                | wx.TR_LINES_AT_ROOT
                                | wx.TR_HIDE_ROOT), name='tree', flag=wx.EXPAND|wx.ALL)
 
