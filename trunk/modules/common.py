@@ -201,6 +201,12 @@ def getpngimage(filename):
     if isinstance(filename, (str, unicode)):
         if not os.path.exists(filename) and not os.path.isabs(filename):
             filename = os.path.normcase(os.path.join(Globals.workpath, filename))
+        path, fname = os.path.split(filename)
+        ini = get_config_file_obj()
+        if path.endswith('images') and 'icontheme' in ini.default:
+            filename1 = os.path.join(path, 'theme', ini.default.icontheme, fname)
+            if os.path.exists(filename1):
+                filename = filename1
         fname, ext = os.path.splitext(decode_string(filename))
         if ext.lower() == '.ico':
             icon = wx.Icon(filename, wx.BITMAP_TYPE_ICO, 16, 16)
@@ -289,15 +295,26 @@ def getConfigPathFile(f, prefix=''):
         return filename
     return ''
 
+_config_file = None
 def get_config_file():
-    filename = getConfigPathFile('config.ini')
-    if not filename:
-        filename = os.path.normcase(os.path.join(Globals.workpath, 'config.ini'))
-    return filename
+    global _config_file
+    
+    if not _config_file:
+        _config_file = getConfigPathFile('config.ini')
+        if not _config_file:
+            _config_file = os.path.normcase(os.path.join(Globals.workpath, 'config.ini'))
+            
+    return _config_file
 
+_config_ini = None
 def get_config_file_obj(*args, **kwargs):
-    from modules import dict4ini
-    return dict4ini.DictIni(get_config_file(), *args, **kwargs)
+    global _config_ini
+    
+    if not _config_ini:
+        from modules import dict4ini
+        _config_ini = dict4ini.DictIni(get_config_file(), *args, **kwargs)
+        
+    return _config_ini
     
 def uni_file(filename):
     if isinstance(filename, str):

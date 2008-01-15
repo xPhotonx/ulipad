@@ -232,3 +232,15 @@ change the pytonpath setting::
 Directory names should be separated by a comma (``,``).  Individual directory 
 names may be delimited using double-quotes (e.g., ``"d:\\"``); names with 
 embedded white space must be quoted.
+
+Icon set theme
+--------------------
+
+You can use this option to switch other icon set theme, the setting is::
+
+    [default]
+    icontheme = tango
+    
+And you should esure that in UliPad's ``images`` directory it should have ``theme/tango``
+directory, and all images will be placed there. If an image cann't be found in
+theme/XXXX directory, then it'll use image in ``images`` directory.
