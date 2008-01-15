@@ -1,4 +1,7 @@
 $Rev$
+[2008/01/15]
+common.py           Add icon set theme support.
+
 [2008/01/14]
 PrefDialog.py mPreference.py
                     Change preference dialog from notebook to treebook
