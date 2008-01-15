@@ -238,9 +238,9 @@ class PrefDialog(wx.Dialog, Mixin.Mixin):
             if kind == 'check':
                 obj = ui.Check(prefvalue, label=message)
                 label = ''
-            elif kind == 'num':
-                obj = ui.IntSpin(prefvalue, max=100000, min=1, size=(60, -1))
-            elif kind == 'int':
+#            elif kind == 'num':
+#                obj = ui.IntSpin(prefvalue, max=100000, min=1, size=(60, -1))
+            elif kind in ('num', 'int'):
                 obj = ui.Int(prefvalue)
             elif kind == 'choice':
                 obj = ui.SingleChoice(prefvalue, choices=extern)
