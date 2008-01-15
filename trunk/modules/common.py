@@ -203,10 +203,18 @@ def getpngimage(filename):
             filename = os.path.normcase(os.path.join(Globals.workpath, filename))
         path, fname = os.path.split(filename)
         ini = get_config_file_obj()
+        
         if path.endswith('images') and 'icontheme' in ini.default:
+            files = []
             filename1 = os.path.join(path, 'theme', ini.default.icontheme, fname)
-            if os.path.exists(filename1):
-                filename = filename1
+            files.append(filename1)
+            if not filename1.endswith('.png'):
+                filename2 = os.path.splitext(filename1)[0] + '.png'
+                files.insert(0, filename2)
+            for f in files:
+                if os.path.exists(f):
+                    filename = f
+                    break
         fname, ext = os.path.splitext(decode_string(filename))
         if ext.lower() == '.ico':
             icon = wx.Icon(filename, wx.BITMAP_TYPE_ICO, 16, 16)
