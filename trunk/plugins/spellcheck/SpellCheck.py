@@ -27,52 +27,34 @@ import enchant
 from enchant.checker import SpellChecker
 from modules import Globals
 from modules import common
+import modules.meide as ui
 
 class SpellCheck(wx.Panel):
     def __init__(self, parent):
         self.parent = parent
         wx.Panel.__init__(self, parent, -1)
-        sizer = wx.BoxSizer(wx.VERTICAL)
-        box1 = wx.BoxSizer(wx.HORIZONTAL)
-        self.text = wx.TextCtrl(self, -1, "", size=(150, -1))
-        box1.Add(self.text, 1, wx.ALL, 2)
-        self.ID_RUN = wx.NewId()
-        self.btnRun = wx.Button(self, self.ID_RUN, tr("Start"))
-        box1.Add(self.btnRun, 0, wx.ALL, 2)
-        self.btnReplace = wx.Button(self, wx.ID_OK, tr("Replace"))
-        box1.Add(self.btnReplace, 0, wx.ALL, 2)
-        self.ID_REPLACEALL = wx.NewId()
-        self.btnReplaceAll = wx.Button(self, self.ID_REPLACEALL, tr("Replace All"))
-        box1.Add(self.btnReplaceAll, 0, wx.ALL, 2)
-        self.ID_IGNORE = wx.NewId()
-        self.btnIgnore = wx.Button(self, self.ID_IGNORE, tr("Ignore"))
-        box1.Add(self.btnIgnore, 0, wx.ALL, 2)
-        self.ID_IGNOREALL = wx.NewId()
-        self.btnIgnoreAll = wx.Button(self, self.ID_IGNOREALL, tr("Ignore All"))
-        box1.Add(self.btnIgnoreAll, 0, wx.ALL, 2)
-        sizer.Add(box1, 0)
         
-        box2 = wx.BoxSizer(wx.HORIZONTAL)
-        self.list = wx.ListBox(self, -1)
-        box2.Add(wx.StaticText(self, -1, tr("Suggest") + ':'), 0, wx.ALL, 2)
-        box2.Add(self.list, 0, wx.ALL|wx.EXPAND, 2)
-        self.dict_list = wx.ListBox(self, -1, choices=enchant.list_languages())
-        box2.Add(wx.StaticText(self, -1, tr("Available Dict") + ':'), 0, wx.ALL, 2)
-        box2.Add(self.dict_list, 0, wx.ALL|wx.EXPAND, 2)
-        sizer.Add(box2, 1, wx.ALL|wx.EXPAND, 2)
+        self.sizer = sizer = ui.VBox(padding=0, namebinding='widget').create(self).auto_layout()
+        h = sizer.add(ui.HBox)
+        h.add(ui.Text('', size=(150, -1)), name='text')
+        h.add(ui.Button(tr('Start')), name='btnRun').bind('click', self.OnRun)
+        h.add(ui.Button(tr('Replace')), name='btnReplace').bind('click', self.OnReplace)
+        h.add(ui.Button(tr('Replace All')), name='btnReplaceAll').bind('click', self.OnReplaceAll)
+        h.add(ui.Button(tr('Ignore')), name='btnIgnore').bind('click', self.OnIgnore)
+        h.add(ui.Button(tr('Ignore All')), name='btnIgnoreAll').bind('click', self.OnIgnoreAll)
         
-        #bind event
-        wx.EVT_BUTTON(self.btnRun, self.ID_RUN, self.OnRun)
-        wx.EVT_BUTTON(self.btnReplace, wx.ID_OK, self.OnReplace)
-        wx.EVT_BUTTON(self.btnReplaceAll, self.ID_REPLACEALL, self.OnReplaceAll)
-        wx.EVT_BUTTON(self.btnIgnore, self.ID_IGNORE, self.OnIgnore)
-        wx.EVT_BUTTON(self.btnIgnoreAll, self.ID_IGNOREALL, self.OnIgnoreAll)
-        wx.EVT_LISTBOX(self, self.list.GetId(), self._OnReplSelect)
-        wx.EVT_LISTBOX(self, self.dict_list.GetId(), self.OnDictSelect)
-        wx.EVT_LISTBOX_DCLICK(self,self.list.GetId(), self.OnReplace)
+        h = sizer.add(ui.HBox, proportion=1)
+        h.add(ui.Label(tr("Suggest") + ':'))
+        h.add(ui.ListBox(size=(250, -1)), name='list').binds(
+                (wx.EVT_LISTBOX, self._OnReplSelect),
+                (wx.EVT_LISTBOX_DCLICK, self.OnReplace),
+            )
+        h.add(ui.Label(tr("Available Dict") + ':'))
+        h.add(ui.ListBox(size=(100, -1), choices=enchant.list_languages()), name='dict_list').bind(
+            wx.EVT_LISTBOX, self.OnDictSelect
+            )
         
-        self.SetSizer(sizer)
-        self.SetAutoLayout(True)
+        sizer.auto_fit(0)
         
         self.init()
         
