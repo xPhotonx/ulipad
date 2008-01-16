@@ -1,4 +1,8 @@
 $Rev$
+[2008/01/16]
+plugins/SpellCheck.py
+                    Refactor interface
+                    
 [2008/01/15]
 common.py           Add icon set theme support.
 
