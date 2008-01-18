@@ -4503,7 +4503,7 @@ from modules import common
 def app_init(app, filenames):
     if app.ddeflag:
         x = common.get_config_file_obj()
-        port = x.server.get('port', 0)
+        port = x.server.get('port', 50000)
         if DDE.senddata('\r\n'.join(filenames), port=port):
             sys.exit(0)
         else:
