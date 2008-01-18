@@ -87,7 +87,7 @@ Mixin.setPlugin('preference', 'init', pref_init)
 
 def add_pref(preflist):
     preflist.extend([
-        (tr('General'), 250, 'check', 'paste_auto_indent', tr('Auto indent when pasting text block'), None)
+        (tr('Document')+'/'+tr('Edit'), 150, 'check', 'paste_auto_indent', tr('Auto indent when pasting text block'), None)
     ])
 Mixin.setPlugin('preference', 'add_pref', add_pref)
 

@@ -39,7 +39,7 @@ Mixin.setPlugin('editor', 'init', beforeinit)
 
 def add_pref(preflist):
     preflist.extend([
-        (tr('Document'), 190, 'choice', 'default_eol_mode', tr('Default line ending used in document:'), eolmess)
+        (tr('Document'), 140, 'choice', 'default_eol_mode', tr('Default line ending used in document:'), eolmess)
     ])
 Mixin.setPlugin('preference', 'add_pref', add_pref)
 

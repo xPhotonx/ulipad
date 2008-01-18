@@ -57,7 +57,6 @@ def create(win, layout, fit=1, namebinding=None):
     fit == 0 will not change the window size
         == 1 will change height size to best size
         == 2 will change width and height both size to best size
-    focus is which bounded control you want to set focus on
     """
     layout.create(win, namebinding)
     win.SetSizer(layout.obj)
@@ -263,13 +262,13 @@ class Element(object):
         self.events.append((event_name, func))
         return self
         
-    def binds(self, events):
+    def binds(self, *events):
         """
         Bind multiple event at once.
         
         events is a tuple list, it looks like:
             
-            [(event_name, func), (event_name, func), ...]
+            (event_name, func), (event_name, func), ...
             
         binds method also support lazy binding.
         """
@@ -812,7 +811,7 @@ class LayoutBase(Element, LayoutValidateMixin):
         
     def _init(self):
         pass
-        
+    
     def SetFocus(self, focus_ctrl_name=None):
         control = None
         if focus_ctrl_name:

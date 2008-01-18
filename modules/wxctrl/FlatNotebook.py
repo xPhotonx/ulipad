@@ -3954,7 +3954,7 @@ class PageContainer(wx.Panel):
         self._nArrowDownButtonStatus = FNB_BTN_NONE
 
         self._nLeftClickZone, tabIdx = self.HitTest(event.GetPosition())
-
+        
         if self._nLeftClickZone == FNB_DROP_DOWN_ARROW:
             self._nArrowDownButtonStatus = FNB_BTN_PRESSED
             self.Refresh()

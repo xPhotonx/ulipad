@@ -42,7 +42,7 @@ Mixin.setMixin('prefdialog', 'OnSyntax', OnSyntax)
 
 def add_pref(preflist):
     preflist.extend([
-        (tr('Document'), 280, 'button', 'document_syntax', tr('Setup document syntax highlight'), 'OnSyntax'),
+        (tr('Document'), 160, 'button', 'document_syntax', tr('Setup document syntax highlight'), 'OnSyntax'),
     ])
 Mixin.setPlugin('preference', 'add_pref', add_pref)
 
