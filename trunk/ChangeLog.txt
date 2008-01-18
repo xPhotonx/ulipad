@@ -1,9 +1,10 @@
 $Rev$
 [2008/01/18]
 common.py           Fix webopen bug, cann't correctly deal with 'mailto:'
+mDDESupport.py      Fix DDE bug, thanks to LP <liupengf12@gmail.com>
 
 [2008/01/16]
-plugins/SpellCheck.py
+plugins/SpellCheck.py  67598092
                     Refactor interface
                     
 [2008/01/15]

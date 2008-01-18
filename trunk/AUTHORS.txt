@@ -25,3 +25,4 @@ mikem <mjmaher@iol.ie>                          Commit pylint_plugin
 魏振 <etggy@163.com>                            Provide php.acp
 Hawker                                          Linux memory display patch
 shmakes <shmakes@gmail.com>                     Good advices and code patch
+LP <liupengf12@gmail.com>                       Report bugs and commit Patch
