@@ -86,7 +86,7 @@ Mixin.setMixin('notebook', 'OnDirBrowserWindow', OnDirBrowserWindow)
 
 def pref_init(pref):
     pref.recent_dir_paths = []
-    pref.recent_dir_paths_num = 10
+    pref.recent_dir_paths_num = 20
     pref.last_dir_paths = []
     pref.open_last_dir_as_startup = True
     pref.dirbrowser_last_addpath = os.getcwd()
@@ -99,9 +99,9 @@ Mixin.setPlugin('preference', 'init', pref_init)
 
 def add_pref(preflist):
     preflist.extend([
-        (tr('General'), 115, 'num', 'recent_dir_paths_num', tr('Max number of recent browse directories:'), None),
-        (tr('General'), 240, 'check', 'open_last_dir_as_startup', tr('Open last directory browser upon startup'), None),
-        (tr('General'), 241, 'openfile', 'command_line', tr('Command line of Open Command Window Here'), None),
+#        (tr('General'), 100, 'num', 'recent_dir_paths_num', tr('Max number of recent browse directories:'), None),
+        (tr('General'), 150, 'check', 'open_last_dir_as_startup', tr('Open last directory browser upon startup'), None),
+        (tr('General'), 160, 'openfile', 'command_line', tr('Command line of Open Command Window Here'), {'span':True}),
     ])
 Mixin.setPlugin('preference', 'add_pref', add_pref)
 

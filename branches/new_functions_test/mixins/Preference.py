@@ -31,10 +31,12 @@ from modules import Globals
 class Preference(Mixin.Mixin):
     __mixinname__ = 'preference'
     preflist = []
+    pages_order = {}
 
     def __init__(self):
         self.initmixin()
         #@add_pref preflist
+        self.callplugin_once('add_pref_page', Preference.pages_order)
         self.callplugin_once('add_pref', Preference.preflist)
         self.callplugin('init', self)
         self.preflist.sort()

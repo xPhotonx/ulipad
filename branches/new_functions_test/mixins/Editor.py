@@ -439,8 +439,7 @@ class TextEditor(wx.stc.StyledTextCtrl, Mixin.Mixin, DocumentBase.DocumentBase):
 #        self.ProcessEvent(event)
 #        
     def OnChar(self, event):
-        # for calltip
-        self.have_focus = True
+    
         if self.execplugin('on_first_char', self, event):
             return
 
@@ -453,7 +452,7 @@ class TextEditor(wx.stc.StyledTextCtrl, Mixin.Mixin, DocumentBase.DocumentBase):
         prev_time = event.GetTimestamp()
         eve.time_stamp = prev_time    
         self.execplugin('after_char', self, eve)
-        self.have_focus = False
+      
         
 #    def process_onkeydown_chain(self, event):
 #        self.execplugin('after_keydown', self, event)

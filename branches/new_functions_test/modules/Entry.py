@@ -29,7 +29,7 @@ class MyTextEntry(ui.SimpleDialog):
         box = ui.SimpleGrid(namebinding='element')
         box.add(message, ui.Text(defaultvalue), name='text')
         super(MyTextEntry, self).__init__(parent, box, title, fit=fit, size=size)
-
+        
         self.layout.SetFocus()
 
     def GetValue(self):

@@ -231,7 +231,7 @@ class CodeSnippetWindow(wx.Panel, Mixin.Mixin):
             (150, 'IDPM_OPEN', tr('Open Snippt File'), wx.ITEM_NORMAL, 'OnOpenSnippet', ''),
             (160, 'IDPM_RECENT', tr('Recently Snippet Files'), wx.ITEM_NORMAL, '', ''),
             (170, 'IDPM_SAVE', tr('Save Snippet File'), wx.ITEM_NORMAL, 'OnSaveSnippet', ''),
-            (175, 'IDPM_SAVE_ALL', tr('Save All Snippet File'), wx.ITEM_NORMAL, 'OnSaveAllSnippet', ''),
+            (175, 'IDPM_SAVE_ALL', tr('Save All Snippets File'), wx.ITEM_NORMAL, 'OnSaveAllSnippet', ''),
             (180, 'IDPM_SAVEAS', tr('Save Snippet File As...'), wx.ITEM_NORMAL, 'OnSaveAsSnippet', ''),
             (185, 'IDPM_CLOSE', tr('Close Snippet File'), wx.ITEM_NORMAL, 'OnCloseSnippet', ''),
             (190, '', '-', wx.ITEM_SEPARATOR, None, ''),

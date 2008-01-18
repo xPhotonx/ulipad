@@ -74,6 +74,14 @@ def OnOptionPreference(win, event):
     dlg.ShowModal()
 Mixin.setMixin('mainframe', 'OnOptionPreference', OnOptionPreference)
 
+def add_pref_page(pages_order):
+    pages_order.update({
+        tr('General'):100,
+        tr('Document'):110,
+    }
+    )
+Mixin.setPlugin('preference', 'add_pref_page', add_pref_page)
+
 
 
 #-----------------------  mMainSubFrame.py ------------------
@@ -347,7 +355,7 @@ Mixin.setPlugin('preference', 'init', pref_init)
 
 def add_pref(preflist):
     preflist.extend([
-        (tr('Document'), 290, 'choice', 'notebook_direction', tr('Document tabs direction'), [tr('Top'), tr('Bottom')])
+        (tr('Document'), 170, 'choice', 'notebook_direction', tr('Document tabs direction'), [tr('Top'), tr('Bottom')])
     ])
 Mixin.setPlugin('preference', 'add_pref', add_pref)
 
@@ -1000,11 +1008,6 @@ def OnSearchFindPrev(win, event):
     win.finder.find(1)
 Mixin.setMixin('mainframe', 'OnSearchFindPrev', OnSearchFindPrev)
 
-def add_pref(preflist):
-    preflist.extend([
-        (tr('General'), 120, 'num', 'max_number', tr('Max number of saved items:'), None)
-    ])
-Mixin.setPlugin('preference', 'add_pref', add_pref)
 
 def pref_init(pref):
     pref.max_number  = 20
@@ -1025,7 +1028,7 @@ def OnSearchGotoLine(win, event):
         except:
             return
         else:
-            document.GotoLine(line-1)
+            document.goto(line)
 Mixin.setMixin('mainframe', 'OnSearchGotoLine', OnSearchGotoLine)
 
 def pref_init(pref):
@@ -1102,7 +1105,7 @@ Mixin.setPlugin('editor', 'init', beforeinit)
 
 def add_pref(preflist):
     preflist.extend([
-        (tr('Document'), 190, 'choice', 'default_eol_mode', tr('Default line ending used in document:'), eolmess)
+        (tr('Document'), 140, 'choice', 'default_eol_mode', tr('Default line ending used in document:'), eolmess)
     ])
 Mixin.setPlugin('preference', 'add_pref', add_pref)
 
@@ -1280,13 +1283,27 @@ def pref_init(pref):
     pref.startup_show_linenumber = True
 Mixin.setPlugin('preference', 'init', pref_init)
 
+tab_startup = tr('Document') + '/' + tr('Startup')
+tab_view = tr('Document') + '/' + tr('View')
+tab_edit = tr('Document') + '/' + tr('Edit')
+tab_backend = tr('Document') + '/' + tr('Backend')
+def add_pref_page(pages_order):
+    pages_order.update({
+        tab_startup:100,
+        tab_view:110,
+        tab_edit:120,
+        tab_backend:130,
+    }
+    )
+Mixin.setPlugin('preference', 'add_pref_page', add_pref_page)
+
 def add_pref(preflist):
     preflist.extend([
-        (tr('Document'), 110, 'check', 'startup_show_tabs', tr('Whitespace is visible on startup'), None),
-        (tr('Document'), 115, 'check', 'startup_show_indent_guide', tr('Indentation guides are visible on startup'), None),
-        (tr('Document'), 120, 'check', 'startup_show_longline', tr('Long line indicator is visible on startup'), None),
-        (tr('Document'), 125, 'check', 'startup_show_linenumber', tr('Show line number on startup'), None),
-        (tr('Document'), 130, 'num', 'edge_column_width', tr('Long line indicator column'), None),
+        (tab_startup, 110, 'check', 'startup_show_tabs', tr('Whitespace is visible on startup'), None),
+        (tab_startup, 120, 'check', 'startup_show_indent_guide', tr('Indentation guides are visible on startup'), None),
+        (tab_startup, 130, 'check', 'startup_show_longline', tr('Long line indicator is visible on startup'), None),
+        (tab_startup, 140, 'check', 'startup_show_linenumber', tr('Show line number on startup'), None),
+        (tr('Document'), 100, 'num', 'edge_column_width', tr('Long line indicator column'), None),
     ])
 Mixin.setPlugin('preference', 'add_pref', add_pref)
 
@@ -1472,10 +1489,11 @@ def pref_init(pref):
     pref.show_comment_chars_dialog = False
 Mixin.setPlugin('preference', 'init', pref_init)
 
+tab_edit = tr('Document')+'/'+tr('Edit')
 def add_pref(preflist):
     preflist.extend([
-        (tr('Document'), 140, 'num', 'tabwidth', tr('Tab width:'), None),
-        (tr('Document'), 145, 'check', 'show_comment_chars_dialog', tr('Show comment character dialog when adding comment'), None),
+        (tr('Document'), 110, 'num', 'tabwidth', tr('Tab width'), None),
+        (tab_edit, 160, 'check', 'show_comment_chars_dialog', tr('Show comment character dialog when adding comment'), None),
     ])
 Mixin.setPlugin('preference', 'add_pref', add_pref)
 
@@ -1876,9 +1894,9 @@ Mixin.setPlugin('preference', 'init', pref_init)
 
 def add_pref(preflist):
     preflist.extend([
-        (tr('Document'), 150, 'check', 'autoindent', tr('Auto indent'), None),
-        (tr('Document'), 160, 'check', 'usetabs', tr('Use Tabs'), None),
-        (tr('Document'), 170, 'check', 'wordwrap', tr('Auto word-wrap'), None),
+        (tr('Document')+'/'+tr('Edit'), 100, 'check', 'autoindent', tr('Auto indent'), None),
+        (tr('Document')+'/'+tr('Edit'), 110, 'check', 'usetabs', tr('Use Tabs'), None),
+        (tr('Document')+'/'+tr('Edit'), 120, 'check', 'wordwrap', tr('Auto word-wrap'), None),
     ])
 Mixin.setPlugin('preference', 'add_pref', add_pref)
 
@@ -2030,7 +2048,7 @@ Mixin.setPlugin('preference', 'init', pref_init)
 
 def add_pref(preflist):
     preflist.extend([
-        (tr('Document'), 170, 'check', 'auto_detect_utf8', tr('Auto detect UTF-8 encoding'), None),
+        (tr('Document')+'/'+tr('Edit'), 130, 'check', 'auto_detect_utf8', tr('Auto detect UTF-8 encoding'), None),
     ])
 Mixin.setPlugin('preference', 'add_pref', add_pref)
 
@@ -2204,7 +2222,7 @@ Mixin.setPlugin('preference', 'init', pref_init)
 
 def add_pref(preflist):
     preflist.extend([
-        (tr('Document'), 180, 'check', 'use_folder', tr('Show code folding margin'), None),
+        (tr('Document'), 130, 'check', 'use_folder', tr('Show code folding margin'), None),
     ])
 Mixin.setPlugin('preference', 'add_pref', add_pref)
 
@@ -2420,7 +2438,7 @@ Mixin.setPlugin('preference', 'init', pref_init)
 
 def add_pref(preflist):
     preflist.extend([
-        (tr('General'), 130, 'check', 'load_session', tr('Auto load the files of last session'), None),
+        (tr('General'), 100, 'check', 'load_session', tr('Auto load the files of last session'), None),
     ])
 Mixin.setPlugin('preference', 'add_pref', add_pref)
 
@@ -2614,7 +2632,7 @@ Mixin.setPlugin('preference', 'init', pref_init)
 
 def add_pref(preflist):
     preflist.extend([
-        (tr('General'), 140, 'check', 'save_current_status', tr('Saves current status when exit the program'), None),
+        (tr('General'), 110, 'check', 'save_current_status', tr('Saves current status when exit the program'), None),
     ])
 Mixin.setPlugin('preference', 'add_pref', add_pref)
 
@@ -2684,7 +2702,7 @@ Mixin.setPlugin('preference', 'init', pref_init)
 
 def add_pref(preflist):
     preflist.extend([
-        (tr('General'), 150, 'check', 'duplicate_extend_mode', tr("Use duplication extend mode ('.' will be treated as word char)"), None)
+        (tr('Document')+'/'+tr('Edit'), 140, 'check', 'duplicate_extend_mode', tr("Use duplication extend mode ('.' will be treated as word char)"), None)
     ])
 Mixin.setPlugin('preference', 'add_pref', add_pref)
 
@@ -2706,7 +2724,8 @@ def add_editor_menu(popmenulist):
 Mixin.setPlugin('editor', 'add_menu', add_editor_menu)
 
 def editor_init(win):
-    win.calltip = Calltip.MyCallTip(win)
+    #win.calltip = Calltip.MyCallTip(win)
+    win.calltip = win.mainframe.document_show_window
     win.calltip_type = -1
 
     wx.EVT_UPDATE_UI(win, win.IDPM_DUPLICATE_MODE, win.OnUpdateUI)
@@ -2842,12 +2861,10 @@ def OnKeyDown(win, event):
     if win.findflag:
         key = event.GetKeyCode()
         if key in (wx.WXK_RETURN, wx.WXK_SPACE):
-            win.calltip.cancel()
             win.findflag = 0
             if win.calltip_type == CALLTIP_DUPLICATE:#duplicate mode
                 win.AddText(win.duplicate_match_text)
         elif key == wx.WXK_ESCAPE:
-            win.calltip.cancel()
             win.findflag = 0
         elif key in ('L', 'P') and event.ControlDown():
             return False
@@ -2928,7 +2945,7 @@ def duplicateMatch(win, kind):
                     win.document.duplicate_calltip = text[start:end]
                     win.document.duplicate_match_len = end - start - win.document.duplicate_length
                     win.document.duplicate_match_text = win.document.GetTextRange(start + win.document.duplicate_length , end)
-                win.document.calltip.cancel()
+
                 win.document.calltip_type = CALLTIP_DUPLICATE
                 win.document.calltip.show(win.document.duplicate_pos, win.document.duplicate_calltip)
                 return
@@ -3283,8 +3300,7 @@ def on_jump_definition(editor, word):
         result = nodes.search_name(lineno, word)
         if result:
             t, v, line = result
-            editor.GotoLine(line-1)
-            editor.EnsureCaretVisible()
+            editor.goto(line)
 Mixin.setPlugin('editor', 'on_jump_definition', on_jump_definition)
 
 def on_get_tool_tip(win, event):
@@ -3834,7 +3850,7 @@ from modules import common
 
 def add_pref(preflist):
     preflist.extend([
-        (tr('Document'), 200, 'check', 'auto_make_bak', tr('Auto make backup of file at opening of file'), None)
+        (tr('Document')+'/'+tr('Backend'), 100, 'check', 'auto_make_bak', tr('Auto make backup of file at opening of file'), None)
     ])
 Mixin.setPlugin('preference', 'add_pref', add_pref)
 
@@ -3868,8 +3884,8 @@ from modules import Globals
 
 def add_pref(preflist):
     preflist.extend([
-        (tr('Document'), 210, 'check', 'auto_check', tr('Auto check if some opened files were modified by others'), None),
-        (tr('Document'), 220, 'check', 'auto_check_confirm', tr('Require confirmation before a file is auto-reloaded'), None)
+        (tr('Document')+'/'+tr('Backend'), 110, 'check', 'auto_check', tr('Auto check if some opened files were modified by others'), None),
+        (tr('Document')+'/'+tr('Backend'), 120, 'check', 'auto_check_confirm', tr('Require confirmation before a file is auto-reloaded'), None)
     ])
 Mixin.setPlugin('preference', 'add_pref', add_pref)
 
@@ -4396,7 +4412,7 @@ if 'utf-8' not in encodings:
 
 def add_pref(preflist):
     preflist.extend([
-        (tr('General'), 160, 'check', 'select_encoding', tr('Show encoding selection dialog when opening or saving file'), None),
+        (tr('General'), 120, 'check', 'select_encoding', tr('Show encoding selection dialog when opening or saving file'), None),
     ])
 Mixin.setPlugin('preference', 'add_pref', add_pref)
 
@@ -4588,8 +4604,8 @@ Mixin.setMixin('mainframe', 'OnDocumentSyntaxHighlight', OnDocumentSyntaxHighlig
 
 def add_pref(preflist):
     preflist.extend([
-        (tr('General'), 170, 'choice', 'default_lexer', tr('Default syntax highlight'), LexerFactory.lexnames),
-        (tr('General'), 180, 'check', 'caret_line_visible', tr('Show caret line'), None),
+        (tr('General'), 130, 'choice', 'default_lexer', tr('Default syntax highlight'), LexerFactory.lexnames),
+        (tr('Document'), 120, 'check', 'caret_line_visible', tr('Show caret line'), None),
     ])
 Mixin.setPlugin('preference', 'add_pref', add_pref)
 
@@ -4649,7 +4665,7 @@ Mixin.setMixin('prefdialog', 'OnSyntax', OnSyntax)
 
 def add_pref(preflist):
     preflist.extend([
-        (tr('Document'), 280, 'button', 'document_syntax', tr('Setup document syntax highlight'), 'OnSyntax'),
+        (tr('Document'), 160, 'button', 'document_syntax', tr('Setup document syntax highlight'), 'OnSyntax'),
     ])
 Mixin.setPlugin('preference', 'add_pref', add_pref)
 
@@ -4879,7 +4895,7 @@ Mixin.setPlugin('preference', 'init', pref_init)
 
 def add_pref(preflist):
     preflist.extend([
-        (tr('General'), 250, 'check', 'paste_auto_indent', tr('Auto indent when pasting text block'), None)
+        (tr('Document')+'/'+tr('Edit'), 150, 'check', 'paste_auto_indent', tr('Auto indent when pasting text block'), None)
     ])
 Mixin.setPlugin('preference', 'add_pref', add_pref)
 
@@ -5534,7 +5550,7 @@ Mixin.setPlugin('preference', 'init', pref_init)
 
 def add_pref(preflist):
     preflist.extend([
-        (tr('Document'), 240, 'choice', 'converted_output', tr('Choose where converted text is to be output:'), [tr('In html window'), tr('In message window'), tr('Replace selected text')]),
+        (tr('Document'), 150, 'choice', 'converted_output', tr('Choose where converted text is to be output:'), [tr('In html window'), tr('In message window'), tr('Replace selected text')]),
     ])
 Mixin.setPlugin('preference', 'add_pref', add_pref)
 
@@ -5852,7 +5868,7 @@ from modules import Mixin
 
 def add_pref(preflist):
     preflist.extend([
-        (tr('General'), 190, 'check', 'splash_on_startup', tr('Show splash window on startup'), None),
+        (tr('General'), 140, 'check', 'splash_on_startup', tr('Show splash window on startup'), None),
     ])
 Mixin.setPlugin('preference', 'add_pref', add_pref)
 
@@ -5962,7 +5978,7 @@ Mixin.setMixin('notebook', 'OnDirBrowserWindow', OnDirBrowserWindow)
 
 def pref_init(pref):
     pref.recent_dir_paths = []
-    pref.recent_dir_paths_num = 10
+    pref.recent_dir_paths_num = 20
     pref.last_dir_paths = []
     pref.open_last_dir_as_startup = True
     pref.dirbrowser_last_addpath = os.getcwd()
@@ -5975,9 +5991,8 @@ Mixin.setPlugin('preference', 'init', pref_init)
 
 def add_pref(preflist):
     preflist.extend([
-        (tr('General'), 115, 'num', 'recent_dir_paths_num', tr('Max number of recent browse directories:'), None),
-        (tr('General'), 240, 'check', 'open_last_dir_as_startup', tr('Open last directory browser upon startup'), None),
-        (tr('General'), 241, 'openfile', 'command_line', tr('Command line of Open Command Window Here'), None),
+        (tr('General'), 150, 'check', 'open_last_dir_as_startup', tr('Open last directory browser upon startup'), None),
+        (tr('General'), 160, 'openfile', 'command_line', tr('Command line of Open Command Window Here'), {'span':True}),
     ])
 Mixin.setPlugin('preference', 'add_pref', add_pref)
 
@@ -6010,7 +6025,6 @@ from modules import Globals
 from modules import common
 from modules import dict4ini
 
-from InputAssistant import _getWord, StopException, CALLTIP_AUTOCOMPLETE
 CALLTIP_AUTOCOMPLETE = 2
 
 def mainframe_init(win):
@@ -6027,7 +6041,6 @@ def editor_init(win):
     win.word_len = 0
     win.custom_assistant = []
     win.function_parameter = []
-    win.calltip_stack = {} # collecting nested calltip's text and pos.
     win.syntax_info = None
     win.auto_routin = None
     win.snippet = None
@@ -6092,9 +6105,7 @@ def on_key_down(win, event):
             if win.AutoCompActive():
                 win.AutoCompCancel()
 
-            win.calltip_stack.clear()
             del win.function_parameter[:]
-            win.calltip.cancel()
 
             win.snippet.nextField(win.GetCurrentPos())
             return True
@@ -6236,14 +6247,7 @@ Mixin.setMixin('editor', 'OnApplyAcp', OnApplyAcp)
 def on_kill_focus(win, event):
     if win.AutoCompActive():
         win.AutoCompCancel()
-    if win.calltip and win.calltip.active:
-        if hasattr(event,'FNB'):
-            win.calltip.cancel()
-            return
-        if not win.have_focus:
-            win.have_focus = True
-        else:
-            win.calltip.cancel()
+
 Mixin.setPlugin('editor', 'on_kill_focus', on_kill_focus)
 
 def on_key_down(win, event):
@@ -6252,133 +6256,40 @@ def on_key_down(win, event):
     #shift=event.ShiftDown()
     alt=event.AltDown()
     if key == wx.WXK_RETURN and not control and not alt:
-        if not win.AutoCompActive():
-            if win.calltip.active:
-                pos = win.GetCurrentPos()
-                # move calltip windown to next line
-                # must be pos+2 not pos+1,the reason I don't konw.
-                win.calltip.move(pos + 2)
-        else:
+        if  win.AutoCompActive():
             event.Skip()
             return True
-    elif key == wx.WXK_ESCAPE:
-        # clear nested calltip state if something is wrong.
-        win.calltip_stack.clear()
-        del win.function_parameter[:]
-        win.calltip.cancel()
 
 Mixin.setPlugin('editor', 'on_key_down', on_key_down, Mixin.HIGH, 1)
 
-class Dump():
-    def __init__(self):
-        self.empty = True
 
-TT = Dump()
-
-def call_calltip(win, word, brace_left, curpos):
-    for f in win.input_calltip:
-        try:
-            r = f(win,word,TT)
-            if r:
-                if isinstance(r, (str, unicode)):
-                    r = [r]
-                tip = '\n\n'.join(list(filter(None, r)) + [tr('(Press ESC to close)')])
-                if win.calltip.active and CALLTIP_AUTOCOMPLETE:
-                    win.calltip.cancel()
-                t = tip.replace('\r\n','\n')
-                win.calltip_type = CALLTIP_AUTOCOMPLETE
-                win.calltip_stack[brace_left] = t
-                win.calltip_current = brace_left
-                win.calltip.show(curpos, t)
-                return
-        except StopException:
-            pass
-        except:
-            error.traceback()
 
 def on_key_up(win, event):
-    # note: by ygao 2007/05/11
-    # typing between "(" and ")",calltip will popup
-    if  win.languagename != "python":
-        return
-    key = None
+    type = None
+    key = ()
     if  isinstance(event, wx.KeyEvent):
-        # prevent calltip starting again
-        key = event.GetKeyCode()
-        if  key == wx.WXK_ESCAPE:
-            return
-    curpos = win.GetCurrentPos()
-    line = win.GetCurrentLine()
-    if  isinstance(event, wx.MouseEvent):
-        if  event.AltDown():
-            full_word = _getWord(win, whole=True, pos=curpos, line=line)
-            call_calltip(win,full_word, None, curpos)
-            event.Skip()
-            return False
-    startPos = win.PositionFromLine(line)
-    endPos = win.GetLineEndPosition(line)
-    brace_left = win.FindText(startPos, endPos, '(')
-    if  31 < key < 127:
-        if  brace_left != -1:
-            brace_right = win.BraceMatch(brace_left)
+        type = "key"
 
-            if  not len(win.calltip_stack):
+        keycode = event.GetKeyCode()
+        ctrl = event.ControlDown()
+        alt = event.AltDown()
+        shift = event.ShiftDown()
 
-                if  brace_left  < curpos <= brace_right:
-                    word = _getWord(win, whole=True, pos=brace_left, line=line)
-                    call_calltip(win,word, brace_left, curpos)
-            else:
-                brace_left = win.FindText(curpos, startPos, '(')
-                if  brace_left == -1:
-                    return
-                klist = win.calltip_stack.keys()
-                klist.sort()
-                brace_left_min = min(klist)
-                brace_right_max = win.BraceMatch(brace_left_min)
-                if  brace_right_max == -1:
-                    return
-                word = None
-                if  brace_left_min  < curpos <= brace_right_max:# and win.calltip_stack.get(brace_left, None):
-                    word = _getWord(win, whole=True, pos=brace_left+1, line=line)
-                    if  brace_left <> win.calltip_current:
-                        call_calltip(win,word, brace_left, curpos)
-    if  len(win.calltip_stack):
-        klist = win.calltip_stack.keys()
-        klist.sort()
-        brace_left = min(klist)
-        if not isinstance(brace_left,int):
-            del klist[:]
-            return
-        brace_right = win.BraceMatch(brace_left)
-        if  brace_right == -1:
-            return
-        if  curpos < brace_left + 1 or curpos > brace_right:
-            win.calltip.cancel()
-            del win.function_parameter[:]
-            win.calltip_stack.clear()
-        elif brace_left  < curpos <= brace_right:
-            klist.reverse()
-            for order in range(len(klist)):
-                left = klist[order]
-                right = win.BraceMatch(left)
-                if  left < curpos <= right:
-                    if  left <> win.calltip_current:
-                        t = win.calltip_stack[left]
-                        win.calltip.show(curpos, t)
-                        win.calltip_current = left
-                        break
-                    else:
-                        if  win.calltip.active:
-                            break
-                        else:
-                            t = win.calltip_stack[left]
-                            win.calltip.show(curpos, t)
-                            win.calltip_current = left
-                            break
+        f = 0
+        if ctrl:
+            f |= wx.stc.STC_SCMOD_CTRL
+        elif alt:
+            f |= wx.stc.STC_SCMOD_ALT
+        elif shift:
+            f |= wx.stc.STC_SCMOD_SHIFT
 
 
+        key = (f, keycode)
+    elif  isinstance(event, wx.MouseEvent):
+        type = "mouse"
 
-
+    win.mainframe.auto_routin_document_show.put({'win':win, 'key':key, 'type':type})
+    #win.mainframe.auto_routin_document_show.put({'win':win, 'event':event})
 Mixin.setPlugin('editor', 'on_key_up', on_key_up)
 Mixin.setPlugin('editor', 'on_mouse_up', on_key_up)
 
@@ -6406,11 +6317,40 @@ def on_modified(win, event):
 Mixin.setPlugin('editor', 'on_modified', on_modified)
 
 from modules import AsyncAction
+
+class DocumentShow(AsyncAction.AsyncAction):
+
+    def do_timeout(self):
+        return float(Globals.pref.inputass_typing_rate)/1000
+
+    def do_action(self, obj):
+        if not self.empty:
+            return
+        pref = Globals.pref
+        win = obj['win']
+        try:
+            if not win: return
+            i = get_inputassistant_obj(win)
+            #event = obj['event']
+            key = obj['key']
+            type = obj['type']
+            win.lock.acquire()
+            i.run2(win, type, key, self)
+            win.lock.release()
+            return True
+        except:
+            win.input_assistant = None
+            error.traceback()
+
+
+
+
+
 KEYS = [' ','=','/','[']
 class InputAssistantAction(AsyncAction.AsyncAction):
 
 
-    def run(self):
+    def run1(self):
         pref = Globals.pref
         try:
             while not self.stop:
@@ -6453,8 +6393,6 @@ class InputAssistantAction(AsyncAction.AsyncAction):
             pass
 
 
-    def do_timeout(self):
-        return float(Globals.pref.inputass_typing_rate)/1000
 
     def do_action(self, obj):
         if not self.empty:
@@ -6479,8 +6417,10 @@ class InputAssistantAction(AsyncAction.AsyncAction):
             Globals.mainframe.input_assistant = None
             error.traceback()
 
-class Analysis(AsyncAction.AsyncAction):
+    def do_timeout(self):
+        return float(Globals.pref.inputass_typing_rate)/1000
 
+class Analysis(AsyncAction.AsyncAction):
 
     def do_timeout(self):
         return 0.2
@@ -6503,6 +6443,9 @@ def main_init(win):
     win.auto_routin_analysis.start()
     win.auto_routin_ac_action = InputAssistantAction()
     win.auto_routin_ac_action.start()
+    win.auto_routin_document_show = DocumentShow()
+    win.auto_routin_document_show.start()
+
 Mixin.setPlugin('mainframe', 'init', main_init)
 
 
@@ -6787,7 +6730,7 @@ Mixin.setPlugin('preference', 'init', pref_init)
 
 def add_pref(preflist):
     preflist.extend([
-        (tr('Document'), 270, 'check', 'auto_todo', tr('Auto show TODO window when opening file containing a TODO'), None),
+        (tr('Document'), 180, 'check', 'auto_todo', tr('Auto show TODO window when opening file containing a TODO'), None),
     ])
 Mixin.setPlugin('preference', 'add_pref', add_pref)
 
@@ -6909,7 +6852,7 @@ Mixin.setPlugin('preference', 'init', pref_init)
 
 def add_pref(preflist):
     preflist.extend([
-        (tr('General'), 260, 'check', 'clear_message', tr('Auto clear message window content when running program'), None)
+        (tr('General'), 170, 'check', 'clear_message', tr('Auto clear message window content when running program'), None)
     ])
 Mixin.setPlugin('preference', 'add_pref', add_pref)
 
@@ -7279,6 +7222,7 @@ def on_first_keydown(win, event):
             return True
         else:
             return False
+
 Mixin.setPlugin('editor', 'on_first_keydown', on_first_keydown)
 
 
@@ -7680,13 +7624,11 @@ def jump_to_file(win, d, f, m):
                 line = doc.GetLine(i)
                 if line.startswith(m):
                     wx.CallAfter(doc.SetFocus)
-                    wx.CallAfter(doc.GotoLine, i)
-                    wx.CallAfter(doc.EnsureCaretVisible)
+                    wx.CallAfter(doc.goto, i-1)
                     return True
         elif m.isdigit():
             wx.CallAfter(doc.SetFocus)
-            wx.CallAfter(doc.GotoLine, int(m))
-            wx.CallAfter(doc.EnsureCaretVisible)
+            wx.CallAfter(doc.GotoLine, int(m)-1)
             return True
     return False
 
@@ -8197,7 +8139,7 @@ Mixin.setPlugin('preference', 'init', pref_init)
 
 import wx
 from modules import Mixin
-from modules import Globals
+
 def add_editor_menu(popmenulist):
     popmenulist.extend([ (None, #parent menu id
         [
@@ -8255,13 +8197,6 @@ def afterinit(win):
     wx.EVT_UPDATE_UI(win, win.IDM_EDIT_COPY_RUN, win.OnUpdateUI)
 Mixin.setPlugin('mainframe', 'afterinit', afterinit)
 
-def on_close(win, event):
-    if event.CanVeto():
-        win = Globals.mainframe
-        shell = win.panel.getPage(tr('Shell'))
-        if shell:
-            return shell.OnClose(event)
-Mixin.setPlugin('mainframe', 'on_close', on_close)
 
 
 
@@ -8447,7 +8382,7 @@ Mixin.setPlugin('preference', 'init', pref_init)
 
 def add_pref(preflist):
     preflist.extend([
-        (tr('Document'), 300, 'check', 'document_move_next_indent_selection', tr('Always select from start of line when moving down to next matching indent'), None),
+        (tr('Document')+'/'+tr('Edit'), 170, 'check', 'document_move_next_indent_selection', tr('Always select from start of line when moving down to next matching indent'), None),
     ])
 Mixin.setPlugin('preference', 'add_pref', add_pref)
 
@@ -8481,9 +8416,9 @@ def move_parent_indent(editor):
         text = line_text.strip()
         if text and not line_text.startswith(comment_chars):
             i = editor.GetLineIndentation(line)
-            editor.GotoLine(line)
+            editor.goto(line-1)
             if i < indent:
-                editor.GotoLine(line)
+                editor.goto(line-1)
                 break
 
         line -= 1
@@ -8495,12 +8430,12 @@ def move_prev_indent(editor):
     line -= 1
     comment_chars = editor.get_document_comment_chars()
     while line > -1:
-        line_text = editor.GetLine(line)
+        line_text = editor.goto(line-1)
         text = line_text.strip()
         if text and not line_text.startswith(comment_chars):
             i = editor.GetLineIndentation(line)
             if i <= indent:
-                editor.GotoLine(line)
+                editor.goto(line-1)
                 break
 
         line -= 1
@@ -8530,7 +8465,7 @@ def move_next_indent(editor):
         line += 1
 
     if editor.GetCurrentLine() < editor.GetLineCount() - 1:
-        editor.GotoLine(line)
+        editor.goto(line-1)
         if Globals.pref.document_move_next_indent_selection:
             editor.SetSelectionStart(startpos)
             editor.SetSelectionEnd(editor.GetCurrentPos())
@@ -8552,13 +8487,76 @@ def move_child_indent(editor):
         if text and not line_text.startswith(comment_chars):
             i = editor.GetLineIndentation(line)
             if i > indent:
-                editor.GotoLine(line)
+                editor.goto(line-1)
                 break
             else:
                 break
 
         line += 1
 Mixin.setMixin('editor', 'move_child_indent', move_child_indent)
+
+
+
+#-----------------------  mDocumentShowWindow.py ------------------
+
+
+import wx
+from modules import Mixin
+
+def add_mainframe_menu(menulist):
+    menulist.extend([('IDM_WINDOW', #parent menu id
+        [
+            (210, 'IDM_WINDOW_Document_Show', tr('Open Document_Show Window')+u'\tCtrl+9', wx.ITEM_NORMAL, 'OnWindowDocument_Show', tr('Open the Document_Show window.')),
+        ]),
+    ])
+Mixin.setPlugin('mainframe', 'add_menu', add_mainframe_menu)
+
+def add_notebook_menu(popmenulist):
+    popmenulist.extend([ (None,
+        [
+            (190, 'IDPM_Document_ShowWINDOW', tr('Open Document Show Window'), wx.ITEM_NORMAL, 'OnNDocu_showWindow', tr('Opens the Document Show window.')),
+        ]),
+    ])
+Mixin.setPlugin('notebook', 'add_menu', add_notebook_menu)
+
+def pref_init(pref):
+    pass
+Mixin.setPlugin('preference', 'init', pref_init)
+
+def add_pref(preflist):
+    pass
+Mixin.setPlugin('preference', 'add_pref', add_pref)
+
+document_show_pagename = tr('Document_Show')
+
+def create_document_show_window(win):
+    if not win.panel.getPage(document_show_pagename):
+        from DocumentShowWindow import DocumentShowWindow
+
+        page = DocumentShowWindow(win.panel.createNotebook('right'), win)
+        win.panel.addPage('right', page, document_show_pagename)
+    win.document_show_window = win.panel.getPage(document_show_pagename)
+    win.panel.showPage(document_show_pagename)
+    win.panel.showWindow("right", True)
+
+Mixin.setMixin('mainframe', 'create_document_show_window', create_document_show_window)
+Mixin.setPlugin('mainframe', 'afterinit', create_document_show_window)
+
+def OnWindow_Document_Show(win, event):
+    win.create_document_show_window()
+    win.panel.showPage(document_show_pagename)
+    win.document_show_window.Show()
+Mixin.setMixin('mainframe', 'OnWindowDocument_Show', OnWindow_Document_Show)
+
+def OnNDocu_showWindow(win, event):
+    win.mainframe.create_document_show_window()
+    win.panel.showPage(document_show_pagename)
+    win.mainframe.document_show_window.Show()
+Mixin.setMixin('notebook', 'OnNDocu_showWindow', OnNDocu_showWindow)
+
+def on_document_enter1(win, editor):
+    win.mainframe.document_show_window.show("document will show here!")
+Mixin.setPlugin('editctrl', 'on_document_enter', on_document_enter1)
 
 
 

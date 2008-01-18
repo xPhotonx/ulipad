@@ -41,7 +41,7 @@ class DDEServer(asyncore.dispatcher):
     def handle_accept(self):
         client = Receiver(self, self.accept())
         self.clients.append(client)
-
+        
 class Receiver(asynchat.async_chat):
     def __init__(self, server, (conn, addr)):
         self.addr = addr
@@ -59,16 +59,16 @@ class Receiver(asynchat.async_chat):
         import wx
         import Globals
         wx.CallAfter(Globals.app.frame.openfiles, unicode(files, 'utf-8').splitlines())
-
+        
     def handle_close (self):
         if self.server.clients.count(self) > 0:
             self.server.clients.remove(self)
         self.close()
-
+    
 server = None
 def run(host=HOST, port=PORT):
     global server
-
+    
     server = DDEServer(host, port)
     from modules import Casing
     d = Casing.Casing(asyncore.loop, 1)

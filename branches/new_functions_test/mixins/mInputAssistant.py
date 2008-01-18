@@ -31,7 +31,6 @@ from modules import Globals
 from modules import common
 from modules import dict4ini
 
-from InputAssistant import _getWord, StopException, CALLTIP_AUTOCOMPLETE
 CALLTIP_AUTOCOMPLETE = 2
 
 def mainframe_init(win):
@@ -49,7 +48,6 @@ def editor_init(win):
     win.word_len = 0
     win.custom_assistant = []
     win.function_parameter = []
-    win.calltip_stack = {} # collecting nested calltip's text and pos.
     win.syntax_info = None
     win.auto_routin = None
     win.snippet = None
@@ -115,9 +113,7 @@ def on_key_down(win, event):
             if win.AutoCompActive():
                 win.AutoCompCancel()
             
-            win.calltip_stack.clear()
             del win.function_parameter[:]
-            win.calltip.cancel()
             
             win.snippet.nextField(win.GetCurrentPos())
             return True
@@ -260,14 +256,7 @@ Mixin.setMixin('editor', 'OnApplyAcp', OnApplyAcp)
 def on_kill_focus(win, event):
     if win.AutoCompActive():
         win.AutoCompCancel()
-    if win.calltip and win.calltip.active:
-        if hasattr(event,'FNB'):
-            win.calltip.cancel()
-            return
-        if not win.have_focus:
-            win.have_focus = True
-        else:
-            win.calltip.cancel()
+
 Mixin.setPlugin('editor', 'on_kill_focus', on_kill_focus)
     
 def on_key_down(win, event):
@@ -276,138 +265,40 @@ def on_key_down(win, event):
     #shift=event.ShiftDown()
     alt=event.AltDown()
     if key == wx.WXK_RETURN and not control and not alt:
-        if not win.AutoCompActive():
-            if win.calltip.active:
-                pos = win.GetCurrentPos()
-                # move calltip windown to next line
-                # must be pos+2 not pos+1,the reason I don't konw.
-                win.calltip.move(pos + 2)
-##                win.calltip.cancel()
-        else:
+        if  win.AutoCompActive():
             event.Skip()
             return True
-    elif key == wx.WXK_ESCAPE:
-        # clear nested calltip state if something is wrong.
-        win.calltip_stack.clear()
-        del win.function_parameter[:]
-        win.calltip.cancel()
-##        statusbar = Globals.mainframe.statusbar
-##        text = "press escape key to set calltip  state to normal, if you find the calltip state is wrong ,doing this can clear wrong state."
-##        statusbar.show_panel('tips: '+text, color='#AAFFAA', font=wx.Font(10, wx.TELETYPE, wx.NORMAL, wx.BOLD, True))
         
 Mixin.setPlugin('editor', 'on_key_down', on_key_down, Mixin.HIGH, 1)
 
-class Dump():
-    def __init__(self):
-        self.empty = True
 
-TT = Dump()
-
-def call_calltip(win, word, brace_left, curpos):
-    for f in win.input_calltip:
-        try:
-            r = f(win,word,TT)
-            if r:
-                if isinstance(r, (str, unicode)):
-                    r = [r]
-                tip = '\n\n'.join(list(filter(None, r)) + [tr('(Press ESC to close)')])
-                if win.calltip.active and CALLTIP_AUTOCOMPLETE:
-                    win.calltip.cancel()
-                t = tip.replace('\r\n','\n')
-                win.calltip_type = CALLTIP_AUTOCOMPLETE
-                win.calltip_stack[brace_left] = t
-                win.calltip_current = brace_left
-                win.calltip.show(curpos, t)
-                return 
-        except StopException:
-            pass
-        except:
-            error.traceback()
 
 def on_key_up(win, event):
-    # note: by ygao 2007/05/11
-    # typing between "(" and ")",calltip will popup  
-    if  win.languagename != "python":
-        return
-    key = None
+    type = None
+    key = ()
     if  isinstance(event, wx.KeyEvent):
-        # prevent calltip starting again 
-        key = event.GetKeyCode()
-        if  key == wx.WXK_ESCAPE:
-            return
-    curpos = win.GetCurrentPos()
-    line = win.GetCurrentLine()
-    if  isinstance(event, wx.MouseEvent):
-        if  event.AltDown():
-            full_word = _getWord(win, whole=True, pos=curpos, line=line)
-            call_calltip(win,full_word, None, curpos)
-            event.Skip()
-            return False
-    startPos = win.PositionFromLine(line)
-    endPos = win.GetLineEndPosition(line)
-    brace_left = win.FindText(startPos, endPos, '(')
-    if  31 < key < 127:
-        if  brace_left != -1:
-            brace_right = win.BraceMatch(brace_left)
+        type = "key"
         
-            if  not len(win.calltip_stack):   
-
-                if  brace_left  < curpos <= brace_right:
-                    word = _getWord(win, whole=True, pos=brace_left, line=line)
-                    call_calltip(win,word, brace_left, curpos)
-            else:
-                brace_left = win.FindText(curpos, startPos, '(')
-                if  brace_left == -1:
-                    return
-                klist = win.calltip_stack.keys()
-                klist.sort()
-                brace_left_min = min(klist)
-                brace_right_max = win.BraceMatch(brace_left_min)
-                if  brace_right_max == -1:
-                    return
-                word = None
-                if  brace_left_min  < curpos <= brace_right_max:# and win.calltip_stack.get(brace_left, None):
-                    word = _getWord(win, whole=True, pos=brace_left+1, line=line)
-                    if  brace_left <> win.calltip_current:
-                        call_calltip(win,word, brace_left, curpos)
-##    if win.calltip.active and win.calltip_type == CALLTIP_AUTOCOMPLETE and len(win.calltip_stack):
-    if  len(win.calltip_stack):
-        klist = win.calltip_stack.keys()
-        klist.sort()
-        brace_left = min(klist)
-        if not isinstance(brace_left,int):
-            del klist[:]
-            return
-        brace_right = win.BraceMatch(brace_left)
-        if  brace_right == -1:
-            return
-        if  curpos < brace_left + 1 or curpos > brace_right:
-            win.calltip.cancel()
-            del win.function_parameter[:]
-            win.calltip_stack.clear()
-        elif brace_left  < curpos <= brace_right:
-            klist.reverse()
-            for order in range(len(klist)):
-                left = klist[order]
-                right = win.BraceMatch(left)
-                if  left < curpos <= right:
-                    if  left <> win.calltip_current:
-                        t = win.calltip_stack[left]
-                        win.calltip.show(curpos, t)
-                        win.calltip_current = left
-                        break
-                    else:
-                        if  win.calltip.active:
-                            break
-                        else:
-                            t = win.calltip_stack[left]
-                            win.calltip.show(curpos, t)
-                            win.calltip_current = left
-                            break
-                            
-                            
-
-            
+        keycode = event.GetKeyCode()
+        ctrl = event.ControlDown()
+        alt = event.AltDown()
+        shift = event.ShiftDown()
+        
+        f = 0
+        if ctrl:
+            f |= wx.stc.STC_SCMOD_CTRL
+        elif alt:
+            f |= wx.stc.STC_SCMOD_ALT
+        elif shift:
+            f |= wx.stc.STC_SCMOD_SHIFT
+        
+        
+        key = (f, keycode)    
+    elif  isinstance(event, wx.MouseEvent):
+        type = "mouse"
+   
+    win.mainframe.auto_routin_document_show.put({'win':win, 'key':key, 'type':type}) 
+    #win.mainframe.auto_routin_document_show.put({'win':win, 'event':event}) 
 Mixin.setPlugin('editor', 'on_key_up', on_key_up)
 Mixin.setPlugin('editor', 'on_mouse_up', on_key_up)
 
@@ -436,11 +327,40 @@ def on_modified(win, event):
 Mixin.setPlugin('editor', 'on_modified', on_modified)
 
 from modules import AsyncAction
+
+class DocumentShow(AsyncAction.AsyncAction):
+    
+    def do_timeout(self):
+        return float(Globals.pref.inputass_typing_rate)/1000
+    
+    def do_action(self, obj):
+        if not self.empty:
+            return
+        pref = Globals.pref
+        win = obj['win']
+        try:
+            if not win: return
+            i = get_inputassistant_obj(win)
+            #event = obj['event']
+            key = obj['key']
+            type = obj['type']
+            win.lock.acquire()
+            i.run2(win, type, key, self)
+            win.lock.release()
+            return True
+        except:
+            win.input_assistant = None
+            error.traceback()
+    
+  
+    
+
+
 KEYS = [' ','=','/','[']
 class InputAssistantAction(AsyncAction.AsyncAction):
     
     
-    def run(self):
+    def run1(self):
         pref = Globals.pref
         try:
             while not self.stop:
@@ -482,9 +402,7 @@ class InputAssistantAction(AsyncAction.AsyncAction):
         except:
             pass
 
-    
-    def do_timeout(self):
-        return float(Globals.pref.inputass_typing_rate)/1000    
+ 
     
     def do_action(self, obj):
         if not self.empty:
@@ -508,13 +426,15 @@ class InputAssistantAction(AsyncAction.AsyncAction):
         except:
             Globals.mainframe.input_assistant = None
             error.traceback()
+            
+    def do_timeout(self):
+        return float(Globals.pref.inputass_typing_rate)/1000
         
 class Analysis(AsyncAction.AsyncAction):
-    
 
     def do_timeout(self):
         return 0.2
-        
+
     def do_action(self, obj):
         win = Globals.mainframe
         if not self.empty:
@@ -533,5 +453,8 @@ def main_init(win):
     win.auto_routin_analysis.start()
     win.auto_routin_ac_action = InputAssistantAction()
     win.auto_routin_ac_action.start()
+    win.auto_routin_document_show = DocumentShow()
+    win.auto_routin_document_show.start()
+    
 Mixin.setPlugin('mainframe', 'init', main_init)
 
