@@ -1,4 +1,7 @@
 $Rev$
+[2008/01/18]
+common.py           Fix webopen bug, cann't correctly deal with 'mailto:'
+
 [2008/01/16]
 plugins/SpellCheck.py
                     Refactor interface

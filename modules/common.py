@@ -488,7 +488,7 @@ def webopen(filename):
     o = webbrowser.get()
     if hasattr(o, 'args'):
         o.args = [arg.replace('"%s"', '%s') for arg in o.args]
-    if not filename.startswith('http://'):
+    if not filename.startswith('http://') and not filename.startswith('mailto:'):
         o.open('file://'+filename, 1)
     else:
         o.open(filename)
