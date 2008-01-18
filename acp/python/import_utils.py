@@ -41,7 +41,7 @@ def get_calltip(win, word, syncvar):
                         notice = "(*** Double click here try to open source file in Ulipad ***)"
                 except:
                     pass
-            return filter(None, [signature, doc, sep, source, notice])
+            return filter(None, [notice, signature, doc, sep, source])
         else:
             if object.type == 'function':
                 return '\n'.join([object.info, object.docstring])
