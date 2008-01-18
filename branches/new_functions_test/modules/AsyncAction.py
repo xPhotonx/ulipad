@@ -40,7 +40,6 @@ class AsyncAction(threading.Thread):
 
                 if self.last:
                     try:
-                        self.clear()
                         self.do_action(self.last)
                         self.last = None
                     except:
