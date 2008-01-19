@@ -16,12 +16,12 @@ class AsyncAction(threading.Thread):
         self.last = None
         
     def put(self, obj):
-        if not self.stop:
-            if not AsyncAction.STOP:
-                self.q.put(obj)
-        else:
-            self.clear()
+        self.q.put(obj)
         
+    def _is_stop(self):
+        return self.stop or self.STOP
+    is_stop = property(_is_stop)
+    
     def stop(self):
         self.stop = True
         
@@ -38,22 +38,21 @@ class AsyncAction(threading.Thread):
         
     def run(self):
         try:
-            while not self.stop:
-                if not AsyncAction.STOP:
-                    self.last = None
-                    while 1:
-                        try:
-                            obj = self.q.get(True, self.get_timestep())
-                            self.last = obj
-                        except:
-                            if self.last:
-                                break
-                    if self.last:
-                        try:
-                            self.do_action(self.last)
-                            self.last = None
-                        except:
-                            pass
+            while not self.is_stop:
+                self.last = None
+                while not self.is_stop:
+                    try:
+                        obj = self.q.get(True, self.get_timestep())
+                        self.last = obj
+                    except:
+                        if self.last:
+                            break
+                if self.last:
+                    try:
+                        self.do_action(self.last)
+                        self.last = None
+                    except:
+                        pass
 
         except:
             pass

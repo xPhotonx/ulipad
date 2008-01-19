@@ -338,6 +338,7 @@ class EditorFactory(FNB.FlatNotebook, Mixin.Mixin):
             index = self.getIndex(document)
         except:
             return
+        self.callplugin('beforeclosefile', self, document)
         self.skip_closing = True
         self.skip_page_change = True
         self.DeletePage(index)
