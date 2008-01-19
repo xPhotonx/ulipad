@@ -43,7 +43,7 @@ class AsyncAction(threading.Thread):
                     self.last = None
                     while 1:
                         try:
-                            obj = self.q.get(True, self.do_timeout())
+                            obj = self.q.get(True, self.get_timestep())
                             self.last = obj
                         except:
                             if self.last:
