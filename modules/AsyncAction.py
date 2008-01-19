@@ -3,6 +3,10 @@ import threading
 import time
 
 class AsyncAction(threading.Thread):
+    """
+    STOP control all inherit class  behivor
+    """
+    STOP = False
     def __init__(self, timestep=.1):
         super(AsyncAction, self).__init__()
         self.q = Queue.Queue(0)
@@ -12,7 +16,11 @@ class AsyncAction(threading.Thread):
         self.last = None
         
     def put(self, obj):
-        self.q.put(obj)
+        if not self.stop:
+            if not AsyncAction.STOP:
+                self.q.put(obj)
+        else:
+            self.clear()
         
     def stop(self):
         self.stop = True
@@ -31,21 +39,21 @@ class AsyncAction(threading.Thread):
     def run(self):
         try:
             while not self.stop:
-                self.last = None
-                while 1:
-                    try:
-                        obj = self.q.get(True, self.get_timestep())
-                        self.last = obj
-                    except:
-                        if self.last:
-                            break
-
-                if self.last:
-                    try:
-                        self.do_action(self.last)
-                        self.last = None
-                    except:
-                        pass
+                if not AsyncAction.STOP:
+                    self.last = None
+                    while 1:
+                        try:
+                            obj = self.q.get(True, self.do_timeout())
+                            self.last = obj
+                        except:
+                            if self.last:
+                                break
+                    if self.last:
+                        try:
+                            self.do_action(self.last)
+                            self.last = None
+                        except:
+                            pass
 
         except:
             pass

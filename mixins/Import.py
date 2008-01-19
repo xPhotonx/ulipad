@@ -6300,6 +6300,11 @@ def on_modified(win, event):
 Mixin.setPlugin('editor', 'on_modified', on_modified)
 
 from modules import AsyncAction
+def on_close(win, event):
+    "when app close, keep thread from running do_action"
+    AsyncAction.AsyncAction.STOP = True
+Mixin.setPlugin('mainframe','on_close', on_close ,Mixin.HIGH, 1)
+
 class InputAssistantAction(AsyncAction.AsyncAction):
     def do_action(self, obj):
         if not self.empty:
