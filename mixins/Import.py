@@ -387,7 +387,7 @@ def OnOpenCmdWindow(win, event=None):
         os.spawnl(os.P_NOWAIT, win.pref.command_line,r" /k %s && cd %s" % (os.path.split(filename)[0][:2], filename))
     else:
         cmdline = win.pref.command_line.replace('{path}', filename)
-        wx.Shell(cmdline)
+        wx.Execute(cmdline)
 Mixin.setMixin('editctrl', 'OnOpenCmdWindow', OnOpenCmdWindow)
 
 
