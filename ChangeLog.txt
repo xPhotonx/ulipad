@@ -1,4 +1,7 @@
 $Rev$
+[2008/02/15]
+Editor.py           Skip control keys on keydown event
+
 [2008/01/18]
 common.py           Fix webopen bug, cann't correctly deal with 'mailto:'
 mDDESupport.py      Fix DDE bug, thanks to LP <liupengf12@gmail.com>
