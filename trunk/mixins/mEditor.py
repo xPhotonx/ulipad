@@ -29,14 +29,14 @@ def add_panel_list(panellist):
     panellist['texteditor'] = TextPanel
 Mixin.setPlugin('editctrl', 'add_panel_list', add_panel_list)
 
-def on_key_down(win, event):
+def on_first_keydown(win, event):
     key = event.GetKeyCode()
     alt = event.AltDown()
     shift = event.ShiftDown()
     ctrl = event.ControlDown()
     if ctrl and key == wx.WXK_TAB:
         if not shift:
-            win.editctrl.AdvanceSelection(True)
+            win.editctrl.Navigation(True)
         else:
-            win.editctrl.AdvanceSelection(False)
-Mixin.setPlugin('editor', 'on_key_down', on_key_down)
+            win.editctrl.Navigation(False)
+Mixin.setPlugin('editor', 'on_first_keydown', on_first_keydown)

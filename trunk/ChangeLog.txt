@@ -1,4 +1,8 @@
 $Rev$
+[2008/02/16]
+Editor.py mEditor.py FlatNotebook.py mInputAssistant.py
+                    Fix smart tabs bug.
+                    
 [2008/02/15]
 Editor.py           Skip control keys on keydown event
 

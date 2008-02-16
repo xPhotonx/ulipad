@@ -124,9 +124,6 @@ def on_key_down(win, event):
         if win.snippet and win.snippet.snip_mode:
             win.snippet.cancel()
             return True
-    if key in (ord('C'), ord('V'), ord('X')) and event.ControlDown() and not event.AltDown() and not event.ShiftDown():
-        event.Skip()
-        return True
     
     if key == wx.WXK_BACK and not event.AltDown() and not event.ControlDown() and not event.ShiftDown():
         if win.pref.input_assistant and win.pref.inputass_identifier:

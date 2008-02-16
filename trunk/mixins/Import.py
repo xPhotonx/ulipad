@@ -402,17 +402,17 @@ def add_panel_list(panellist):
     panellist['texteditor'] = TextPanel
 Mixin.setPlugin('editctrl', 'add_panel_list', add_panel_list)
 
-def on_key_down(win, event):
+def on_first_keydown(win, event):
     key = event.GetKeyCode()
     alt = event.AltDown()
     shift = event.ShiftDown()
     ctrl = event.ControlDown()
     if ctrl and key == wx.WXK_TAB:
         if not shift:
-            win.editctrl.AdvanceSelection(True)
+            win.editctrl.Navigation(True)
         else:
-            win.editctrl.AdvanceSelection(False)
-Mixin.setPlugin('editor', 'on_key_down', on_key_down)
+            win.editctrl.Navigation(False)
+Mixin.setPlugin('editor', 'on_first_keydown', on_first_keydown)
 
 
 
@@ -6113,9 +6113,6 @@ def on_key_down(win, event):
         if win.snippet and win.snippet.snip_mode:
             win.snippet.cancel()
             return True
-    if key in (ord('C'), ord('V'), ord('X')) and event.ControlDown() and not event.AltDown() and not event.ShiftDown():
-        event.Skip()
-        return True
 
     if key == wx.WXK_BACK and not event.AltDown() and not event.ControlDown() and not event.ShiftDown():
         if win.pref.input_assistant and win.pref.inputass_identifier:
@@ -8319,9 +8316,9 @@ def move_parent_indent(editor):
         text = line_text.strip()
         if text and not line_text.startswith(comment_chars):
             i = editor.GetLineIndentation(line)
-            editor.goto(line-1)
+            editor.GotoLine(line)
             if i < indent:
-                editor.goto(line-1)
+                editor.GotoLine(line)
                 break
 
         line -= 1
@@ -8333,12 +8330,12 @@ def move_prev_indent(editor):
     line -= 1
     comment_chars = editor.get_document_comment_chars()
     while line > -1:
-        line_text = editor.goto(line-1)
+        line_text = editor.GetLine(line)
         text = line_text.strip()
         if text and not line_text.startswith(comment_chars):
             i = editor.GetLineIndentation(line)
             if i <= indent:
-                editor.goto(line-1)
+                editor.GotoLine(line)
                 break
 
         line -= 1
@@ -8390,7 +8387,7 @@ def move_child_indent(editor):
         if text and not line_text.startswith(comment_chars):
             i = editor.GetLineIndentation(line)
             if i > indent:
-                editor.goto(line-1)
+                editor.GotoLine(line)
                 break
             else:
                 break
