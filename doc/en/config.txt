@@ -244,3 +244,7 @@ You can use this option to switch other icon set theme, the setting is::
 And you should esure that in UliPad's ``images`` directory it should have ``theme/tango``
 directory, and all images will be placed there. If an image cann't be found in
 theme/XXXX directory, then it'll use image in ``images`` directory.
+
+Set DDE port---------------Default, UliPad will bind 50000 port to DDE socket, but sometimes this port may 
+be used by others, so you could not use DDE. So you can change the default DDE 
+port in config.ini. Just write down below code in config.ini::	[server]	port=50001

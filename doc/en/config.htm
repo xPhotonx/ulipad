@@ -532,6 +532,16 @@ icontheme = tango
 directory, and all images will be placed there. If an image cann't be found in
 theme/XXXX directory, then it'll use image in <tt class="docutils literal"><span class="pre">images</span></tt> directory.</p>
 </div>
+<div class="section">
+<h1><a id="set-dde-port" name="set-dde-port">Set DDE port</a></h1>
+<p>Default, UliPad will bind 50000 port to DDE socket, but sometimes this port may
+be used by others, so you could not use DDE. So you can change the default DDE
+port in config.ini. Just write down below code in config.ini:</p>
+<pre class="literal-block">
+[server]
+port=50001
+</pre>
+</div>
 </div>
 </body>
 </html>
