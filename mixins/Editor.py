@@ -394,7 +394,6 @@ class TextEditor(wx.stc.StyledTextCtrl, Mixin.Mixin, DocumentBase.DocumentBase):
 
         if key in (ord('C'), ord('V'), ord('X')) and event.ControlDown() and not event.AltDown() and not event.ShiftDown():
             event.Skip()
-            print 'ctrl'
             return True
         
         f = wx.ACCEL_NORMAL

@@ -110,7 +110,7 @@ def fileopentext(win, stext):
         win.lineendingsaremixed = True
 Mixin.setPlugin('editor', 'openfiletext', fileopentext)
 
-def afteropenfile(win, filename):
+def openfiletext(win, text):
     def f():
         if win.lineendingsaremixed:
             eolmodestr = "MIX"
@@ -124,14 +124,15 @@ def afteropenfile(win, filename):
         if win.lineendingsaremixed == False:
             eolmodestr = win.eolstr[win.eolmode]
         win.mainframe.SetStatusText(eolmodestr, 3)
-        win.SetEOLMode(win.eolmode)
-    wx.CallAfter(f)
-Mixin.setPlugin('editor', 'afteropenfile', afteropenfile)
+        setEOLMode(win, win.eolmode)
+#    wx.CallAfter(f)
+    f()
+Mixin.setPlugin('editor', 'openfiletext', openfiletext)
 
-#def savefile(win, filename):
-#    if not win.lineendingsaremixed:
-#        setEOLMode(win, win.eolmode)
-#Mixin.setPlugin('editor', 'savefile', savefile)
+def savefile(win, filename):
+    if not win.lineendingsaremixed:
+        setEOLMode(win, win.eolmode)
+Mixin.setPlugin('editor', 'savefile', savefile)
 
 def on_document_enter(win, document):
     if document.edittype == 'edit':
