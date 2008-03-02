@@ -284,8 +284,9 @@ class EditorFactory(FNB.FlatNotebook, Mixin.Mixin):
             return
         self.showPageTitle(document)
         if not delay:
-            if index != self.GetSelection():
-                self.SetSelection(index)
+#            if index != self.GetSelection():
+#                self.SetSelection(index)
+            self.SetSelection(index)
             d = document
             if not document.opened:
                 d = self.changeDocument(document, False)
@@ -325,6 +326,7 @@ class EditorFactory(FNB.FlatNotebook, Mixin.Mixin):
         if ctrl.isModified():
             title = '* ' + title
         index = self.getIndex(ctrl)
+        wx.CallAfter(self.EnsureVisible, self.getIndex(ctrl))
         if title != self.GetPageText(index):
             wx.CallAfter(self.SetPageText, self.getIndex(ctrl), title)
 

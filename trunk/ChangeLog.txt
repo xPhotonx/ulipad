@@ -1,4 +1,8 @@
 $Rev$
+[2008/03/02]
+EditorFactory.py FlatNotebook.py
+                    Fix tab invisible bug after changing size or changing the page title
+                    
 [2008/03/01]
 mLineending.py      Fix copy and paste lineending is not correct bug
 

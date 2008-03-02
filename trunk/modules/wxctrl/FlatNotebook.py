@@ -3315,6 +3315,9 @@ class FlatNotebook(wx.PyPanel):
 
         self._pages._iActivePage = page
         self._pages.DoSetSelection(page)
+        
+    def EnsureVisible(self, page):
+        self._pages.EnsureVisible(page)
 
 
     def DeletePage(self, page):
@@ -3518,6 +3521,7 @@ class FlatNotebook(wx.PyPanel):
         """ Sets the text for the given page. """
 
         bVal = self._pages.SetPageText(page, text)
+        self._pages.EnsureVisible(page, False)
         self._pages.Refresh()
 
         return bVal
@@ -3903,6 +3907,7 @@ class PageContainer(wx.Panel):
 
         self._nFrom = fr
 
+        self.EnsureVisible(page, False)
         self.Refresh() # Call on paint
         event.Skip()
 
@@ -4193,11 +4198,14 @@ class PageContainer(wx.Panel):
             if da_page != None:
                 da_page.SetFocus()
         
+        self.EnsureVisible(page)
+
+    def EnsureVisible(self, page, refresh=True):
         if not self.IsTabVisible(page):
             # Try to remove one tab from start and try again
             
             if not self.CanFitToScreen(page):
-
+        
                 if self._nFrom > page:
                     self._nFrom = page
                 else:
@@ -4205,10 +4213,9 @@ class PageContainer(wx.Panel):
                         self._nFrom += 1
                         if self.CanFitToScreen(page):
                             break
- 
-        self.Refresh()
-
-
+        if refresh:
+            self.Refresh()
+        
     def DeletePage(self, page):
         """ Delete the specified page from L{FlatNotebook}. """
 
