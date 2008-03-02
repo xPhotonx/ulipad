@@ -392,10 +392,6 @@ class TextEditor(wx.stc.StyledTextCtrl, Mixin.Mixin, DocumentBase.DocumentBase):
         
         key = event.GetKeyCode()
 
-        if key in (ord('C'), ord('V'), ord('X')) and event.ControlDown() and not event.AltDown() and not event.ShiftDown():
-            event.Skip()
-            return True
-        
         f = wx.ACCEL_NORMAL
         if event.ControlDown():
             f |= wx.ACCEL_CTRL
@@ -415,6 +411,10 @@ class TextEditor(wx.stc.StyledTextCtrl, Mixin.Mixin, DocumentBase.DocumentBase):
             event.SetId(_id)
             fu(event)
             return
+        
+        if key in (ord('C'), ord('V'), ord('X')) and event.ControlDown() and not event.AltDown() and not event.ShiftDown():
+            event.Skip()
+            return True
         
         if not self.execplugin('on_key_down', self, event):
             event.Skip()
