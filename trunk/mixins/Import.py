@@ -1193,10 +1193,6 @@ def openfiletext(win, text):
     f()
 Mixin.setPlugin('editor', 'openfiletext', openfiletext)
 
-def savefile(win, filename):
-    if not win.lineendingsaremixed:
-        setEOLMode(win, win.eolmode)
-Mixin.setPlugin('editor', 'savefile', savefile)
 
 def on_document_enter(win, document):
     if document.edittype == 'edit':
@@ -1211,6 +1207,87 @@ def getEndOfLineCharacter(character):
     if character == '\r' or character == '\n':
         return character
     return ""
+
+
+def add_pref(preflist):
+    preflist.extend([
+        (tr('Document')+'/'+tr('Edit'), 180, 'check', 'edit_linestrip', tr('Strip the line ending when saving'), eolmess)
+    ])
+Mixin.setPlugin('preference', 'add_pref', add_pref)
+
+def pref_init(pref):
+    pref.edit_linestrip = False
+Mixin.setPlugin('preference', 'init', pref_init)
+
+import re
+r_lineending = re.compile(r'\s+$')
+def savefile(win, filename):
+    status = win.save_state()
+    win.SetUndoCollection(0)
+    try:
+
+        if not win.lineendingsaremixed:
+            setEOLMode(win, win.eolmode)
+
+        for i in range(win.GetLineCount()):
+            start = win.PositionFromLine(i)
+            end = win.GetLineEndPosition(i)
+            text = win.GetTextRange(start, end)
+            b = r_lineending.search(text)
+            if b:
+                win.SetTargetStart(start+b.start())
+                win.SetTargetEnd(start+b.end())
+                win.ReplaceTarget('')
+    finally:
+        win.restore_state(status)
+        win.SetUndoCollection(1)
+
+Mixin.setPlugin('editor', 'savefile', savefile)
+
+def add_mainframe_menu(menulist):
+    menulist.extend([
+        ('IDM_EDIT_FORMAT',
+        [
+            (220, '', '-', wx.ITEM_SEPARATOR, None, ''),
+            (230, 'IDM_EDIT_FORMAT_STRIPLINEENDING', tr('Strip Line ending'), wx.ITEM_NORMAL, 'OnEditFormatStripLineending', tr('Strip line ending.')),
+        ]),
+    ])
+Mixin.setPlugin('mainframe', 'add_menu', add_mainframe_menu)
+
+def add_editor_menu(popmenulist):
+    popmenulist.extend([
+        ('IDPM_FORMAT',
+        [
+            (220, '', '-', wx.ITEM_SEPARATOR, None, ''),
+            (230, 'IDPM_FORMAT_STRIPLINEENDING', tr('Strip Line ending'), wx.ITEM_NORMAL, 'OnFormatStripLineending', tr('Strip line ending.')),
+        ]),
+    ])
+Mixin.setPlugin('editor', 'add_menu', add_editor_menu)
+
+def strip_lineending(document):
+    status = document.save_state()
+    document.BeginUndoAction()
+    try:
+        for i in range(document.GetLineCount()):
+            start = document.PositionFromLine(i)
+            end = document.GetLineEndPosition(i)
+            text = document.GetTextRange(start, end)
+            b = r_lineending.search(text)
+            if b:
+                document.SetTargetStart(start+b.start())
+                document.SetTargetEnd(start+b.end())
+                document.ReplaceTarget('')
+    finally:
+        document.restore_state(status)
+        document.EndUndoAction()
+
+def OnEditFormatStripLineending(win, event):
+    strip_lineending(win.document)
+Mixin.setMixin('mainframe', 'OnEditFormatStripLineending', OnEditFormatStripLineending)
+
+def OnFormatStripLineending(win, event):
+    strip_lineending(win)
+Mixin.setMixin('editor', 'OnFormatStripLineending', OnFormatStripLineending)
 
 
 
