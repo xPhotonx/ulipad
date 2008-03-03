@@ -1,10 +1,10 @@
 #   Programmer:     limodou
 #   E-mail:         limodou@gmail.com
-#  
+#
 #   Copyleft 2006 limodou
-#  
+#
 #   Distributed under the terms of the GPL (GNU Public License)
-#  
+#
 #   UliPad is free software; you can redistribute it and/or modify
 #   it under the terms of the GNU General Public License as published by
 #   the Free Software Foundation; either version 2 of the License, or
@@ -67,14 +67,16 @@ Mixin.setPlugin('mainframe', 'add_menu', add_mainframe_menu)
 def setEOLMode(win, mode):
     win.lineendingsaremixed = False
     win.eolmode = mode
-    state = win.save_state()
-    win.BeginUndoAction()
-    text = win.GetText()
-    text = re.sub(r'\r\n|\r|\n', win.eolstring[mode], text)
-    win.SetText(text)
-#    win.ConvertEOLs(win.eols[mode])
-    win.EndUndoAction()
-    win.restore_state(state)
+#    state = win.save_state()
+#    win.BeginUndoAction()
+#    text = win.GetText()
+#    text = re.sub(r'\r\n|\r|\n', win.eolstring[mode], text)
+#    win.SetText(text)
+    win.disable_onmodified = True
+    win.ConvertEOLs(win.eols[mode])
+    win.disable_onmodified = False
+#    win.EndUndoAction()
+#    win.restore_state(state)
     win.SetEOLMode(win.eols[mode])
     win.mainframe.SetStatusText(win.eolstr[mode], 3)
 
@@ -167,12 +169,10 @@ import re
 r_lineending = re.compile(r'\s+$')
 def savefile(win, filename):
     status = win.save_state()
-    win.SetUndoCollection(0)
     try:
-        
-        if not win.lineendingsaremixed:
-            setEOLMode(win, win.eolmode)
-        
+#        if not win.lineendingsaremixed:
+#            setEOLMode(win, win.eolmode)
+
         for i in range(win.GetLineCount()):
             start = win.PositionFromLine(i)
             end = win.GetLineEndPosition(i)
@@ -184,8 +184,7 @@ def savefile(win, filename):
                 win.ReplaceTarget('')
     finally:
         win.restore_state(status)
-        win.SetUndoCollection(1)
-        
+
 Mixin.setPlugin('editor', 'savefile', savefile)
 
 def add_mainframe_menu(menulist):
@@ -224,7 +223,7 @@ def strip_lineending(document):
     finally:
         document.restore_state(status)
         document.EndUndoAction()
-        
+
 def OnEditFormatStripLineending(win, event):
     strip_lineending(win.document)
 Mixin.setMixin('mainframe', 'OnEditFormatStripLineending', OnEditFormatStripLineending)

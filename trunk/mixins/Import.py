@@ -1133,13 +1133,9 @@ Mixin.setPlugin('mainframe', 'add_menu', add_mainframe_menu)
 def setEOLMode(win, mode):
     win.lineendingsaremixed = False
     win.eolmode = mode
-    state = win.save_state()
-    win.BeginUndoAction()
-    text = win.GetText()
-    text = re.sub(r'\r\n|\r|\n', win.eolstring[mode], text)
-    win.SetText(text)
-    win.EndUndoAction()
-    win.restore_state(state)
+    win.disable_onmodified = True
+    win.ConvertEOLs(win.eols[mode])
+    win.disable_onmodified = False
     win.SetEOLMode(win.eols[mode])
     win.mainframe.SetStatusText(win.eolstr[mode], 3)
 
@@ -1223,11 +1219,7 @@ import re
 r_lineending = re.compile(r'\s+$')
 def savefile(win, filename):
     status = win.save_state()
-    win.SetUndoCollection(0)
     try:
-
-        if not win.lineendingsaremixed:
-            setEOLMode(win, win.eolmode)
 
         for i in range(win.GetLineCount()):
             start = win.PositionFromLine(i)
@@ -1240,7 +1232,6 @@ def savefile(win, filename):
                 win.ReplaceTarget('')
     finally:
         win.restore_state(status)
-        win.SetUndoCollection(1)
 
 Mixin.setPlugin('editor', 'savefile', savefile)
 
@@ -1533,27 +1524,23 @@ def add_editor_menu_image_list(imagelist):
 Mixin.setPlugin('editor', 'add_menu_image_list', add_editor_menu_image_list)
 
 def OnEditFormatIndent(win, event):
-    win.document.BeginUndoAction()
-    win.document.CmdKeyExecute(wx.stc.STC_CMD_TAB)
-    win.document.EndUndoAction()
+    OnFormatIndent(win.document, event)
 Mixin.setMixin('mainframe', 'OnEditFormatIndent', OnEditFormatIndent)
 
 def OnEditFormatUnindent(win, event):
-    win.document.BeginUndoAction()
-    win.document.CmdKeyExecute(wx.stc.STC_CMD_BACKTAB)
-    win.document.EndUndoAction()
+    OnFormatUnindent(win.document, event)
 Mixin.setMixin('mainframe', 'OnEditFormatUnindent', OnEditFormatUnindent)
 
 def OnFormatIndent(win, event):
-    win.BeginUndoAction()
+    win.disable_onmodified = True
     win.CmdKeyExecute(wx.stc.STC_CMD_TAB)
-    win.EndUndoAction()
+    win.disable_onmodified = False
 Mixin.setMixin('editor', 'OnFormatIndent', OnFormatIndent)
 
 def OnFormatUnindent(win, event):
-    win.BeginUndoAction()
+    win.disable_onmodified = True
     win.CmdKeyExecute(wx.stc.STC_CMD_BACKTAB)
-    win.EndUndoAction()
+    win.disable_onmodified = False
 Mixin.setMixin('editor', 'OnFormatUnindent', OnFormatUnindent)
 
 def OnFormatQuote(win, event):
