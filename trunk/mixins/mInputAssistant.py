@@ -1,10 +1,10 @@
 #   Programmer:     limodou
 #   E-mail:         limodou@gmail.com
-#  
+#
 #   Copyleft 2006 limodou
-#  
+#
 #   Distributed under the terms of the GPL (GNU Public License)
-#  
+#
 #   UliPad is free software; you can redistribute it and/or modify
 #   it under the terms of the GNU General Public License as published by
 #   the Free Software Foundation; either version 2 of the License, or
@@ -42,7 +42,7 @@ def editor_init(win):
     win.AutoCompStops(' .,;:()[]{}\'"\\<>%^&+-=*/|`')
     win.AutoCompSetAutoHide(True)
     win.AutoCompSetCancelAtStart(False)
-    
+
 #    win.inputassistant_obj = None
     win.replace_strings = None
     win.word_len = 0
@@ -91,18 +91,18 @@ def on_auto_completion(win, pos, text):
     start, end = win.word_len
     wx.CallAfter(_replace_text, win, start, end, text)
 Mixin.setPlugin('editor', 'on_auto_completion', on_auto_completion)
-    
+
 def get_inputassistant_obj(win):
     if not win.mainframe.input_assistant:
         from InputAssistant import InputAssistant
-    
+
         win.mainframe.input_assistant = i = InputAssistant()
     else:
         i = win.mainframe.input_assistant
     return i
 
 def after_char(win, event):
-    win.mainframe.auto_routin_ac_action.put({'type':'normal', 'win':win, 
+    win.mainframe.auto_routin_ac_action.put({'type':'normal', 'win':win,
         'event':event, 'on_char_flag':True})
 Mixin.setPlugin('editor', 'after_char', after_char)
 
@@ -113,18 +113,18 @@ def on_key_down(win, event):
         if win.snippet and win.snippet.snip_mode:
             if win.AutoCompActive():
                 win.AutoCompCancel()
-            
+
             win.calltip_stack.clear()
             del win.function_parameter[:]
             win.calltip.cancel()
-            
+
             win.snippet.nextField(win.GetCurrentPos())
             return True
     if key == ord('Q') and event.AltDown() and not event.ControlDown() and not event.ShiftDown():
         if win.snippet and win.snippet.snip_mode:
             win.snippet.cancel()
             return True
-    
+
     if key == wx.WXK_BACK and not event.AltDown() and not event.ControlDown() and not event.ShiftDown():
         if win.pref.input_assistant and win.pref.inputass_identifier:
             win.mainframe.auto_routin_ac_action.put({'type':'default', 'win':win, 'event':event})
@@ -133,7 +133,7 @@ Mixin.setPlugin('editor', 'on_key_down', on_key_down)
 
 def on_first_keydown(win, event):
     if win.pref.input_assistant:
-        win.mainframe.auto_routin_ac_action.put({'type':'normal', 'win':win, 
+        win.mainframe.auto_routin_ac_action.put({'type':'normal', 'win':win,
             'event':event, 'on_char_flag':False})
     return False
 Mixin.setPlugin('editor', 'on_first_keydown', on_first_keydown, nice=1)
@@ -163,20 +163,20 @@ Mixin.setPlugin('preference', 'add_pref', add_pref)
 def get_acp_files(win):
     i = get_inputassistant_obj(win)
     i.install_acp(win, win.languagename)
-    
+
     files = []
     objs = i.get_acp(win.languagename)
     if objs:
         files = [obj.filename for obj in objs]
-       
+
     b = glob.glob(os.path.join(Globals.workpath, '*.acp')) + glob.glob(os.path.join(Globals.confpath, '*.acp'))
     afiles = sets.Set(b)
     afiles.difference_update(files)
     afiles = list(afiles)
     afiles.sort()
-    
+
     sfiles = [obj.filename for obj in win.custom_assistant]
-    
+
     elements = [
     ('static', 'applied', '\n'.join(files), tr('Deault acp files:'), None),
     ('multi', 'custom', sfiles, tr('Available acp files:'), afiles),
@@ -190,24 +190,24 @@ def get_acp_files(win):
         for f in values['custom']:
             win.custom_assistant.append(i.get_assistant(f))
         i.install_acp(win, win.languagename, True)
-            
+
     easy.Destroy()
-    
+
 def call_lexer(win, oldfilename, filename, language):
     i = get_inputassistant_obj(win)
     i.install_acp(win, win.languagename)
-    
+
     files = []
     objs = i.get_acp(win.languagename)
     if objs:
         files = [obj.filename for obj in objs]
-       
+
     b = glob.glob(os.path.join(Globals.workpath, '*.acp')) + glob.glob(os.path.join(Globals.confpath, '*.acp'))
     afiles = sets.Set(b)
     afiles.difference_update(files)
     afiles = list(afiles)
     afiles.sort()
-    
+
     prjfile = common.getProjectFile(filename)
     ini = dict4ini.DictIni(prjfile)
     ext = os.path.splitext(filename)[1]
@@ -216,7 +216,7 @@ def call_lexer(win, oldfilename, filename, language):
     if acps:
         if isinstance(acps, str):
             acps = [acps]
-            
+
         for f in acps:
             for acpf in afiles:
                 if os.path.basename(acpf) == f:
@@ -236,7 +236,7 @@ def OnDocumentApplyAcp(win, event):
     if hasattr(win, 'document') and win.document.edittype == 'edit':
        get_acp_files(win.document)
 Mixin.setMixin('mainframe', 'OnDocumentApplyAcp', OnDocumentApplyAcp)
-    
+
 def add_editor_menu(popmenulist):
     popmenulist.extend([
         (None,
@@ -263,7 +263,7 @@ def on_kill_focus(win, event):
         else:
             win.calltip.cancel()
 Mixin.setPlugin('editor', 'on_kill_focus', on_kill_focus)
-    
+
 def on_key_down(win, event):
     key = event.GetKeyCode()
     control = event.ControlDown()
@@ -288,7 +288,7 @@ def on_key_down(win, event):
 ##        statusbar = Globals.mainframe.statusbar
 ##        text = "press escape key to set calltip  state to normal, if you find the calltip state is wrong ,doing this can clear wrong state."
 ##        statusbar.show_panel('tips: '+text, color='#AAFFAA', font=wx.Font(10, wx.TELETYPE, wx.NORMAL, wx.BOLD, True))
-        
+
 Mixin.setPlugin('editor', 'on_key_down', on_key_down, Mixin.HIGH, 1)
 
 def leaveopenfile(win, filename):
@@ -298,19 +298,23 @@ def leaveopenfile(win, filename):
         win.mainframe.auto_routin_analysis.put(win)
 Mixin.setPlugin('editor', 'leaveopenfile', leaveopenfile)
 
-def on_modified(win, event):
-#    if not win.dont_analysis:
-    type = event.GetModificationType()
-    for flag in (wx.stc.STC_MOD_INSERTTEXT, wx.stc.STC_MOD_DELETETEXT):
-        if flag & type:
-            modified_line = win.LineFromPosition(event.GetPosition())
-            if  win.modified_line is None:
-                win.modified_line = modified_line
-                win.mainframe.auto_routin_analysis.put(win)
-            else:
-                if  win.modified_line != modified_line or event.GetLinesAdded() != 0:
-                    win.modified_line = modified_line
-                    win.mainframe.auto_routin_analysis.put(win)
+#def on_modified_text(win, event):
+##    if not win.dont_analysis:
+#    type = event.GetModificationType()
+#    for flag in (wx.stc.STC_MOD_INSERTTEXT, wx.stc.STC_MOD_DELETETEXT):
+#        if flag & type:
+#            modified_line = win.LineFromPosition(event.GetPosition())
+#            if  win.modified_line is None:
+#                win.modified_line = modified_line
+#                win.mainframe.auto_routin_analysis.put(win)
+#            else:
+#                if  win.modified_line != modified_line or event.GetLinesAdded() != 0:
+#                    win.modified_line = modified_line
+#                    win.mainframe.auto_routin_analysis.put(win)
+#Mixin.setPlugin('editor', 'on_modified_text', on_modified_text)
+
+def on_modified(win):
+    win.mainframe.auto_routin_analysis.put(win)
 Mixin.setPlugin('editor', 'on_modified', on_modified)
 
 from modules import AsyncAction
@@ -323,9 +327,9 @@ class InputAssistantAction(AsyncAction.AsyncAction):
     def do_action(self, obj):
         if not self.empty:
             return
-        
+
         pref = Globals.pref
-        
+
         action = obj['type']
         win = obj['win']
         try:
@@ -342,10 +346,10 @@ class InputAssistantAction(AsyncAction.AsyncAction):
         except:
             Globals.mainframe.input_assistant = None
             error.traceback()
-            
+
     def get_timestep(self):
         return float(Globals.pref.inputass_typing_rate)/1000
-        
+
 class Analysis(AsyncAction.AsyncAction):
     def do_action(self, obj):
         win = Globals.mainframe
@@ -359,7 +363,7 @@ class Analysis(AsyncAction.AsyncAction):
         except:
             win.input_assistant = None
             error.traceback()
-        
+
 def main_init(win):
     win.auto_routin_analysis = Analysis(.2)
     win.auto_routin_analysis.start()

@@ -414,6 +414,15 @@ def on_first_keydown(win, event):
             win.editctrl.Navigation(False)
 Mixin.setPlugin('editor', 'on_first_keydown', on_first_keydown)
 
+def on_modified(win):
+    if win.edittype == 'edit':
+        if not win.isModified():
+            win.SetSavePoint()
+        if win.editctrl:
+            wx.CallAfter(win.editctrl.showTitle, win)
+            wx.CallAfter(win.editctrl.showPageTitle, win)
+Mixin.setPlugin('editor', 'on_modified', on_modified)
+
 
 
 #-----------------------  mComEdit.py ------------------
@@ -1035,7 +1044,7 @@ def pref_init(pref):
     pref.smart_nav_last_position = None
 Mixin.setPlugin('preference', 'init', pref_init)
 
-def on_modified(win, event):
+def on_modified_text(win, event):
     if hasattr(win, 'multiview') and win.multiview:
         return
     type = event.GetModificationType()
@@ -1046,7 +1055,7 @@ def on_modified(win, event):
                 win.pref.save()
             wx.CallAfter(f)
             return
-Mixin.setPlugin('editor', 'on_modified', on_modified)
+Mixin.setPlugin('editor', 'on_modified_text', on_modified_text)
 
 def OnSearchLastModify(win, event=None):
     if win.pref.smart_nav_last_position:
@@ -1136,6 +1145,7 @@ def setEOLMode(win, mode):
     win.disable_onmodified = True
     win.ConvertEOLs(win.eols[mode])
     win.disable_onmodified = False
+    win.callplugin('on_modified', win)
     win.SetEOLMode(win.eols[mode])
     win.mainframe.SetStatusText(win.eolstr[mode], 3)
 
@@ -1444,7 +1454,7 @@ def add_tool_list(toollist, toolbaritems):
     })
 Mixin.setPlugin('mainframe', 'add_tool_list', add_tool_list)
 
-def on_modified(win, event):
+def on_modified(win):
     win.setLineNumberMargin(win.show_linenumber)
 Mixin.setPlugin('editor', 'on_modified', on_modified)
 
@@ -1535,12 +1545,14 @@ def OnFormatIndent(win, event):
     win.disable_onmodified = True
     win.CmdKeyExecute(wx.stc.STC_CMD_TAB)
     win.disable_onmodified = False
+    win.callplugin('on_modified', win)
 Mixin.setMixin('editor', 'OnFormatIndent', OnFormatIndent)
 
 def OnFormatUnindent(win, event):
     win.disable_onmodified = True
     win.CmdKeyExecute(wx.stc.STC_CMD_BACKTAB)
     win.disable_onmodified = False
+    win.callplugin('on_modified', win)
 Mixin.setMixin('editor', 'OnFormatUnindent', OnFormatUnindent)
 
 def OnFormatQuote(win, event):
@@ -6350,18 +6362,9 @@ def leaveopenfile(win, filename):
         win.mainframe.auto_routin_analysis.put(win)
 Mixin.setPlugin('editor', 'leaveopenfile', leaveopenfile)
 
-def on_modified(win, event):
-    type = event.GetModificationType()
-    for flag in (wx.stc.STC_MOD_INSERTTEXT, wx.stc.STC_MOD_DELETETEXT):
-        if flag & type:
-            modified_line = win.LineFromPosition(event.GetPosition())
-            if  win.modified_line is None:
-                win.modified_line = modified_line
-                win.mainframe.auto_routin_analysis.put(win)
-            else:
-                if  win.modified_line != modified_line or event.GetLinesAdded() != 0:
-                    win.modified_line = modified_line
-                    win.mainframe.auto_routin_analysis.put(win)
+
+def on_modified(win):
+    win.mainframe.auto_routin_analysis.put(win)
 Mixin.setPlugin('editor', 'on_modified', on_modified)
 
 from modules import AsyncAction
@@ -8323,7 +8326,7 @@ def createCodeSnippetEditWindow(win):
         return snippet
 Mixin.setMixin('mainframe', 'createCodeSnippetEditWindow', createCodeSnippetEditWindow)
 
-def on_modified(win, event):
+def on_modified(win):
     if hasattr(win, 'code_snippet') and win.code_snippet:
         if not win.snippet_obj.changing:
             win.snippet_obj.update_node(win.snippet_obj.tree.GetSelection(), newcontent=win.GetText())
@@ -8334,7 +8337,6 @@ def on_selected(win, text):
     doc.AddText(text)
     wx.CallAfter(doc.SetFocus)
 Mixin.setPlugin('codesnippet', 'on_selected', on_selected)
-
 
 
 

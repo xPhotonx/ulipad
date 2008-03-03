@@ -75,6 +75,7 @@ def setEOLMode(win, mode):
     win.disable_onmodified = True
     win.ConvertEOLs(win.eols[mode])
     win.disable_onmodified = False
+    win.callplugin('on_modified', win)
 #    win.EndUndoAction()
 #    win.restore_state(state)
     win.SetEOLMode(win.eols[mode])

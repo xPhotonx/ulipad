@@ -101,6 +101,7 @@ def OnFormatIndent(win, event):
     win.disable_onmodified = True
     win.CmdKeyExecute(wx.stc.STC_CMD_TAB)
     win.disable_onmodified = False
+    win.callplugin('on_modified', win)
 #    win.EndUndoAction()
 Mixin.setMixin('editor', 'OnFormatIndent', OnFormatIndent)
 
@@ -109,6 +110,7 @@ def OnFormatUnindent(win, event):
     win.disable_onmodified = True
     win.CmdKeyExecute(wx.stc.STC_CMD_BACKTAB)
     win.disable_onmodified = False
+    win.callplugin('on_modified', win)
 #    win.EndUndoAction()
 Mixin.setMixin('editor', 'OnFormatUnindent', OnFormatUnindent)
 

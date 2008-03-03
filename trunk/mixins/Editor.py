@@ -227,19 +227,19 @@ class TextEditor(wx.stc.StyledTextCtrl, Mixin.Mixin, DocumentBase.DocumentBase):
                     self.filename = oldfilename
                     raise
 
-                self.settext = True
+                self.disable_onmodified = True
                 self.SetText(stext[0])
                 self.EmptyUndoBuffer()
                 self.SetSavePoint()
-                self.settext = False
+                self.disable_onmodified = False
             else:
                 self.callplugin('openfileencoding', self, '', [''], encoding)
                 if defaulttext:
-                    self.settext = True
+                    self.disable_onmodified = True
                     self.SetText(defaulttext)
                     self.EmptyUndoBuffer()
                     self.SetSavePoint()
-                    self.settext = False
+                    self.disable_onmodified = False
 
             self.callplugin('call_lexer', self, '', filename, language)
             self.callplugin('afteropenfile', self, filename)
@@ -378,14 +378,8 @@ class TextEditor(wx.stc.StyledTextCtrl, Mixin.Mixin, DocumentBase.DocumentBase):
     def OnModified(self, event):
         if self.disable_onmodified:
             return
-        if self.edittype == 'edit' and not self.settext:
-            if not self.isModified():
-                self.SetSavePoint()
-            if self.editctrl:
-                wx.CallAfter(self.editctrl.showTitle, self)
-                wx.CallAfter(self.editctrl.showPageTitle, self)
-        if not self.settext:
-            self.callplugin('on_modified', self, event)
+        self.callplugin('on_modified', self)
+        self.callplugin('on_modified_text', self, event)
 
     def OnMarginClick(self, event):
         self.callplugin('on_margin_click', self, event)
@@ -421,7 +415,7 @@ class TextEditor(wx.stc.StyledTextCtrl, Mixin.Mixin, DocumentBase.DocumentBase):
             return True
 
         if not self.execplugin('on_key_down', self, event):
-            if key == wx.WXK_TAB and not event.ControlDown() and not event.AltDown() and not event.ShiftDown():
+            if key == wx.WXK_TAB and not event.ControlDown() and not event.AltDown():
                 self.disable_onmodified = True
                 self.tab_press = True
             event.Skip()
@@ -471,11 +465,11 @@ class TextEditor(wx.stc.StyledTextCtrl, Mixin.Mixin, DocumentBase.DocumentBase):
         key = event.GetKeyCode()
 
         if not self.execplugin('on_key_up', self, event):
-            if key == wx.WXK_TAB and not event.ControlDown() and not event.AltDown() and not event.ShiftDown():
+            if key == wx.WXK_TAB and not event.ControlDown() and not event.AltDown():
                 if self.tab_press:
                     self.tab_press = False
-                    self.disable_onmodified = True
-
+                    self.disable_onmodified = False
+                    self.callplugin('on_modified', self)
             event.Skip()
 
     def OnMouseUp(self, event):
@@ -711,15 +705,39 @@ class TextEditor(wx.stc.StyledTextCtrl, Mixin.Mixin, DocumentBase.DocumentBase):
             wx.TheClipboard.Close()
 
         if success:
+            self.disable_onmodified = True
             if not self.execplugin('on_paste', self, do.GetText()):
                 wx.stc.StyledTextCtrl.Paste(self)
+            self.disable_onmodified = False
+            self.callplugin('on_modified', self)
 
     def Copy(self):
         if self.SelectionIsRectangle():
             self.selection_column_mode = True
         else:
             self.selection_column_mode = False
+        self.disable_onmodified = True
         wx.stc.StyledTextCtrl.Copy(self)
+        self.disable_onmodified = False
+        self.callplugin('on_modified', self)
+
+    def Cut(self):
+        self.disable_onmodified = True
+        wx.stc.StyledTextCtrl.Cut(self)
+        self.disable_onmodified = False
+        self.callplugin('on_modified', self)
+
+    def Undo(self):
+        self.disable_onmodified = True
+        wx.stc.StyledTextCtrl.Undo(self)
+        self.disable_onmodified = False
+        self.callplugin('on_modified', self)
+
+    def Redo(self):
+        self.disable_onmodified = True
+        wx.stc.StyledTextCtrl.Redo(self)
+        self.disable_onmodified = False
+        self.callplugin('on_modified', self)
 
     def dselect(self):
         pos = self.GetCurrentPos()
