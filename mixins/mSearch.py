@@ -85,9 +85,9 @@ def OnSearchFind(win, event):
     name = 'findpanel'
     if not win.documentarea.sizer.is_shown(name):
         import FindReplace
-        
+
         panel = FindReplace.FindPanel(win.documentarea, name)
-        win.documentarea.sizer.add(panel, 
+        win.documentarea.sizer.add(panel,
             name=name, flag=wx.EXPAND|wx.ALL, border=2)
     else:
         panel = win.documentarea.sizer.find(name)
@@ -107,9 +107,9 @@ def OnSearchReplace(win, event):
     name = 'findpanel'
     if not win.documentarea.sizer.is_shown(name):
         import FindReplace
-        
+
         panel = FindReplace.FindPanel(win.documentarea, name)
-        win.documentarea.sizer.add(panel, 
+        win.documentarea.sizer.add(panel,
             name=name, flag=wx.EXPAND|wx.ALL, border=2)
     else:
         panel = win.documentarea.sizer.find(name)
@@ -158,7 +158,7 @@ def pref_init(pref):
     pref.smart_nav_last_position = None
 Mixin.setPlugin('preference', 'init', pref_init)
 
-def on_modified(win, event):
+def on_modified_text(win, event):
     if hasattr(win, 'multiview') and win.multiview:
         return
     type = event.GetModificationType()
@@ -169,7 +169,7 @@ def on_modified(win, event):
                 win.pref.save()
             wx.CallAfter(f)
             return
-Mixin.setPlugin('editor', 'on_modified', on_modified)
+Mixin.setPlugin('editor', 'on_modified_text', on_modified_text)
 
 #this function will replace the one in mSearch.py
 def OnSearchLastModify(win, event=None):

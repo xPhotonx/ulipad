@@ -66,23 +66,26 @@ def get_state(editor, cmd, text='', pos=None):
                     concurrent.ServerCommandPlay(None, cmd, (_id, pos, len(text)))
                 else:
                     concurrent.client.call('editcmd', cmd, (_id, pos, len(text)))
-        
+
 def on_key_up(win, event):
-    get_state(win, 'gotopos')
+    if win.mainframe.command_starting:
+        get_state(win, 'gotopos')
 Mixin.setPlugin('editor', 'on_key_up', on_key_up)
 
 def on_mouse_up(win, event):
-    get_state(win, 'gotopos')
+    if win.mainframe.command_starting:
+        get_state(win, 'gotopos')
 Mixin.setPlugin('editor', 'on_mouse_up', on_mouse_up)
 
-def on_modified(win, event):
-    type = event.GetModificationType()
-    pos = event.GetPosition()
-    if wx.stc.STC_MOD_INSERTTEXT & type:
-        get_state(win, 'addtext', event.GetText(), pos)
-    elif wx.stc.STC_MOD_DELETETEXT & type:
-        get_state(win, 'deltext', event.GetText(), pos)
-Mixin.setPlugin('editor', 'on_modified', on_modified)
+def on_modified_text(win, event):
+    if win.mainframe.command_starting:
+        type = event.GetModificationType()
+        pos = event.GetPosition()
+        if wx.stc.STC_MOD_INSERTTEXT & type:
+            get_state(win, 'addtext', event.GetText(), pos)
+        elif wx.stc.STC_MOD_DELETETEXT & type:
+            get_state(win, 'deltext', event.GetText(), pos)
+Mixin.setPlugin('editor', 'on_modified_text', on_modified_text)
 
 def closefile(mainframe, document, filename):
     concurrent = mainframe.concurrentwindow
@@ -121,6 +124,6 @@ Mixin.setMixin('mainframe', 'createConcurrentWindow', createConcurrentWindow)
 
 def pref_init(pref):
     pref.pairprog_host = '127.0.0.1'
-    pref.pairprog_port = '5555'
+    pref.pairprog_port = '55555'
     pref.pairprog_username = ''
 Mixin.setPlugin('preference', 'init', pref_init)

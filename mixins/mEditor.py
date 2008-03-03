@@ -40,3 +40,12 @@ def on_first_keydown(win, event):
         else:
             win.editctrl.Navigation(False)
 Mixin.setPlugin('editor', 'on_first_keydown', on_first_keydown)
+
+def on_modified(win):
+    if win.edittype == 'edit':
+        if not win.isModified():
+            win.SetSavePoint()
+        if win.editctrl:
+            wx.CallAfter(win.editctrl.showTitle, win)
+            wx.CallAfter(win.editctrl.showPageTitle, win)
+Mixin.setPlugin('editor', 'on_modified', on_modified)

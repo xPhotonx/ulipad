@@ -1,10 +1,10 @@
 #   Programmer:     limodou
 #   E-mail:         limodou@gmail.com
-#  
+#
 #   Copyleft 2006 limodou
-#  
+#
 #   Distributed under the terms of the GPL (GNU Public License)
-#  
+#
 #   UliPad is free software; you can redistribute it and/or modify
 #   it under the terms of the GNU General Public License as published by
 #   the Free Software Foundation; either version 2 of the License, or
@@ -67,7 +67,7 @@ def editor_init(win):
 
     #show indentation guides
     win.SetIndentationGuides(win.mainframe.pref.startup_show_indent_guide)
-    
+
     win.mwidth = 0     #max line number
     win.show_linenumber = win.mainframe.pref.startup_show_linenumber
 Mixin.setPlugin('editor', 'init', editor_init)
@@ -163,7 +163,7 @@ def on_mainframe_updateui(win, event):
             event.Check(win.document.GetViewEOL())
         elif eid == win.IDM_VIEW_LINE_NUMBER:
             event.Check(win.document.show_linenumber)
-                
+
     else:
         if eid in [win.IDM_VIEW_TAB, win.IDM_VIEW_INDENTATION_GUIDES, win.IDM_VIEW_RIGHT_EDGE, win.IDM_VIEW_ENDOFLINE_MARK]:
 #        if eid in [win.IDM_VIEW_TAB, win.IDM_VIEW_INDENTATION_GUIDES, win.IDM_VIEW_RIGHT_EDGE]:
@@ -182,7 +182,7 @@ def add_tool_list(toollist, toolbaritems):
     })
 Mixin.setPlugin('mainframe', 'add_tool_list', add_tool_list)
 
-def on_modified(win, event):
+def on_modified(win):
     win.setLineNumberMargin(win.show_linenumber)
 Mixin.setPlugin('editor', 'on_modified', on_modified)
 
