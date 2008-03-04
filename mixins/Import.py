@@ -1245,13 +1245,14 @@ def pref_init(pref):
 Mixin.setPlugin('preference', 'init', pref_init)
 
 def savefile(win, filename):
-    status = win.save_state()
-    try:
-
-        win.mainframe.OnEditFormatChop(None)
-    finally:
-        win.restore_state(status)
-
+    if pref.edit_linestrip:
+        status = win.save_state()
+        try:
+    #        if not win.lineendingsaremixed:
+    #            setEOLMode(win, win.eolmode)
+            win.mainframe.OnEditFormatChop(None)
+        finally:
+            win.restore_state(status)
 Mixin.setPlugin('editor', 'savefile', savefile)
 
 
