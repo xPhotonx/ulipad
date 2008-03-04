@@ -163,14 +163,6 @@ def on_modified(win):
         return
     win.pref.smart_nav_last_position = win.getFilename(), win.save_state()
     win.pref.save()
-#    type = event.GetModificationType()
-#    for flag in (wx.stc.STC_MOD_INSERTTEXT, wx.stc.STC_MOD_DELETETEXT):
-#        if flag & type:
-#            def f():
-#                win.pref.smart_nav_last_position = win.getFilename(), win.save_state()
-#                win.pref.save()
-#            wx.CallAfter(f)
-#            return
 Mixin.setPlugin('editor', 'on_modified', on_modified)
 
 #this function will replace the one in mSearch.py
