@@ -6353,8 +6353,6 @@ from modules import AsyncAction
 def on_close(win, event):
     "when app close, keep thread from running do_action"
     AsyncAction.AsyncAction.STOP = True
-    win.auto_routin_analysis.join()
-    win.auto_routin_ac_action.join()
 Mixin.setPlugin('mainframe','on_close', on_close ,Mixin.HIGH, 1)
 
 def on_close(win, event):
