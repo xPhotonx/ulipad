@@ -3942,9 +3942,7 @@ __doc__ = 'Auto check if the file is modified'
 
 import wx
 import os
-import time
 from modules import Mixin
-from modules import AsyncAction
 from modules import Globals
 
 def add_pref(preflist):
@@ -3954,36 +3952,10 @@ def add_pref(preflist):
     ])
 Mixin.setPlugin('preference', 'add_pref', add_pref)
 
-def pref_init(pref):
-    pref.auto_check  = True
-    pref.auto_check_confirm = True
-    pref.auto_check_interval = 3    #second
-Mixin.setPlugin('preference', 'init', pref_init)
 
-class Autocheck(AsyncAction.AsyncAction):
-    def do_action(self, obj):
-        if not self.empty:
-            return
-        try:
-            win = Globals.mainframe
-            _check(win)
-        except:
-            pass
-
-def main_init(win):
-    win.auto_check_files = Autocheck(1)
-    win.auto_check_files.start()
-    win.auto_last_checkpoint = 0
-Mixin.setPlugin('mainframe', 'init', main_init)
-
-def on_idle(win):
-    if not win.auto_last_checkpoint:
-        win.auto_last_checkpoint = time.time()
-    else:
-        if time.time() - win.auto_last_checkpoint > win.pref.auto_check_interval:
-            win.auto_check_files.put(True)
-            win.auto_last_checkpoint = time.time()
-Mixin.setPlugin('mainframe', 'on_idle', on_idle)
+def on_set_focus(win, event):
+    _check(Globals.mainframe)
+Mixin.setPlugin('editor', 'on_set_focus', on_set_focus)
 
 def _check(win):
     if win.pref.auto_check:
@@ -6418,6 +6390,7 @@ import os
 from modules import Mixin
 from modules import common
 from modules import makemenu
+from modules import Globals
 
 def add_tool_list(toollist, toolbaritems):
     #order, IDname, imagefile, short text, long text, func
@@ -6464,11 +6437,15 @@ def create_menu(win, menu):
                 if os.path.exists(templatefile):
                     text = file(templatefile).read()
                     text = common.decode_string(text)
+                    import re
+                    eolstring = {0:'\n', 1:'\r\n', 2:'\r'}
+                    eol = eolstring[Globals.pref.default_eol_mode]
+                    text = re.sub(r'\r\n|\r|\n', eol, text)
                 else:
                     text = ''
             document = win.editctrl.new(defaulttext=text, language=lexer.name)
             if document:
-                document.SetFocus()
+                document.goto(document.GetTextLength())
 
     for name, lexname in win.filenewtypes:
         _id = wx.NewId()
