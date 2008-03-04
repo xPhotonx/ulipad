@@ -46,21 +46,35 @@ def OnEditorCopyRun(win, event):
     _copy_and_run(win)
 Mixin.setMixin('editor', 'OnEditorCopyRun', OnEditorCopyRun)
 
+import re
+re_space = re.compile(r'^\s+')
+def lstrip_multitext(text):
+    lines = text.splitlines()
+    m = 999999
+    for line in lines:
+        b = re_space.search(line)
+        if b:
+            m = min(len(b.group()), m)
+        else:
+            m = 0
+            break
+    return '\n'.join([x[m:] for x in lines])
+
 def _copy_and_run(doc):
     from modules import Globals
-    
+
     win = Globals.mainframe
     text = doc.GetSelectedText()
     if text:
         win.createShellWindow()
         win.panel.showPage(tr('Shell'))
         shellwin = win.panel.getPage(tr('Shell'))
-        shellwin.Execute(text.rstrip())
+        shellwin.Execute(lstrip_multitext(text))
 
 def OnEditCopyRun(win, event):
     _copy_and_run(win.editctrl.getCurDoc())
 Mixin.setMixin('mainframe', 'OnEditCopyRun', OnEditCopyRun)
-    
+
 def add_mainframe_menu(menulist):
     menulist.extend([
         ('IDM_EDIT',
