@@ -1,4 +1,8 @@
 $Rev$
+[2008/03/04]
+*                   Enhance on_modified process, improve the edit speed
+mShell.py           Strip leading space when doing "Run in Shell"
+
 [2008/03/03]
 Editor.py mFormat.py mLineending.py
                     Fix press tab and convert EOF too slow problem

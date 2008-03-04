@@ -414,6 +414,10 @@ def on_first_keydown(win, event):
             win.editctrl.Navigation(False)
 Mixin.setPlugin('editor', 'on_first_keydown', on_first_keydown)
 
+def on_modified_routin(win):
+    win.mainframe.auto_onmodified.put(win)
+Mixin.setPlugin('editor', 'on_modified_routin', on_modified_routin)
+
 def on_modified(win):
     if win.edittype == 'edit':
         if not win.isModified():
@@ -422,6 +426,30 @@ def on_modified(win):
             wx.CallAfter(win.editctrl.showTitle, win)
             wx.CallAfter(win.editctrl.showPageTitle, win)
 Mixin.setPlugin('editor', 'on_modified', on_modified)
+
+from modules import Globals
+from modules.Debug import error
+from modules import AsyncAction
+class OnModified(AsyncAction.AsyncAction):
+    def do_action(self, obj):
+        win = Globals.mainframe
+        if not self.empty:
+            return
+        try:
+            if not obj: return
+            obj.callplugin('on_modified', obj)
+            return True
+        except:
+            error.traceback()
+
+def main_init(win):
+    win.auto_onmodified = OnModified(.2)
+    win.auto_onmodified.start()
+Mixin.setPlugin('mainframe', 'init', main_init)
+
+def on_close(win, event):
+    win.auto_onmodified.join()
+Mixin.setPlugin('mainframe','on_close', on_close)
 
 
 
@@ -1044,18 +1072,12 @@ def pref_init(pref):
     pref.smart_nav_last_position = None
 Mixin.setPlugin('preference', 'init', pref_init)
 
-def on_modified_text(win, event):
+def on_modified(win):
     if hasattr(win, 'multiview') and win.multiview:
         return
-    type = event.GetModificationType()
-    for flag in (wx.stc.STC_MOD_INSERTTEXT, wx.stc.STC_MOD_DELETETEXT):
-        if flag & type:
-            def f():
-                win.pref.smart_nav_last_position = win.getFilename(), win.save_state()
-                win.pref.save()
-            wx.CallAfter(f)
-            return
-Mixin.setPlugin('editor', 'on_modified_text', on_modified_text)
+    win.pref.smart_nav_last_position = win.getFilename(), win.save_state()
+    win.pref.save()
+Mixin.setPlugin('editor', 'on_modified', on_modified)
 
 def OnSearchLastModify(win, event=None):
     if win.pref.smart_nav_last_position:
@@ -1142,10 +1164,7 @@ Mixin.setPlugin('mainframe', 'add_menu', add_mainframe_menu)
 def setEOLMode(win, mode):
     win.lineendingsaremixed = False
     win.eolmode = mode
-    win.disable_onmodified = True
     win.ConvertEOLs(win.eols[mode])
-    win.disable_onmodified = False
-    win.callplugin('on_modified', win)
     win.SetEOLMode(win.eols[mode])
     win.mainframe.SetStatusText(win.eolstr[mode], 3)
 
@@ -1225,70 +1244,16 @@ def pref_init(pref):
     pref.edit_linestrip = False
 Mixin.setPlugin('preference', 'init', pref_init)
 
-import re
-r_lineending = re.compile(r'\s+$')
 def savefile(win, filename):
     status = win.save_state()
     try:
 
-        for i in range(win.GetLineCount()):
-            start = win.PositionFromLine(i)
-            end = win.GetLineEndPosition(i)
-            text = win.GetTextRange(start, end)
-            b = r_lineending.search(text)
-            if b:
-                win.SetTargetStart(start+b.start())
-                win.SetTargetEnd(start+b.end())
-                win.ReplaceTarget('')
+        win.mainframe.OnEditFormatChop(None)
     finally:
         win.restore_state(status)
 
 Mixin.setPlugin('editor', 'savefile', savefile)
 
-def add_mainframe_menu(menulist):
-    menulist.extend([
-        ('IDM_EDIT_FORMAT',
-        [
-            (220, '', '-', wx.ITEM_SEPARATOR, None, ''),
-            (230, 'IDM_EDIT_FORMAT_STRIPLINEENDING', tr('Strip Line ending'), wx.ITEM_NORMAL, 'OnEditFormatStripLineending', tr('Strip line ending.')),
-        ]),
-    ])
-Mixin.setPlugin('mainframe', 'add_menu', add_mainframe_menu)
-
-def add_editor_menu(popmenulist):
-    popmenulist.extend([
-        ('IDPM_FORMAT',
-        [
-            (220, '', '-', wx.ITEM_SEPARATOR, None, ''),
-            (230, 'IDPM_FORMAT_STRIPLINEENDING', tr('Strip Line ending'), wx.ITEM_NORMAL, 'OnFormatStripLineending', tr('Strip line ending.')),
-        ]),
-    ])
-Mixin.setPlugin('editor', 'add_menu', add_editor_menu)
-
-def strip_lineending(document):
-    status = document.save_state()
-    document.BeginUndoAction()
-    try:
-        for i in range(document.GetLineCount()):
-            start = document.PositionFromLine(i)
-            end = document.GetLineEndPosition(i)
-            text = document.GetTextRange(start, end)
-            b = r_lineending.search(text)
-            if b:
-                document.SetTargetStart(start+b.start())
-                document.SetTargetEnd(start+b.end())
-                document.ReplaceTarget('')
-    finally:
-        document.restore_state(status)
-        document.EndUndoAction()
-
-def OnEditFormatStripLineending(win, event):
-    strip_lineending(win.document)
-Mixin.setMixin('mainframe', 'OnEditFormatStripLineending', OnEditFormatStripLineending)
-
-def OnFormatStripLineending(win, event):
-    strip_lineending(win)
-Mixin.setMixin('editor', 'OnFormatStripLineending', OnFormatStripLineending)
 
 
 
@@ -1542,17 +1507,11 @@ def OnEditFormatUnindent(win, event):
 Mixin.setMixin('mainframe', 'OnEditFormatUnindent', OnEditFormatUnindent)
 
 def OnFormatIndent(win, event):
-    win.disable_onmodified = True
     win.CmdKeyExecute(wx.stc.STC_CMD_TAB)
-    win.disable_onmodified = False
-    win.callplugin('on_modified', win)
 Mixin.setMixin('editor', 'OnFormatIndent', OnFormatIndent)
 
 def OnFormatUnindent(win, event):
-    win.disable_onmodified = True
     win.CmdKeyExecute(wx.stc.STC_CMD_BACKTAB)
-    win.disable_onmodified = False
-    win.callplugin('on_modified', win)
 Mixin.setMixin('editor', 'OnFormatUnindent', OnFormatUnindent)
 
 def OnFormatQuote(win, event):
@@ -1590,13 +1549,35 @@ def savepreference(mainframe, pref):
         document.SetTabWidth(mainframe.pref.tabwidth)
 Mixin.setPlugin('prefdialog', 'savepreference', savepreference)
 
+import re
+r_lineending = re.compile(r'\s+$')
+def strip_lineending(document):
+    status = document.save_state()
+    document.BeginUndoAction()
+    try:
+        for i in range(document.GetLineCount()):
+            start = document.PositionFromLine(i)
+            end = document.GetLineEndPosition(i)
+            text = document.GetTextRange(start, end)
+            b = r_lineending.search(text)
+            if b:
+                document.SetTargetStart(start+b.start())
+                document.SetTargetEnd(start+b.end())
+                document.ReplaceTarget('')
+    finally:
+        document.restore_state(status)
+        document.EndUndoAction()
+
+def OnEditFormatStripLineending(win, event):
+    strip_lineending(win.document)
+Mixin.setMixin('mainframe', 'OnEditFormatStripLineending', OnEditFormatStripLineending)
+
+def OnFormatStripLineending(win, event):
+    strip_lineending(win)
+Mixin.setMixin('editor', 'OnFormatStripLineending', OnFormatStripLineending)
+
 def OnEditFormatChop(win, event):
-    win.document.BeginUndoAction()
-    for i in win.document.getSelectionLines():
-        text = win.document.getLineText(i)
-        newtext = text.rstrip()
-        win.document.replaceLineText(i, newtext)
-    win.document.EndUndoAction()
+    strip_lineending(win.document)
 Mixin.setMixin('mainframe', 'OnEditFormatChop', OnEditFormatChop)
 
 def OnFormatChop(win, event):
@@ -1644,8 +1625,8 @@ def OnEditFormatComment(win, event):
     win.pref.save()
     win.document.BeginUndoAction()
     for i in win.document.getSelectionLines():
-        text = win.document.getLineText(i)
-        win.document.replaceLineText(i, commentchar + text)
+        start = win.document.PositionFromLine(i)
+        win.document.InsertText(start, commentchar)
     win.document.EndUndoAction()
 Mixin.setMixin('mainframe', 'OnEditFormatComment', OnEditFormatComment)
 
@@ -1670,10 +1651,12 @@ def OnEditFormatUncomment(win, event):
     win.pref.last_comment_chars = commentchar
     win.pref.save()
     win.document.BeginUndoAction()
+    len_cm = len(commentchar)
     for i in win.document.getSelectionLines():
+        start = win.document.PositionFromLine(i)
         text = win.document.getLineText(i)
         if text.startswith(commentchar):
-            win.document.replaceLineText(i, text[len(commentchar):])
+            win.document.removeText(start, len_cm)
     win.document.EndUndoAction()
 Mixin.setMixin('mainframe', 'OnEditFormatUncomment', OnEditFormatUncomment)
 
@@ -6362,7 +6345,6 @@ def leaveopenfile(win, filename):
         win.mainframe.auto_routin_analysis.put(win)
 Mixin.setPlugin('editor', 'leaveopenfile', leaveopenfile)
 
-
 def on_modified(win):
     win.mainframe.auto_routin_analysis.put(win)
 Mixin.setPlugin('editor', 'on_modified', on_modified)
@@ -6371,7 +6353,14 @@ from modules import AsyncAction
 def on_close(win, event):
     "when app close, keep thread from running do_action"
     AsyncAction.AsyncAction.STOP = True
+    win.auto_routin_analysis.join()
+    win.auto_routin_ac_action.join()
 Mixin.setPlugin('mainframe','on_close', on_close ,Mixin.HIGH, 1)
+
+def on_close(win, event):
+    win.auto_routin_analysis.join()
+    win.auto_routin_ac_action.join()
+Mixin.setPlugin('mainframe','on_close', on_close)
 
 class InputAssistantAction(AsyncAction.AsyncAction):
     def do_action(self, obj):
@@ -8133,6 +8122,20 @@ def OnEditorCopyRun(win, event):
     _copy_and_run(win)
 Mixin.setMixin('editor', 'OnEditorCopyRun', OnEditorCopyRun)
 
+import re
+re_space = re.compile(r'^\s+')
+def lstrip_multitext(text):
+    lines = text.splitlines()
+    m = 999999
+    for line in lines:
+        b = re_space.search(line)
+        if b:
+            m = min(len(b.group()), m)
+        else:
+            m = 0
+            break
+    return '\n'.join([x[m:] for x in lines])
+
 def _copy_and_run(doc):
     from modules import Globals
 
@@ -8142,7 +8145,7 @@ def _copy_and_run(doc):
         win.createShellWindow()
         win.panel.showPage(tr('Shell'))
         shellwin = win.panel.getPage(tr('Shell'))
-        shellwin.Execute(text.rstrip())
+        shellwin.Execute(lstrip_multitext(text))
 
 def OnEditCopyRun(win, event):
     _copy_and_run(win.editctrl.getCurDoc())

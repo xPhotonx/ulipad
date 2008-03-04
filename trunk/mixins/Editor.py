@@ -376,10 +376,9 @@ class TextEditor(wx.stc.StyledTextCtrl, Mixin.Mixin, DocumentBase.DocumentBase):
         self.callplugin('on_update_ui', self, event)
 
     def OnModified(self, event):
-        if self.disable_onmodified:
-            return
-        self.callplugin('on_modified', self)
         self.callplugin('on_modified_text', self, event)
+        self.callplugin('on_modified_routin', self)
+
 
     def OnMarginClick(self, event):
         self.callplugin('on_margin_click', self, event)
@@ -415,9 +414,6 @@ class TextEditor(wx.stc.StyledTextCtrl, Mixin.Mixin, DocumentBase.DocumentBase):
             return True
 
         if not self.execplugin('on_key_down', self, event):
-            if key == wx.WXK_TAB and not event.ControlDown() and not event.AltDown():
-                self.disable_onmodified = True
-                self.tab_press = True
             event.Skip()
 
     def clone_key_event(self, event):
@@ -462,14 +458,7 @@ class TextEditor(wx.stc.StyledTextCtrl, Mixin.Mixin, DocumentBase.DocumentBase):
 #        self.execplugin('after_char', self, event)
 
     def OnKeyUp(self, event):
-        key = event.GetKeyCode()
-
         if not self.execplugin('on_key_up', self, event):
-            if key == wx.WXK_TAB and not event.ControlDown() and not event.AltDown():
-                if self.tab_press:
-                    self.tab_press = False
-                    self.disable_onmodified = False
-                    self.callplugin('on_modified', self)
             event.Skip()
 
     def OnMouseUp(self, event):
@@ -492,6 +481,11 @@ class TextEditor(wx.stc.StyledTextCtrl, Mixin.Mixin, DocumentBase.DocumentBase):
         self.mainframe.document = self
         if not self.execplugin('on_set_focus', self, event):
             event.Skip()
+
+    def removeText(self, start, length):
+        self.SetTargetStart(start)
+        self.SetTargetEnd(start + length)
+        self.ReplaceTarget('')
 
     def getLinePositionTuple(self, pos=None):
         if pos == None:
@@ -705,39 +699,15 @@ class TextEditor(wx.stc.StyledTextCtrl, Mixin.Mixin, DocumentBase.DocumentBase):
             wx.TheClipboard.Close()
 
         if success:
-            self.disable_onmodified = True
             if not self.execplugin('on_paste', self, do.GetText()):
                 wx.stc.StyledTextCtrl.Paste(self)
-            self.disable_onmodified = False
-            self.callplugin('on_modified', self)
 
     def Copy(self):
         if self.SelectionIsRectangle():
             self.selection_column_mode = True
         else:
             self.selection_column_mode = False
-        self.disable_onmodified = True
         wx.stc.StyledTextCtrl.Copy(self)
-        self.disable_onmodified = False
-        self.callplugin('on_modified', self)
-
-    def Cut(self):
-        self.disable_onmodified = True
-        wx.stc.StyledTextCtrl.Cut(self)
-        self.disable_onmodified = False
-        self.callplugin('on_modified', self)
-
-    def Undo(self):
-        self.disable_onmodified = True
-        wx.stc.StyledTextCtrl.Undo(self)
-        self.disable_onmodified = False
-        self.callplugin('on_modified', self)
-
-    def Redo(self):
-        self.disable_onmodified = True
-        wx.stc.StyledTextCtrl.Redo(self)
-        self.disable_onmodified = False
-        self.callplugin('on_modified', self)
 
     def dselect(self):
         pos = self.GetCurrentPos()

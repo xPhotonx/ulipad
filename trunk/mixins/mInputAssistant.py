@@ -298,21 +298,6 @@ def leaveopenfile(win, filename):
         win.mainframe.auto_routin_analysis.put(win)
 Mixin.setPlugin('editor', 'leaveopenfile', leaveopenfile)
 
-#def on_modified_text(win, event):
-##    if not win.dont_analysis:
-#    type = event.GetModificationType()
-#    for flag in (wx.stc.STC_MOD_INSERTTEXT, wx.stc.STC_MOD_DELETETEXT):
-#        if flag & type:
-#            modified_line = win.LineFromPosition(event.GetPosition())
-#            if  win.modified_line is None:
-#                win.modified_line = modified_line
-#                win.mainframe.auto_routin_analysis.put(win)
-#            else:
-#                if  win.modified_line != modified_line or event.GetLinesAdded() != 0:
-#                    win.modified_line = modified_line
-#                    win.mainframe.auto_routin_analysis.put(win)
-#Mixin.setPlugin('editor', 'on_modified_text', on_modified_text)
-
 def on_modified(win):
     win.mainframe.auto_routin_analysis.put(win)
 Mixin.setPlugin('editor', 'on_modified', on_modified)
@@ -321,7 +306,14 @@ from modules import AsyncAction
 def on_close(win, event):
     "when app close, keep thread from running do_action"
     AsyncAction.AsyncAction.STOP = True
+    win.auto_routin_analysis.join()
+    win.auto_routin_ac_action.join()
 Mixin.setPlugin('mainframe','on_close', on_close ,Mixin.HIGH, 1)
+
+def on_close(win, event):
+    win.auto_routin_analysis.join()
+    win.auto_routin_ac_action.join()
+Mixin.setPlugin('mainframe','on_close', on_close)
 
 class InputAssistantAction(AsyncAction.AsyncAction):
     def do_action(self, obj):

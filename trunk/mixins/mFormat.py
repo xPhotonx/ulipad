@@ -97,21 +97,11 @@ def OnEditFormatUnindent(win, event):
 Mixin.setMixin('mainframe', 'OnEditFormatUnindent', OnEditFormatUnindent)
 
 def OnFormatIndent(win, event):
-#    win.BeginUndoAction()
-    win.disable_onmodified = True
     win.CmdKeyExecute(wx.stc.STC_CMD_TAB)
-    win.disable_onmodified = False
-    win.callplugin('on_modified', win)
-#    win.EndUndoAction()
 Mixin.setMixin('editor', 'OnFormatIndent', OnFormatIndent)
 
 def OnFormatUnindent(win, event):
-#    win.BeginUndoAction()
-    win.disable_onmodified = True
     win.CmdKeyExecute(wx.stc.STC_CMD_BACKTAB)
-    win.disable_onmodified = False
-    win.callplugin('on_modified', win)
-#    win.EndUndoAction()
 Mixin.setMixin('editor', 'OnFormatUnindent', OnFormatUnindent)
 
 def OnFormatQuote(win, event):
@@ -149,13 +139,35 @@ def savepreference(mainframe, pref):
         document.SetTabWidth(mainframe.pref.tabwidth)
 Mixin.setPlugin('prefdialog', 'savepreference', savepreference)
 
+import re
+r_lineending = re.compile(r'\s+$')
+def strip_lineending(document):
+    status = document.save_state()
+    document.BeginUndoAction()
+    try:
+        for i in range(document.GetLineCount()):
+            start = document.PositionFromLine(i)
+            end = document.GetLineEndPosition(i)
+            text = document.GetTextRange(start, end)
+            b = r_lineending.search(text)
+            if b:
+                document.SetTargetStart(start+b.start())
+                document.SetTargetEnd(start+b.end())
+                document.ReplaceTarget('')
+    finally:
+        document.restore_state(status)
+        document.EndUndoAction()
+
+def OnEditFormatStripLineending(win, event):
+    strip_lineending(win.document)
+Mixin.setMixin('mainframe', 'OnEditFormatStripLineending', OnEditFormatStripLineending)
+
+def OnFormatStripLineending(win, event):
+    strip_lineending(win)
+Mixin.setMixin('editor', 'OnFormatStripLineending', OnFormatStripLineending)
+
 def OnEditFormatChop(win, event):
-    win.document.BeginUndoAction()
-    for i in win.document.getSelectionLines():
-        text = win.document.getLineText(i)
-        newtext = text.rstrip()
-        win.document.replaceLineText(i, newtext)
-    win.document.EndUndoAction()
+    strip_lineending(win.document)
 Mixin.setMixin('mainframe', 'OnEditFormatChop', OnEditFormatChop)
 
 def OnFormatChop(win, event):
@@ -203,8 +215,8 @@ def OnEditFormatComment(win, event):
     win.pref.save()
     win.document.BeginUndoAction()
     for i in win.document.getSelectionLines():
-        text = win.document.getLineText(i)
-        win.document.replaceLineText(i, commentchar + text)
+        start = win.document.PositionFromLine(i)
+        win.document.InsertText(start, commentchar)
     win.document.EndUndoAction()
 Mixin.setMixin('mainframe', 'OnEditFormatComment', OnEditFormatComment)
 
@@ -229,10 +241,12 @@ def OnEditFormatUncomment(win, event):
     win.pref.last_comment_chars = commentchar
     win.pref.save()
     win.document.BeginUndoAction()
+    len_cm = len(commentchar)
     for i in win.document.getSelectionLines():
+        start = win.document.PositionFromLine(i)
         text = win.document.getLineText(i)
         if text.startswith(commentchar):
-            win.document.replaceLineText(i, text[len(commentchar):])
+            win.document.removeText(start, len_cm)
     win.document.EndUndoAction()
 Mixin.setMixin('mainframe', 'OnEditFormatUncomment', OnEditFormatUncomment)
 
