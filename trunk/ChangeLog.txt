@@ -2,6 +2,9 @@ $Rev$
 [2008/03/04]
 *                   Enhance on_modified process, improve the edit speed
 mShell.py           Strip leading space when doing "Run in Shell"
+mAutoCheck.py       Chanage auto file check to Editor on_set_focus event
+SvnSettings.py      Fix password widget it Text bug, changed to Password
+mFileNew.py         Fix template line-ending not match the default line-ending setting
 
 [2008/03/03]
 Editor.py mFormat.py mLineending.py
