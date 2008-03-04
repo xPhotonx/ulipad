@@ -314,13 +314,13 @@ def get_config_file():
             
     return _config_file
 
-_config_ini = None
+#_config_ini = None
 def get_config_file_obj(*args, **kwargs):
-    global _config_ini
+#    global _config_ini
     
-    if not _config_ini:
-        from modules import dict4ini
-        _config_ini = dict4ini.DictIni(get_config_file(), *args, **kwargs)
+#    if not _config_ini:
+    from modules import dict4ini
+    _config_ini = dict4ini.DictIni(get_config_file(), *args, **kwargs)
         
     return _config_ini
     
