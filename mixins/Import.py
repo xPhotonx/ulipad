@@ -3705,13 +3705,13 @@ def OnScriptItems(win, event):
     filename = win.pref.scripts[index][1]
 
     try:
-        scripttext = open(filename, 'rU').read()
+        scripttext = open(common.encode_path(filename), 'rU').read()
     except:
         common.showerror(win, tr("Can't open the file [%s]!") % filename)
         return
 
     try:
-        code = compile((scripttext + '\n'), filename, 'exec')
+        code = compile((scripttext + '\n'), common.encode_path(filename), 'exec')
     except:
         d = wx.lib.dialogs.ScrolledMessageDialog(win, (tr("Error compiling script.\n\nTraceback:\n\n") +
             ''.join(traceback.format_exception(*sys.exc_info()))), tr("Error"), wx.DefaultPosition, wx.Size(400,300))
