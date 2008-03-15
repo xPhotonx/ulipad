@@ -1120,7 +1120,6 @@ Mixin.setPlugin('editctrl', 'on_document_enter', on_document_enter)
 
 import wx
 from modules import Mixin
-import re
 
 eolmess = [tr(r"Unix Mode ('\n')"), tr(r"DOS/Windows Mode ('\r\n')"), tr(r"Mac Mode ('\r')")]
 
@@ -1245,7 +1244,7 @@ def pref_init(pref):
 Mixin.setPlugin('preference', 'init', pref_init)
 
 def savefile(win, filename):
-    if pref.edit_linestrip:
+    if win.pref.edit_linestrip:
         status = win.save_state()
         try:
     #        if not win.lineendingsaremixed:
