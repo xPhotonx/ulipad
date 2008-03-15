@@ -34,7 +34,8 @@ def check_python():
         for v in ('2.3', '2.4', '2.5', '2.6', '3.0'):
             try:
                 key = winreg.Key(winreg.HKLM, r'SOFTWARE\Python\Pythoncore\%s\InstallPath' % v)
-                interpreters.append((v, os.path.join(key.value, 'python.exe')))
+                interpreters.append((v+' console', os.path.join(key.value, 'python.exe')))
+                interpreters.append((v+' window', os.path.join(key.value, 'pythonw.exe')))
             except:
                 pass
     else:
