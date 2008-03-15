@@ -1,4 +1,7 @@
 $Rev$
+[2008/03/15]
+mPyRun.py           Add auto detect python interpreter in windows platform
+
 [2008/03/13]
 mScript.py          Fix script filename cannot be unicode(chinese) bug
 
