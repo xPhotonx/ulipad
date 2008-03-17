@@ -70,7 +70,7 @@ class OnModified(AsyncAction.AsyncAction):
             error.traceback()
 
 def main_init(win):
-    win.auto_onmodified = OnModified(.2)
+    win.auto_onmodified = OnModified(.5)
     win.auto_onmodified.start()
 Mixin.setPlugin('mainframe', 'init', main_init)
 

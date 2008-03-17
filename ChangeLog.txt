@@ -1,4 +1,9 @@
 $Rev$
+[2008/03/17]
+HtmlPage.py mRestFileType.py Del acp/rst
+                    Improve ReST document render, and fix the setfocus lost bug when
+                    auto modified the html output, thanks a lot to ygao
+                    
 [2008/03/15]
 mPyRun.py           Add auto detect python interpreter in windows platform
 
