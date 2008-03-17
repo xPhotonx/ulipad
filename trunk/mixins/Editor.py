@@ -763,3 +763,6 @@ class TextEditor(wx.stc.StyledTextCtrl, Mixin.Mixin, DocumentBase.DocumentBase):
         else:
             self.SetMarginWidth(1, 0)
 
+    def OnClose(self, note, **kwargs):
+        Globals.mainframe.editctrl.switch(Globals.mainframe.editctrl.getCurDoc())
+    
