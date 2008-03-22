@@ -1,4 +1,7 @@
 $Rev$
+[2008/03/22]
+web2py_plugin       Add web2py plugin
+
 [2008/03/17]
 HtmlPage.py mRestFileType.py Del acp/rst
                     Improve ReST document render, and fix the setfocus lost bug when

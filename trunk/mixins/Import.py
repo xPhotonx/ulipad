@@ -3951,6 +3951,10 @@ def add_pref(preflist):
     ])
 Mixin.setPlugin('preference', 'add_pref', add_pref)
 
+def pref_init(pref):
+    pref.auto_check  = True
+    pref.auto_check_confirm = True
+Mixin.setPlugin('preference', 'init', pref_init)
 
 def on_set_focus(win, event):
     _check(Globals.mainframe)

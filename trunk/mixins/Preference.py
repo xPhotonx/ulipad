@@ -1,7 +1,7 @@
 #   Programmer: limodou
 #   E-mail:     limodou@gmail.com
 #
-#   Copyleft 2006 limodou
+#   Copyleft 2008 limodou
 #
 #   Distributed under the terms of the GPL (GNU Public License)
 #
@@ -27,6 +27,9 @@ from modules import Mixin
 from modules.Debug import debug, error
 from modules.EasyGuider import obj2ini
 from modules import Globals
+import threading
+
+_lock = threading.Lock()
 
 class Preference(Mixin.Mixin):
     __mixinname__ = 'preference'
@@ -48,25 +51,21 @@ class Preference(Mixin.Mixin):
         return copy.copy(self)
 
     def save(self, filename=''):
-        if not filename:
-            filename = self.get_defulat_inifile()
-#       pickle.dump(self, open(filename, 'w'))
+        _lock.acquire()
         try:
-            obj2ini.dump(self, filename, encoding='utf-8')
-        except:
+            if not filename:
+                filename = self.get_defulat_inifile()
             try:
-                obj2ini.dump(self, filename)
+                obj2ini.dump(self, filename, encoding='utf-8')
             except:
-                error.traceback()
+                try:
+                    obj2ini.dump(self, filename)
+                except:
+                    error.traceback()
+        finally:
+            _lock.release()
 
     def load(self, filename=''):
-#       if not filename:
-#           filename = self.defaultfile
-#       if os.path.exists(filename):
-#           obj = pickle.load(open(filename))
-#           for k, v in obj.__dict__.items():
-#               if hasattr(self, k):
-#                   setattr(self, k, v)
         if not filename:
             filename = self.get_defulat_inifile()
         if os.path.exists(filename):

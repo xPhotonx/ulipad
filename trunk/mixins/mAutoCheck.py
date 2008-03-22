@@ -37,11 +37,11 @@ def add_pref(preflist):
     ])
 Mixin.setPlugin('preference', 'add_pref', add_pref)
 
-#def pref_init(pref):
-#    pref.auto_check  = True
-#    pref.auto_check_confirm = True
+def pref_init(pref):
+    pref.auto_check  = True
+    pref.auto_check_confirm = True
 #    pref.auto_check_interval = 3    #second
-#Mixin.setPlugin('preference', 'init', pref_init)
+Mixin.setPlugin('preference', 'init', pref_init)
 #
 #class Autocheck(AsyncAction.AsyncAction):
 #    def do_action(self, obj):
