@@ -27,8 +27,6 @@ def env(app, dir='', nomodel=False):
     else:
         request.folder = dir
         
-    print 'request.folder', request.folder
-    
     environment={}
     for key in html.__all__: environment[key]=eval('html.%s' % key)
     for key in validators.__all__: environment[key]=eval('validators.%s' % key)
@@ -51,7 +49,7 @@ def env(app, dir='', nomodel=False):
         for f in glob(model_path):
             fname, ext = os.path.splitext(f)
             execfile(f, environment)
-            print 'Imported "%s" model file' % fname
+#            print 'Imported "%s" model file' % fname
     
     return environment
 
