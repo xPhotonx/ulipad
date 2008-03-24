@@ -20,5 +20,5 @@
 #   Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 #
 #   $Id: DosPrompt.py,v 1.1 2005/07/31 09:08:14 limodou Exp $
-
+import editor_ext
 import dirbrowser_ext
