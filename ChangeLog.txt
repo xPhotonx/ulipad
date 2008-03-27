@@ -1,4 +1,8 @@
 $Rev$
+[2008/03/27]
+EditorFactory.py    Chanage left double click to right double click
+common.py makemenu.py
+                    Change setmenutext to use fix width to set the menu text, replace with '\t'
 [2008/03/22]
 web2py_plugin       Add web2py plugin
 
