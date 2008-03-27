@@ -77,7 +77,7 @@ class EditorFactory(FNB.FlatNotebook, Mixin.Mixin):
 #        self.SetRightClickMenu(self.popmenu)
         FNB.EVT_FLATNOTEBOOK_PAGE_CHANGED(self, self.id, self.OnChanged)
         FNB.EVT_FLATNOTEBOOK_PAGE_CLOSING(self, self.id, self.OnClose)
-        wx.EVT_LEFT_DCLICK(self._pages, self.OnDClick)
+        wx.EVT_RIGHT_DCLICK(self._pages, self.OnDClick)
         FNB.EVT_FLATNOTEBOOK_PAGE_CONTEXT_MENU(self, self.id, self.OnPopup)
 
         self.imageindex = {}

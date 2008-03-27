@@ -21,6 +21,8 @@
 #
 #   $Id$
 
+from modules import common
+
 def rerange(text):
     import re
     r_blank = re.compile(r'\s+')
@@ -48,7 +50,7 @@ def rerange(text):
             lastp = p
             b = feed(line, p)
             if b:
-                p = p + string_width(b)
+                p = p + common.string_width(b)
                 strings.append(b)
             else:
                 break
@@ -63,26 +65,9 @@ def rerange(text):
         if flag:
             flag = False
             pos.append(0)
-        s.append(''.join([hz_string_ljust(x, y) for x, y in zip(strings, pos)]))
+        s.append(''.join([common.hz_string_ljust(x, y) for x, y in zip(strings, pos)]))
     return s
 
-def hz_string_ljust(s, length):
-    l = string_width(s)
-    return s.ljust(length - (l - len(s)))
-
-def string_width(text):
-    import unicodedata
-    s = 0
-    for ch in text:
-        if isinstance(ch, unicode):
-            if unicodedata.east_asian_width(ch) != 'Na':
-                s += 2
-            else:
-                s += 1
-        else:
-            s += 1
-    return s
-            
 def feed(text, pos):
     s = []
     i = pos

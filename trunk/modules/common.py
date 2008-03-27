@@ -492,3 +492,25 @@ def webopen(filename):
         o.open('file://'+filename, 1)
     else:
         o.open(filename)
+
+def hz_string_ljust(s, length):
+    l = string_width(s)
+    return s.ljust(length - (l - len(s)))
+
+def hz_string_rjust(s, length):
+    l = string_width(s)
+    return s.rjust(length - (l - len(s)))
+
+def string_width(text):
+    import unicodedata
+    s = 0
+    for ch in text:
+        if isinstance(ch, unicode):
+            if unicodedata.east_asian_width(ch) != 'Na':
+                s += 2
+            else:
+                s += 1
+        else:
+            s += 1
+    return s
+            
