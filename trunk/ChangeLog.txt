@@ -1,6 +1,7 @@
 $Rev$
 [2008/03/31]
 mLineending.py      Add line ending mixture check when saving file feature
+FindReplace.py      Add search text count
 
 [2008/03/27]
 EditorFactory.py    Chanage left double click to right double click
