@@ -1,4 +1,7 @@
 $Rev$
+[2008/03/31]
+mLineending.py      Add line ending mixture check when saving file feature
+
 [2008/03/27]
 EditorFactory.py    Chanage left double click to right double click
 common.py makemenu.py
