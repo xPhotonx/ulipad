@@ -256,7 +256,6 @@ class TextEditor(wx.stc.StyledTextCtrl, Mixin.Mixin, DocumentBase.DocumentBase):
 
             oldfilename = self.filename
             self.setFilename(filename)
-
             #call plugin to process text
             stext = [self.GetText()]
 
