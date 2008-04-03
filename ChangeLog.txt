@@ -1,4 +1,7 @@
 $Rev$
+[2008/04/03]
+SyntaxCheck.py      Fix exception process bug
+
 [2008/03/31]
 mLineending.py      Add line ending mixture check when saving file feature
 FindReplace.py      Add search text count
