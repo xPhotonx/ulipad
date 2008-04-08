@@ -26,8 +26,6 @@ except(.*)<space> = ArithmeticError,AssertionError,AttributeError,DeprecationWar
 if\s+__name__<space> = == '__main__'
 
 [autovalues]
-except = "!<except ${1: Exception, e}:\n\t${0}"
-finally = "!<finally:\n\t${0}"
 
 [auto_default]
 1 = @acp.python.import.default_identifier
