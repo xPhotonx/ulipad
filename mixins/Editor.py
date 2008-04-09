@@ -115,7 +115,7 @@ class TextEditor(wx.stc.StyledTextCtrl, Mixin.Mixin, DocumentBase.DocumentBase):
 
         #
         self.SetModEventMask(wx.stc.STC_PERFORMED_UNDO | wx.stc.STC_PERFORMED_REDO | wx.stc.STC_MOD_DELETETEXT | wx.stc.STC_MOD_INSERTTEXT)
-        
+
         #move caret
         self.have_focus = False
         self.SetFocus()
@@ -132,7 +132,7 @@ class TextEditor(wx.stc.StyledTextCtrl, Mixin.Mixin, DocumentBase.DocumentBase):
 #        self.popmenu = makemenu.makepopmenu(self, TextEditor.popmenulist, TextEditor.imagelist)
         makemenu.bind_popup_menu_ids(self, TextEditor.popmenulist)
         self.popmenu = None
-        
+
         wx.stc.EVT_STC_MODIFIED(self, self.GetId(), self.OnModified)
         wx.stc.EVT_STC_MARGINCLICK(self, self.GetId(), self.OnMarginClick)
         wx.EVT_KEY_DOWN(self, self.OnKeyDown)
@@ -146,10 +146,10 @@ class TextEditor(wx.stc.StyledTextCtrl, Mixin.Mixin, DocumentBase.DocumentBase):
         wx.EVT_SET_FOCUS(self, self.OnSetFocus)
         wx.stc.EVT_STC_USERLISTSELECTION(self, self.GetId(), self.OnUserListSelection)
         wx.EVT_UPDATE_UI(self, self.GetId(), self.OnUpdateUI)
-        
+
         if ''.join(map(str, wx.VERSION[:3])) >= '2830':
             wx.stc.EVT_STC_AUTOCOMP_SELECTION(self, self.GetId(), self.OnAutoCompletion)
-        
+
         #set some flags
         self.cansavefileflag = True
         self.needcheckfile = True
@@ -157,17 +157,19 @@ class TextEditor(wx.stc.StyledTextCtrl, Mixin.Mixin, DocumentBase.DocumentBase):
         self.canopenfileflag = True
 
         self.selection_column_mode = False
-        
+
         self.last_routin = None
         self.last_keydown_routin = None
-        
+
         self.saving = False #saving flag
         self.lock = thread.allocate_lock()
         self.openning = False
-        
+        self.disable_onmodified = False
+        self.tab_press = False
+
         #set drop target
 #        self.SetDropTarget(EditorDropTarget(self))
-        
+
         self.callplugin('init', self)
 
     def isModified(self):
@@ -188,10 +190,10 @@ class TextEditor(wx.stc.StyledTextCtrl, Mixin.Mixin, DocumentBase.DocumentBase):
             return
         if self.openning:
             return
-        
+
         self.openning = True
         try:
-            
+
             self.callplugin('openfile', self, filename)
 
             oldfilename = self.filename
@@ -225,19 +227,19 @@ class TextEditor(wx.stc.StyledTextCtrl, Mixin.Mixin, DocumentBase.DocumentBase):
                     self.filename = oldfilename
                     raise
 
-                self.settext = True
+                self.disable_onmodified = True
                 self.SetText(stext[0])
                 self.EmptyUndoBuffer()
                 self.SetSavePoint()
-                self.settext = False
+                self.disable_onmodified = False
             else:
                 self.callplugin('openfileencoding', self, '', [''], encoding)
                 if defaulttext:
-                    self.settext = True
+                    self.disable_onmodified = True
                     self.SetText(defaulttext)
                     self.EmptyUndoBuffer()
                     self.SetSavePoint()
-                    self.settext = False
+                    self.disable_onmodified = False
 
             self.callplugin('call_lexer', self, '', filename, language)
             self.callplugin('afteropenfile', self, filename)
@@ -246,7 +248,7 @@ class TextEditor(wx.stc.StyledTextCtrl, Mixin.Mixin, DocumentBase.DocumentBase):
         finally:
             self.opened = True
             self.openning = False
-            
+
     def savefile(self, filename, encoding):
         self.saving = True
         try:
@@ -254,10 +256,9 @@ class TextEditor(wx.stc.StyledTextCtrl, Mixin.Mixin, DocumentBase.DocumentBase):
 
             oldfilename = self.filename
             self.setFilename(filename)
-
             #call plugin to process text
             stext = [self.GetText()]
-            
+
             try:
                 self.callplugin('savefileencoding', self, stext, encoding)
                 self.callplugin('savefiletext', self, stext)
@@ -307,13 +308,13 @@ class TextEditor(wx.stc.StyledTextCtrl, Mixin.Mixin, DocumentBase.DocumentBase):
             self.callplugin('call_lexer', self, oldfilename, filename, self.languagename)
         finally:
             self.saving = False
-        
+
     def setTitle(self, title):
         self.title = title
         if self.editctrl:
             wx.CallAfter(self.editctrl.showTitle, self)
             wx.CallAfter(self.editctrl.showPageTitle, self)
-        
+
     def getIndentChar(self):
         if self.GetUseTabs():
             return '\t'
@@ -374,14 +375,9 @@ class TextEditor(wx.stc.StyledTextCtrl, Mixin.Mixin, DocumentBase.DocumentBase):
         self.callplugin('on_update_ui', self, event)
 
     def OnModified(self, event):
-        if self.edittype == 'edit' and not self.settext:
-            if not self.isModified():
-                self.SetSavePoint()
-            if self.editctrl:
-                wx.CallAfter(self.editctrl.showTitle, self)
-                wx.CallAfter(self.editctrl.showPageTitle, self)
-        if not self.settext:
-            self.callplugin('on_modified', self, event)
+        self.callplugin('on_modified_text', self, event)
+        self.callplugin('on_modified_routin', self)
+
 
     def OnMarginClick(self, event):
         self.callplugin('on_margin_click', self, event)
@@ -389,12 +385,9 @@ class TextEditor(wx.stc.StyledTextCtrl, Mixin.Mixin, DocumentBase.DocumentBase):
     def OnKeyDown(self, event):
         if self.execplugin('on_first_keydown', self, event):
             return
-        
+
         key = event.GetKeyCode()
-#        if key in (wx.WXK_ALT, wx.WXK_CONTROL, wx.WXK_SHIFT):
-#            event.Skip()
-#            return
-#        
+
         f = wx.ACCEL_NORMAL
         if event.ControlDown():
             f |= wx.ACCEL_CTRL
@@ -402,7 +395,7 @@ class TextEditor(wx.stc.StyledTextCtrl, Mixin.Mixin, DocumentBase.DocumentBase):
             f |= wx.ACCEL_SHIFT
         if event.AltDown():
             f |= wx.ACCEL_ALT
-            
+
         #skip Shift+BS
         if event.ShiftDown() and key == wx.stc.STC_KEY_BACK:
             return
@@ -414,7 +407,11 @@ class TextEditor(wx.stc.StyledTextCtrl, Mixin.Mixin, DocumentBase.DocumentBase):
             event.SetId(_id)
             fu(event)
             return
-        
+
+        if key in (ord('C'), ord('V'), ord('X')) and event.ControlDown() and not event.AltDown() and not event.ShiftDown():
+            event.Skip()
+            return True
+
         if not self.execplugin('on_key_down', self, event):
             event.Skip()
 
@@ -434,26 +431,25 @@ class TextEditor(wx.stc.StyledTextCtrl, Mixin.Mixin, DocumentBase.DocumentBase):
         evt.SetEventType(event.GetEventType())
         evt.SetId(event.GetId())
         return evt
-    
+
 #    def post_key(self, event):
 #        self.ProcessEvent(event)
-#        
+#
     def OnChar(self, event):
-    
+        # for calltip
+        self.have_focus = True
         if self.execplugin('on_first_char', self, event):
             return
 
         if not self.execplugin('on_char', self, event):
             event.Skip()
-        
+
         eve = self.clone_key_event(event)
 #        wx.CallAfter(self.process_onchar_chain, eve)
 #        self.process_onchar_chain(eve)
-        prev_time = event.GetTimestamp()
-        eve.time_stamp = prev_time    
         self.execplugin('after_char', self, eve)
-      
-        
+        self.have_focus = False
+
 #    def process_onkeydown_chain(self, event):
 #        self.execplugin('after_keydown', self, event)
 #
@@ -475,16 +471,21 @@ class TextEditor(wx.stc.StyledTextCtrl, Mixin.Mixin, DocumentBase.DocumentBase):
     def OnZoom(self, event):
         if not self.execplugin('on_zoom', self, event):
             event.Skip()
-            
+
     def OnKillFocus(self, event):
         if not self.execplugin('on_kill_focus', self, event):
-            event.Skip()        
+            event.Skip()
 
     def OnSetFocus(self, event):
         self.mainframe.document = self
         if not self.execplugin('on_set_focus', self, event):
-            event.Skip()        
-            
+            event.Skip()
+
+    def removeText(self, start, length):
+        self.SetTargetStart(start)
+        self.SetTargetEnd(start + length)
+        self.ReplaceTarget('')
+
     def getLinePositionTuple(self, pos=None):
         if pos == None:
             pos = self.GetCurrentPos()
@@ -671,6 +672,7 @@ class TextEditor(wx.stc.StyledTextCtrl, Mixin.Mixin, DocumentBase.DocumentBase):
         if lineno:
             lineno -= 1
             self.GotoLine(lineno)
+            self.EnsureVisible(lineno)
             self.EnsureCaretVisible()
 
     def OnPopUp(self, event):
@@ -705,7 +707,7 @@ class TextEditor(wx.stc.StyledTextCtrl, Mixin.Mixin, DocumentBase.DocumentBase):
         else:
             self.selection_column_mode = False
         wx.stc.StyledTextCtrl.Copy(self)
-        
+
     def dselect(self):
         pos = self.GetCurrentPos()
 #        self.SetSelection(-1, -1)
@@ -725,7 +727,7 @@ class TextEditor(wx.stc.StyledTextCtrl, Mixin.Mixin, DocumentBase.DocumentBase):
         self.GotoLine(posOfCurrentLine)
         self.GotoPos(pos)
         self.SetFocus()
-    
+
     def get_full_state(self):
         """filename, pos, bookmarks"""
         bookmarks = []
@@ -736,12 +738,12 @@ class TextEditor(wx.stc.StyledTextCtrl, Mixin.Mixin, DocumentBase.DocumentBase):
             start = line + 1
             line = self.MarkerNext(start, 1)
         return self.filename, self.save_state(), bookmarks
-        
+
     def OnUserListSelection(self, event):
         t = event.GetListType()
         text = event.GetText()
         self.callplugin('on_user_list_selction', self, t, text)
-        
+
     def OnAutoCompletion(self, event):
         text = event.GetText()
         self.callplugin('on_auto_completion', self, self.GetCurrentPos(), text)
@@ -759,3 +761,7 @@ class TextEditor(wx.stc.StyledTextCtrl, Mixin.Mixin, DocumentBase.DocumentBase):
                 self.SetMarginWidth(1, width)
         else:
             self.SetMarginWidth(1, 0)
+
+    def OnClose(self, note, **kwargs):
+        Globals.mainframe.editctrl.switch(Globals.mainframe.editctrl.getCurDoc())
+    

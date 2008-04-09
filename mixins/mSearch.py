@@ -85,9 +85,9 @@ def OnSearchFind(win, event):
     name = 'findpanel'
     if not win.documentarea.sizer.is_shown(name):
         import FindReplace
-        
+
         panel = FindReplace.FindPanel(win.documentarea, name)
-        win.documentarea.sizer.add(panel, 
+        win.documentarea.sizer.add(panel,
             name=name, flag=wx.EXPAND|wx.ALL, border=2)
     else:
         panel = win.documentarea.sizer.find(name)
@@ -107,9 +107,9 @@ def OnSearchReplace(win, event):
     name = 'findpanel'
     if not win.documentarea.sizer.is_shown(name):
         import FindReplace
-        
+
         panel = FindReplace.FindPanel(win.documentarea, name)
-        win.documentarea.sizer.add(panel, 
+        win.documentarea.sizer.add(panel,
             name=name, flag=wx.EXPAND|wx.ALL, border=2)
     else:
         panel = win.documentarea.sizer.find(name)
@@ -158,17 +158,11 @@ def pref_init(pref):
     pref.smart_nav_last_position = None
 Mixin.setPlugin('preference', 'init', pref_init)
 
-def on_modified(win, event):
+def on_modified(win):
     if hasattr(win, 'multiview') and win.multiview:
         return
-    type = event.GetModificationType()
-    for flag in (wx.stc.STC_MOD_INSERTTEXT, wx.stc.STC_MOD_DELETETEXT):
-        if flag & type:
-            def f():
-                win.pref.smart_nav_last_position = win.getFilename(), win.save_state()
-                win.pref.save()
-            wx.CallAfter(f)
-            return
+    win.pref.smart_nav_last_position = win.getFilename(), win.save_state()
+    win.pref.save()
 Mixin.setPlugin('editor', 'on_modified', on_modified)
 
 #this function will replace the one in mSearch.py

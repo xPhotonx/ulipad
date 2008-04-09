@@ -21,12 +21,13 @@
 #
 #   $Id$
 
+import sys
+import types
 import compiler
+import wx
 from modules.pyflakes import checker
 from modules import common
-import wx
 from modules.EasyGuider import EasyList
-import sys
 from modules.Debug import error
 
 def check(codeString, filename):
@@ -36,10 +37,13 @@ def check(codeString, filename):
         tree = compiler.parse(codeString)
     except (SyntaxError, IndentationError):
         value = sys.exc_info()[1]
-        (lineno, offset, line) = value[1][1:]
-        if line.endswith("\n"):
-            line = line[:-1]
-        message.append((filename, lineno, tr('could not compile')))
+        if isinstance(value, types.InstanceType):
+            lineno = value.lineno
+            offset = value.offset
+            line = value.text
+            if line.endswith("\n"):
+                line = line[:-1]
+            message.append((filename, lineno, value.msg))
     except:
         error.traceback()
         message.append((filename, -1, tr('There are some unknown errors, please check error.txt')))

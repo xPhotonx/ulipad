@@ -197,6 +197,7 @@ def setmenutext(win, accel):
     for idname, menu in win.menuitems.items():
         if accel and accel.has_key(idname):
             if accel[idname][0]:
-                caption = menu.GetText() + u'\t' + unicode(accel[idname][0])
-                caption = caption.replace('+', ',')
+                label = menu.GetText()
+                caption = label + accel[idname][0].rjust(40-common.string_width(label))
+#                caption = caption.replace('+', ',')
                 menu.SetText(caption)

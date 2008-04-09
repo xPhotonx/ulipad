@@ -268,3 +268,6 @@ class IEHtmlWindow(HtmlWindowBase):
 
     def SetPage(self, text):
         self.ie.LoadString(text)
+
+    def DoRefresh(self):
+        self.ie.RefreshPage(iewin.REFRESH_COMPLETELY)

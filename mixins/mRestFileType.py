@@ -72,7 +72,6 @@ Mixin.setPlugin('mainframe', 'closefile', closefile)
 def setfilename(document, filename):
     for pagename, panelname, notebook, page in Globals.mainframe.panel.getPages():
         if is_resthtmlview(page, document):
-            print 'setfilename'
             title = document.getShortFilename()
 #            Globals.mainframe.panel.setName(page, title)
 Mixin.setPlugin('editor', 'setfilename', setfilename)
@@ -89,9 +88,7 @@ def createRestHtmlViewWindow(win, side, document):
         if win.document.documenttype == 'texteditor':
             text = html_fragment(document.GetText().encode('utf-8'))
             if text:
-                page = RestHtmlView(win.panel.createNotebook(side), text)
-                page.document = win.document    #save document object
-                page.resthtmlview = True
+                page = RestHtmlView(win.panel.createNotebook(side), text, document)
                 win.panel.addPage(side, page, dispname)
                 win.panel.setImageIndex(page, 'html')
                 return page
@@ -129,15 +126,22 @@ from mixins import HtmlPage
 import tempfile
 import os
 class RestHtmlView(wx.Panel):
-    def __init__(self, parent, content):
+    def __init__(self, parent, content, document):
         wx.Panel.__init__(self, parent, -1)
     
         mainframe = Globals.mainframe
+        self.document = document
+        self.resthtmlview = True
+        self.rendering = False
         box = wx.BoxSizer(wx.VERTICAL)
         self.chkAuto = wx.CheckBox(self, -1, tr("Stop auto updated"))
         box.Add(self.chkAuto, 0, wx.ALL, 2)
         if wx.Platform == '__WXMSW__':
+            import wx.lib.iewin as iewin
+            
             self.html = HtmlPage.IEHtmlWindow(self)
+            self.html.ie.Bind(iewin.EVT_DocumentComplete, self.OnDocumentComplete, self.html.ie)
+            self.html.ie.Bind(iewin.EVT_ProgressChange, self.OnDocumentComplete, self.html.ie)
         else:
             self.html = HtmlPage.DefaultHtmlWindow(self)
             self.html.SetRelatedFrame(mainframe, mainframe.app.appname + " - Browser [%s]")
@@ -152,14 +156,24 @@ class RestHtmlView(wx.Panel):
     
         self.SetSizer(box)
         
-    def load(self, content):
+    def create_tempfile(self, content):
         if not self.tmpfilename:
-            fd, self.tmpfilename = tempfile.mkstemp('.html')
+            path = os.path.dirname(self.document.filename)
+            if not path:
+                path = None
+            fd, self.tmpfilename = tempfile.mkstemp('.html', dir=path)
             os.write(fd, content)
             os.close(fd)
         else:
             file(self.tmpfilename, 'w').write(content)
+        
+    def load(self, content):
+        self.create_tempfile(content)
         self.html.Load(self.tmpfilename)
+        
+    def refresh(self, content):
+        self.create_tempfile(content)
+        wx.CallAfter(self.html.DoRefresh)
        
     def canClose(self):
         return True
@@ -174,8 +188,30 @@ class RestHtmlView(wx.Panel):
             except:
                 pass
     
+    def OnDocumentComplete(self, evt):
+        if self.FindFocus() is not self.document:
+            self.document.SetFocus()
+    
 def is_resthtmlview(page, document):
     if hasattr(page, 'resthtmlview') and page.resthtmlview and page.document is document:
         return True
     else:
         return False
+
+def on_modified(win):
+    for pagename, panelname, notebook, page in Globals.mainframe.panel.getPages():
+        if is_resthtmlview(page, win) and not page.isStop() and not page.rendering:
+            page.rendering = True
+            from modules import Casing
+            
+            def f():
+                try:
+                    text = html_fragment(win.GetText().encode('utf-8'))
+                    page.refresh(text)
+                finally:
+                    page.rendering = False
+            d = Casing.Casing(f)
+            d.start_thread()
+            break
+Mixin.setPlugin('editor', 'on_modified', on_modified)
+

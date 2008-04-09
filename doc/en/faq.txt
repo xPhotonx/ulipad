@@ -36,7 +36,8 @@ How do I get the newest source code from SVN
 
 There are a couple of free programs that make this extremely easy.
 Windows users should get TortoiseSVN http://tortoisesvn.tigris.org/.
-Others should get RapidSVN http://rapidsvn.tigris.org/.
+Others should get RapidSVN http://rapidsvn.tigris.org/. And there is 
+also pysvn-workbench http://pysvn.tigris.org/docs/WorkBench.html written by python.
 
 This FAQ will explain the use of TortoiseSVN.
 

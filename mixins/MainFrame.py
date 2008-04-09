@@ -24,15 +24,11 @@
 
 import wx
 import copy
-import time
-#import locale
 from modules import Mixin
 from modules import makemenu
 from modules import Accelerator
 from modules import MyStatusBar
-from modules import Casing
 from modules import Globals
-#from modules import common
 
 class MainFrame(wx.Frame, Mixin.Mixin):
 
@@ -128,7 +124,8 @@ class MainFrame(wx.Frame, Mixin.Mixin):
             self.callplugin('on_update_ui', self, event)
 
     def OnIdle(self, event):
-        self.callplugin('on_idle', self)
+        if Globals.app.wxApp.Active:
+            self.callplugin('on_idle', self)
 #        try:
 #            while not self.closeflag:
 #                if not self.app.wxApp.Active:

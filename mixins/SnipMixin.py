@@ -224,8 +224,12 @@ class SnipMixin(object):
         # if something went wrong and the snippet has been
         # 'messed up' (e.g. by undo/redo commands)
         if not tpl_text :
-            common.warn(tr('Something went wrong with this snippet'))
+            # common.warn(tr('Something went wrong with this snippet'))
             self.cancel()
+            # ygao noet: if something wrong, yeild to TAB event.
+            event = wx.KeyEvent(wx.wxEVT_KEY_DOWN)
+            event.m_keyCode = wx.WXK_TAB
+            self.editor.ProcessEvent(event)
             return
     
         # 1. Update the mirrors and transforms Fields
@@ -319,8 +323,10 @@ class SnipMixin(object):
         if len(self.snippet_stack)>0 :
             self.snippet = self.snippet_stack.pop()
             self.snippet.index -= 1
-        else :
-            self.resetSnippet()
+##        else :
+##            self.resetSnippet()
+        # todo: this can fix some error? 2008:02:22 by ygao
+        self.resetSnippet()
         
     def resetSnippet(self):
         self.snip_mode = False

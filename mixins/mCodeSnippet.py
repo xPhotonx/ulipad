@@ -54,11 +54,11 @@ Mixin.setPlugin('codesnippet', 'add_images', add_images)
 def add_image(imagelist, imageids, name, image):
     if name not in ('close', 'open'):
         return
-    
+
     m = [
         ('modified', common.getpngimage('images/TortoiseModified.gif')),
     ]
-    
+
     for f, imgfile in m:
         bmp = common.merge_bitmaps(image, imgfile)
         index = imagelist.Add(bmp)
@@ -82,7 +82,7 @@ def createCodeSnippetWindow(win):
         import xml.etree.ElementTree
     except:
         import elementtree.ElementTree
-     
+
     page = win.panel.getPage(tr('Code Snippet'))
     if not page:
         from CodeSnippet import CodeSnippetWindow
@@ -146,7 +146,7 @@ def createCodeSnippetEditWindow(win):
         return snippet
 Mixin.setMixin('mainframe', 'createCodeSnippetEditWindow', createCodeSnippetEditWindow)
 
-def on_modified(win, event):
+def on_modified(win):
     if hasattr(win, 'code_snippet') and win.code_snippet:
         if not win.snippet_obj.changing:
             win.snippet_obj.update_node(win.snippet_obj.tree.GetSelection(), newcontent=win.GetText())
@@ -157,4 +157,3 @@ def on_selected(win, text):
     doc.AddText(text)
     wx.CallAfter(doc.SetFocus)
 Mixin.setPlugin('codesnippet', 'on_selected', on_selected)
-    

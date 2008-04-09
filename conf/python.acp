@@ -19,7 +19,6 @@
 (^\s*)class<space> = "\\1class ${1:}${2:(${3:object})}:\n\t${0}"
 (^\s*)from<space> = "\\1from ${1:} import${0}"
 (^\s*)while<space> = "\\1while ${1:1}:\n\t${0}"
-(^.*)todo<space> = "\\1# todo !^ ${date} by ${author}"
 
 [autore_append]
 from\s+([\w.]+)\s+import(.*)<space> = @acp.python.import.fromimport
@@ -27,8 +26,6 @@ except(.*)<space> = ArithmeticError,AssertionError,AttributeError,DeprecationWar
 if\s+__name__<space> = == '__main__'
 
 [autovalues]
-except = "!<except ${1: Exception, e}:\n\t${0}"
-finally = "!<finally:\n\t${0}"
 
 [auto_default]
 1 = @acp.python.import.default_identifier

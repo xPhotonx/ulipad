@@ -1144,15 +1144,12 @@ class TabNavigatorWindow(wx.Dialog):
         if event.GetKeyCode() == wx.WXK_CONTROL:
             self.CloseDialog()
 
-
-    def OnNavigationKey(self, event):
-        """Handles the wx.EVT_NAVIGATION_KEY for the L{TabNavigatorWindow}. """
-
+    def Navigation(self, direction=True):
         selected = self._listBox.GetSelection()
         bk = self.GetParent()
         maxItems = bk.GetPageCount()
             
-        if event.GetDirection():
+        if direction:
         
             # Select next page
             if selected == maxItems - 1:
@@ -1169,6 +1166,10 @@ class TabNavigatorWindow(wx.Dialog):
                 itemToSelect = selected - 1
         
         self._listBox.SetSelection(itemToSelect)
+        
+    def OnNavigationKey(self, event):
+        """Handles the wx.EVT_NAVIGATION_KEY for the L{TabNavigatorWindow}. """
+        self.Navigation(event.GetDirection())
 
 
     def PopulateListControl(self, book):
@@ -3314,6 +3315,9 @@ class FlatNotebook(wx.PyPanel):
 
         self._pages._iActivePage = page
         self._pages.DoSetSelection(page)
+        
+    def EnsureVisible(self, page):
+        self._pages.EnsureVisible(page)
 
 
     def DeletePage(self, page):
@@ -3442,6 +3446,18 @@ class FlatNotebook(wx.PyPanel):
             self._naviIcon = bmp
         else:
             raise TypeError, "SetNavigatorIcon requires a valid bitmap"
+        
+    def Navigation(self, direction=True):
+        if len(self._windows) >= 1:
+            if not self._popupWin:
+                self._popupWin = TabNavigatorWindow(self, self._naviIcon)
+                self._popupWin.SetReturnCode(wx.ID_OK)
+                self._popupWin.ShowModal()
+                self._popupWin.Destroy()
+                self._popupWin = None
+            else:
+                # a dialog is already opened
+                self._popupWin.Navigation(direction)
 
     def OnNavigationKey(self, event):
         """ Handles the wx.EVT_NAVIGATION_KEY event for L{FlatNotebook}. """
@@ -3451,16 +3467,8 @@ class FlatNotebook(wx.PyPanel):
                 return
             # change pages
             if self.HasFlag(FNB_SMART_TABS):
-                if not self._popupWin:
-                    self._popupWin = TabNavigatorWindow(self, self._naviIcon)
-                    self._popupWin.SetReturnCode(wx.ID_OK)
-                    self._popupWin.ShowModal()
-                    self._popupWin.Destroy()
-                    self._popupWin = None
-                else:
-                    # a dialog is already opened
-                    self._popupWin.OnNavigationKey(event)
-                    return
+                self.Navigation(event.GetDirection())
+                return
             else:
                 # change pages
                 self.AdvanceSelection(event.GetDirection())
@@ -3513,6 +3521,7 @@ class FlatNotebook(wx.PyPanel):
         """ Sets the text for the given page. """
 
         bVal = self._pages.SetPageText(page, text)
+        self._pages.EnsureVisible(page, False)
         self._pages.Refresh()
 
         return bVal
@@ -3898,6 +3907,7 @@ class PageContainer(wx.Panel):
 
         self._nFrom = fr
 
+        self.EnsureVisible(page, False)
         self.Refresh() # Call on paint
         event.Skip()
 
@@ -4188,11 +4198,14 @@ class PageContainer(wx.Panel):
             if da_page != None:
                 da_page.SetFocus()
         
+        self.EnsureVisible(page)
+
+    def EnsureVisible(self, page, refresh=True):
         if not self.IsTabVisible(page):
             # Try to remove one tab from start and try again
             
             if not self.CanFitToScreen(page):
-
+        
                 if self._nFrom > page:
                     self._nFrom = page
                 else:
@@ -4200,10 +4213,9 @@ class PageContainer(wx.Panel):
                         self._nFrom += 1
                         if self.CanFitToScreen(page):
                             break
- 
-        self.Refresh()
-
-
+        if refresh:
+            self.Refresh()
+        
     def DeletePage(self, page):
         """ Delete the specified page from L{FlatNotebook}. """
 

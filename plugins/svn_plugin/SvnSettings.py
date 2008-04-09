@@ -56,7 +56,7 @@ class SVNSettings(wx.Dialog):
         grid.add((1, 0), ui.Label(tr('Username')+':'))
         grid.add((1, 1), ui.Text, name='username')
         grid.add((2, 0), ui.Label(tr('Password')+':'))
-        grid.add((2, 1), ui.Text, name='password')
+        grid.add((2, 1), ui.Password, name='password')
         grid.add((3, 0), ui.Label(tr('Proxy timeout in seconds')+':'))
         grid.add((3, 1), ui.Int, name='timeout')
         

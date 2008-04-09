@@ -77,7 +77,7 @@ class EditorFactory(FNB.FlatNotebook, Mixin.Mixin):
 #        self.SetRightClickMenu(self.popmenu)
         FNB.EVT_FLATNOTEBOOK_PAGE_CHANGED(self, self.id, self.OnChanged)
         FNB.EVT_FLATNOTEBOOK_PAGE_CLOSING(self, self.id, self.OnClose)
-        wx.EVT_LEFT_DCLICK(self._pages, self.OnDClick)
+        wx.EVT_RIGHT_DCLICK(self._pages, self.OnDClick)
         FNB.EVT_FLATNOTEBOOK_PAGE_CONTEXT_MENU(self, self.id, self.OnPopup)
 
         self.imageindex = {}
@@ -284,8 +284,9 @@ class EditorFactory(FNB.FlatNotebook, Mixin.Mixin):
             return
         self.showPageTitle(document)
         if not delay:
-            if index != self.GetSelection():
-                self.SetSelection(index)
+#            if index != self.GetSelection():
+#                self.SetSelection(index)
+            self.SetSelection(index)
             d = document
             if not document.opened:
                 d = self.changeDocument(document, False)
@@ -325,6 +326,7 @@ class EditorFactory(FNB.FlatNotebook, Mixin.Mixin):
         if ctrl.isModified():
             title = '* ' + title
         index = self.getIndex(ctrl)
+        wx.CallAfter(self.EnsureVisible, self.getIndex(ctrl))
         if title != self.GetPageText(index):
             wx.CallAfter(self.SetPageText, self.getIndex(ctrl), title)
 
@@ -338,6 +340,7 @@ class EditorFactory(FNB.FlatNotebook, Mixin.Mixin):
             index = self.getIndex(document)
         except:
             return
+        self.callplugin('beforeclosefile', self, document)
         self.skip_closing = True
         self.skip_page_change = True
         self.DeletePage(index)
