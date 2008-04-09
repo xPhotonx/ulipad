@@ -108,6 +108,7 @@ def add_images(images):
         ('MODULE', 'images/module.gif'),
         ('VARIABLE', 'images/vars.gif'),
         ('METHOD', 'images/method.gif'),
+        ('FUNCTION', 'images/function.gif'),
         ('CLASS_OPEN', 'images/minus.gif'),
         ('CLASS_CLOSE', 'images/plus.gif'),
         ]
@@ -144,8 +145,8 @@ def parsetext(win, editor):
             funcs.sort(c)
         for i, v in enumerate(funcs):
             name, info, lineno, docstring = v
-            _id, obj = win.replacenode(None, i, info, win.get_image_id('METHOD'), 
-                None,  {'data':lineno}, win.get_image_id('METHOD'), 
+            _id, obj = win.replacenode(None, i, info, win.get_image_id('FUNCTION'), 
+                None,  {'data':lineno}, win.get_image_id('FUNCTION'), 
                 sorttype=pref.python_classbrowser_sort)
             editor.doc_nodes[_id] = docstring
     classes = nodes.find('class')
