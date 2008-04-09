@@ -1,4 +1,8 @@
 $Rev$
+[2008/04/09]
+mFileNew.py         Can remember the last new file type(select new type menu first), 
+                    then when you select new menu, it'll use the last new file type as default
+
 [2008/04/03]
 SyntaxCheck.py      Fix exception process bug
 

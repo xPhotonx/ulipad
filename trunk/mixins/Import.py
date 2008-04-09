@@ -6470,17 +6470,35 @@ Mixin.setPlugin('mainframe', 'init', main_init)
 
 import wx
 import os
+from modules import Id
 from modules import Mixin
 from modules import common
 from modules import makemenu
 from modules import Globals
+from modules.wxctrl import FlatButtons
+
+def pref_init(pref):
+    pref.last_new_type = ''
+Mixin.setPlugin('preference', 'init', pref_init)
 
 def add_tool_list(toollist, toolbaritems):
     #order, IDname, imagefile, short text, long text, func
     toolbaritems.update({
-        'new':(wx.ITEM_NORMAL, 'IDM_FILE_NEWS', 'images/new.gif', tr('new'), tr('Creates a new document'), 'OnFileNews'),
+        'new':(10, create_new),
     })
 Mixin.setPlugin('mainframe', 'add_tool_list', add_tool_list, Mixin.LOW)
+
+def create_new(win, toolbar):
+    _id = Id.makeid(win, 'IDM_FILE_NEW')
+    btnNew = FlatButtons.FlatBitmapMenuButton(toolbar, _id, common.getpngimage('images/new.gif'))
+    btnNew.SetRightClickFunc(win.OnFileNews)
+    wx.EVT_BUTTON(btnNew, _id, win.OnFileNew)
+
+    return btnNew
+
+def OnFileNew(win, event):
+    new_file(win)
+Mixin.setMixin('mainframe', 'OnFileNew', OnFileNew)
 
 def OnFileNews(win, event):
     eid = event.GetId()
@@ -6491,8 +6509,6 @@ def OnFileNews(win, event):
     win.PopupMenu(menu, (size[0]*pos, size[1]))
     menu.Destroy()
 Mixin.setMixin('mainframe', 'OnFileNews', OnFileNews)
-
-
 
 def add_mainframe_menu(menulist):
     menulist.extend([ ('IDM_FILE_NEWMORE',
@@ -6508,32 +6524,41 @@ def init(win):
     create_menu(win, menu)
 Mixin.setPlugin('mainframe', 'init', init)
 
+def new_file(win, lexname=None):
+    if not lexname:
+        lexname = win.pref.last_new_type
+    if lexname:
+        lexer = win.lexers.getNamedLexer(lexname)
+        text = ''
+        if lexer:
+            templatefile = common.getConfigPathFile('template.%s' % lexer.name)
+            if os.path.exists(templatefile):
+                text = file(templatefile).read()
+                text = common.decode_string(text)
+                import re
+                eolstring = {0:'\n', 1:'\r\n', 2:'\r'}
+                eol = eolstring[Globals.pref.default_eol_mode]
+                text = re.sub(r'\r\n|\r|\n', eol, text)
+            else:
+                text = ''
+        document = win.editctrl.new(defaulttext=text, language=lexer.name)
+        if document:
+            document.goto(document.GetTextLength())
+
 def create_menu(win, menu):
     ids = {}
     def _OnFileNew(event, win=win, ids=ids):
         lexname = ids.get(event.GetId(), '')
-        if lexname:
-            lexer = win.lexers.getNamedLexer(lexname)
-            text = ''
-            if lexer:
-                templatefile = common.getConfigPathFile('template.%s' % lexer.name)
-                if os.path.exists(templatefile):
-                    text = file(templatefile).read()
-                    text = common.decode_string(text)
-                    import re
-                    eolstring = {0:'\n', 1:'\r\n', 2:'\r'}
-                    eol = eolstring[Globals.pref.default_eol_mode]
-                    text = re.sub(r'\r\n|\r|\n', eol, text)
-                else:
-                    text = ''
-            document = win.editctrl.new(defaulttext=text, language=lexer.name)
-            if document:
-                document.goto(document.GetTextLength())
+        new_file(win, lexname)
+        win.pref.last_new_type = lexname
+        win.pref.save()
 
     for name, lexname in win.filenewtypes:
         _id = wx.NewId()
-        menu.Append(_id, "%s" % name)
+        menu.AppendCheckItem(_id, "%s" % name)
         ids[_id] = lexname
+        if lexname == win.pref.last_new_type:
+            menu.Check(_id, True)
         wx.EVT_MENU(win, _id, _OnFileNew)
 
 
