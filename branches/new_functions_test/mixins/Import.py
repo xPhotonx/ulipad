@@ -387,7 +387,7 @@ def OnOpenCmdWindow(win, event=None):
         os.spawnl(os.P_NOWAIT, win.pref.command_line,r" /k %s && cd %s" % (os.path.split(filename)[0][:2], filename))
     else:
         cmdline = win.pref.command_line.replace('{path}', filename)
-        wx.Shell(cmdline)
+        wx.Execute(cmdline)
 Mixin.setMixin('editctrl', 'OnOpenCmdWindow', OnOpenCmdWindow)
 
 
@@ -402,17 +402,54 @@ def add_panel_list(panellist):
     panellist['texteditor'] = TextPanel
 Mixin.setPlugin('editctrl', 'add_panel_list', add_panel_list)
 
-def on_key_down(win, event):
+def on_first_keydown(win, event):
     key = event.GetKeyCode()
     alt = event.AltDown()
     shift = event.ShiftDown()
     ctrl = event.ControlDown()
     if ctrl and key == wx.WXK_TAB:
         if not shift:
-            win.editctrl.AdvanceSelection(True)
+            win.editctrl.Navigation(True)
         else:
-            win.editctrl.AdvanceSelection(False)
-Mixin.setPlugin('editor', 'on_key_down', on_key_down)
+            win.editctrl.Navigation(False)
+Mixin.setPlugin('editor', 'on_first_keydown', on_first_keydown)
+
+def on_modified_routin(win):
+    win.mainframe.auto_onmodified.put(win)
+Mixin.setPlugin('editor', 'on_modified_routin', on_modified_routin)
+
+def on_modified(win):
+    if win.edittype == 'edit':
+        if not win.isModified():
+            win.SetSavePoint()
+        if win.editctrl:
+            wx.CallAfter(win.editctrl.showTitle, win)
+            wx.CallAfter(win.editctrl.showPageTitle, win)
+Mixin.setPlugin('editor', 'on_modified', on_modified)
+
+from modules import Globals
+from modules.Debug import error
+from modules import AsyncAction
+class OnModified(AsyncAction.AsyncAction):
+    def do_action(self, obj):
+        win = Globals.mainframe
+        if not self.empty:
+            return
+        try:
+            if not obj: return
+            obj.callplugin('on_modified', obj)
+            return True
+        except:
+            error.traceback()
+
+def main_init(win):
+    win.auto_onmodified = OnModified(.5)
+    win.auto_onmodified.start()
+Mixin.setPlugin('mainframe', 'init', main_init)
+
+def on_close(win, event):
+    win.auto_onmodified.join()
+Mixin.setPlugin('mainframe','on_close', on_close)
 
 
 
@@ -1035,17 +1072,11 @@ def pref_init(pref):
     pref.smart_nav_last_position = None
 Mixin.setPlugin('preference', 'init', pref_init)
 
-def on_modified(win, event):
+def on_modified(win):
     if hasattr(win, 'multiview') and win.multiview:
         return
-    type = event.GetModificationType()
-    for flag in (wx.stc.STC_MOD_INSERTTEXT, wx.stc.STC_MOD_DELETETEXT):
-        if flag & type:
-            def f():
-                win.pref.smart_nav_last_position = win.getFilename(), win.save_state()
-                win.pref.save()
-            wx.CallAfter(f)
-            return
+    win.pref.smart_nav_last_position = win.getFilename(), win.save_state()
+    win.pref.save()
 Mixin.setPlugin('editor', 'on_modified', on_modified)
 
 def OnSearchLastModify(win, event=None):
@@ -1089,7 +1120,6 @@ Mixin.setPlugin('editctrl', 'on_document_enter', on_document_enter)
 
 import wx
 from modules import Mixin
-import re
 
 eolmess = [tr(r"Unix Mode ('\n')"), tr(r"DOS/Windows Mode ('\r\n')"), tr(r"Mac Mode ('\r')")]
 
@@ -1130,16 +1160,11 @@ def add_mainframe_menu(menulist):
     ])
 Mixin.setPlugin('mainframe', 'add_menu', add_mainframe_menu)
 
-def setEOLMode(win, mode):
+def setEOLMode(win, mode, convert=True):
     win.lineendingsaremixed = False
     win.eolmode = mode
-    state = win.save_state()
-    win.BeginUndoAction()
-    text = win.GetText()
-    text = re.sub(r'\r\n|\r|\n', win.eolstring[mode], text)
-    win.SetText(text)
-    win.EndUndoAction()
-    win.restore_state(state)
+    if convert:
+        win.ConvertEOLs(win.eols[mode])
     win.SetEOLMode(win.eols[mode])
     win.mainframe.SetStatusText(win.eolstr[mode], 3)
 
@@ -1155,44 +1180,59 @@ def OnDocumentEolConvertMac(win, event):
     setEOLMode(win.document, 2)
 Mixin.setMixin('mainframe', 'OnDocumentEolConvertMac', OnDocumentEolConvertMac)
 
-def fileopentext(win, stext):
-    text = stext[0]
-
-    win.lineendingsaremixed = False
+def check_mixed(text):
+    lineendingsaremixed = False
 
     eollist = "".join(map(getEndOfLineCharacter, text))
 
     len_win = eollist.count('\r\n')
     len_unix = eollist.count('\n')
     len_mac = eollist.count('\r')
+    eolmode = -1
     if len_mac > 0 and len_unix == 0:
-        win.eolmode = 2
+        eolmode = 2
     elif len_win == len_unix == len_mac:
-        win.eolmode = 1
+        eolmode = 1
     elif len_unix > 0 and len_win == 0 and len_mac == 0:
-        win.eolmode = 0
+        eolmode = 0
     else:
-        win.lineendingsaremixed = True
+        lineendingsaremixed = True
+
+    return eolmode, lineendingsaremixed
+
+def fileopentext(win, stext):
+    text = stext[0]
+    win.eolmode, win.lineendingsaremixed = check_mixed(text)
 Mixin.setPlugin('editor', 'openfiletext', fileopentext)
 
+def confirm_eol(win):
+    eolmodestr = "MIX"
+    d = wx.MessageDialog(win,
+        tr('%s is currently Mixed.\nWould you like to change it to the default?\nThe Default is: %s')
+        % (win.filename, win.eolmess[win.pref.default_eol_mode]),
+        tr("Mixed Line Ending"), wx.YES_NO | wx.ICON_QUESTION)
+    if d.ShowModal() == wx.ID_YES:
+        setEOLMode(win, win.pref.default_eol_mode)
+        return True
+    else:
+        return False
+
 def afteropenfile(win, filename):
-    def f():
-        if win.lineendingsaremixed:
-            eolmodestr = "MIX"
-            d = wx.MessageDialog(win,
-                tr('%s is currently Mixed.\nWould you like to change it to the default?\nThe Default is: %s')
-                % (win.filename, win.eolmess[win.pref.default_eol_mode]),
-                tr("Mixed Line Ending"), wx.YES_NO | wx.ICON_QUESTION)
-            if d.ShowModal() == wx.ID_YES:
-                setEOLMode(win, win.pref.default_eol_mode)
-    #            win.savefile(win.filename, win.locale)
-        if win.lineendingsaremixed == False:
-            eolmodestr = win.eolstr[win.eolmode]
+    if win.lineendingsaremixed:
+        confirm_eol(win)
+    else:
+        eolmodestr = win.eolstr[win.eolmode]
         win.mainframe.SetStatusText(eolmodestr, 3)
-        win.SetEOLMode(win.eolmode)
-    wx.CallAfter(f)
+        setEOLMode(win, win.eolmode, convert=False)
 Mixin.setPlugin('editor', 'afteropenfile', afteropenfile)
 
+
+def savefile(win, filename):
+    text = win.GetText()
+    win.eolmode, win.lineendingsaremixed = check_mixed(text)
+    if win.lineendingsaremixed:
+        confirm_eol(win)
+Mixin.setPlugin('editor', 'savefile', savefile)
 
 def on_document_enter(win, document):
     if document.edittype == 'edit':
@@ -1207,6 +1247,29 @@ def getEndOfLineCharacter(character):
     if character == '\r' or character == '\n':
         return character
     return ""
+
+
+def add_pref(preflist):
+    preflist.extend([
+        (tr('Document')+'/'+tr('Edit'), 180, 'check', 'edit_linestrip', tr('Strip the line ending when saving'), eolmess)
+    ])
+Mixin.setPlugin('preference', 'add_pref', add_pref)
+
+def pref_init(pref):
+    pref.edit_linestrip = False
+Mixin.setPlugin('preference', 'init', pref_init)
+
+def savefile(win, filename):
+    if win.pref.edit_linestrip:
+        status = win.save_state()
+        try:
+    #        if not win.lineendingsaremixed:
+    #            setEOLMode(win, win.eolmode)
+            win.mainframe.OnEditFormatChop(None)
+        finally:
+            win.restore_state(status)
+Mixin.setPlugin('editor', 'savefile', savefile)
+
 
 
 
@@ -1372,7 +1435,7 @@ def add_tool_list(toollist, toolbaritems):
     })
 Mixin.setPlugin('mainframe', 'add_tool_list', add_tool_list)
 
-def on_modified(win, event):
+def on_modified(win):
     win.setLineNumberMargin(win.show_linenumber)
 Mixin.setPlugin('editor', 'on_modified', on_modified)
 
@@ -1452,27 +1515,19 @@ def add_editor_menu_image_list(imagelist):
 Mixin.setPlugin('editor', 'add_menu_image_list', add_editor_menu_image_list)
 
 def OnEditFormatIndent(win, event):
-    win.document.BeginUndoAction()
-    win.document.CmdKeyExecute(wx.stc.STC_CMD_TAB)
-    win.document.EndUndoAction()
+    OnFormatIndent(win.document, event)
 Mixin.setMixin('mainframe', 'OnEditFormatIndent', OnEditFormatIndent)
 
 def OnEditFormatUnindent(win, event):
-    win.document.BeginUndoAction()
-    win.document.CmdKeyExecute(wx.stc.STC_CMD_BACKTAB)
-    win.document.EndUndoAction()
+    OnFormatUnindent(win.document, event)
 Mixin.setMixin('mainframe', 'OnEditFormatUnindent', OnEditFormatUnindent)
 
 def OnFormatIndent(win, event):
-    win.BeginUndoAction()
     win.CmdKeyExecute(wx.stc.STC_CMD_TAB)
-    win.EndUndoAction()
 Mixin.setMixin('editor', 'OnFormatIndent', OnFormatIndent)
 
 def OnFormatUnindent(win, event):
-    win.BeginUndoAction()
     win.CmdKeyExecute(wx.stc.STC_CMD_BACKTAB)
-    win.EndUndoAction()
 Mixin.setMixin('editor', 'OnFormatUnindent', OnFormatUnindent)
 
 def OnFormatQuote(win, event):
@@ -1510,13 +1565,35 @@ def savepreference(mainframe, pref):
         document.SetTabWidth(mainframe.pref.tabwidth)
 Mixin.setPlugin('prefdialog', 'savepreference', savepreference)
 
+import re
+r_lineending = re.compile(r'\s+$')
+def strip_lineending(document):
+    status = document.save_state()
+    document.BeginUndoAction()
+    try:
+        for i in range(document.GetLineCount()):
+            start = document.PositionFromLine(i)
+            end = document.GetLineEndPosition(i)
+            text = document.GetTextRange(start, end)
+            b = r_lineending.search(text)
+            if b:
+                document.SetTargetStart(start+b.start())
+                document.SetTargetEnd(start+b.end())
+                document.ReplaceTarget('')
+    finally:
+        document.restore_state(status)
+        document.EndUndoAction()
+
+def OnEditFormatStripLineending(win, event):
+    strip_lineending(win.document)
+Mixin.setMixin('mainframe', 'OnEditFormatStripLineending', OnEditFormatStripLineending)
+
+def OnFormatStripLineending(win, event):
+    strip_lineending(win)
+Mixin.setMixin('editor', 'OnFormatStripLineending', OnFormatStripLineending)
+
 def OnEditFormatChop(win, event):
-    win.document.BeginUndoAction()
-    for i in win.document.getSelectionLines():
-        text = win.document.getLineText(i)
-        newtext = text.rstrip()
-        win.document.replaceLineText(i, newtext)
-    win.document.EndUndoAction()
+    strip_lineending(win.document)
 Mixin.setMixin('mainframe', 'OnEditFormatChop', OnEditFormatChop)
 
 def OnFormatChop(win, event):
@@ -1564,8 +1641,8 @@ def OnEditFormatComment(win, event):
     win.pref.save()
     win.document.BeginUndoAction()
     for i in win.document.getSelectionLines():
-        text = win.document.getLineText(i)
-        win.document.replaceLineText(i, commentchar + text)
+        start = win.document.PositionFromLine(i)
+        win.document.InsertText(start, commentchar)
     win.document.EndUndoAction()
 Mixin.setMixin('mainframe', 'OnEditFormatComment', OnEditFormatComment)
 
@@ -1590,10 +1667,12 @@ def OnEditFormatUncomment(win, event):
     win.pref.last_comment_chars = commentchar
     win.pref.save()
     win.document.BeginUndoAction()
+    len_cm = len(commentchar)
     for i in win.document.getSelectionLines():
+        start = win.document.PositionFromLine(i)
         text = win.document.getLineText(i)
         if text.startswith(commentchar):
-            win.document.replaceLineText(i, text[len(commentchar):])
+            win.document.removeText(start, len_cm)
     win.document.EndUndoAction()
 Mixin.setMixin('mainframe', 'OnEditFormatUncomment', OnEditFormatUncomment)
 
@@ -2724,8 +2803,7 @@ def add_editor_menu(popmenulist):
 Mixin.setPlugin('editor', 'add_menu', add_editor_menu)
 
 def editor_init(win):
-    #win.calltip = Calltip.MyCallTip(win)
-    win.calltip = win.mainframe.document_show_window
+    win.calltip = Calltip.MyCallTip(win)
     win.calltip_type = -1
 
     wx.EVT_UPDATE_UI(win, win.IDPM_DUPLICATE_MODE, win.OnUpdateUI)
@@ -2861,10 +2939,12 @@ def OnKeyDown(win, event):
     if win.findflag:
         key = event.GetKeyCode()
         if key in (wx.WXK_RETURN, wx.WXK_SPACE):
+            win.calltip.cancel()
             win.findflag = 0
             if win.calltip_type == CALLTIP_DUPLICATE:#duplicate mode
                 win.AddText(win.duplicate_match_text)
         elif key == wx.WXK_ESCAPE:
+            win.calltip.cancel()
             win.findflag = 0
         elif key in ('L', 'P') and event.ControlDown():
             return False
@@ -2945,7 +3025,7 @@ def duplicateMatch(win, kind):
                     win.document.duplicate_calltip = text[start:end]
                     win.document.duplicate_match_len = end - start - win.document.duplicate_length
                     win.document.duplicate_match_text = win.document.GetTextRange(start + win.document.duplicate_length , end)
-
+                win.document.calltip.cancel()
                 win.document.calltip_type = CALLTIP_DUPLICATE
                 win.document.calltip.show(win.document.duplicate_pos, win.document.duplicate_calltip)
                 return
@@ -3640,13 +3720,13 @@ def OnScriptItems(win, event):
     filename = win.pref.scripts[index][1]
 
     try:
-        scripttext = open(filename, 'rU').read()
+        scripttext = open(common.encode_path(filename), 'rU').read()
     except:
         common.showerror(win, tr("Can't open the file [%s]!") % filename)
         return
 
     try:
-        code = compile((scripttext + '\n'), filename, 'exec')
+        code = compile((scripttext + '\n'), common.encode_path(filename), 'exec')
     except:
         d = wx.lib.dialogs.ScrolledMessageDialog(win, (tr("Error compiling script.\n\nTraceback:\n\n") +
             ''.join(traceback.format_exception(*sys.exc_info()))), tr("Error"), wx.DefaultPosition, wx.Size(400,300))
@@ -3877,9 +3957,7 @@ __doc__ = 'Auto check if the file is modified'
 
 import wx
 import os
-import time
 from modules import Mixin
-from modules import AsyncAction
 from modules import Globals
 
 def add_pref(preflist):
@@ -3892,37 +3970,11 @@ Mixin.setPlugin('preference', 'add_pref', add_pref)
 def pref_init(pref):
     pref.auto_check  = True
     pref.auto_check_confirm = True
-    pref.auto_check_interval = 3    #second
 Mixin.setPlugin('preference', 'init', pref_init)
 
-class Autocheck(AsyncAction.AsyncAction):
-
-    def do_timeout(self):
-        return Globals.pref.auto_check_interval
-
-    def do_action(self, obj):
-        if not self.empty:
-            return
-        try:
-            win = Globals.mainframe
-            _check(win)
-        except:
-            pass
-
-def main_init(win):
-    win.auto_check_files = Autocheck()
-    win.auto_check_files.start()
-    win.auto_last_checkpoint = 0
-Mixin.setPlugin('mainframe', 'init', main_init)
-
-def on_idle(win):
-    if not win.auto_last_checkpoint:
-        win.auto_last_checkpoint = time.time()
-    else:
-        if time.time() - win.auto_last_checkpoint > win.pref.auto_check_interval:
-            win.auto_check_files.put(True)
-            win.auto_last_checkpoint = time.time()
-Mixin.setPlugin('mainframe', 'on_idle', on_idle)
+def on_set_focus(win, event):
+    _check(Globals.mainframe)
+Mixin.setPlugin('editor', 'on_set_focus', on_set_focus)
 
 def _check(win):
     if win.pref.auto_check:
@@ -4015,12 +4067,29 @@ import sys
 from modules import common
 from modules import Mixin
 
+def check_python():
+    interpreters = []
+    if wx.Platform == '__WXMSW__':
+        from modules import winreg
+        for v in ('2.3', '2.4', '2.5', '2.6', '3.0'):
+            try:
+                key = winreg.Key(winreg.HKLM, r'SOFTWARE\Python\Pythoncore\%s\InstallPath' % v)
+                interpreters.append((v+' console', os.path.join(key.value, 'python.exe')))
+                interpreters.append((v+' window', os.path.join(key.value, 'pythonw.exe')))
+            except:
+                pass
+    else:
+        version = '.'.join(map(str, sys.version_info[:2]))
+        interpreters.append((version, sys.executable))
+    return interpreters
+
 def pref_init(pref):
-    cmd = sys.executable
-    if os.path.basename(sys.argv[0]) == os.path.basename(cmd):
-        cmd = ''
-    pref.python_interpreter = [('default', cmd)]
-    pref.default_interpreter = 'default'
+    s = check_python()
+    pref.python_interpreter = s
+    if len(s) == 1:
+        pref.default_interpreter = s[0][0]
+    else:
+        pref.default_interpreter = 'noexist'
     pref.python_show_args = False
     pref.python_save_before_run = False
 Mixin.setPlugin('preference', 'init', pref_init)
@@ -4057,15 +4126,47 @@ def editor_init(win):
 Mixin.setPlugin('editor', 'init', editor_init)
 
 def _get_python_exe(win):
-    interpreters = dict(win.pref.python_interpreter)
-    interpreter = interpreters[win.pref.default_interpreter]
+    s = win.pref.python_interpreter
+    interpreters = dict(s)
+    interpreter = interpreters.get(win.pref.default_interpreter, '')
+
+    #check python execute
+    e = check_python()
+    for x, v in e:
+        flag = False
+        for i, t in enumerate(s):
+            name, exe = t
+            if exe == v:
+                flag = True
+                if name != x:
+                    s[i] = (x, v)
+        if not flag:
+            s.append((x, v))
+    win.pref.save()
+
     if not interpreter:
-        common.showerror(win, tr("You didn't setup python interpreter, \nplease setup it first in Preference dialog"))
-        return
+        value = ''
+        if s:
+            if len(s) > 1:
+                dlg = SelectInterpreter(win, s[0][0], [x for x, v in s])
+                if dlg.ShowModal() == wx.ID_OK:
+                    value = dlg.GetValue()
+                dlg.Destroy()
+            else:
+                value = s[0][0]
+
+        if not value:
+            common.showerror(win, tr("You didn't setup python interpreter, \nplease setup it first in Preference dialog"))
+
+        interpreter = dict(s).get(value, '')
+        win.pref.default_interpreter = value
+        win.pref.save()
+
     return interpreter
 
 def OnPythonRun(win, event):
     interpreter = _get_python_exe(win)
+    if not interpreter: return
 
     doc = win.editctrl.getCurDoc()
     if doc.isModified() or doc.filename == '':
@@ -4221,6 +4322,21 @@ def on_leave(mainframe, filename, languagename):
     ret = mainframe.Disconnect(mainframe.IDM_PYTHON_RUN, -1, wx.wxEVT_UPDATE_UI)
     ret = mainframe.Disconnect(mainframe.IDM_PYTHON_SETARGS, -1, wx.wxEVT_UPDATE_UI)
 Mixin.setPlugin('pythonfiletype', 'on_leave', on_leave)
+
+
+from modules import meide as ui
+
+class SelectInterpreter(ui.SimpleDialog):
+    def __init__(self, parent, value, interpreters):
+        box = ui.VBox(namebinding='element')
+        box.add(ui.Label(tr('Which python interpreter do you want to use?')))
+        box.add(ui.ComboBox(value, choices=interpreters, style=wx.CB_READONLY), name='interpreter')
+        super(SelectInterpreter, self).__init__(parent, box, title=tr('Select Python Interpreter'), fit=2)
+
+        self.layout.SetFocus()
+
+    def GetValue(self):
+        return self.interpreter.GetValue()
 
 
 
@@ -4506,7 +4622,7 @@ from modules import common
 def app_init(app, filenames):
     if app.ddeflag:
         x = common.get_config_file_obj()
-        port = x.server.get('port', 0)
+        port = x.server.get('port', 50000)
         if DDE.senddata('\r\n'.join(filenames), port=port):
             sys.exit(0)
         else:
@@ -6041,11 +6157,11 @@ def editor_init(win):
     win.word_len = 0
     win.custom_assistant = []
     win.function_parameter = []
+    win.calltip_stack = {} # collecting nested calltip's text and pos.
     win.syntax_info = None
     win.auto_routin = None
     win.snippet = None
     win.modified_line = None
-    win.documented_word = ''
 Mixin.setPlugin('editor', 'init', editor_init)
 
 def _replace_text(win, start, end, text):
@@ -6106,7 +6222,9 @@ def on_key_down(win, event):
             if win.AutoCompActive():
                 win.AutoCompCancel()
 
+            win.calltip_stack.clear()
             del win.function_parameter[:]
+            win.calltip.cancel()
 
             win.snippet.nextField(win.GetCurrentPos())
             return True
@@ -6114,9 +6232,6 @@ def on_key_down(win, event):
         if win.snippet and win.snippet.snip_mode:
             win.snippet.cancel()
             return True
-    if key in (ord('C'), ord('V'), ord('X')) and event.ControlDown() and not event.AltDown() and not event.ShiftDown():
-        event.Skip()
-        return True
 
     if key == wx.WXK_BACK and not event.AltDown() and not event.ControlDown() and not event.ShiftDown():
         if win.pref.input_assistant and win.pref.inputass_identifier:
@@ -6138,8 +6253,7 @@ def pref_init(pref):
     pref.inputass_identifier = True
     pref.inputass_full_identifier = True
     pref.inputass_func_parameter_autocomplete = True
-    pref.inputass_calltip_including_source_code = False
-    pref.inputass_typing_rate = 500
+    pref.inputass_typing_rate = 400
 Mixin.setPlugin('preference', 'init', pref_init)
 
 def add_pref(preflist):
@@ -6150,8 +6264,7 @@ def add_pref(preflist):
         (tr('Input Assistant'), 130, 'check', 'inputass_identifier', tr("Enable auto prompt identifiers"), None),
         (tr('Input Assistant'), 140, 'check', 'inputass_full_identifier', tr("Enable full identifiers search"), None),
         (tr('Input Assistant'), 150, 'check', 'inputass_func_parameter_autocomplete', tr("Enable function parameter autocomplete"), None),
-        (tr('Input Assistant'), 160, 'check', 'inputass_calltip_including_source_code', tr("Enable calltip content including source code"), None),
-        (tr('Input Assistant'), 170, 'int',   'inputass_typing_rate', tr("skip input assistant when typing rate faster than this "), None),
+        (tr('Input Assistant'), 160, 'int', 'inputass_typing_rate', tr("Skip Input Assistant when typing rate faster than this milisecond"), None),
     ])
 Mixin.setPlugin('preference', 'add_pref', add_pref)
 
@@ -6248,7 +6361,14 @@ Mixin.setMixin('editor', 'OnApplyAcp', OnApplyAcp)
 def on_kill_focus(win, event):
     if win.AutoCompActive():
         win.AutoCompCancel()
-
+    if win.calltip and win.calltip.active:
+        if hasattr(event,'FNB'):
+            win.calltip.cancel()
+            return
+        if not win.have_focus:
+            win.have_focus = True
+        else:
+            win.calltip.cancel()
 Mixin.setPlugin('editor', 'on_kill_focus', on_kill_focus)
 
 def on_key_down(win, event):
@@ -6257,42 +6377,22 @@ def on_key_down(win, event):
     #shift=event.ShiftDown()
     alt=event.AltDown()
     if key == wx.WXK_RETURN and not control and not alt:
-        if  win.AutoCompActive():
+        if not win.AutoCompActive():
+            if win.calltip.active:
+                pos = win.GetCurrentPos()
+                # move calltip windown to next line
+                # must be pos+2 not pos+1,the reason I don't konw.
+                win.calltip.move(pos + 2)
+        else:
             event.Skip()
             return True
+    elif key == wx.WXK_ESCAPE:
+        # clear nested calltip state if something is wrong.
+        win.calltip_stack.clear()
+        del win.function_parameter[:]
+        win.calltip.cancel()
 
 Mixin.setPlugin('editor', 'on_key_down', on_key_down, Mixin.HIGH, 1)
-
-
-
-def on_key_up(win, event):
-    type = None
-    key = ()
-    if  isinstance(event, wx.KeyEvent):
-        type = "key"
-
-        keycode = event.GetKeyCode()
-        ctrl = event.ControlDown()
-        alt = event.AltDown()
-        shift = event.ShiftDown()
-
-        f = 0
-        if ctrl:
-            f |= wx.stc.STC_SCMOD_CTRL
-        elif alt:
-            f |= wx.stc.STC_SCMOD_ALT
-        elif shift:
-            f |= wx.stc.STC_SCMOD_SHIFT
-
-
-        key = (f, keycode)
-    elif  isinstance(event, wx.MouseEvent):
-        type = "mouse"
-
-    win.mainframe.auto_routin_document_show.put({'win':win, 'key':key, 'type':type})
-    #win.mainframe.auto_routin_document_show.put({'win':win, 'event':event})
-Mixin.setPlugin('editor', 'on_key_up', on_key_up)
-Mixin.setPlugin('editor', 'on_mouse_up', on_key_up)
 
 def leaveopenfile(win, filename):
     if win.pref.input_assistant:
@@ -6301,100 +6401,22 @@ def leaveopenfile(win, filename):
         win.mainframe.auto_routin_analysis.put(win)
 Mixin.setPlugin('editor', 'leaveopenfile', leaveopenfile)
 
-def on_modified(win, event):
-    type = event.GetModificationType()
-    for flag in (wx.stc.STC_MOD_INSERTTEXT, wx.stc.STC_MOD_DELETETEXT):
-        if flag & type:
-            modified_line = win.LineFromPosition(event.GetPosition())
-            if  win.modified_line is None:
-                win.modified_line = modified_line
-                win.mainframe.auto_routin_analysis.put(win)
-            else:
-                if  win.modified_line != modified_line or event.GetLinesAdded() != 0:
-                    import sys
-                    print>>sys.__stdout__,modified_line
-                    win.modified_line = modified_line
-                    win.mainframe.auto_routin_analysis.put(win)
+def on_modified(win):
+    win.mainframe.auto_routin_analysis.put(win)
 Mixin.setPlugin('editor', 'on_modified', on_modified)
 
 from modules import AsyncAction
+def on_close(win, event):
+    "when app close, keep thread from running do_action"
+    AsyncAction.AsyncAction.STOP = True
+Mixin.setPlugin('mainframe','on_close', on_close ,Mixin.HIGH, 1)
 
-class DocumentShow(AsyncAction.AsyncAction):
+def on_close(win, event):
+    win.auto_routin_analysis.join()
+    win.auto_routin_ac_action.join()
+Mixin.setPlugin('mainframe','on_close', on_close)
 
-    def do_timeout(self):
-        return float(Globals.pref.inputass_typing_rate)/1000
-
-    def do_action(self, obj):
-        if not self.empty:
-            return
-        pref = Globals.pref
-        win = obj['win']
-        try:
-            if not win: return
-            i = get_inputassistant_obj(win)
-            #event = obj['event']
-            key = obj['key']
-            type = obj['type']
-            win.lock.acquire()
-            i.run2(win, type, key, self)
-            win.lock.release()
-            return True
-        except:
-            win.input_assistant = None
-            error.traceback()
-
-
-
-
-
-KEYS = [' ','=','/','[']
 class InputAssistantAction(AsyncAction.AsyncAction):
-
-
-    def run1(self):
-        pref = Globals.pref
-        try:
-            while not self.stop:
-                self.last = None
-                self.prev = 1000
-                obj = None
-                while 1:
-                    try:
-                        obj = self.q.get(True, self.do_timeout())
-                        self.last = obj
-                        if obj['on_char_flag']:
-                            tt = obj['event'].time_stamp - self.prev < pref.inputass_typing_rate - pref.inputass_typing_rate/5
-                            self.prev = obj['event'].time_stamp
-                            key = obj['event'].GetKeyCode()
-                            if chr(key) in KEYS and tt:
-                                self.last = obj
-                                break
-                            elif chr(key) in KEYS and (not tt):
-                                try:
-                                    obj1 = self.q.get(True, float(pref.inputass_typing_rate*2)/1000)
-                                    self.last = obj1
-                                    break
-                                except:
-                                    #no key typing,trigger tmplater expand
-                                    self.last = obj
-                                    if self.last:
-                                        break
-                    except:
-                        if self.last:
-                            break
-
-                if self.last:
-                    try:
-                        self.do_action(self.last)
-                        self.last = None
-                    except:
-                        pass
-
-        except:
-            pass
-
-
-
     def do_action(self, obj):
         if not self.empty:
             return
@@ -6418,14 +6440,10 @@ class InputAssistantAction(AsyncAction.AsyncAction):
             Globals.mainframe.input_assistant = None
             error.traceback()
 
-    def do_timeout(self):
+    def get_timestep(self):
         return float(Globals.pref.inputass_typing_rate)/1000
 
 class Analysis(AsyncAction.AsyncAction):
-
-    def do_timeout(self):
-        return 0.2
-
     def do_action(self, obj):
         win = Globals.mainframe
         if not self.empty:
@@ -6440,15 +6458,11 @@ class Analysis(AsyncAction.AsyncAction):
             error.traceback()
 
 def main_init(win):
-    win.auto_routin_analysis = Analysis()
+    win.auto_routin_analysis = Analysis(.2)
     win.auto_routin_analysis.start()
-    win.auto_routin_ac_action = InputAssistantAction()
+    win.auto_routin_ac_action = InputAssistantAction(float(win.pref.inputass_typing_rate)/1000)
     win.auto_routin_ac_action.start()
-    win.auto_routin_document_show = DocumentShow()
-    win.auto_routin_document_show.start()
-
 Mixin.setPlugin('mainframe', 'init', main_init)
-
 
 
 
@@ -6459,6 +6473,7 @@ import os
 from modules import Mixin
 from modules import common
 from modules import makemenu
+from modules import Globals
 
 def add_tool_list(toollist, toolbaritems):
     #order, IDname, imagefile, short text, long text, func
@@ -6505,11 +6520,15 @@ def create_menu(win, menu):
                 if os.path.exists(templatefile):
                     text = file(templatefile).read()
                     text = common.decode_string(text)
+                    import re
+                    eolstring = {0:'\n', 1:'\r\n', 2:'\r'}
+                    eol = eolstring[Globals.pref.default_eol_mode]
+                    text = re.sub(r'\r\n|\r|\n', eol, text)
                 else:
                     text = ''
             document = win.editctrl.new(defaulttext=text, language=lexer.name)
             if document:
-                document.SetFocus()
+                document.goto(document.GetTextLength())
 
     for name, lexname in win.filenewtypes:
         _id = wx.NewId()
@@ -7223,7 +7242,6 @@ def on_first_keydown(win, event):
             return True
         else:
             return False
-
 Mixin.setPlugin('editor', 'on_first_keydown', on_first_keydown)
 
 
@@ -7403,7 +7421,6 @@ Mixin.setPlugin('mainframe', 'closefile', closefile)
 def setfilename(document, filename):
     for pagename, panelname, notebook, page in Globals.mainframe.panel.getPages():
         if is_resthtmlview(page, document):
-            print 'setfilename'
             title = document.getShortFilename()
 Mixin.setPlugin('editor', 'setfilename', setfilename)
 
@@ -7419,9 +7436,7 @@ def createRestHtmlViewWindow(win, side, document):
         if win.document.documenttype == 'texteditor':
             text = html_fragment(document.GetText().encode('utf-8'))
             if text:
-                page = RestHtmlView(win.panel.createNotebook(side), text)
-                page.document = win.document    #save document object
-                page.resthtmlview = True
+                page = RestHtmlView(win.panel.createNotebook(side), text, document)
                 win.panel.addPage(side, page, dispname)
                 win.panel.setImageIndex(page, 'html')
                 return page
@@ -7459,15 +7474,22 @@ from mixins import HtmlPage
 import tempfile
 import os
 class RestHtmlView(wx.Panel):
-    def __init__(self, parent, content):
+    def __init__(self, parent, content, document):
         wx.Panel.__init__(self, parent, -1)
 
         mainframe = Globals.mainframe
+        self.document = document
+        self.resthtmlview = True
+        self.rendering = False
         box = wx.BoxSizer(wx.VERTICAL)
         self.chkAuto = wx.CheckBox(self, -1, tr("Stop auto updated"))
         box.Add(self.chkAuto, 0, wx.ALL, 2)
         if wx.Platform == '__WXMSW__':
+            import wx.lib.iewin as iewin
+
             self.html = HtmlPage.IEHtmlWindow(self)
+            self.html.ie.Bind(iewin.EVT_DocumentComplete, self.OnDocumentComplete, self.html.ie)
+            self.html.ie.Bind(iewin.EVT_ProgressChange, self.OnDocumentComplete, self.html.ie)
         else:
             self.html = HtmlPage.DefaultHtmlWindow(self)
             self.html.SetRelatedFrame(mainframe, mainframe.app.appname + " - Browser [%s]")
@@ -7482,14 +7504,24 @@ class RestHtmlView(wx.Panel):
 
         self.SetSizer(box)
 
-    def load(self, content):
+    def create_tempfile(self, content):
         if not self.tmpfilename:
-            fd, self.tmpfilename = tempfile.mkstemp('.html')
+            path = os.path.dirname(self.document.filename)
+            if not path:
+                path = None
+            fd, self.tmpfilename = tempfile.mkstemp('.html', dir=path)
             os.write(fd, content)
             os.close(fd)
         else:
             file(self.tmpfilename, 'w').write(content)
+
+    def load(self, content):
+        self.create_tempfile(content)
         self.html.Load(self.tmpfilename)
+
+    def refresh(self, content):
+        self.create_tempfile(content)
+        wx.CallAfter(self.html.DoRefresh)
 
     def canClose(self):
         return True
@@ -7504,11 +7536,33 @@ class RestHtmlView(wx.Panel):
             except:
                 pass
 
+    def OnDocumentComplete(self, evt):
+        if self.FindFocus() is not self.document:
+            self.document.SetFocus()
+
 def is_resthtmlview(page, document):
     if hasattr(page, 'resthtmlview') and page.resthtmlview and page.document is document:
         return True
     else:
         return False
+
+def on_modified(win):
+    for pagename, panelname, notebook, page in Globals.mainframe.panel.getPages():
+        if is_resthtmlview(page, win) and not page.isStop() and not page.rendering:
+            page.rendering = True
+            from modules import Casing
+
+            def f():
+                try:
+                    text = html_fragment(win.GetText().encode('utf-8'))
+                    page.refresh(text)
+                finally:
+                    page.rendering = False
+            d = Casing.Casing(f)
+            d.start_thread()
+            break
+Mixin.setPlugin('editor', 'on_modified', on_modified)
+
 
 
 
@@ -7726,155 +7780,60 @@ def other_popup_menu(editor, projectname, menus):
     if editor.languagename == 'python':
         menus.extend([(None, #parent menu id
             [
-                (9, 'IDPM_PYTHON_EPYDOC', tr('Create Comment for Function')+u'\tAlt+A', wx.ITEM_NORMAL, 'OnPythonEPyDoc', 'Creates comment for a function.'),
+                (9, 'IDPM_PYTHON_EPYDOC', tr('Create Comment for Function'), wx.ITEM_NORMAL, 'OnPythonEPyDoc', 'Creates comment for a function.'),
             ]),
         ])
 Mixin.setPlugin('editor', 'other_popup_menu', other_popup_menu)
 
-
-re_func = re.compile('^(\s*)(def|class)\s+[\w\d_*]+\s*(\()')
+re_func = re.compile('^(\s*)def\s+[\w\d_]+\((.*?)\):')
 comment_template = """
-%(doc)s
 
 @author: %(username)s
 
 %(parameters)s
-@return: %(return)s
-@rtype:  %(rtype)s
-
+@return:
+@rtype:
 """
-import SnipMixin
-def call_snippet(win, tpl, start, end):
-    editor = win
-    if editor.snippet:
-        snippet = editor.snippet
-    else:
-        snippet = editor.snippet = SnipMixin.SnipMixin(editor)
-    snippet.start(tpl, start, end)
-
-def get_definition_line(win):
-    """
-
-    @author: ygao
-
-    @param win: editor
-    @type win: instance
-    @return:  line number
-    @rtype:   int
-
-    """
-    if  win.syntax_info:
-        obj = win.syntax_info.guess(win.GetCurrentLine())
-        if  len(obj) > 0:
-            obj1 = obj[0]
-            return obj1.span[0]
-
-def OnPythonEPyDoc(win, event=None, line=None):
-    """
-    using live template to create EPy formate comment
-
-    @author: ygao
-
-    @param win: editor
-    @type win: instance
-    @param event:
-    @type event:
-    @param line: must be at definition
-    @type line: int
-    @return:
-    @rtype:
-
-    """
-    def output(win, indent, parameters, pos, para_sum):
+def OnPythonEPyDoc(win, event=None):
+    def output(win, indent, parameters, pos):
         t = (indent / win.GetTabWidth() + 1) * win.getIndentChar()
         startpos = win.PositionFromLine(win.LineFromPosition(pos)+1)
         win.GotoPos(startpos)
-        text = '"""' + comment_template % {'parameters':parameters, 'username':win.pref.personal_username, \
-            'doc':"${1:}",'return':" ${" + str(para_sum) + ":}", 'rtype':" ${0}"} + '"""' + win.getEOLChar()
+        text = '"""' + comment_template % {'parameters':parameters, 'username':win.pref.personal_username} + '"""' + win.getEOLChar()
         s = ''.join([t + x for x in text.splitlines(True)])
         win.AddText(s)
-        start = startpos
-        end = win.GetCurrentPos()
-        win.GotoPos(start)
-
         win.EnsureCaretVisible()
-        call_snippet(win, win.GetTextRange(start, end), start, end)
 
-    if  line is None:
-        line = win.GetCurrentLine()
-    else:
-        line = line
+    line = win.GetCurrentLine()
     text = win.getLineText(line)
-    # note: 2008:01:27 by ygao
-    # def ygao():
-    #
-    #     cursor flash on this
+    pos = win.GetCurrentPos()
     if not text.strip():
         for i in range(line-1, -1, -1):
             text = win.getLineText(i)
-            # get function definiton line
-            line = line - 1
             if text.strip():
                 break
-    # note: this case: 2008:01:27 by ygao
-    # def __ygao (para,
-    #             parameters):
+
     b = None
     if text:
         b = re_func.match(text)
-        # current line more priority
-        if b is None:
-            line = get_definition_line(win) - 1
-            text = win.getLineText(line)
-            b = re_func.match(text)
-
     if b:
-        indent = b.groups()[0]
-        function_left_char_pos = b.span(3)[0] + win.PositionFromLine(line)
-        function_right_char_pos = win.BraceMatch(function_left_char_pos)
-        if function_right_char_pos == -1:
-            return
-        parameters = win.GetTextRange(function_left_char_pos + 1, function_right_char_pos)
-        pos = function_right_char_pos
+        indent, parameters = b.groups()
         paras = [x.strip() for x in parameters.split(',')]
         s = []
-        para_sum = 2
-        # note: if no parameters, there is one u'', 2008:01:27 by ygao
-        if  paras[0] != '':
-            for x in paras:
-                if x.startswith('**'):
-                    x = x[2:]
-                if x.startswith('*'):
-                    x = x[1:]
-                if '=' in x:
-                    x = x.split('=')[0]
-                x = x.strip()
-                s.append('@param %s:' % x + " ${" + str(para_sum)+":}")
-                para_sum = para_sum + 1
-                s.append('@type %s:' % x + " ${" + str(para_sum)+":}")
-                para_sum = para_sum + 1
+        for x in paras:
+            if x.startswith('**'):
+                x = x[2:]
+            if x.startswith('*'):
+                x = x[1:]
+            if '=' in x:
+                x = x.split('=')[0]
+            x = x.strip()
+            s.append('@param %s:' % x)
+            s.append('@type %s:' % x)
         s = win.getEOLChar().join(s)
-        output(win, len(indent), s, pos, para_sum)
+        output(win, len(indent), s, pos)
         return
 Mixin.setMixin('editor', 'OnPythonEPyDoc', OnPythonEPyDoc)
-
-
-def OnPythonEPy(win, event):
-    try:
-        win.document.OnPythonEPyDoc(event=event)
-    except:
-        error.traceback()
-Mixin.setMixin('mainframe', 'OnPythonEPy', OnPythonEPy)
-
-def add_pyftype_menu(menulist):
-    menulist.extend([('IDM_PYTHON', #parent menu id
-        [
-            (375, 'IDM_PYTHON_PYTHON_EPYDOC', tr('Create Comment for Function') + u'\tAlt+A', wx.ITEM_NORMAL, 'OnPythonEPy', tr('Creates comment for a function.')),
-
-        ]),
-    ])
-Mixin.setPlugin('pythonfiletype', 'add_menu', add_pyftype_menu)
-
 
 
 
@@ -8258,6 +8217,20 @@ def OnEditorCopyRun(win, event):
     _copy_and_run(win)
 Mixin.setMixin('editor', 'OnEditorCopyRun', OnEditorCopyRun)
 
+import re
+re_space = re.compile(r'^\s+')
+def lstrip_multitext(text):
+    lines = text.splitlines()
+    m = 999999
+    for line in lines:
+        b = re_space.search(line)
+        if b:
+            m = min(len(b.group()), m)
+        else:
+            m = 0
+            break
+    return '\n'.join([x[m:] for x in lines])
+
 def _copy_and_run(doc):
     from modules import Globals
 
@@ -8267,7 +8240,7 @@ def _copy_and_run(doc):
         win.createShellWindow()
         win.panel.showPage(tr('Shell'))
         shellwin = win.panel.getPage(tr('Shell'))
-        shellwin.Execute(text.rstrip())
+        shellwin.Execute(lstrip_multitext(text))
 
 def OnEditCopyRun(win, event):
     _copy_and_run(win.editctrl.getCurDoc())
@@ -8451,7 +8424,7 @@ def createCodeSnippetEditWindow(win):
         return snippet
 Mixin.setMixin('mainframe', 'createCodeSnippetEditWindow', createCodeSnippetEditWindow)
 
-def on_modified(win, event):
+def on_modified(win):
     if hasattr(win, 'code_snippet') and win.code_snippet:
         if not win.snippet_obj.changing:
             win.snippet_obj.update_node(win.snippet_obj.tree.GetSelection(), newcontent=win.GetText())
@@ -8462,7 +8435,6 @@ def on_selected(win, text):
     doc.AddText(text)
     wx.CallAfter(doc.SetFocus)
 Mixin.setPlugin('codesnippet', 'on_selected', on_selected)
-
 
 
 
@@ -8512,9 +8484,9 @@ def move_parent_indent(editor):
         text = line_text.strip()
         if text and not line_text.startswith(comment_chars):
             i = editor.GetLineIndentation(line)
-            editor.goto(line-1)
+            editor.GotoLine(line)
             if i < indent:
-                editor.goto(line-1)
+                editor.GotoLine(line)
                 break
 
         line -= 1
@@ -8526,12 +8498,12 @@ def move_prev_indent(editor):
     line -= 1
     comment_chars = editor.get_document_comment_chars()
     while line > -1:
-        line_text = editor.goto(line-1)
+        line_text = editor.GetLine(line)
         text = line_text.strip()
         if text and not line_text.startswith(comment_chars):
             i = editor.GetLineIndentation(line)
             if i <= indent:
-                editor.goto(line-1)
+                editor.GotoLine(line)
                 break
 
         line -= 1
@@ -8583,7 +8555,7 @@ def move_child_indent(editor):
         if text and not line_text.startswith(comment_chars):
             i = editor.GetLineIndentation(line)
             if i > indent:
-                editor.goto(line-1)
+                editor.GotoLine(line)
                 break
             else:
                 break

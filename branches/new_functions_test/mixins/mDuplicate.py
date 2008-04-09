@@ -59,8 +59,7 @@ def add_editor_menu(popmenulist):
 Mixin.setPlugin('editor', 'add_menu', add_editor_menu)
 
 def editor_init(win):
-    #win.calltip = Calltip.MyCallTip(win)
-    win.calltip = win.mainframe.document_show_window
+    win.calltip = Calltip.MyCallTip(win)
     win.calltip_type = -1
 
     wx.EVT_UPDATE_UI(win, win.IDPM_DUPLICATE_MODE, win.OnUpdateUI)
@@ -235,10 +234,12 @@ def OnKeyDown(win, event):
     if win.findflag:
         key = event.GetKeyCode()
         if key in (wx.WXK_RETURN, wx.WXK_SPACE):
+            win.calltip.cancel()
             win.findflag = 0
             if win.calltip_type == CALLTIP_DUPLICATE:#duplicate mode
                 win.AddText(win.duplicate_match_text)
         elif key == wx.WXK_ESCAPE:
+            win.calltip.cancel()
             win.findflag = 0
         elif key in ('L', 'P') and event.ControlDown():
             return False
@@ -320,7 +321,7 @@ def duplicateMatch(win, kind):
                     win.document.duplicate_calltip = text[start:end]
                     win.document.duplicate_match_len = end - start - win.document.duplicate_length
                     win.document.duplicate_match_text = win.document.GetTextRange(start + win.document.duplicate_length , end)
-                
+                win.document.calltip.cancel()
                 win.document.calltip_type = CALLTIP_DUPLICATE
                 win.document.calltip.show(win.document.duplicate_pos, win.document.duplicate_calltip)
                 return

@@ -15,4 +15,3 @@
 [auto_default]
 
 [auto_complete]
-analysis = @acp.rst.utils.analysis

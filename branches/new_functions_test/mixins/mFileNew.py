@@ -26,6 +26,7 @@ import os
 from modules import Mixin
 from modules import common
 from modules import makemenu
+from modules import Globals
 
 def add_tool_list(toollist, toolbaritems):
     #order, IDname, imagefile, short text, long text, func
@@ -86,11 +87,15 @@ def create_menu(win, menu):
                 if os.path.exists(templatefile):
                     text = file(templatefile).read()
                     text = common.decode_string(text)
+                    import re
+                    eolstring = {0:'\n', 1:'\r\n', 2:'\r'}
+                    eol = eolstring[Globals.pref.default_eol_mode]
+                    text = re.sub(r'\r\n|\r|\n', eol, text)
                 else:
                     text = ''
             document = win.editctrl.new(defaulttext=text, language=lexer.name)
             if document:
-                document.SetFocus()
+                document.goto(document.GetTextLength())
     
     for name, lexname in win.filenewtypes:
         _id = wx.NewId()

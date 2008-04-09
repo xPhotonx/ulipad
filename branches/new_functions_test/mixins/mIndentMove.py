@@ -65,9 +65,9 @@ def move_parent_indent(editor):
         text = line_text.strip()
         if text and not line_text.startswith(comment_chars):
             i = editor.GetLineIndentation(line)
-            editor.goto(line-1)
+            editor.GotoLine(line)
             if i < indent:
-                editor.goto(line-1)
+                editor.GotoLine(line)
                 break
         
         line -= 1
@@ -79,12 +79,12 @@ def move_prev_indent(editor):
     line -= 1
     comment_chars = editor.get_document_comment_chars()
     while line > -1:
-        line_text = editor.goto(line-1)
+        line_text = editor.GetLine(line)
         text = line_text.strip()
         if text and not line_text.startswith(comment_chars):
             i = editor.GetLineIndentation(line)
             if i <= indent:
-                editor.goto(line-1)
+                editor.GotoLine(line)
                 break
 #            elif i < indent:
 #                break
@@ -140,7 +140,7 @@ def move_child_indent(editor):
         if text and not line_text.startswith(comment_chars):
             i = editor.GetLineIndentation(line)
             if i > indent:
-                editor.goto(line-1)
+                editor.GotoLine(line)
                 break
             else:
                 break

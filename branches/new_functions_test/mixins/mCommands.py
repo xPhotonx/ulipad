@@ -127,5 +127,23 @@ def on_first_keydown(win, event):
             return True
         else:
             return False
-
+# recovery the old version
+#    key = event.GetKeyCode()
+#    if key in (wx.WXK_ESCAPE, ):
+#        if  win.on_focus:
+#            if win.AutoCompActive():
+#                win.AutoCompCancel()
+#                return
+#            if win.calltip.active:
+#                win.calltip.cancel()
+#                return 
+#            if  not _impact_mode:
+#                _impact_mode = True
+#                showinfo("vim mode begin")
+#                return True
+#        _impact_mode = False
+#        Globals.mainframe.statusbar.hide_panel()
+#        return True
+#    else:
+#        return False
 Mixin.setPlugin('editor', 'on_first_keydown', on_first_keydown)

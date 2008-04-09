@@ -220,6 +220,39 @@ class Finder:
 
     def regularReplace(self, text):
         return re.sub(self.findtext, self.replacetext, text)
+    
+    def count(self, section):
+        length = len(getRawText(self.findtext))
+        if section == 0:    #whole document
+            start = 0
+            end = self.win.GetLength()
+        else:
+            start, end = self.win.GetSelection()
+        
+        if self.regular:
+            r = self.regularSearch(start, end)
+            if r:
+                b, e = r
+            else:
+                b = -1
+        else:
+            b = self.win.FindText(start, end, self.findtext, self.getFlags())
+        count = 0
+        while b != -1 and start<end:
+            count += 1
+            if not self.regular:
+                start = b + length
+            else:
+                start = e
+            if self.regular:
+                r = self.regularSearch(start, end)
+                if r:
+                    b, e = r
+                else:
+                    b = -1
+            else:
+                b = self.win.FindText(start, end, self.findtext, self.getFlags())
+        return count
 
 class FindPanel(wx.Panel):
     def __init__(self, parent, name, replace=False, *args, **kwargs):
@@ -279,6 +312,7 @@ class FindPanel(wx.Panel):
                 .bind(wx.EVT_KEY_DOWN, self.OnKeyDown)
             box.add(ui.Button(tr('Replace'))).bind('click', self.OnReplace)
             box.add(ui.Button(tr('Replace All'))).bind('click', self.OnReplaceAll)
+            box.add(ui.Button(tr('Count'))).bind('click', self.OnCount)
             box.add(ui.Radio(False, tr('Whole File'), style=wx.RB_GROUP), name='rdoWhole')
             box.add(ui.Radio(False, tr('Selected Text')), name='rdoSelection')
             
@@ -317,10 +351,11 @@ class FindPanel(wx.Panel):
         self.setValue()
         self.findtext.SetFocus()
         
+    re_end = re.compile(r'\r\n|\r|\n', re.DOTALL)
     def _reset_replace(self):
         self.replacetext.Clear()
         text = self.finder.win.GetSelectedText()
-        if len(text) > 0:
+        if self.re_end.search(text) > 0:
             self.rdoWhole.SetValue(False)
             self.rdoSelection.SetValue(True)
         else:
@@ -454,3 +489,15 @@ class FindPanel(wx.Panel):
         self.finder.replaceAll(int(self.rdoSelection.GetValue()))
         wx.CallAfter(Globals.mainframe.document.SetFocus)
 
+    def OnCount(self, event):
+        self.getValue()
+        if not self.finder.findtext:
+            common.warn(tr("Target text cann't be empty!"))
+            return
+        self.addFindString(self.finder.findtext)
+        count = self.finder.count(int(self.rdoSelection.GetValue()))
+        if count == 0:
+            common.note(tr("Cann't find the text !"))
+        else:
+            common.note(tr("Total %d places!") % count)
+        

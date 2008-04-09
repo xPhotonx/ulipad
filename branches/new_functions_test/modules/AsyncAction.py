@@ -1,17 +1,27 @@
 import Queue
 import threading
 import time
+
 class AsyncAction(threading.Thread):
-    def __init__(self):
+    """
+    STOP control all inherit class  behivor
+    """
+    STOP = False
+    def __init__(self, timestep=.1):
         super(AsyncAction, self).__init__()
         self.q = Queue.Queue(0)
         self.setDaemon(True)
         self.stop = False
+        self.timestep = timestep
         self.last = None
         
     def put(self, obj):
         self.q.put(obj)
         
+    def _is_stop(self):
+        return self.stop or self.STOP
+    is_stop = property(_is_stop)
+    
     def stop(self):
         self.stop = True
         
@@ -28,16 +38,15 @@ class AsyncAction(threading.Thread):
         
     def run(self):
         try:
-            while not self.stop:
+            while not self.is_stop:
                 self.last = None
-                while 1:
+                while not self.is_stop:
                     try:
-                        obj = self.q.get(True, self.do_timeout())
+                        obj = self.q.get(True, self.get_timestep())
                         self.last = obj
                     except:
                         if self.last:
                             break
-
                 if self.last:
                     try:
                         self.do_action(self.last)
@@ -47,14 +56,7 @@ class AsyncAction(threading.Thread):
 
         except:
             pass
-        
-    def do_timeout(self):
-        '''
-        if you want to change thread timeout value,overwrite this method.
-        
-        '''        
-        return 0.1
-    
+            
     def do_action(self, obj):
         '''
         you should judge if not self.empty to quit the process, because
@@ -62,6 +64,9 @@ class AsyncAction(threading.Thread):
         one should ba cancelled
         '''
         pass
+    
+    def get_timestep(self):
+        return self.timestep
     
 if __name__ == '__main__':
     class Test(AsyncAction):
@@ -72,7 +77,7 @@ if __name__ == '__main__':
                 return
             print 'pppppp', obj
             
-    a = Test()
+    a = Test(1)
     a.start()
     for i in range(100):
         a.put(i)

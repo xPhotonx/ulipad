@@ -41,9 +41,6 @@ class DUMY_CLASS:pass
 assistant = {}
 assistant_objs = {}
 KEYS = {'<space>':' ', '<equal>':'=', '<div>':'/', '<square>':'['}
-special_placeholders = ("${time}", "${timestring}", "${timestamp}",
-                    "${date}", "${day}", "${month}", "${year}", "${author}")
-
 CALLTIP_AUTOCOMPLETE = 2
 class StopException(Exception):pass
 
@@ -340,8 +337,13 @@ class InputAssistant(Mixin.Mixin):
                     #deal with auto identifiers
                     result = False
                     try:
-                       
-                        if self.key[0] == 0 and self.key[1] == ord('.'):
+                        if self.key[0] == 0 and self.key[1] == ord('('):
+                            self.process_calltip_begin()
+                            result = True
+                        elif self.key[0] == 0 and self.key[1] == ord(')'):
+                            self.process_calltip_end()
+                            result = True
+                        elif self.key[0] == 0 and self.key[1] == ord('.'):
                             self.process_autocomplete()
                             result = True
                         if not result:
@@ -447,7 +449,30 @@ class InputAssistant(Mixin.Mixin):
             r.sort(lambda x, y:cmp(x.upper(), y.upper()))            
             return r
         
-   
+    def process_calltip_begin(self):
+        win = self.editor
+        if not win.pref.inputass_calltip:
+            return False
+        pos = win.GetCurrentPos()
+        word = _getWord(win)
+        pos = win.GetCurrentPos()
+        r = self.call_calltip(word, self.syncvar)
+        if r:
+            if isinstance(r, (str, unicode)):
+                r = [r]
+            tip = '\n\n'.join(list(filter(None, r)) + [tr('(Press ESC to close)')])
+            if win.calltip.active and CALLTIP_AUTOCOMPLETE:
+                win.calltip.cancel()
+            t = tip.replace('\r\n','\n')
+            win.calltip_type = CALLTIP_AUTOCOMPLETE
+            win.calltip_stack[pos-1] = t
+            self.postcall(win.calltip.show, pos, t)
+            #save position
+            curpos = win.GetCurrentPos()
+            win.calltip_column = win.GetColumn(curpos)
+            win.calltip_line = win.GetCurrentLine()
+            return True
+        return False
     
     def postcall(self, f, *args):
         if self.on_char and not self.syncvar.empty or self.oldpos != self.editor.GetCurrentPos():
@@ -457,58 +482,53 @@ class InputAssistant(Mixin.Mixin):
         wx.CallAfter(f, *args)
         return
         
- 
-    
-    def run2(self, editor, type, key_all, syncvar=None):
-        if not editor.pref.input_assistant:
-            return False
+    def process_calltip_end(self):
+        win = self.editor
+        braceAtCaret = -1
+        braceOpposite = -1
+        charBefore = None
+        caretPos = win.GetCurrentPos()
+        if caretPos > 0:
+            charBefore = win.GetCharAt(caretPos - 1)
+            styleBefore = win.GetStyleAt(caretPos - 1)
+        # check before
+        if charBefore and chr(charBefore) in ")":
+            braceAtCaret = caretPos - 1
+        if braceAtCaret >= 0:
+            braceOpposite = win.BraceMatch(braceAtCaret)
+        try:
+            if  braceOpposite != -1:
+                calltip_text = win.calltip_stack.get(braceOpposite, None)
+                if  calltip_text is None:
+                    return
+                else:
+                    klist = win.calltip_stack.keys()
+                    klist.sort()
+                    i = klist.index(braceOpposite)
+                    s = klist[i-1]
+                    ss = min(klist)
+                    if  braceOpposite == ss:
+                        wx.CallAfter(win.calltip.cancel)
+                        win.calltip_stack.clear()
+                        del win.function_parameter[:]
+                        return 
+                    if  len(win.calltip_stack)>1:
+                        del win.calltip_stack[braceOpposite]
+                    calltip_text = win.calltip_stack.get(s, None)
+                    if  calltip_text:
+                        if win.calltip.active and CALLTIP_AUTOCOMPLETE:
+                            win.calltip.cancel()
+                        win.calltip_type = CALLTIP_AUTOCOMPLETE
+                        pos = win.GetCurrentPos()
+                        self.postcall(win.calltip.show, pos, calltip_text)
+                        #save position
+                        curpos = win.GetCurrentPos()
+                        win.calltip_column = win.GetColumn(curpos)
+                        win.calltip_line = win.GetCurrentLine()
+        except:
+            error.traceback()
+        return False
         
-        if not hasattr(editor, 'lexer') or editor.lexer.cannot_expand(editor):
-            return False
-        
-        if not syncvar.empty:
-            return True
-        
-       
-        self.oldpos = editor.GetCurrentPos()
-        self.editor = editor
-        win = editor
-        self.language = editor.languagename
-        if type == 'key':
-            key = key_all[1]
-        curpos = win.GetCurrentPos()
-        line = win.GetCurrentLine()
-    
-        full_word = _getWord(win, whole=True, pos=curpos, line=line)
-        self.call_calltip2(win, full_word, None, curpos, syncvar)
-        return        
-
-        
-    
-    def call_calltip2(self, win, word, brace_left, curpos, syncvar):
-        for f in win.input_calltip:
-            try:
-                r = f(win,word,syncvar)
-                if r:
-                    if isinstance(r, (str, unicode)):
-                        r = [r]
-                    tip = '\n\n'.join(list(filter(None, r)))
-                    self.postcall2(syncvar, win.calltip.show, tip)
-                    return 
-            except StopException:
-                pass
-            except:
-                error.traceback()
-    
-    
-
-    def postcall2(self,syncvar, f, *args):
-        if not syncvar.empty or self.oldpos != self.editor.GetCurrentPos():
-            raise StopException
-        wx.CallAfter(f, *args)
-        return
-
-
     def process_autocomplete(self):
         win = self.editor
         if not win.pref.inputass_autocomplete:
@@ -846,12 +866,6 @@ class InputAssistant(Mixin.Mixin):
         cur_pos = -1
         refline = win.GetCurrentLine()
         for t in text:
-            # thanks to Scribes ,I port this feature  2008:01:10 by ygao
-            global special_placeholders
-            for i in range(len(special_placeholders)):
-                pos = t.encode('utf-8').find(special_placeholders[i])
-                if  pos > -1:
-                    t = t.replace(special_placeholders[i], replace_special_placeholder(special_placeholders[i],win))
             pos = t.encode('utf-8').find('!^')
             if pos > -1:
                 t = t.replace('!^', '')
@@ -925,17 +939,11 @@ def convert_key(s):
             key = ord(i)
     return f, key
 
-def _getWord(win, whole=None, pos=None, line=None):
-    if  pos is None:
-        pos=win.GetCurrentPos()
-    else:
-        pos = pos
+def _getWord(win, whole=None):
+    pos=win.GetCurrentPos()
     if win.getChar(pos-1) == '(':
         pos -= 1
-    if  line is None:
-        line = win.GetCurrentLine()
-    else:
-        line = line
+    line = win.GetCurrentLine()
     linePos=win.PositionFromLine(line)
     txt = win.GetLine(line)
     start=win.WordStartPosition(pos,1)
@@ -956,45 +964,6 @@ def _getWord(win, whole=None, pos=None, line=None):
     return txt[start-linePos:end-linePos]
 
 
-def replace_special_placeholder(placeholder,win):
-    """
-    Replaces a variable/'special placeholder' with it's value.
-
-    """
-    if placeholder == "${day}":
-        from time import localtime
-        thetime = localtime()
-        return pad_zero(thetime[2])
-    if placeholder == "${month}":
-        from time import localtime
-        thetime = localtime()
-        return pad_zero(thetime[1])
-    if placeholder == "${year}":
-        from time import localtime
-        thetime = localtime()
-        return pad_zero(thetime[0])
-    if placeholder == "${date}":
-        from time import localtime
-        thetime = localtime()
-        return "%s:%s:%s" % (pad_zero(thetime[0]), pad_zero(thetime[1]), pad_zero(thetime[2]))
-    if placeholder == "${time}":
-        from time import localtime
-        thetime = localtime()
-        return "%s:%s:%s" % (pad_zero(thetime[3]), pad_zero(thetime[4]), pad_zero(thetime[5]))
-    if placeholder == "${timestring}":
-        from time import ctime
-        return ctime()
-    if placeholder == "${timestamp}":
-        from time import localtime
-        thetime = localtime()
-        return "[%s-%s-%s] %s:%s:%s" % (thetime[0], pad_zero(thetime[1]), pad_zero(thetime[2]), pad_zero(thetime[3]), pad_zero(thetime[4]), pad_zero(thetime[5]))
-    if placeholder == "${author}":
-        return win.pref.personal_username
-
-def pad_zero(num):
-    if num < 10:
-        return "0" + str(num)
-    return str(num)
 
 
 

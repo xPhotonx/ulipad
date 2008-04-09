@@ -1,4 +1,5 @@
 import doctest
-import sys
+import os, sys
 
-doctest.testfile(sys.argv[1], report=True, verbose=True)
+execfile(sys.argv[1])
+doctest.testmod(report=True, verbose=True)

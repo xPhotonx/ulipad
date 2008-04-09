@@ -1,7 +1,7 @@
 #   Programmer: limodou
 #   E-mail:     limodou@gmail.com
 #
-#   Copyleft 2006 limodou
+#   Copyleft 2008 limodou
 #
 #   Distributed under the terms of the GPL (GNU Public License)
 #
@@ -27,12 +27,29 @@ import sys
 from modules import common
 from modules import Mixin
 
+def check_python():
+    interpreters = []
+    if wx.Platform == '__WXMSW__':
+        from modules import winreg
+        for v in ('2.3', '2.4', '2.5', '2.6', '3.0'):
+            try:
+                key = winreg.Key(winreg.HKLM, r'SOFTWARE\Python\Pythoncore\%s\InstallPath' % v)
+                interpreters.append((v+' console', os.path.join(key.value, 'python.exe')))
+                interpreters.append((v+' window', os.path.join(key.value, 'pythonw.exe')))
+            except:
+                pass
+    else:
+        version = '.'.join(map(str, sys.version_info[:2]))
+        interpreters.append((version, sys.executable))
+    return interpreters
+        
 def pref_init(pref):
-    cmd = sys.executable
-    if os.path.basename(sys.argv[0]) == os.path.basename(cmd):
-        cmd = ''
-    pref.python_interpreter = [('default', cmd)]
-    pref.default_interpreter = 'default'
+    s = check_python()
+    pref.python_interpreter = s
+    if len(s) == 1:
+        pref.default_interpreter = s[0][0]
+    else:
+        pref.default_interpreter = 'noexist'
     pref.python_show_args = False
     pref.python_save_before_run = False
 Mixin.setPlugin('preference', 'init', pref_init)
@@ -69,15 +86,47 @@ def editor_init(win):
 Mixin.setPlugin('editor', 'init', editor_init)
 
 def _get_python_exe(win):
-    interpreters = dict(win.pref.python_interpreter)
-    interpreter = interpreters[win.pref.default_interpreter]
+    s = win.pref.python_interpreter
+    interpreters = dict(s)
+    interpreter = interpreters.get(win.pref.default_interpreter, '')
+
+    #check python execute
+    e = check_python()
+    for x, v in e:
+        flag = False
+        for i, t in enumerate(s):
+            name, exe = t
+            if exe == v:
+                flag = True
+                if name != x:
+                    s[i] = (x, v)
+        if not flag:
+            s.append((x, v))
+    win.pref.save()
+    
     if not interpreter:
-        common.showerror(win, tr("You didn't setup python interpreter, \nplease setup it first in Preference dialog"))
-        return
+        value = ''
+        if s:
+            if len(s) > 1:
+                dlg = SelectInterpreter(win, s[0][0], [x for x, v in s])
+                if dlg.ShowModal() == wx.ID_OK:
+                    value = dlg.GetValue()
+                dlg.Destroy()
+            else:
+                value = s[0][0]
+                
+        if not value:
+            common.showerror(win, tr("You didn't setup python interpreter, \nplease setup it first in Preference dialog"))
+        
+        interpreter = dict(s).get(value, '')
+        win.pref.default_interpreter = value
+        win.pref.save()
+        
     return interpreter
 
 def OnPythonRun(win, event):
     interpreter = _get_python_exe(win)
+    if not interpreter: return
 
     doc = win.editctrl.getCurDoc()
     if doc.isModified() or doc.filename == '':
@@ -233,3 +282,19 @@ def on_leave(mainframe, filename, languagename):
     ret = mainframe.Disconnect(mainframe.IDM_PYTHON_RUN, -1, wx.wxEVT_UPDATE_UI)
     ret = mainframe.Disconnect(mainframe.IDM_PYTHON_SETARGS, -1, wx.wxEVT_UPDATE_UI)
 Mixin.setPlugin('pythonfiletype', 'on_leave', on_leave)
+
+
+################################# Dialogs
+from modules import meide as ui
+
+class SelectInterpreter(ui.SimpleDialog):
+    def __init__(self, parent, value, interpreters):
+        box = ui.VBox(namebinding='element')
+        box.add(ui.Label(tr('Which python interpreter do you want to use?')))
+        box.add(ui.ComboBox(value, choices=interpreters, style=wx.CB_READONLY), name='interpreter')
+        super(SelectInterpreter, self).__init__(parent, box, title=tr('Select Python Interpreter'), fit=2)
+        
+        self.layout.SetFocus()
+
+    def GetValue(self):
+        return self.interpreter.GetValue()
