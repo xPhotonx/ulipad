@@ -6257,14 +6257,44 @@ def pref_init(pref):
     pref.inputass_typing_rate = 400
 Mixin.setPlugin('preference', 'init', pref_init)
 
+def _get(name):
+    def _f(name=name):
+        return getattr(Globals.pref, name)
+    return _f
+
+from modules import meide as ui
+
+mInputAssistant_ia = ui.Check(_get('input_assistant'), tr('Enable input assistant'))
+mInputAssistant_s1 = ui.Check(_get('inputass_calltip'), tr("Enable calltip"))
+mInputAssistant_s2 = ui.Check(_get('inputass_autocomplete'), tr("Enable auto completion"))
+mInputAssistant_s3 = ui.Check(_get('inputass_identifier'), tr("Enable auto prompt identifiers"))
+mInputAssistant_s4 = ui.Check(_get('inputass_full_identifier'), tr("Enable full identifiers search"))
+mInputAssistant_s5 = ui.Check(_get('inputass_func_parameter_autocomplete'), tr("Enable function parameter autocomplete"))
+
+def _toggle(event=None):
+    ss = [mInputAssistant_s1, mInputAssistant_s2, mInputAssistant_s3, mInputAssistant_s4, mInputAssistant_s5]
+    if mInputAssistant_ia.GetValue():
+        for s in ss:
+            s.get_widget().Enable()
+    else:
+        for s in ss:
+            s.get_widget().Disable()
+
+def aftercreate(dlg):
+    _toggle()
+Mixin.setPlugin('prefdialog', 'aftercreate', aftercreate)
+
 def add_pref(preflist):
+
+    mInputAssistant_ia.bind('check', _toggle)
+
     preflist.extend([
-        (tr('Input Assistant'), 100, 'check', 'input_assistant', tr('Enable input assistant'), None),
-        (tr('Input Assistant'), 110, 'check', 'inputass_calltip', tr("Enable calltip"), None),
-        (tr('Input Assistant'), 120, 'check', 'inputass_autocomplete', tr("Enable auto completion"), None),
-        (tr('Input Assistant'), 130, 'check', 'inputass_identifier', tr("Enable auto prompt identifiers"), None),
-        (tr('Input Assistant'), 140, 'check', 'inputass_full_identifier', tr("Enable full identifiers search"), None),
-        (tr('Input Assistant'), 150, 'check', 'inputass_func_parameter_autocomplete', tr("Enable function parameter autocomplete"), None),
+        (tr('Input Assistant'), 100, mInputAssistant_ia, 'input_assistant', '', None),
+        (tr('Input Assistant'), 110, mInputAssistant_s1, 'inputass_calltip', '', None),
+        (tr('Input Assistant'), 120, mInputAssistant_s2, 'inputass_autocomplete', '', None),
+        (tr('Input Assistant'), 130, mInputAssistant_s3, 'inputass_identifier', '', None),
+        (tr('Input Assistant'), 140, mInputAssistant_s4, 'inputass_full_identifier', '', None),
+        (tr('Input Assistant'), 150, mInputAssistant_s5, 'inputass_func_parameter_autocomplete', '', None),
         (tr('Input Assistant'), 160, 'int', 'inputass_typing_rate', tr("Skip Input Assistant when typing rate faster than this milisecond"), None),
     ])
 Mixin.setPlugin('preference', 'add_pref', add_pref)

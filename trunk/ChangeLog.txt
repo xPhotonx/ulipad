@@ -2,6 +2,10 @@ $Rev$
 [2008/04/09]
 mFileNew.py         Can remember the last new file type(select new type menu first), 
                     then when you select new menu, it'll use the last new file type as default
+PrefDialog.py mInputAssistant.py
+                    Improve preference dialog input assistant checkbox process. 
+                    When you check the first checkbox(Enable input assistant) it'll
+                    automatically toggle other 5 checkboxes.
 
 [2008/04/03]
 SyntaxCheck.py      Fix exception process bug
