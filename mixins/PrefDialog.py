@@ -157,6 +157,8 @@ class PrefDialog(wx.Dialog, Mixin.Mixin):
         self.values = self.get_values()
         
         wx.EVT_UPDATE_UI(self, self.btnApply.GetId(), self.OnUpdateApply)
+
+        self.callplugin('aftercreate', self)
         
     def addPages(self, treebook):
         for v in self.pref.preflist:
