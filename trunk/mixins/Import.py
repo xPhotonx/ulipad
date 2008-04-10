@@ -6575,6 +6575,8 @@ def new_file(win, lexname=None):
         document = win.editctrl.new(defaulttext=text, language=lexer.name)
         if document:
             document.goto(document.GetTextLength())
+    else:
+        win.editctrl.new()
 
 def create_menu(win, menu):
     ids = {}
