@@ -159,6 +159,7 @@ class ShellWindow(wx.py.shell.Shell, Mixin.Mixin):
             self.AutoCompCancel()
         if self.CallTipActive():
             self.CallTipCancel()
+        event.Skip()
 
     def canClose(self):
         return True
