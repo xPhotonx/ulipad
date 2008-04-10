@@ -30,6 +30,12 @@ def afterinit(win):
     win.concurrentwindow = None
 Mixin.setPlugin('mainframe', 'afterinit', afterinit)
 
+def on_kill_focus(win, event):
+    main = Globals.mainframe
+    if main.concurrentwindow and main.concurrentwindow.has_document(win):
+        return Globals.mainframe.command_starting is True
+Mixin.setPlugin('editor', 'on_kill_focus', on_kill_focus)
+
 def on_start(concurrent, side):
     win = Globals.mainframe
     win.command_starting = True
@@ -39,6 +45,8 @@ Mixin.setPlugin('concurrent', 'start', on_start)
 def on_stop(concurrent, side):
     win = Globals.mainframe
     win.command_starting = False
+    wx.CallAfter(win.document.SetFocus)
+    wx.CallAfter(win.concurrentwindow.SetFocus)
     win.concurrentwindow = None
 Mixin.setPlugin('concurrent', 'stop', on_stop)
 
