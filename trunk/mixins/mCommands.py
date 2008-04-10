@@ -42,16 +42,16 @@ def add_mainframe_menu(menulist):
     ])
 Mixin.setPlugin('mainframe', 'add_menu', add_mainframe_menu)
 
-def editor_init(win):
-    win.on_focus = False
-Mixin.setPlugin('editor', 'init', editor_init)
+def mainframe_init(win):
+    win.command_mode = False
+Mixin.setPlugin('mainframe', 'init', mainframe_init)
 
-def on_set_focus(win, event):
-    win.on_focus = True
-Mixin.setPlugin('editor', 'on_set_focus', on_set_focus)
+#def on_set_focus(win, event):
+#    win.on_focus = True
+#Mixin.setPlugin('editor', 'on_set_focus', on_set_focus)
 
 def on_kill_focus(win, event):
-    win.on_focus = False
+    return Globals.mainframe.command_mode is True
 Mixin.setPlugin('editor', 'on_kill_focus', on_kill_focus)
 
 def afterinit(win):

@@ -1,4 +1,8 @@
 $Rev$
+[2008/04/10]
+mCommands.py mConcurrent.py
+                    Improve caret display(process KILL_FOCUS event if in command mode or concurrent mode)
+                    
 [2008/04/09]
 mFileNew.py         Can remember the last new file type(select new type menu first), 
                     then when you select new menu, it'll use the last new file type as default
