@@ -34,7 +34,7 @@ def add_mainframe_menu(menulist):
         ]),
         ('IDM_WINDOW',
         [
-            (151, 'IDM_WINDOW_CODESNIPPETS', tr('Open Code Snippets Window'), wx.ITEM_NORMAL, 'OnWindowSnippet', tr('Opens code snippets window.'))
+            (151, 'IDM_WINDOW_CODESNIPPET', tr('Open Code Snippets Window'), wx.ITEM_NORMAL, 'OnWindowCodeSnippet', tr('Opens code snippets window.'))
         ]),
     ])
 Mixin.setPlugin('mainframe', 'add_menu', add_mainframe_menu)
