@@ -1,4 +1,8 @@
 $Rev$
+[2008/04/12]
+mLexer.py mLexerClass1.py
+                    Add slice syntax support
+                    
 [2008/04/10]
 mCommands.py mConcurrent.py
                     Improve caret display(process KILL_FOCUS event if in command mode or concurrent mode)

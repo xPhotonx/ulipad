@@ -326,3 +326,40 @@ print "Hello world"
         self.addSyntaxItem('word6',             'Word 6',               wx.stc.STC_LUA_WORD6,             STE_STYLE_CHARACTER)
         self.addSyntaxItem('word7',             'Word 7',               wx.stc.STC_LUA_WORD7,             STE_STYLE_CHARACTER)
         self.addSyntaxItem('word8',             'Word 8',               wx.stc.STC_LUA_WORD8,             STE_STYLE_CHARACTER)
+
+class SliceLexer(LexerClass.CLexer):
+    metaname = "slice"
+    
+    keywords = ("""
+bool enum implements module struct
+byte exception int Object throws
+class extends interface out true
+const false local sequence void
+dictionary float LocalObject short
+double idempotent long string""",)
+
+    preview_code = """
+// Slice
+module ModuleName
+{
+
+const int PI = 3.1415926;
+const string wellcome = "Hello, World!";
+
+struct Point {
+    float x;
+    float y;
+};
+
+interface Area {
+    idempotent float calcArea();
+};
+
+};
+"""
+
+    def pre_colourize(self, win):
+        #FOLDING
+        win.enablefolder = True
+        win.SetProperty("fold", "1")
+        win.SetProperty("fold.compact", "1")
