@@ -3854,6 +3854,8 @@ def add_lexer(lexer):
             wx.stc.STC_LEX_CONTAINER, 'rst.stx', LexerRst.RstLexer),
         (LexerClass1.LuaLexer.metaname, tr('Lua|*.lua'),
             wx.stc.STC_LEX_LUA, 'lur.stx', LexerClass1.LuaLexer),
+        (LexerClass1.SliceLexer.metaname, tr('Slice|*.ice'),
+            wx.stc.STC_LEX_CPP, 'c.stx', LexerClass1.SliceLexer),
     ])
 Mixin.setPlugin('lexerfactory', 'add_lexer', add_lexer)
 
@@ -3873,6 +3875,7 @@ def add_new_files(new_files):
         ('Active Server Pages', LexerClass1.ASPLexer.metaname),
         ('ReStructured Text', LexerRst.RstLexer.metaname),
         ('Lua', LexerClass1.LuaLexer.metaname),
+        ('Slice', LexerClass1.SliceLexer.metaname),
     ])
 Mixin.setPlugin('mainframe', 'add_new_files', add_new_files)
 
