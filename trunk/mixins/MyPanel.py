@@ -414,7 +414,7 @@ class Notebook(FNB.FlatNotebook, Mixin.Mixin):
     def __init__(self, parent, panel, side, style=0):
         self.initmixin()
 
-        FNB.FlatNotebook.__init__(self, parent, -1, style=style|FNB.FNB_SMART_TABS|FNB.FNB_VC8|FNB.FNB_X_ON_TAB|FNB.FNB_NO_X_BUTTON, size=(0, 0))
+        FNB.FlatNotebook.__init__(self, parent, -1, style=style|FNB.FNB_VC8|FNB.FNB_X_ON_TAB|FNB.FNB_NO_X_BUTTON, size=(0, 0))
         self.parent = parent
         self.panel = panel
         self.side = side
@@ -430,7 +430,7 @@ class Notebook(FNB.FlatNotebook, Mixin.Mixin):
         self.SetRightClickMenu(self.popmenu)
         FNB.EVT_FLATNOTEBOOK_PAGE_CHANGED(self, self.GetId(), self.OnPageChanged)
 #        wx.EVT_LEFT_UP(self, self.OnPageChanged)
-        wx.EVT_LEFT_DCLICK(self._pages, self.OnDClick)
+        wx.EVT_RIGHT_DCLICK(self._pages, self.OnDClick)
 #        wx.EVT_RIGHT_DOWN(self, self.OnPopUp)
         FNB.EVT_FLATNOTEBOOK_PAGE_CLOSING(self, self.GetId(), self.OnClose)
         self.SetActiveTabColour('#7FFFD4')
