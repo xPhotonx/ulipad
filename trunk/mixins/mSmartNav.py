@@ -61,6 +61,7 @@ def create_prev(win, toolbar):
     ID_PREV = Id.makeid(win, 'IDM_SEARCH_NAV_PREV')
     btnPrev = FlatButtons.FlatBitmapMenuButton(toolbar, ID_PREV, common.getpngimage('images/nav_left.gif'))
     btnPrev.SetRightClickFunc(win.OnSmartNavPrevFiles)
+    btnPrev.SetToolTip(wx.ToolTip(tr('previous file')))
     wx.EVT_BUTTON(btnPrev, ID_PREV, win.OnSmartNavPrev)
     wx.EVT_UPDATE_UI(win, win.IDM_SEARCH_NAV_PREV, win.OnUpdateUI)
 
@@ -70,6 +71,7 @@ def create_next(win, toolbar):
     ID_NEXT = Id.makeid(win, 'IDM_SEARCH_NAV_NEXT')
     btnNext = FlatButtons.FlatBitmapMenuButton(toolbar, ID_NEXT, common.getpngimage('images/nav_right.gif'))
     btnNext.SetRightClickFunc(win.OnSmartNavNextFiles)
+    btnNext.SetToolTip(wx.ToolTip(tr('next file')))
     wx.EVT_BUTTON(btnNext, ID_NEXT, win.OnSmartNavNext)
     wx.EVT_UPDATE_UI(win, win.IDM_SEARCH_NAV_NEXT, win.OnUpdateUI)
 
