@@ -1,6 +1,6 @@
 msgid ""
 msgstr ""
-"PO-Revision-Date: 2008-04-12 16:26+0800\n"
+"PO-Revision-Date: 2008-04-12 17:30+0800\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Project-Id-Version: UliPad 3.9\n"
 "Generated-By: pygettext.py 1.5\n"
@@ -183,8 +183,8 @@ msgid "Open Snippet File"
 msgstr "打开代码片段文件"
 
 #: ..\mixins\CodeSnippet.py:755
-msgid "Some snippet files have been changed, do you want to save them?"
-msgstr "部分代码片段文件发生了变化，是否要保存？"
+msgid "Some changes have been made to the Code Snippets Window. Do you want to save them?"
+msgstr "代码片段窗口发生了一些变化。想要保存它们吗？"
 
 #: ..\mixins\CodeSnippet.py:756
 #: ..\mixins\CodeSnippet.py:948
@@ -196,8 +196,8 @@ msgid "There are some errors as openning the Snippet file"
 msgstr "在打开代码片段文件时有错误"
 
 #: ..\mixins\CodeSnippet.py:868
-#: ..\mixins\Import.py:8479
-#: ..\mixins\mCodeSnippet.py:143
+#: ..\mixins\Import.py:8483
+#: ..\mixins\mCodeSnippet.py:147
 msgid "Snippet"
 msgstr "代码片段"
 
@@ -835,7 +835,7 @@ msgstr "Ftp站点：%s"
 #: ..\mixins\FtpClass.py:903
 #: ..\mixins\HtmlPage.py:95
 #: ..\mixins\Import.py:3087
-#: ..\mixins\Import.py:8662
+#: ..\mixins\Import.py:8666
 #: ..\mixins\InterpreterDialog.py:56
 #: ..\mixins\InterpreterDialog.py:176
 #: ..\mixins\PluginDialog.py:61
@@ -918,7 +918,7 @@ msgstr "下载文件名："
 #: ..\mixins\Import.py:2130
 #: ..\mixins\Import.py:2784
 #: ..\mixins\Import.py:5018
-#: ..\mixins\Import.py:8511
+#: ..\mixins\Import.py:8515
 #: ..\mixins\ScriptDialog.py:67
 #: ..\mixins\ShellDialog.py:67
 #: ..\mixins\mComEdit.py:86
@@ -989,7 +989,7 @@ msgstr "通用"
 #: ..\mixins\Import.py:5018
 #: ..\mixins\Import.py:5673
 #: ..\mixins\Import.py:6814
-#: ..\mixins\Import.py:8511
+#: ..\mixins\Import.py:8515
 #: ..\mixins\mAutoBak.py:31
 #: ..\mixins\mAutoCheck.py:35
 #: ..\mixins\mAutoCheck.py:36
@@ -3946,74 +3946,85 @@ msgid "Enable debug mode"
 msgstr "允许调试模式"
 
 #: ..\mixins\Import.py:8379
-#: ..\mixins\Import.py:8387
+#: ..\mixins\Import.py:8391
 #: ..\mixins\mCodeSnippet.py:33
-#: ..\mixins\mCodeSnippet.py:41
+#: ..\mixins\mCodeSnippet.py:45
 msgid "Opens code snippet window."
 msgstr "打开代码片段窗口。"
 
 #: ..\mixins\Import.py:8379
-#: ..\mixins\Import.py:8422
-#: ..\mixins\Import.py:8427
-#: ..\mixins\Import.py:8433
-#: ..\mixins\Import.py:8438
-#: ..\mixins\Import.py:8442
-#: ..\mixins\Import.py:8453
 #: ..\mixins\mCodeSnippet.py:33
-#: ..\mixins\mCodeSnippet.py:86
-#: ..\mixins\mCodeSnippet.py:91
-#: ..\mixins\mCodeSnippet.py:97
-#: ..\mixins\mCodeSnippet.py:102
+msgid "Code Snippets"
+msgstr "代码片段"
+
+#: ..\mixins\Import.py:8383
+#: ..\mixins\Import.py:8391
+#: ..\mixins\mCodeSnippet.py:37
+#: ..\mixins\mCodeSnippet.py:45
+msgid "Open Code Snippets Window"
+msgstr "打开代码片段窗口"
+
+#: ..\mixins\Import.py:8383
+#: ..\mixins\mCodeSnippet.py:37
+#, fuzzy
+msgid "Opens code snippets window."
+msgstr "打开代码片段窗口。"
+
+#: ..\mixins\Import.py:8426
+#: ..\mixins\Import.py:8431
+#: ..\mixins\Import.py:8437
+#: ..\mixins\Import.py:8442
+#: ..\mixins\Import.py:8446
+#: ..\mixins\Import.py:8457
+#: ..\mixins\mCodeSnippet.py:90
+#: ..\mixins\mCodeSnippet.py:95
+#: ..\mixins\mCodeSnippet.py:101
 #: ..\mixins\mCodeSnippet.py:106
-#: ..\mixins\mCodeSnippet.py:117
+#: ..\mixins\mCodeSnippet.py:110
+#: ..\mixins\mCodeSnippet.py:121
 msgid "Code Snippet"
 msgstr "代码片段"
 
-#: ..\mixins\Import.py:8387
-#: ..\mixins\mCodeSnippet.py:41
-msgid "Open Code Snippet Window"
-msgstr "打开代码片段窗口"
-
-#: ..\mixins\Import.py:8511
+#: ..\mixins\Import.py:8515
 #: ..\mixins\mIndentMove.py:34
 msgid "Always select from start of line when moving down to next matching indent"
 msgstr "在向下移动到下一个匹配缩近时总是从行首进行文本选中"
 
-#: ..\mixins\Import.py:8642
-#: ..\mixins\Import.py:8660
+#: ..\mixins\Import.py:8646
+#: ..\mixins\Import.py:8664
 #: ..\mixins\mCheckUpdate.py:38
 #: ..\mixins\mCheckUpdate.py:56
 msgid "Check update when startup"
 msgstr "启动时检查更新"
 
-#: ..\mixins\Import.py:8642
+#: ..\mixins\Import.py:8646
 #: ..\mixins\mCheckUpdate.py:38
 msgid "Update"
 msgstr "更新"
 
-#: ..\mixins\Import.py:8650
-#: ..\mixins\Import.py:8676
+#: ..\mixins\Import.py:8654
+#: ..\mixins\Import.py:8680
 #: ..\mixins\mCheckUpdate.py:46
 #: ..\mixins\mCheckUpdate.py:72
 msgid "Check Update"
 msgstr "更新检查"
 
-#: ..\mixins\Import.py:8654
+#: ..\mixins\Import.py:8658
 #: ..\mixins\mCheckUpdate.py:50
 msgid "There is new version %s of UliPad."
 msgstr "有新版本 %s 的UliPad"
 
-#: ..\mixins\Import.py:8657
+#: ..\mixins\Import.py:8661
 #: ..\mixins\mCheckUpdate.py:53
 msgid "Goto Download page"
 msgstr "去下载页面"
 
-#: ..\mixins\Import.py:8676
+#: ..\mixins\Import.py:8680
 #: ..\mixins\mCheckUpdate.py:72
 msgid "Check if where is new version of UliPad."
 msgstr "检查是否有UliPad的新版本。"
 
-#: ..\mixins\Import.py:8697
+#: ..\mixins\Import.py:8701
 #: ..\mixins\mCheckUpdate.py:93
 msgid "There is no new version."
 msgstr "没有新版本。"
