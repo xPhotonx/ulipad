@@ -8678,7 +8678,7 @@ def add_mainframe_menu(menulist):
     ])
 Mixin.setPlugin('mainframe', 'add_menu', add_mainframe_menu)
 
-def check_update():
+def check_update(force=False):
     from modules import Casing
 
     def f():
@@ -8693,7 +8693,8 @@ def check_update():
                     dlg.ShowModal()
                     dlg.Destroy()
                 else:
-                    common.showmessage(tr("There is no new version."))
+                    if force:
+                        common.showmessage(tr("There is no new version."))
             wx.CallAfter(_f)
         except Error, e:
             wx.CallAfter(common.showerror, e)
@@ -8702,7 +8703,7 @@ def check_update():
     d.start_thread()
 
 def OnHelpCheckUpdate(win, event):
-    check_update()
+    check_update(True)
 Mixin.setMixin('mainframe', 'OnHelpCheckUpdate', OnHelpCheckUpdate)
 
 def on_show(win):
