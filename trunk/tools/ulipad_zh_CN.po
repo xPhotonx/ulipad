@@ -1,6 +1,6 @@
 msgid ""
 msgstr ""
-"PO-Revision-Date: 2008-04-12 11:08+0800\n"
+"PO-Revision-Date: 2008-04-12 16:26+0800\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Project-Id-Version: UliPad 3.9\n"
 "Generated-By: pygettext.py 1.5\n"
@@ -59,13 +59,12 @@ msgid "Paste Before"
 msgstr "向前粘贴"
 
 #: ..\mixins\CodeSnippet.py:230
-#: ..\mixins\CodeSnippet.py:705
-msgid "New Snippet File"
-msgstr "新建代码片段文件"
+msgid "New Snippet File..."
+msgstr "新建代码片段文件..."
 
 #: ..\mixins\CodeSnippet.py:231
-msgid "Open Snippt File"
-msgstr "打开代码片段文件"
+msgid "Open Snippet File..."
+msgstr "打开代码片段文件..."
 
 #: ..\mixins\CodeSnippet.py:232
 msgid "Recent Snippet Files"
@@ -76,7 +75,7 @@ msgid "Save Snippet File"
 msgstr "保存代码片段文件"
 
 #: ..\mixins\CodeSnippet.py:234
-msgid "Save All Snippets File"
+msgid "Save All Snippet Files"
 msgstr "保存全部代码片段文件"
 
 #: ..\mixins\CodeSnippet.py:235
@@ -174,6 +173,10 @@ msgstr "向前增加结点"
 #: ..\mixins\CodeSnippet.py:529
 msgid "Add Node After"
 msgstr "向后增加结点"
+
+#: ..\mixins\CodeSnippet.py:705
+msgid "New Snippet File"
+msgstr "新建代码片段文件"
 
 #: ..\mixins\CodeSnippet.py:730
 msgid "Open Snippet File"
@@ -4010,8 +4013,8 @@ msgstr "去下载页面"
 msgid "Check if where is new version of UliPad."
 msgstr "检查是否有UliPad的新版本。"
 
-#: ..\mixins\Import.py:8696
-#: ..\mixins\mCheckUpdate.py:92
+#: ..\mixins\Import.py:8697
+#: ..\mixins\mCheckUpdate.py:93
 msgid "There is no new version."
 msgstr "没有新版本。"
 

@@ -5,7 +5,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
-"POT-Creation-Date: Sat Apr 12 11:05:47 2008\n"
+"POT-Creation-Date: Sat Apr 12 16:25:52 2008\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -49,12 +49,12 @@ msgstr ""
 msgid "Paste Before"
 msgstr ""
 
-#: ..\mixins\CodeSnippet.py:230 ..\mixins\CodeSnippet.py:705
-msgid "New Snippet File"
+#: ..\mixins\CodeSnippet.py:230
+msgid "New Snippet File..."
 msgstr ""
 
 #: ..\mixins\CodeSnippet.py:231
-msgid "Open Snippt File"
+msgid "Open Snippet File..."
 msgstr ""
 
 #: ..\mixins\CodeSnippet.py:232
@@ -66,7 +66,7 @@ msgid "Save Snippet File"
 msgstr ""
 
 #: ..\mixins\CodeSnippet.py:234
-msgid "Save All Snippets File"
+msgid "Save All Snippet Files"
 msgstr ""
 
 #: ..\mixins\CodeSnippet.py:235
@@ -137,6 +137,10 @@ msgstr ""
 
 #: ..\mixins\CodeSnippet.py:518 ..\mixins\CodeSnippet.py:529
 msgid "Add Node After"
+msgstr ""
+
+#: ..\mixins\CodeSnippet.py:705
+msgid "New Snippet File"
 msgstr ""
 
 #: ..\mixins\CodeSnippet.py:730
@@ -3054,7 +3058,7 @@ msgstr ""
 msgid "Check if where is new version of UliPad."
 msgstr ""
 
-#: ..\mixins\Import.py:8696 ..\mixins\mCheckUpdate.py:92
+#: ..\mixins\Import.py:8697 ..\mixins\mCheckUpdate.py:93
 msgid "There is no new version."
 msgstr ""
 
