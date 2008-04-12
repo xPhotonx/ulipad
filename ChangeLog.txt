@@ -2,6 +2,7 @@ $Rev$
 [2008/04/12]
 mLexer.py mLexerClass1.py
                     Add slice syntax support
+mCheckUpdate.py     Add auto check update
                     
 [2008/04/10]
 mCommands.py mConcurrent.py

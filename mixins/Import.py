@@ -8623,3 +8623,93 @@ Mixin.setMixin('editor', 'move_child_indent', move_child_indent)
 
 
 
+#-----------------------  mCheckUpdate.py ------------------
+
+import wx
+from modules import Mixin
+from modules import Version
+from modules import common
+from modules.HyperLinksCtrl import HyperLinkCtrl, EVT_HYPERLINK_LEFT
+from modules import Globals
+from modules import meide as ui
+
+def pref_init(pref):
+    pref.check_update = True
+Mixin.setPlugin('preference', 'init', pref_init)
+
+def add_pref(preflist):
+    preflist.extend([
+        (tr('Update'), 100, 'check', 'check_update', tr('Check update when startup'), None),
+    ])
+Mixin.setPlugin('preference', 'add_pref', add_pref)
+
+class UpdateDialog(wx.Dialog):
+    homepage = 'http://code.google.com/p/ulipad/downloads/list'
+
+    def __init__(self, parent, version):
+        wx.Dialog.__init__(self, parent, -1, size = (400, 340), style = wx.DEFAULT_DIALOG_STYLE, title = tr('Check Update'))
+
+        box = ui.VBox(padding=6, namebinding='widget').create(self).auto_layout()
+        h = box.add(ui.HBox)
+        h.add(ui.Label(tr('There is new version %s of UliPad.') % version))
+
+        self.ID_HOMEPAGE = wx.NewId()
+        self.homepage = HyperLinkCtrl(self, self.ID_HOMEPAGE, tr("Goto Download page"), URL=self.homepage)
+        h.add(self.homepage).bind(EVT_HYPERLINK_LEFT, self.OnDownload)
+
+        box.add(ui.Check(Globals.pref.check_update, tr("Check update when startup")), name='chkCheck').bind('check', self.OnCheck)
+
+        box.add(ui.Button(tr("OK"), id=wx.ID_OK), name='btnOk', flag=wx.ALIGN_CENTER|wx.ALL, border=10)
+        self.btnOk.SetDefault()
+
+        box.auto_fit(2)
+
+    def OnDownload(self, event):
+        common.webopen(self.homepage)
+
+    def OnCheck(self, event):
+        Globals.pref.check_update = self.chkCheck.GetValue()
+
+def add_mainframe_menu(menulist):
+    menulist.extend([ ('IDM_HELP', #parent menu id
+        [
+            (800, 'IDM_HELP_UPDATE', tr('Check Update'), wx.ITEM_NORMAL, 'OnHelpCheckUpdate', tr('Check if where is new version of UliPad.')),
+        ]),
+    ])
+Mixin.setPlugin('mainframe', 'add_menu', add_mainframe_menu)
+
+def check_update():
+    from modules import Casing
+
+    def f():
+        from xmlrpclib import ServerProxy, Error
+        server = ServerProxy("http://ulipad.appspot.com/XMLRPC")
+
+        try:
+            version = server.version()
+            def _f():
+                if version != Version.version:
+                    dlg = UpdateDialog(Globals.mainframe, version)
+                    dlg.ShowModal()
+                    dlg.Destroy()
+                else:
+                    common.showmessage(tr("There is no new version."))
+            wx.CallAfter(_f)
+        except Error, e:
+            wx.CallAfter(common.showerror, e)
+
+    d = Casing.Casing(f)
+    d.start_thread()
+
+def OnHelpCheckUpdate(win, event):
+    check_update()
+Mixin.setMixin('mainframe', 'OnHelpCheckUpdate', OnHelpCheckUpdate)
+
+def on_show(win):
+    if not Globals.pref.check_update:
+        return
+    wx.FutureCall(1000, check_update())
+Mixin.setPlugin('mainframe', 'show', on_show)
+
+
+
