@@ -258,10 +258,10 @@ class CodeSnippetWindow(wx.Panel, Mixin.Mixin):
         box = self.sizer.add(ui.HBox(padding=2))
         self.btnSave = FlatButtons.FlatBitmapButton(self, -1, 
             common.getpngimage('images/save.gif'))
-        box.add(self.btnSave).bind('click', self.OnSaveSnippet)
+        box.add(self.btnSave).bind('click', self.OnSaveSnippet).tooltip(tr('save'))
         self.btnSaveAll = FlatButtons.FlatBitmapButton(self, -1, 
             common.getpngimage('images/saveall.gif'))
-        box.add(self.btnSaveAll).bind('click', self.OnSaveAllSnippet)
+        box.add(self.btnSaveAll).bind('click', self.OnSaveAllSnippet).tooltip(tr('save all'))
         self.code_snippet_imagelist = imagelist = wx.ImageList(16, 16)
 
         #add share image list

@@ -1,11 +1,11 @@
 #! /usr/bin/env python
 
 """
-    rpdb2.py - version 2.2.2
+    rpdb2.py - version 2.3.8
 
     A remote Python debugger for CPython
 
-    Copyright (C) 2005-2007 Nir Aides
+    Copyright (C) 2005-2008 Nir Aides
 
     This program is free software; you can redistribute it and/or modify it 
     under the terms of the GNU General Public License as published by the 
@@ -22,7 +22,7 @@
     51 Franklin Street, Fifth Floor, Boston, MA 02111-1307 USA    
 """
 
-COPYRIGHT_NOTICE = """Copyright (C) 2005-2007 Nir Aides"""
+COPYRIGHT_NOTICE = """Copyright (C) 2005-2008 Nir Aides"""
 
 CREDITS_NOTICE = """Jurjen N.E. Bos - Compatibility with OS X."""
 
@@ -267,15 +267,18 @@ import SimpleXMLRPCServer
 import SocketServer
 import xmlrpclib
 import threading
-import linecache
 import traceback
+import zipimport
 import commands
 import tempfile
 import __main__
-import compiler
+import copy_reg
+import platform
+import operator
 import weakref
 import httplib
 import os.path
+import zipfile
 import pickle
 import socket
 import getopt
@@ -284,17 +287,38 @@ import thread
 import random
 import base64
 import atexit
+import locale
+import codecs
+import signal
 import errno
 import time
 import copy
 import hmac
 import stat
-import sets
+import zlib
 import sys
 import cmd
-import md5
 import imp
 import os
+import re
+
+try:
+    import hashlib
+    _md5 = hashlib.md5
+except:
+    import md5
+    _md5 = md5
+
+try:
+    import compiler
+    import sets
+except:
+    pass
+
+try:
+    import popen2
+except:
+    pass
 
 try:
     from Crypto.Cipher import DES
@@ -348,6 +372,7 @@ def start_embedded_debugger(
             fAllowUnencrypted = True, 
             fAllowRemote = False, 
             timeout = TIMEOUT_FIVE_MINUTES, 
+            source_provider = None, 
             fDebug = False
             ):
 
@@ -359,14 +384,27 @@ def start_embedded_debugger(
 
     This will cause the script to freeze until a debugger console attaches.
 
-    _rpdb2_pwd - The password that governs security of client/server communication
+    _rpdb2_pwd - The password that governs security of client/server communication.
+
     fAllowUnencrypted - Allow unencrypted communications. Communication will
-                        be authenticated but encrypted only if possible.
+        be authenticated but encrypted only if possible.
+
     fAllowRemote - Allow debugger consoles from remote machines to connect.
-    timeout - Seconds to wait for attachment before giving up. If None, 
-              never give up. Once the timeout period expires, the debuggee will
-              resume execution.
-    fDebug  - debug output.
+
+    timeout - Seconds to wait for attachment before giving up. Once the 
+        timeout period expires, the debuggee will resume execution. 
+        If None, never give up. If 0, do not wait at all.
+
+    source_provider - When script source is not available on file system it is
+        possible to specify a function that receives a "filename" and returns
+        its source. If filename specifies a file that does not fall under
+        the jurisdiction of this function it should raise IOError. If this
+        function is responsible for the specified file but the source is
+        not available it should raise IOError(SOURCE_NOT_AVAILABLE). You can
+        study the way source_provider_blender() works. Note that a misbehaving 
+        function can break the debugger.
+
+    fDebug - debug output.
 
     IMPORTNAT SECURITY NOTE:
     USING A HARDCODED PASSWORD MAY BE UNSECURE SINCE ANYONE WITH READ
@@ -381,6 +419,7 @@ def start_embedded_debugger(
                         fAllowUnencrypted, 
                         fAllowRemote, 
                         timeout, 
+                        source_provider,
                         fDebug
                         )
     
@@ -390,6 +429,7 @@ def start_embedded_debugger_interactive_password(
                 fAllowUnencrypted = True, 
                 fAllowRemote = False, 
                 timeout = TIMEOUT_FIVE_MINUTES, 
+                source_provider = None,
                 fDebug = False, 
                 stdin = sys.stdin, 
                 stdout = sys.stdout
@@ -398,18 +438,25 @@ def start_embedded_debugger_interactive_password(
     if g_server is not None:
         return
 
-    if stdout is not None:
-        stdout.write('Please type password:')
-        
-    _rpdb2_pwd = stdin.readline().rstrip('\n')
-    
-    return __start_embedded_debugger(
-                        _rpdb2_pwd, 
-                        fAllowUnencrypted, 
-                        fAllowRemote, 
-                        timeout, 
-                        fDebug
-                        )
+    while True:
+        if stdout is not None:
+            stdout.write('Please type password:')
+            
+        _rpdb2_pwd = stdin.readline().rstrip('\n')
+        _rpdb2_pwd = as_unicode(_rpdb2_pwd, detect_encoding(stdin), fstrict = True)
+
+        try:
+            return __start_embedded_debugger(
+                                _rpdb2_pwd, 
+                                fAllowUnencrypted, 
+                                fAllowRemote, 
+                                timeout, 
+                                source_provider,
+                                fDebug
+                                )
+
+        except BadArgument:
+            stdout.write(STR_PASSWORD_BAD)
     
 
 
@@ -436,17 +483,37 @@ def setbreak():
 
     return __setbreak()
 
-    
-    
+
+
+def set_temp_breakpoint(path, scopename = '', lineno = 1):
+    """
+    Set a temporary breakpoint in a file. path must be an absolute path.
+    scopename can either be an empty string or a fully qualified scope name
+    (For example u'g_debugger.m_bp_manager.set_temp_breakpoint'). lineno is 
+    either relative to file start or to scope start.
+
+    To set a temporary breakpoint to hit when a file is first
+    imported or exec-uted call set_temp_breakpoint(path)
+
+    This function may throw a varaiety of exceptions.
+    """
+
+    path = as_unicode(path, fstrict = True)
+    scopename = as_unicode(scopename, fstrict = True)
+
+    return __set_temp_breakpoint(path, scopename, lineno)
+
+
+
 #
 #----------------------------------- Interfaces ------------------------------
 #
 
 
 
-VERSION = (2, 2, 2, 0, '')
-RPDB_VERSION = "RPDB_2_2_2"
-RPDB_COMPATIBILITY_VERSION = "RPDB_2_2_2"
+VERSION = (2, 3, 8, 0, '')
+RPDB_VERSION = "RPDB_2_3_8"
+RPDB_COMPATIBILITY_VERSION = "RPDB_2_3_8"
 
 
 
@@ -477,7 +544,6 @@ class CSimpleSessionManager:
                             )
 
         self.m_fRunning = False
-        self.m_termination_lineno = None
         
         event_type_dict = {CEventUnhandledException: {}}
         self.__sm.register_callback(self.__unhandled_exception, event_type_dict, fSingleUse = False)
@@ -489,10 +555,16 @@ class CSimpleSessionManager:
         self.__sm.register_callback(self.__termination_callback, event_type_dict, fSingleUse = False)
 
 
-    def launch(self, fchdir, command_line):
+    def shutdown(self):
+        self.__sm.shutdown()
+
+
+    def launch(self, fchdir, command_line, encoding = 'utf-8', fload_breakpoints = False):
+        command_line = as_unicode(command_line, encoding, fstrict = True)
+
         self.m_fRunning = False
-        self.m_termination_lineno = None
-        self.__sm.launch(fchdir, command_line, fload_breakpoints = False)
+
+        self.__sm.launch(fchdir, command_line, fload_breakpoints)
 
 
     def request_go(self):
@@ -538,17 +610,17 @@ class CSimpleSessionManager:
     #
     
     def unhandled_exception_callback(self):
-        print 'unhandled_exception_callback'
+        _print('unhandled_exception_callback')
         self.request_go()
 
 
     def script_paused(self):
-        print 'script_paused'
+        _print('script_paused')
         self.request_go()
 
 
     def script_terminated_callback(self):
-        print 'script_terminated_callback'
+        _print('script_terminated_callback')
 
 
     #
@@ -575,10 +647,14 @@ class CSimpleSessionManager:
             #
             # First break comes immediately after launch.
             #
+            print_debug('Simple session manager continues on first break.')
             self.m_fRunning = True
             self.request_go()
             return
             
+        if self.__sm.is_unhandled_exception():
+            return
+
         sl = self.__sm.get_stack(tid_list = [], fAll = False)
         if len(sl) == 0:
             self.request_go()
@@ -617,16 +693,27 @@ class CSessionManager:
     This is the interface through which the debugger controls and 
     communicates with the debuggee.
 
+    Accepted strings are either utf-8 or Unicode unless specified otherwise.
+    Returned strings are Unicode (also when embedded in data structures).
+
     You can study the way it is used in StartClient()
     """
     
     def __init__(self, _rpdb2_pwd, fAllowUnencrypted, fAllowRemote, host):
+        if _rpdb2_pwd != None:
+            assert(is_valid_pwd(_rpdb2_pwd))
+            _rpdb2_pwd = as_unicode(_rpdb2_pwd, fstrict = True)
+
         self.__smi = CSessionManagerInternal(
                             _rpdb2_pwd, 
                             fAllowUnencrypted, 
                             fAllowRemote, 
                             host
                             )
+
+
+    def shutdown(self):
+        return self.__smi.shutdown()
 
 
     def set_printer(self, printer):
@@ -674,14 +761,20 @@ class CSessionManager:
         return self.__smi.refresh()
 
 
-    def launch(self, fchdir, command_line):
+    def launch(self, fchdir, command_line, encoding = 'utf-8', fload_breakpoints = True):
         """
         Launch debuggee in a new process and attach.
         fchdir - Change current directory to that of the debuggee.
         command_line - command line arguments pass to the script as a string.
+        fload_breakpoints - Load breakpoints of last session.
+
+        if command line is not a unicode string it will be decoded into unicode
+        with the given encoding
         """
         
-        return self.__smi.launch(fchdir, command_line)
+        command_line = as_unicode(command_line, encoding, fstrict = True)
+
+        return self.__smi.launch(fchdir, command_line, fload_breakpoints)
 
         
     def restart(self):
@@ -703,12 +796,17 @@ class CSessionManager:
         return self.__smi.get_launch_args()
 
         
-    def attach(self, key, name = None):
+    def attach(self, key, name = None, encoding = 'utf-8'):
         """
         Attach to a debuggee (establish communication with the debuggee-server)
         key - a string specifying part of the filename or PID of the debuggee.
+
+        if key is not a unicode string it will be decoded into unicode
+        with the given encoding
         """
-        
+       
+        key = as_unicode(key, encoding, fstrict = True)
+
         return self.__smi.attach(key, name)
 
 
@@ -732,7 +830,10 @@ class CSessionManager:
         """
         Go (run) until the specified location is reached.
         """
-        
+       
+        filename = as_unicode(filename, fstrict = True)
+        scope = as_unicode(scope, fstrict = True)
+
         return self.__smi.request_go_breakpoint(filename, scope, lineno)
 
 
@@ -788,6 +889,10 @@ class CSessionManager:
                        locally when the breakpoint is hit. The break will 
                        occur only if the expression evaluates to true.
         """
+
+        filename = as_unicode(filename, fstrict = True)
+        scope = as_unicode(scope, fstrict = True)
+        expr = as_unicode(expr, fstrict = True)
 
         return self.__smi.set_breakpoint(
                                 filename, 
@@ -902,7 +1007,9 @@ class CSessionManager:
         return self.__smi.get_stack(tid_list, fAll)
 
 
-    def get_source_file(self, filename, lineno, nlines): 
+    def get_source_file(self, filename, lineno, nlines):
+        filename = as_unicode(filename, fstrict = True)
+
         return self.__smi.get_source_file(filename, lineno, nlines)
 
         
@@ -974,7 +1081,7 @@ class CSessionManager:
         return self.__smi.get_server_info()
 
 
-    def get_namespace(self, nl, fFilter, repr_limit = 128):
+    def get_namespace(self, nl, filter_level, repr_limit = 128, fFilter = "DEPRECATED"):
         """
         get_namespace is designed for locals/globals panes that let 
         the user inspect a namespace tree in GUI debuggers such as Winpdb.
@@ -985,8 +1092,8 @@ class CSessionManager:
              value, that is, to return its children as well in case it has 
              children e.g. lists, dictionaries, etc...
              
-        fFilter - Flag. Filter out __methods__ from objects and classes in 
-             the namespace viewer.
+        filter_level - 0, 1, or 2. Filter out methods and functions from
+            classes and objects. (0 - None, 1 - Medium, 2 - Maximum).
 
         repr_limit - Length limit (approximated) to be imposed repr() of 
              returned items.
@@ -1033,8 +1140,13 @@ class CSessionManager:
                           in a list or in a dictionary or members of a class, 
                           etc, this key will have their number as value.
         """
-        
-        return self.__smi.get_namespace(nl, fFilter, repr_limit)
+       
+        if fFilter != "DEPRECATED":
+            filter_level = fFilter
+
+        filter_level = int(filter_level)
+
+        return self.__smi.get_namespace(nl, filter_level, repr_limit)
 
 
     #
@@ -1052,6 +1164,8 @@ class CSessionManager:
         NOTE: This call might not return since debugged script logic can lead
         to tmporary locking or even deadlocking.
         """
+
+        expr = as_unicode(expr, fstrict = True)
         
         return self.__smi.evaluate(expr)
 
@@ -1068,7 +1182,89 @@ class CSessionManager:
         to tmporary locking or even deadlocking.
         """
         
+        suite = as_unicode(suite, fstrict = True)
+
         return self.__smi.execute(suite)
+
+
+    def complete_expression(self, expr):
+        """
+        Return matching completions for expression.
+        Accepted expressions are of the form a.b.c
+
+        Dictionary lookups or functions call are not evaluated. For 
+        example: 'getobject().complete' or 'dict[item].complete' are
+        not processed.
+
+        On the other hand partial expressions and statements are 
+        accepted. For example: 'foo(arg1, arg2.member.complete' will
+        be accepted and the completion for 'arg2.member.complete' will
+        be calculated.
+
+        Completions are returned as a tuple of two items. The first item
+        is a prefix to expr and the second item is a list of completions.
+        For example if expr is 'foo(self.comp' the returned tuple can
+        be ('foo(self.', ['complete', 'completion', etc...])
+        """
+
+        expr = as_unicode(expr, fstrict = True)
+        
+        return self.__smi.complete_expression(expr)
+
+
+    def set_encoding(self, encoding, fraw = False):
+        """
+        Set the encoding that will be used as source encoding for execute()
+        evaluate() commands and in strings returned by get_namespace().
+
+        The encoding value can be either 'auto' or any encoding accepted by 
+        the codecs module. If 'auto' is specified, the encoding used will be 
+        the source encoding of the active scope, which is utf-8 by default.
+
+        The default encoding value is 'auto'.
+
+        If fraw is True, strings returned by evaluate() and get_namespace() 
+        will represent non ASCII characters as an escape sequence.
+        """
+
+        return self.__smi.set_encoding(encoding, fraw)
+
+
+    def get_encoding(self):
+        """
+        return the (encoding, fraw) tuple.
+        """
+        return self.__smi.get_encoding()
+
+
+    def set_synchronicity(self, fsynchronicity):
+        """
+        Set the synchronicity mode. 
+        
+        Traditional Python debuggers that use the inspected thread (usually 
+        the main thread) to query or modify the script name-space have to 
+        wait until the script hits a break-point. Synchronicity allows the
+        debugger to query and modify the script name-space even if its 
+        threads are still running or blocked in C library code by using 
+        special worker threads. In some rare cases querying or modifying data 
+        in synchronicity can crash the script. For example in some Linux 
+        builds of wxPython querying the state of wx objects from a thread 
+        other than the GUI thread can crash the script. If this happens or 
+        if you want to restrict these operations to the inspected thread, 
+        turn synchronicity off.
+
+        On the other hand when synchronicity is off it is possible to 
+        accidentally deadlock or block indefinitely the script threads by 
+        querying or modifying particular data structures.
+
+        The default is on (True).
+        """
+
+        return self.__smi.set_synchronicity(fsynchronicity)
+
+
+    def get_synchronicity(self):
+        return self.__smi.get_synchronicity()
 
 
     def get_state(self):
@@ -1102,7 +1298,9 @@ class CSessionManager:
         Set the password that will govern the authentication and encryption
         of client-server communication.
         """
-        
+       
+        _rpdb2_pwd = as_unicode(_rpdb2_pwd, fstrict = True)
+
         return self.__smi.set_password(_rpdb2_pwd)
 
 
@@ -1147,9 +1345,36 @@ class CSessionManager:
         return self.__smi.get_remote()
 
 
+    def set_environ(self, envmap):
+        """
+        Set the environment variables mapping. This mapping is used 
+        when a new script is launched to modify its environment.
+        
+        Example for a mapping on Windows: [('Path', '%Path%;c:\\mydir')]
+        Example for a mapping on Linux: [('PATH', '$PATH:~/mydir')]
+
+        The mapping should be a list of tupples where each tupple is
+        composed of a key and a value. Keys and Values must be either 
+        strings or Unicode strings. Other types will raise the BadArgument 
+        exception.
+
+        Invalid arguments will be silently ignored.
+        """
+        
+        return self.__smi.set_environ(envmap)
+
+
+    def get_environ(self):
+        """
+        Return the current environment mapping.
+        """
+        
+        return self.__smi.get_environ()
+
+
     def stop_debuggee(self):
         """
-        Stop the debuggee with the os.abort() command.
+        Stop the debuggee immediately.
         """
         
         return self.__smi.stop_debuggee()
@@ -1204,9 +1429,30 @@ class CConsole:
         from outside the console when the console is embeded in other 
         components, for example take a look at Winpdb. 
         """
+
+        filename = as_unicode(filename)
+
         return self.m_ci.set_filename(filename)
 
-    
+
+    def complete(self, text, state):
+        """
+        Return the next possible completion for 'text'.
+        If a command has not been entered, then complete against command list.
+        Otherwise try to call complete_<command> to get list of completions.
+        """
+
+        text = as_unicode(text)
+
+        return self.m_ci.complete(text, state)
+
+
+    def printer(self, text):
+        text = as_unicode(text)
+
+        return self.m_ci.printer(text)
+        
+
 
 #
 # ---------------------------- Exceptions ----------------------------------
@@ -1225,6 +1471,15 @@ class CException(Exception):
 
 
 
+class BadMBCSPath(CException):
+    """
+    Raised on Windows systems when the python executable or debugger script
+    path can not be encoded with the file system code page. This means that
+    the Windows code page is misconfigured.
+    """
+
+
+
 class NotPythonSource(CException):
     """
     Raised when an attempt to load non Python source is made.
@@ -1235,7 +1490,7 @@ class NotPythonSource(CException):
 class InvalidScopeName(CException):
     """
     Invalid scope name.
-    This exception may be thrown when a request was made to set a breakpoint
+    This exception might be thrown when a request was made to set a breakpoint
     to an unknown scope.
     """
 
@@ -1299,6 +1554,11 @@ class NoExceptionFound(CException):
 class CConnectionException(CException):
     def __init__(self, *args):
         CException.__init__(self, *args)
+
+
+
+class FirewallBlock(CConnectionException):
+    """Firewall is blocking socket communication."""
 
 
 
@@ -1388,10 +1648,87 @@ class AuthenticationBadIndex(CSecurityException):
 
 
 #
+#----------------- unicode handling for compatibility with py3k ----------------
+#
+
+
+
+def is_py3k():
+    return sys.version_info[0] >= 3
+
+
+
+def is_unicode(s):
+    if is_py3k() and type(s) == str:
+        return True
+
+    if type(s) == unicode:
+        return True
+
+    return False
+
+
+
+def as_unicode(s, encoding = 'utf-8', fstrict = False):
+    if is_unicode(s):
+        return s
+
+    if fstrict:
+        u = s.decode(encoding)
+    else:
+        u = s.decode(encoding, 'replace')
+
+    return u
+
+
+
+def as_string(s, encoding = 'utf-8', fstrict = False):
+    if is_py3k():
+        if is_unicode(s):
+            return s
+
+        if fstrict:
+            e = s.decode(encoding)
+        else:
+            e = s.decode(encoding, 'replace')
+
+        return e
+
+    if not is_unicode(s):
+        return s
+
+    if fstrict:
+        e = s.encode(encoding)
+    else:
+        e = s.encode(encoding, 'replace')
+
+    return e
+
+
+
+def as_bytes(s, encoding = 'utf-8', fstrict = True):
+    if not is_unicode(s):
+        return s
+
+    if fstrict:
+        b = s.encode(encoding)
+    else:
+        b = s.encode(encoding, 'replace')
+
+    return b
+
+
+
+#
 #----------------------- Infinite List of Globals ---------------------------
 #
 
 
+
+#
+# According to PEP-8: "Use 4 spaces per indentation level." 
+#
+PYTHON_TAB_WIDTH = 4
 
 GNOME_DEFAULT_TERM = 'gnome-terminal'
 NT_DEBUG = 'nt_debug'
@@ -1410,9 +1747,10 @@ POSIX = 'posix'
 # accommodate scenarios of scripts with child processes.
 #
 osSpawn = {
-    'nt': 'start "rpdb2 - Version ' + get_version() + ' - Debuggee Console" cmd /k ""%(exec)s" %(options)s"', 
-    NT_DEBUG: 'start "rpdb2 - Version ' + get_version() + ' - Debuggee Console" cmd /k ""%(exec)s" %(options)s"', 
+    'nt': 'start "rpdb2 - Version ' + get_version() + ' - Debuggee Console" cmd.exe /K ""%(exec)s" %(options)s"', 
+    NT_DEBUG: 'start "rpdb2 - Version ' + get_version() + ' - Debuggee Console" cmd.exe /K ""%(exec)s" %(options)s"', 
     POSIX: "%(term)s -e %(shell)s -c '%(exec)s %(options)s; %(shell)s' &", 
+    'Terminal': "Terminal --disable-server -x %(shell)s -c '%(exec)s %(options)s; %(shell)s' &", 
     GNOME_DEFAULT_TERM: "gnome-terminal --disable-factory -x %(shell)s -c '%(exec)s %(options)s; %(shell)s' &", 
     MAC: '%(exec)s %(options)s',
     DARWIN: '%(exec)s %(options)s',
@@ -1435,6 +1773,9 @@ RPDB_BPL_FOLDER = os.path.join(RPDB_SETTINGS_FOLDER, 'breakpoints')
 RPDB_BPL_FOLDER_NT = 'rpdb2_breakpoints'
 MAX_BPL_FILES = 100
 
+EMBEDDED_SYNC_THRESHOLD = 1.0
+EMBEDDED_SYNC_TIMEOUT = 5.0
+
 HEARTBEAT_TIMEOUT = 16
 IDLE_MAX_RATE = 2.0
 PING_TIMEOUT = 4.0
@@ -1443,6 +1784,7 @@ COMMUNICATION_RETRIES = 5
 
 WAIT_FOR_BREAK_TIMEOUT = 3.0
 
+SHUTDOWN_TIMEOUT = 4.0
 STARTUP_TIMEOUT = 3.0
 STARTUP_RETRIES = 3
 
@@ -1450,7 +1792,7 @@ LOOPBACK = '127.0.0.1'
 LOCALHOST = 'localhost'
 
 SERVER_PORT_RANGE_START = 51000
-SERVER_PORT_RANGE_LENGTH = 20
+SERVER_PORT_RANGE_LENGTH = 24
 
 SOURCE_EVENT_CALL = 'C'
 SOURCE_EVENT_LINE = 'L'
@@ -1469,8 +1811,8 @@ CONSOLE_PRINTER = '*** '
 CONSOLE_WRAP_INDEX = 78
 CONSOLE_PROMPT = '\n> '
 CONSOLE_PROMPT_ANALYZE = '\nAnalayze> '
-CONSOLE_INTRO = ("""RPDB - The Remote Python Debugger, version %s,
-Copyright (C) 2005-2007 Nir Aides.
+CONSOLE_INTRO = ("""RPDB2 - The Remote Python Debugger, version %s,
+Copyright (C) 2005-2008 Nir Aides.
 Type "help", "copyright", "license", "credits" for more information.""" % (RPDB_VERSION))
 
 PRINT_NOTICE_PROMPT = "Hit Return for more, or q (and Return) to quit:"
@@ -1513,7 +1855,11 @@ STR_ILEGAL_ANALYZE_MODE_ARG = "Argument is not allowed in analyze mode. Type 'he
 STR_ILEGAL_ANALYZE_MODE_CMD = "Command is not allowed in analyze mode. Type 'help analyze' for more info."
 STR_ANALYZE_MODE_TOGGLE = "Analyze mode was set to: %s."
 STR_BAD_ARGUMENT = "Bad Argument."
+STR_BAD_SYNTAX = 'Unknown syntax: %s\nDid you forget to use the exec or eval console commands?'
 STR_PSYCO_WARNING = "The psyco module was detected. The debugger is incompatible with the psyco module and will not function correctly as long as the psyco module is imported and used."
+STR_CONFLICTING_MODULES = "The modules: %s, which are incompatible with the debugger were detected and can possibly cause the debugger to fail."
+STR_SIGNAL_INTERCEPT = "The signal %s(%d) was intercepted inside debugger tracing logic. It will be held pending until the debugger continues. Any exceptions raised by the handler will be ignored!"
+STR_SIGNAL_EXCEPTION = "Exception %s raised by handler of signal %s(%d) inside debugger tracing logic was ignored!"
 STR_DEBUGGEE_TERMINATED = "Debuggee has terminated."
 STR_DEBUGGEE_NOT_BROKEN = "Debuggee has to be waiting at break point to complete this command."
 STR_DEBUGGER_HAS_BROKEN = "Debuggee is waiting at break point for further commands."
@@ -1521,7 +1867,9 @@ STR_ALREADY_ATTACHED = "Already attached. Detach from debuggee and try again."
 STR_NOT_ATTACHED = "Not attached to any script. Attach to a script and try again."
 STR_COMMUNICATION_FAILURE = "Failed to communicate with debugged script."
 STR_ERROR_OTHER = "Command returned the following error:\n%(type)s, %(value)s.\nPlease check stderr for stack trace and report to support."
+STR_BAD_MBCS_PATH = "The debugger can not launch the script since the path to the Python executable or the debugger scripts can not be encoded into the default system code page. Please check the settings of 'Language for non-Unicode programs' in the Advanced tab of the Windows Regional and Language Options dialog."
 STR_LOST_CONNECTION = "Lost connection to debuggee."
+STR_FIREWALL_BLOCK = "A firewall is blocking the local communication chanel (socket) that is required between the debugger and the debugged script. Please make sure that the firewall allows that communication."
 STR_BAD_VERSION = "A debuggee was found with incompatible debugger version %(value)s."
 STR_BAD_VERSION2 = "While attempting to find the specified debuggee at least one debuggee was found that uses incompatible version of RPDB2."
 STR_UNEXPECTED_DATA = "Unexpected data received."
@@ -1543,7 +1891,7 @@ STR_ATTACH_FAILED_NAME = "Failed to attach to '%s'."
 STR_ATTACH_CRYPTO_MODE = "Debug Channel is%s encrypted."
 STR_ATTACH_CRYPTO_MODE_NOT = "NOT"
 STR_ATTACH_SUCCEEDED = "Successfully attached to '%s'."
-STR_ATTEMPTING_TO_STOP = "Requesting script to stop (with os.abort())."
+STR_ATTEMPTING_TO_STOP = "Requesting script to stop."
 STR_ATTEMPTING_TO_DETACH = "Detaching from script..."
 STR_DETACH_SUCCEEDED = "Detached from script."
 STR_DEBUGGEE_UNKNOWN = "Failed to find script."
@@ -1570,18 +1918,27 @@ STR_ACTIVE_THREADS = """List of active threads known to the debugger:
 -----------------------------------------------""" 
 STR_BREAKPOINTS_LIST = """List of breakpoints:
 
- Id  State      Line  Filename-Scope-Condition
+ Id  State      Line  Filename-Scope-Condition-Encoding
 ------------------------------------------------------------------------------""" 
 
 STR_BREAKPOINTS_TEMPLATE = """ %2d  %-8s  %5d  %s
+                      %s
                       %s
                       %s"""
 
 STR_ENCRYPTION_SUPPORT_ERROR = "Encryption is not supported since the python-crypto package was not found. Either install the python-crypto package or allow unencrypted connections."
 STR_PASSWORD_NOT_SET = 'Password is not set.'
 STR_PASSWORD_SET = 'Password is set to: "%s"'
+STR_PASSWORD_BAD = 'The password should begin with a letter and continue with any combination of digits, letters or underscores (\'_\'). Only English characters are accepted for letters.'
 STR_ENCRYPT_MODE = 'Force encryption mode: %s'
 STR_REMOTE_MODE = 'Allow remote machines mode: %s'
+STR_ENCODING_MODE = 'Encoding is set to: %s'
+STR_ENCODING_MODE_SET = 'Encoding was set to: %s'
+STR_ENCODING_BAD = 'The specified encoding was not recognized by the debugger.'
+STR_ENVIRONMENT = 'The current environment mapping is:'
+STR_ENVIRONMENT_EMPTY = 'The current environment mapping is not set.'
+STR_SYNCHRONICITY_BAD = "Can not process command when thread is running unless synchronicity mode is turned on. Type 'help synchro' at the command prompt for more information."
+STR_SYNCHRONICITY_MODE = 'The synchronicity mode is set to: %s'
 STR_TRAP_MODE = 'Trap unhandled exceptions mode is set to: %s'
 STR_TRAP_MODE_SET = "Trap unhandled exceptions mode was set to: %s."
 STR_FORK_MODE = "Fork mode is set to: %s, %s."
@@ -1602,8 +1959,6 @@ FORK_AUTO = 'auto'
 ENCRYPTION_ENABLED = 'encrypted'
 ENCRYPTION_DISABLED = 'plain-text'
 
-ENCRYPTION_PREFIX = 'encrypted'
-
 STATE_ENABLED = 'enabled'
 STATE_DISABLED = 'disabled'
 
@@ -1615,8 +1970,9 @@ PYTHON_EXT_LIST = ['.py', '.pyw', '.pyc', '.pyd', '.pyo', '.so']
 
 MODULE_SCOPE = '?'
 MODULE_SCOPE2 = '<module>'
-BLENDER_NO_SOURCE_FILENAME = '<string>'
-ERROR_NO_BLENDER_SOURCE = 'Blender script source not available.'
+
+BLENDER_SOURCE_NOT_AVAILABLE = as_unicode('Blender script source code is not available.')
+SOURCE_NOT_AVAILABLE = as_unicode('Source code is not available.')
 
 SCOPE_SEP = '.'
 
@@ -1659,10 +2015,16 @@ DICT_KEY_SUBNODES = 'subnodes'
 DICT_KEY_N_SUBNODES = 'n_subnodes'
 DICT_KEY_ERROR = 'error'
 
-RPDB_EXEC_INFO = 'rpdb_exception_info'
+RPDB_EXEC_INFO = as_unicode('rpdb_exception_info')
 
 MODE_ON = 'ON'
 MODE_OFF = 'OFF'
+
+ENCODING_UTF8_PREFIX_1 = '\xef\xbb\xbf'
+ENCODING_SOURCE = '# -*- coding: %s -*-\n'
+ENCODING_AUTO = as_unicode('auto')
+ENCODING_RAW = as_unicode('raw')
+ENCODING_RAW_I = as_unicode('__raw')
 
 MAX_EVALUATE_LENGTH = 256 * 1024
 MAX_NAMESPACE_ITEMS = 1024
@@ -1687,7 +2049,7 @@ INDEX_TABLE_SIZE = 100
 
 DISPACHER_METHOD = 'dispatcher_method'
 
-BASIC_TYPES_LIST = ['str', 'unicode', 'int', 'long', 'float', 'bool', 'NoneType']
+CONFLICTING_MODULES = ['psyco', 'pdb', 'bdb', 'doctest']
 
 XML_DATA = """<?xml version='1.0'?>
 <methodCall>
@@ -1703,6 +2065,10 @@ N_WORK_QUEUE_THREADS = 8
 
 DEFAULT_PATH_SUFFIX_LENGTH = 55
 
+ELLIPSIS_UNICODE = as_unicode('...')
+ELLIPSIS_BYTES = as_bytes('...')
+
+ERROR_NO_ATTRIBUTE = 'Error: No attribute.'
 
 
 g_server_lock = threading.RLock()
@@ -1723,10 +2089,8 @@ g_fDebug = False
 #
 g_traceback_lock = threading.RLock()
 
-#
-# Filename to Source-lines dictionary of blender Python scripts.
-#
-g_blender_text = {}
+g_source_provider_aux = None
+g_lines_cache = {}
 
 g_initial_cwd = []
 
@@ -1734,6 +2098,7 @@ g_error_mapping = {
     socket.error: STR_COMMUNICATION_FAILURE,
    
     CConnectionException: STR_LOST_CONNECTION,
+    FirewallBlock: STR_FIREWALL_BLOCK,
     BadVersion: STR_BAD_VERSION,
     UnexpectedData: STR_UNEXPECTED_DATA,
     SpawnUnsupported: STR_SPAWN_UNSUPPORTED,
@@ -1743,7 +2108,8 @@ g_error_mapping = {
     EncryptionExpected: STR_ENCRYPTION_EXPECTED,
     DecryptionFailure: STR_DECRYPTION_FAILURE,
     AuthenticationBadData: STR_ACCESS_DENIED,
-    AuthenticationFailure: STR_ACCESS_DENIED,   
+    AuthenticationFailure: STR_ACCESS_DENIED,
+    BadMBCSPath: STR_BAD_MBCS_PATH,
 
     AlreadyAttached: STR_ALREADY_ATTACHED,    
     NotAttached: STR_NOT_ATTACHED,
@@ -1758,6 +2124,7 @@ g_error_mapping = {
 #
 g_forkpid = None
 g_forktid = None
+g_fignorefork = False
 
 g_exectid = None
 g_execpid = None
@@ -1771,21 +2138,245 @@ g_fos_exit = False
 #
 g_module_main = None
 
-g_fsent_psyco_warning = False
+g_found_conflicting_modules = []
 
 g_fignore_atexit = False
 g_ignore_broken_pipe = 0
+
+
+#
+# Unicode version of path names that do not encode well witn the windows 
+# 'mbcs' encoding. This dict is used to work with such path names on
+# windows.
+#
+g_found_unicode_files = {}
+
+g_frames_path = {}
+
+g_signal_handlers = {}
+g_signals_pending = []
+
+#g_profile = None
+
+g_fFirewallTest = True
+
+
+
+g_safe_base64_to = string.maketrans(as_bytes('/+='), as_bytes('_-#'))
+g_safe_base64_from = string.maketrans(as_bytes('_-#'), as_bytes('/+='))
+
+
+
+g_alertable_waiters = {}
+
+
+
+g_builtins_module = sys.modules.get('__builtin__', sys.modules.get('builtins'))
 
 
 
 #
 # ---------------------------- General Utils ------------------------------
 #
+
+
+
+def job_wrapper(event, foo, *args, **kwargs):
+    try:
+        #print_debug('Thread %d doing job %s' % (thread.get_ident(), foo.__name__))
+        foo(*args, **kwargs)
+    finally:
+        event.set()
+
+
+
+def send_job(tid, timeout, foo, *args, **kwargs):
+    #
+    # Attempt to send job to thread tid.
+    # Will throw KeyError if thread tid is not available for jobs.
+    #
+
+    (lock, jobs) = g_alertable_waiters[tid]
+
+    event = threading.Event()
+    f = lambda: job_wrapper(event, foo, *args, **kwargs)
+    jobs.append(f)
+    
+    try:
+        lock.acquire()
+        lock.notifyAll()
+    finally:
+        lock.release()
+
+    safe_wait(event, timeout)
+
+
+
+def alertable_wait(lock, timeout = None):
+    jobs = []
+    tid = thread.get_ident()
+    g_alertable_waiters[tid] = (lock, jobs)
+
+    try:
+        safe_wait(lock, timeout)
+        
+        while len(jobs) != 0:
+            job = jobs.pop(0)
+            try:
+                job()
+            except:
+                pass
             
+            if len(jobs) == 0:
+                time.sleep(0.1)
+
+    finally:
+        del g_alertable_waiters[tid]
+
+
+
+def safe_wait(lock, timeout = None):
+    #
+    # workaround windows bug where signal handlers might raise exceptions
+    # even if they return normally.
+    #
+
+    while True:
+        try:
+            t0 = time.time()
+            return lock.wait(timeout)
+
+        except:
+            if timeout == None:
+                continue
+            
+            timeout -= (time.time() - t0)
+            if timeout <= 0:
+                return
+
+
+
+#
+# The following code is related to the ability of the debugger
+# to work both on Python 2.5 and 3.0.
+#
+
+class _stub_type:
+    pass
+
+
+
+def _rpdb2_bytes(s, e):
+    return s.encode(e)
+   
+
+
+if not hasattr(g_builtins_module, 'unicode'):
+    unicode = _stub_type
+
+if not hasattr(g_builtins_module, 'long'):
+    long = _stub_type
+
+if not hasattr(g_builtins_module, 'str8'):
+    str8 = _stub_type
+
+if not hasattr(g_builtins_module, 'bytearray'):
+    bytearray = _stub_type
+
+if not hasattr(g_builtins_module, 'bytes'):
+    bytes = _stub_type
+
+    #
+    # Pickle on Python 2.5 should know how to handle byte strings
+    # that arrive from Python 3.0 over sockets.
+    #
+    g_builtins_module.bytes = _rpdb2_bytes
+
+
+if is_py3k():
+    class sets:
+        Set = _stub_type
+        BaseSet = _stub_type
+        ImmutableSet = _stub_type
+
+
+
+if sys.version_info[:2] <= (2, 3):
+    set = sets.Set
+
+
+
+def _raw_input(s):
+    if is_py3k():
+        return input(s)
+
+    i = raw_input(s)
+    i = as_unicode(i, detect_encoding(sys.stdin), fstrict = True)
+
+    return i
+
+
+
+def _print(s, f = sys.stdout, feol = True):
+    s = as_unicode(s)
+
+    encoding = detect_encoding(f)
+
+    s = as_bytes(s, encoding, fstrict = False)
+    s = as_string(s, encoding)
+
+    if feol:
+        f.write(s + '\n')
+    else:
+        f.write(s)
+
+
+
+def detect_encoding(file):
+    try:
+        encoding = file.encoding
+        if encoding == None:
+            return detect_locale()
+
+    except:
+        return detect_locale()
+
+    try:
+        codecs.lookup(encoding)
+        return encoding
+
+    except:
+        pass
+
+    if encoding.lower().startswith('utf_8'):
+        return 'utf-8'
+
+    return 'ascii'
+
+
+
+def detect_locale():
+    encoding = locale.getdefaultlocale()[1]
+
+    if encoding == None:
+        return 'ascii'
+
+    try:
+        codecs.lookup(encoding)
+        return encoding
+
+    except:
+        pass
+
+    if encoding.lower().startswith('utf_8'):
+        return 'utf-8'
+
+    return 'ascii'
+
 
 
 def class_name(c):
-    s = str(c)
+    s = safe_str(c)
     
     if "'" in s:
         s = s.split("'")[1]
@@ -1811,94 +2402,212 @@ def clip_filename(path, n = DEFAULT_PATH_SUFFIX_LENGTH):
     
 
 
+def safe_str(x):
+    try:
+        return str(x)
+
+    except:
+        return 'N/A'
+    
+
+
 def safe_repr(x):
     try:
-        y = repr(x)
-        return y
+        return repr(x)
 
     except:
         return 'N/A'
 
 
 
-def repr_list(pattern, l, length, is_valid):
+def parse_type(t):
+    rt = safe_repr(t)
+    if not "'" in rt:
+        return rt
+
+    st = rt.split("'")[1]
+    return st
+
+
+def repr_list(pattern, l, length, encoding, is_valid):
     length = max(0, length - len(pattern) + 2)
 
     s = ''
 
     index = 0
-    for i in l:
-        #
-        # Remove any trace of session password from data structures that 
-        # go over the network.
-        #
-        if i in ['_rpdb2_args', '_rpdb2_pwd', 'm_rpdb2_pwd']:
-            continue
-        
-        s += repr_ltd(i, length - len(s), is_valid)
 
-        index += 1
-        
-        if index < len(l) and len(s) > length:
-            is_valid[0] = False
-            if not s.endswith('...'):
-                s += '...'
-            break
+    try:
+        for i in l:
+            #
+            # Remove any trace of session password from data structures that 
+            # go over the network.
+            #
+            if type(i) == str and i in ['_rpdb2_args', '_rpdb2_pwd', 'm_rpdb2_pwd']:
+                continue
+            
+            s += repr_ltd(i, length - len(s), encoding, is_valid)
 
-        if index < len(l):
-            s += ', '
+            index += 1
+            
+            if index < len(l) and len(s) > length:
+                is_valid[0] = False
+                if not s.endswith('...'):
+                    s += '...'
+                break
 
-    return pattern % s
+            if index < len(l) or (index == 1 and pattern[0] == '('):
+                s += ', '
+
+    except AttributeError:
+        is_valid[0] = False 
+
+    return as_unicode(pattern % s)
 
 
 
-def repr_dict(pattern, d, length, is_valid):
+def repr_dict(pattern, d, length, encoding, is_valid):
     length = max(0, length - len(pattern) + 2)
 
     s = ''
 
     index = 0
-    for k in d:
-        #
-        # Remove any trace of session password from data structures that 
-        # go over the network.
-        #
-        if k in ['_rpdb2_args', '_rpdb2_pwd', 'm_rpdb2_pwd']:
-            continue
-        
-        v = d[k]
 
-        s += repr_ltd(k, length - len(s), is_valid)
+    try:
+        for k in d:
+            #
+            # Remove any trace of session password from data structures that 
+            # go over the network.
+            #
+            if type(k) == str and k in ['_rpdb2_args', '_rpdb2_pwd', 'm_rpdb2_pwd']:
+                continue
+            
+            v = d[k]
 
-        if len(s) > length:
+            s += repr_ltd(k, length - len(s), encoding, is_valid)
+
+            if len(s) > length:
+                is_valid[0] = False
+                if not s.endswith('...'):
+                    s += '...'
+                break
+
+            s +=  ': ' + repr_ltd(v, length - len(s), encoding, is_valid)
+
+            index += 1
+
+            if index < len(d) and len(s) > length:
+                is_valid[0] = False
+                if not s.endswith('...'):
+                    s += '...'
+                break
+
+            if index < len(d):
+                s += ', '
+
+    except AttributeError:
+        is_valid[0] = False 
+
+    return as_unicode(pattern % s)
+
+
+
+def repr_bytearray(s, length, encoding, is_valid):
+    try:
+        s = s.decode(encoding)
+        r = repr_unicode(s, length, is_valid)
+        return 'bytearray(b' + r[1:] + ')'
+
+    except:
+        #
+        # If a string is not encoded as utf-8 its repr() will be done with
+        # the regular repr() function.
+        #
+        return repr_str_raw(s, length, is_valid)
+
+
+
+def repr_bytes(s, length, encoding, is_valid):
+    try:
+        s = s.decode(encoding)
+        r = repr_unicode(s, length, is_valid)
+        return 'b' + r[1:]
+
+    except:
+        #
+        # If a string is not encoded as utf-8 its repr() will be done with
+        # the regular repr() function.
+        #
+        return repr_str_raw(s, length, is_valid)
+
+
+
+def repr_str8(s, length, encoding, is_valid):
+    try:
+        s = s.decode(encoding)
+        r = repr_unicode(s, length, is_valid)
+        return 's' + r[1:]
+
+    except:
+        #
+        # If a string is not encoded as utf-8 its repr() will be done with
+        # the regular repr() function.
+        #
+        return repr_str_raw(s, length, is_valid)
+
+
+
+def repr_str(s, length, encoding, is_valid):
+    try:
+        s = as_unicode(s, encoding, fstrict = True)
+        r = repr_unicode(s, length, is_valid)
+        return r[1:]
+
+    except:
+        #
+        # If a string is not encoded as utf-8 its repr() will be done with
+        # the regular repr() function.
+        #
+        return repr_str_raw(s, length, is_valid)
+
+
+
+def repr_unicode(s, length, is_valid):
+    index = [2, 1][is_py3k()]
+
+    rs = ''
+
+    for c in s:
+        if len(rs) > length:
             is_valid[0] = False
-            if not s.endswith('...'):
-                s += '...'
+            rs += '...'
             break
 
-        s +=  ': ' + repr_ltd(v, length - len(s), is_valid)
+        if ord(c) < 128:
+            rs += repr(c)[index: -1]
+        else:
+            rs += c
 
-        index += 1
+    if not "'" in rs:
+        return as_unicode("u'%s'" % rs)
 
-        if index < len(d) and len(s) > length:
-            is_valid[0] = False
-            if not s.endswith('...'):
-                s += '...'
-            break
-
-        if index < len(d):
-            s += ', '
-
-    return pattern % s
+    if not '"' in rs:
+        return as_unicode('u"%s"' % rs)
+   
+    return as_unicode("u'%s'" % rs.replace("'", "\\'"))
 
 
 
-def repr_str(s, length, is_valid):
+def repr_str_raw(s, length, is_valid):
+    if is_unicode(s):
+        eli = ELLIPSIS_UNICODE
+    else:
+        eli = ELLIPSIS_BYTES
+
     if len(s) > length:
         is_valid[0] = False
-        s = s[: length] + '...'
+        s = s[: length] + eli
 
-    return repr(s)
+    return as_unicode(repr(s))
 
 
 
@@ -1909,63 +2618,104 @@ def repr_base(v, length, is_valid):
         is_valid[0] = False
         r = r[: length] + '...'
 
-    return r
+    return as_unicode(r)
 
 
 
-def repr_ltd(x, length, is_valid = [True]):
-    length = max(0, length)
-
+def repr_ltd(x, length, encoding, is_valid = [True]):
     try:
-        if isinstance(x, set):
-            return repr_list('set([%s])', x, length, is_valid)
+        length = max(0, length)
 
-        if isinstance(x, frozenset):
-            return repr_list('frozenset([%s])', x, length, is_valid)
+        try:
+            if isinstance(x, frozenset):
+                return repr_list('frozenset([%s])', x, length, encoding, is_valid)
 
-    except NameError:
-        pass
+            if isinstance(x, set):
+                return repr_list('set([%s])', x, length, encoding, is_valid)
 
-    if isinstance(x, sets.Set):
-        return repr_list('sets.Set([%s])', x, length, is_valid)
+        except NameError:
+            pass
 
-    if isinstance(x, sets.ImmutableSet):
-        return repr_list('sets.ImmutableSet([%s])', x, length, is_valid)
+        if isinstance(x, sets.Set):
+            return repr_list('sets.Set([%s])', x, length, encoding, is_valid)
 
-    if isinstance(x, list):
-        return repr_list('[%s]', x, length, is_valid)
+        if isinstance(x, sets.ImmutableSet):
+            return repr_list('sets.ImmutableSet([%s])', x, length, encoding, is_valid)
 
-    if isinstance(x, tuple):
-        return repr_list('(%s)', x, length, is_valid)
+        if isinstance(x, list):
+            return repr_list('[%s]', x, length, encoding, is_valid)
 
-    if isinstance(x, dict):
-        return repr_dict('{%s}', x, length, is_valid)
+        if isinstance(x, tuple):
+            return repr_list('(%s)', x, length, encoding, is_valid)
 
-    if type(x) in [str, unicode]:
-        return repr_str(x, length, is_valid)
+        if isinstance(x, dict):
+            return repr_dict('{%s}', x, length, encoding, is_valid)
 
-    if type(x) in [bool, int, float, long, type(None)]:
-        return repr_base(x, length, is_valid)
+        if encoding == ENCODING_RAW_I and [True for t in [str, unicode, bytearray, bytes, str8] if t is type(x)]:
+            return repr_str_raw(x, length, is_valid)
 
-    is_valid[0] = False
+        if type(x) is unicode:
+            return repr_unicode(x, length, is_valid)
 
-    y = safe_repr(x)[: length]
-    if len(y) == length:
-        y += '...'
+        if type(x) is bytearray:
+            return repr_bytearray(x, length, encoding, is_valid)
 
-    return y
+        if type(x) is bytes:
+            return repr_bytes(x, length, encoding, is_valid)
+
+        if type(x) is str8:
+            return repr_str8(x, length, encoding, is_valid)
+
+        if type(x) is str:
+            return repr_str(x, length, encoding, is_valid)
+
+        if [True for t in [bool, int, float, long, type(None)] if t is type(x)]:
+            return repr_base(x, length, is_valid)
+
+        is_valid[0] = False
+
+        y = safe_repr(x)[: length]
+        if len(y) == length:
+            y += '...'
+
+        if encoding == ENCODING_RAW_I:
+            encoding = 'utf-8'
+
+        try:
+            y = as_unicode(y, encoding, fstrict = True)
+            return y
+            
+        except:
+            pass
+
+        encoding = sys.getfilesystemencoding()
+        y = as_unicode(y, encoding)
+
+        return y
+
+    except:
+        print_debug_exception()
+        return as_unicode('N/A')
 
 
 
-def print_debug(str):
+def print_debug(_str):
     if not g_fDebug:
         return
 
     t = time.time()
     l = time.localtime(t)
-    s = time.strftime('%H:%M:%S', l) + '.%03d' % ((t - int(t)) * 1000, )
+    s = time.strftime('%H:%M:%S', l) + '.%03d' % ((t - int(t)) * 1000)
 
-    print >> sys.__stderr__, s, 'RPDB2:', str
+    f = sys._getframe(1)
+    
+    filename = os.path.basename(f.f_code.co_filename)
+    lineno = f.f_lineno
+    name = f.f_code.co_name
+
+    str = '%s %s:%d in %s: %s' % (s, filename, lineno, name, _str)
+
+    _print(str, sys.__stderr__)
 
 
 
@@ -1982,6 +2732,20 @@ def print_debug_exception(fForce = False):
 
        
 
+class CFileWrapper:
+    def __init__(self, f):
+        self.m_f = f
+
+
+    def write(self, s):
+        _print(s, self.m_f, feol = False) 
+
+
+    def __getattr__(self, name):
+        return self.m_f.__getattr__(name)
+
+
+
 def print_exception(t, v, tb, fForce = False):
     """
     Print exceptions to stderr when in debug mode.
@@ -1992,7 +2756,7 @@ def print_exception(t, v, tb, fForce = False):
         
     try:
         g_traceback_lock.acquire()
-        traceback.print_exception(t, v, tb, file = sys.stderr)
+        traceback.print_exception(t, v, tb, file = CFileWrapper(sys.stderr))
         
     finally:    
         g_traceback_lock.release()
@@ -2007,12 +2771,73 @@ def print_stack():
     if g_fDebug == True:
         try:
             g_traceback_lock.acquire()
-            traceback.print_stack(file = sys.stderr)
+            traceback.print_stack(file = CFileWrapper(sys.stderr))
             
         finally:    
             g_traceback_lock.release()
 
        
+
+#
+# myisfile() is similar to os.path.isfile() but also works with
+# Python eggs.
+#
+def myisfile(path):
+    try:
+        mygetfile(path, False)
+        return True
+
+    except:
+        return False
+
+       
+
+#
+# Read a file even if inside a Python egg.
+#
+def mygetfile(path, fread_file = True):
+    if os.path.isfile(path):
+        if not fread_file:
+            return
+        
+        if sys.platform == 'OpenVMS':
+            #
+            # OpenVMS filesystem does not support byte stream.
+            #
+            mode = 'r'
+        else:
+            mode = 'rb'
+
+        f = open(path, mode)
+        data = f.read()
+        f.close()
+        return data
+
+    d = os.path.dirname(path)
+
+    while True:
+        if os.path.exists(d):
+            break
+
+        _d = os.path.dirname(d)
+        if _d in [d, '']:
+            raise IOError
+
+        d = _d
+
+    if not zipfile.is_zipfile(d):
+        raise IOError
+
+    z = zipimport.zipimporter(d)
+
+    try:
+        data = z.get_data(path[len(d) + 1:])
+        return data
+
+    except:
+        raise IOError
+
+
 
 def split_command_line_path_filename_args(command_line):
     """
@@ -2023,7 +2848,7 @@ def split_command_line_path_filename_args(command_line):
     if len(command_line) == 0:
         return ('', '', '')
 
-    if os.path.isfile(command_line):
+    if myisfile(command_line):
         (_path, _filename) = split_path(command_line)
         return (_path, _filename, '')
         
@@ -2064,30 +2889,65 @@ def split_path(path):
 
 
 
+def my_os_path_join(dirname, basename):
+    if is_py3k() or (type(dirname) == str and type(basename) == str):
+        return os.path.join(dirname, basename)
+
+    encoding = sys.getfilesystemencoding()
+
+    if type(dirname) == str:
+        dirname = dirname.decode(encoding)
+
+    if type(basename) == str:
+        basename = basename.decode(encoding)
+
+    return os.path.join(dirname, basename)
+
+
+
 def calc_frame_path(frame):
+    globals_filename = frame.f_globals.get('__file__', None)
     filename = frame.f_code.co_filename
     
     if filename.startswith('<'):
-        return filename
+        if globals_filename == None:
+            return filename
+        else:
+            filename = CalcScriptName(os.path.basename(globals_filename))
+
+    if filename in g_frames_path:
+        return g_frames_path[filename]
+    
+    if globals_filename != None:
+        dirname = os.path.dirname(globals_filename)
+        basename = os.path.basename(filename)
+        path = my_os_path_join(dirname, basename)        
+
+        if os.path.isabs(path):    
+            abspath = my_abspath(path)
+            lowered = winlower(abspath)        
+            g_frames_path[filename] = lowered
+            return lowered
+
+        try:
+            abspath = FindFile(path, fModules = True)
+            lowered = winlower(abspath)    
+            g_frames_path[filename] = lowered
+            return lowered
+
+        except IOError:
+            pass
 
     if os.path.isabs(filename):
         abspath = my_abspath(filename)
-        lowered = winlower(abspath)        
+        lowered = winlower(abspath)
+        g_frames_path[filename] = lowered
         return lowered
         
-    globals_file = frame.f_globals.get('__file__', None)
-    
-    if globals_file != None and os.path.isabs(globals_file):    
-        dirname = os.path.dirname(globals_file)
-        basename = os.path.basename(filename)
-        path = os.path.join(dirname, basename)        
-        abspath = my_abspath(path)
-        lowered = winlower(abspath)        
-        return lowered
-
     try:
         abspath = FindFile(filename, fModules = True)
         lowered = winlower(abspath)    
+        g_frames_path[filename] = lowered
         return lowered
 
     except IOError:
@@ -2116,6 +2976,9 @@ def my_abspath(path):
 
 
 
+#
+# MOD
+#
 def my_abspath1(path):
     """
     Modification of ntpath.abspath() that avoids doing an import.
@@ -2127,7 +2990,14 @@ def my_abspath1(path):
         except WindowsError:
             pass
     else:
-        path = os.getcwd()
+        try:
+            path = os.getcwd()
+
+        except UnicodeDecodeError:
+            #
+            # This exception can be raised in py3k (alpha) on nt.
+            #
+            path = os.getcwdu()
         
     np = os.path.normpath(path)
 
@@ -2145,17 +3015,22 @@ def IsPythonSourceFile(path):
     if path.endswith(PYTHONW_FILE_EXTENSION):
         return True
 
+    path = g_found_unicode_files.get(path, path)
+
+    for lineno in range(1, 10):
+        line = get_source_line(path, lineno)
+
+        if line.startswith('#!') and 'python' in line:
+            return True
+
+    if is_py3k():
+        #
+        # py3k does not have compiler.parseFile, so return
+        # True anyway...
+        #
+        return True
+
     try:
-        f = open(path, 'r')
-        c = f.read(10000)
-        f.close()
-  
-        ll = c.split('\n')
-
-        for l in ll:
-            if l.startswith('#!') and 'python' in l:
-                return True
-
         compiler.parseFile(path) 
         return True
 
@@ -2215,12 +3090,12 @@ def FindModuleDir(module_name):
     
     if not hasattr(m, '__file__') or m.__file__ == None:
         parent_dir = FindModuleDir(parent)
-        module_dir = os.path.join(parent_dir, winlower(child))
+        module_dir = my_os_path_join(parent_dir, winlower(child))
         return module_dir
 
     if not os.path.isabs(m.__file__):
         parent_dir = FindModuleDir(parent)
-        module_dir = os.path.join(parent_dir, winlower(child))
+        module_dir = my_os_path_join(parent_dir, winlower(child))
         return module_dir        
         
     (root, ext) = os.path.splitext(m.__file__)
@@ -2241,7 +3116,7 @@ def FindFileAsModule(filename):
     root_dotted = root.replace('\\', '.').replace('/', '.').replace(':', '.')
 
     match_list = []    
-    for (module_name, m) in sys.modules.items():
+    for (module_name, m) in list(sys.modules.items()):
         lowered_module_name = winlower(module_name)
         if (root_dotted + '.').startswith(lowered_module_name + '.'):
             match_list.append((len(module_name), module_name))
@@ -2262,17 +3137,17 @@ def FindFileAsModule(filename):
         if suffix == '':
             path = module_dir + ext
         else:    
-            path = os.path.join(module_dir, suffix.strip('\\')) + ext
+            path = my_os_path_join(module_dir, suffix.strip('\\')) + ext
         
         scriptname = CalcScriptName(path, fAllowAnyExt = False)
-        if os.path.isfile(scriptname):
+        if myisfile(scriptname):
             return scriptname
 
         #
         # Check .pyw files
         #
         scriptname += 'w'
-        if scriptname.endswith(PYTHONW_FILE_EXTENSION) and os.path.isfile(scriptname):
+        if scriptname.endswith(PYTHONW_FILE_EXTENSION) and myisfile(scriptname):
             return scriptname
         
     raise IOError
@@ -2290,6 +3165,10 @@ def FindFile(
     FindFile looks for the full path of a script in a rather non-strict
     and human like behavior.
 
+    ENCODING:
+    filename should be either Unicode or encoded with sys.getfilesystemencoding()!
+    Returned value is encoded with sys.getfilesystemencoding().
+
     It will always look for .py or .pyw files even if a .pyc or no 
     extension is given.
 
@@ -2301,6 +3180,9 @@ def FindFile(
     4. PATH
     """
 
+    if filename in g_found_unicode_files:
+        return filename
+
     if filename.startswith('<'):
         raise IOError
         
@@ -2309,7 +3191,7 @@ def FindFile(
 
     if fModules and not (os.path.isabs(filename) or filename.startswith('.')):
         try:    
-            return FindFileAsModule(filename)
+            return winlower(FindFileAsModule(filename))
         except IOError:
             pass
                 
@@ -2326,43 +3208,76 @@ def FindFile(
             pass
 
     if os.path.isabs(filename) or filename.startswith('.'):
-        abspath = my_abspath(filename)
-        lowered = winlower(abspath)
-        scriptname = CalcScriptName(lowered, fAllowAnyExt)
-        
-        if os.path.isfile(scriptname):
-            return scriptname
+        try:
+            scriptname = None
 
-        #
-        # Check .pyw files
-        #
-        scriptname += 'w'
-        if scriptname.endswith(PYTHONW_FILE_EXTENSION) and os.path.isfile(scriptname):
-            return scriptname
-        
-        raise IOError
+            abspath = my_abspath(filename)
+            lowered = winlower(abspath)
+            scriptname = CalcScriptName(lowered, fAllowAnyExt)
+            
+            if myisfile(scriptname):
+                return scriptname
+
+            #
+            # Check .pyw files
+            #
+            scriptname += 'w'
+            if scriptname.endswith(PYTHONW_FILE_EXTENSION) and myisfile(scriptname):
+                return scriptname
+            
+            scriptname = None
+            raise IOError
+
+        finally:
+            if not is_py3k() and is_unicode(scriptname):
+                fse = sys.getfilesystemencoding()
+                _l = as_string(scriptname, fse)
+                if '?' in _l:
+                    g_found_unicode_files[_l] = scriptname
+                return _l
 
     scriptname = CalcScriptName(filename, fAllowAnyExt)
-    cwd = os.getcwd()
-    env_path = os.environ['PATH']
-    paths = sources_paths + [cwd] + g_initial_cwd + sys.path + env_path.split(os.pathsep)
     
-    for p in paths:
-        f = os.path.join(p, scriptname)
-        abspath = my_abspath(f)
-        lowered = winlower(abspath)
-        
-        if os.path.isfile(lowered):
-            return lowered
-
+    try:
+        cwd = [os.getcwd(), os.getcwdu()]
+    
+    except UnicodeDecodeError:
         #
-        # Check .pyw files
+        # This exception can be raised in py3k (alpha) on nt.
         #
-        lowered += 'w'
-        if lowered.endswith(PYTHONW_FILE_EXTENSION) and os.path.isfile(lowered):
-            return lowered
+        cwd = [os.getcwdu()]
 
-    raise IOError
+    env_path = os.environ['PATH']
+    paths = sources_paths + cwd + g_initial_cwd + sys.path + env_path.split(os.pathsep)
+    
+    try:
+        lowered = None
+
+        for p in paths:
+            f = my_os_path_join(p, scriptname)
+            abspath = my_abspath(f)
+            lowered = winlower(abspath)
+            
+            if myisfile(lowered):
+                return lowered
+
+            #
+            # Check .pyw files
+            #
+            lowered += 'w'
+            if lowered.endswith(PYTHONW_FILE_EXTENSION) and myisfile(lowered):
+                return lowered
+
+        lowered = None
+        raise IOError
+
+    finally:
+        if not is_py3k() and is_unicode(lowered):
+            fse = sys.getfilesystemencoding()
+            _l = as_string(lowered, fse)
+            if '?' in _l:
+                g_found_unicode_files[_l] = lowered
+            return _l
 
 
 
@@ -2379,9 +3294,9 @@ def IsFileInPath(filename):
 
 
 
-def IsPrefixInEnviron(str):
+def IsPrefixInEnviron(_str):
     for e in os.environ.keys():
-        if e.startswith(str):
+        if e.startswith(_str):
             return True
 
     return False
@@ -2468,103 +3383,191 @@ def winlower(path):
     
     
 
-def is_blender_file(filename):
+
+def source_provider_blender(filename):
     """
-    Return True if filename refers to a blender file.
+    Return source code of the file referred by filename.
     
     Support for debugging of Blender Python scripts.
     Blender scripts are not always saved on disk, and their 
     source has to be queried directly from the Blender API.
     http://www.blender.org
     """
-    
+
     if not 'Blender.Text' in sys.modules:
-        return False
-
-    if filename == BLENDER_NO_SOURCE_FILENAME:
-        return True
-    
-    _filename = os.path.basename(filename)
-
-    try:
-        sys.modules['Blender.Text'].get(_filename)
-        return True
-
-    except NameError:
-        f = winlower(_filename)
-        tlist = sys.modules['Blender.Text'].get()
-        for t in tlist:
-            n = winlower(t.getName())
-            if n == f:
-                return True
-            
-        return False
-
-
-
-def get_blender_source(filename):
-    """
-    Return list of lines in the file refered by filename.
-    
-    Support for debugging of Blender Python scripts.
-    Blender scripts are not always saved on disk, and their 
-    source has to be queried directly from the Blender API.
-    http://www.blender.org
-    """
+        raise IOError
 
     if filename.startswith('<'):
-        raise IOError(ERROR_NO_BLENDER_SOURCE)
+        #
+        # This specifies blender source whose source is not
+        # available.
+        #
+        raise IOError(BLENDER_SOURCE_NOT_AVAILABLE)
         
     _filename = os.path.basename(filename)
-
-    lines = g_blender_text.get(_filename, None)
-    if lines is not None:
-        return lines
-        
-    f = winlower(_filename)
-    lines = g_blender_text.get(f, None)
-    if lines is not None:
-        return lines
 
     try:
         t = sys.modules['Blender.Text'].get(_filename)
         lines = t.asLines()
-        g_blender_text[_filename] = lines
-        return lines
+        return '\n'.join(lines) + '\n'
         
     except NameError:
         f = winlower(_filename)
         tlist = sys.modules['Blender.Text'].get()
 
+        t = None
         for _t in tlist:
             n = winlower(_t.getName())
             if n == f:
                 t = _t
                 break
         
+        if t == None:
+            #
+            # filename does not specify a blender file. Raise IOError
+            # so that search can continue on file system.
+            #
+            raise IOError
+
         lines = t.asLines()
-        g_blender_text[f] = lines
-        return lines
+        return '\n'.join(lines) + '\n'
 
+
+
+def source_provider_filesystem(filename):
+    l = mygetfile(filename)
+
+    if l[:3] == as_bytes(ENCODING_UTF8_PREFIX_1):
+        l = l[3:]
+     
+    return l
+
+
+
+def source_provider(filename):
+    source = None
+    ffilesystem = False
+
+    try:
+        if g_source_provider_aux != None:
+            source = g_source_provider_aux(filename)
     
-            
-def get_source_line(filename, lineno, fBlender):
-    """
-    Return source line from file.
-    """
+    except IOError:
+        v = sys.exc_info()[1]
+        if SOURCE_NOT_AVAILABLE in v.args:
+            raise
+
+    try:
+        if source == None:
+            source = source_provider_blender(filename)
     
-    if fBlender:
-        lines = get_blender_source(filename)
+    except IOError:
+        v = sys.exc_info()[1]
+        if BLENDER_SOURCE_NOT_AVAILABLE in v.args:
+            raise
 
-        try:
-            line = lines[lineno - 1] + '\n'
-            return line
-            
-        except IndexError:
-            return '' 
+    if source == None:
+        source = source_provider_filesystem(filename)
+        ffilesystem = True
 
-    line = linecache.getline(filename, lineno) 
-    return line
+    encoding = ParseEncoding(source)
+
+    if not is_unicode(source):
+        source = as_unicode(source, encoding)
+
+    return source, encoding, ffilesystem
+
+
+
+def lines_cache(filename):
+    filename = g_found_unicode_files.get(filename, filename)
+
+    if filename in g_lines_cache:
+        return g_lines_cache[filename]
+
+    (source, encoding, ffilesystem) = source_provider(filename)
+    source = source.replace(as_unicode('\r\n'), as_unicode('\n'))
+
+    lines = source.split(as_unicode('\n'))
+
+    g_lines_cache[filename] = (lines, encoding, ffilesystem)
+
+    return (lines, encoding, ffilesystem)
+
+
+
+def get_source(filename):
+    (lines, encoding, ffilesystem) = lines_cache(filename)
+    source = as_unicode('\n').join(lines) 
+
+    return (source, encoding)
+
+
+
+def get_source_line(filename, lineno):
+    (lines, encoding, ffilesystem) = lines_cache(filename)
+
+    if lineno > len(lines):
+        return as_unicode('')
+    
+    return lines[lineno - 1] + as_unicode('\n')
+
+
+
+def is_provider_filesystem(filename):
+    try:
+        (lines, encoding, ffilesystem) = lines_cache(filename)
+        return ffilesystem
+
+    except IOError:
+        v = sys.exc_info()[1]
+        return not (BLENDER_SOURCE_NOT_AVAILABLE in v.args or SOURCE_NOT_AVAILABLE in v.args)
+
+
+
+def get_file_encoding(filename):
+    (lines, encoding, ffilesystem) = lines_cache(filename)
+    return encoding
+
+
+
+def ParseLineEncoding(l):
+    if l.startswith('# -*- coding: '):
+        e = l[len('# -*- coding: '):].split()[0]
+        return e
+
+    if l.startswith('# vim:fileencoding='):
+        e = l[len('# vim:fileencoding='):].strip()
+        return e
+
+    return None    
+
+        
+        
+def ParseEncoding(txt):
+    """
+    Parse document encoding according to: 
+    http://docs.python.org/ref/encodings.html
+    """
+   
+    eol = '\n'
+    if not is_unicode(txt):
+        eol = as_bytes('\n')
+
+    l = txt.split(eol, 20)[:-1]
+
+    for line in l:
+        line = as_unicode(line)
+        encoding = ParseLineEncoding(line)
+        if encoding is not None:
+            try:
+                codecs.lookup(encoding)
+                return encoding
+
+            except:
+                return 'utf-8'
+
+    return 'utf-8'
 
 
 
@@ -2616,20 +3619,23 @@ def generate_rid():
     Return a 7 digits random id.
     """
     
-    return repr(random.randint(1000000, 9999999))
+    rid = repr(random.randint(1000000, 9999999))
+    rid = as_unicode(rid)
+
+    return rid
 
 
 
-def generate_random_char(str):
+def generate_random_char(_str):
     """
     Return a random character from string argument.
     """
     
-    if str == '':
+    if _str == '':
         return ''
         
-    i = random.randint(0, len(str) - 1)
-    return str[i]
+    i = random.randint(0, len(_str) - 1)
+    return _str[i]
 
 
 
@@ -2646,7 +3652,35 @@ def generate_random_password():
     for i in range(0, 7):
         _rpdb2_pwd += generate_random_char(ds)
 
+    _rpdb2_pwd = as_unicode(_rpdb2_pwd)
+
     return _rpdb2_pwd    
+
+
+
+def is_valid_pwd(_rpdb2_pwd):
+    if _rpdb2_pwd in [None, '']:
+        return False
+
+    try:
+        if not is_unicode(_rpdb2_pwd):
+            _rpdb2_pwd = _rpdb2_pwd.decode('ascii')
+
+        _rpdb2_pwd.encode('ascii')
+
+    except:
+        return False
+
+    for c in _rpdb2_pwd:
+        if c.isalnum():
+            continue
+
+        if c == '_':
+            continue
+
+        return False
+
+    return True
 
 
 
@@ -2659,29 +3693,29 @@ def is_encryption_supported():
 
 
 
-def calc_suffix(str, n):
+def calc_suffix(_str, n):
     """
     Return an n charaters suffix of the argument string of the form
     '...suffix'.
     """
     
-    if len(str) <= n:
-        return str
+    if len(_str) <= n:
+        return _str
 
-    return '...' + str[-(n - 3):]
+    return '...' + _str[-(n - 3):]
 
 
     
-def calc_prefix(str, n):
+def calc_prefix(_str, n):
     """
     Return an n charaters prefix of the argument string of the form
     'prefix...'.
     """
     
-    if len(str) <= n:
-        return str
+    if len(_str) <= n:
+        return _str
 
-    return str[: (n - 3)] + '...'
+    return _str[: (n - 3)] + '...'
 
 
 
@@ -2698,15 +3732,15 @@ def create_rpdb_settings_folder():
 
     rsf = os.path.join(home, RPDB_SETTINGS_FOLDER)
     if not os.path.exists(rsf):
-        os.mkdir(rsf, 0700)
+        os.mkdir(rsf, int('0700', 8))
 
     pwds = os.path.join(home, RPDB_PWD_FOLDER)    
     if not os.path.exists(pwds):
-        os.mkdir(pwds, 0700)
+        os.mkdir(pwds, int('0700', 8))
 
     bpl = os.path.join(home, RPDB_BPL_FOLDER)    
     if not os.path.exists(bpl):
-        os.mkdir(bpl, 0700)
+        os.mkdir(bpl, int('0700', 8))
 
 
 
@@ -2725,8 +3759,6 @@ def cleanup_bpl_folder(path):
         
     ll.sort()
 
-    print ll
-    
     for (t, f) in ll[: -MAX_BPL_FILES]:
         try:
             os.remove(os.path.join(path, f))
@@ -2736,7 +3768,8 @@ def cleanup_bpl_folder(path):
         
 
 def calc_bpl_filename(filename):
-    tmp_filename = md5.new(filename).hexdigest()[:10]
+    key = as_bytes(filename)
+    tmp_filename = hmac.new(key).hexdigest()[:10]
 
     if os.name == POSIX:
         home = os.path.expanduser('~')
@@ -2758,7 +3791,7 @@ def calc_bpl_filename(filename):
         # Folder creation is done here since this is a temp folder.
         #
         try:
-            os.mkdir(bpldir, 0700)
+            os.mkdir(bpldir, int('0700', 8))
         except:
             print_debug_exception()
             raise CException
@@ -2795,7 +3828,7 @@ def create_pwd_file(rid, _rpdb2_pwd):
 
     path = calc_pwd_file_path(rid)
 
-    fd = os.open(path, os.O_WRONLY | os.O_CREAT, 0600)
+    fd = os.open(path, os.O_WRONLY | os.O_CREAT, int('0600', 8))
     
     os.write(fd, _rpdb2_pwd)
     os.close(fd)
@@ -2815,6 +3848,8 @@ def read_pwd_file(rid):
     _rpdb2_pwd = p.read()
     p.close()
 
+    _rpdb2_pwd = as_unicode(_rpdb2_pwd, fstrict = True)
+
     return _rpdb2_pwd
     
     
@@ -2833,42 +3868,6 @@ def delete_pwd_file(rid):
         os.remove(path)
     except:
         pass
-
-
-
-def ParseLineEncoding(l):
-    if l.startswith('# -*- coding: '):
-        e = l[len('# -*- coding: '):].split()[0]
-        return e
-
-    if l.startswith('# vim:fileencoding='):
-        e = l[len('# vim:fileencoding='):].strip()
-        return e
-
-    return None    
-
-        
-        
-def ParseEncoding(txt):
-    """
-    Parse document encoding according to: 
-    http://docs.python.org/ref/encodings.html
-    """
-    
-    if txt.startswith('\xef\xbb\xbf'):
-        return 'utf8'
-
-    l = txt.split('\n', 2)
-
-    e = ParseLineEncoding(l[0])
-    if e is not None:
-        return e
-        
-    if len(l) == 1:
-        return None 
-        
-    e = ParseLineEncoding(l[1])
-    return e
 
 
 
@@ -2895,31 +3894,53 @@ def CalcUserShell():
 
 
 
-def IsFilteredProperty(a):
+def IsFilteredAttribute(a):
     if not (a.startswith('__') and a.endswith('__')):
         return False
 
-    if a in ['__class__', '__bases__', '__file__', '__doc__', '__name__']:
+    if a in ['__class__', '__bases__', '__file__', '__doc__', '__name__', '__all__', '__builtins__']:
         return False
 
     return True
 
 
 
-def CalcFilteredDir(r, fFilter):
+def IsFilteredAttribute2(r, a):
+    try:
+        o = getattr(r, a)
+        r = parse_type(type(o))
+
+        if 'function' in r or 'method' in r or r == 'type':
+            return True
+
+        return False
+
+    except:
+        return False
+
+
+
+def CalcFilteredDir(r, filter_level):
     d = dir(r)
 
-    if not fFilter:
+    if 'finfo' in d and parse_type(type(r)) == 'mp_request':
+        #
+        # Workaround mod_python segfault in type(req.finfo) by
+        # removing this attribute from the namespace viewer.
+        #
+        d.remove('finfo')
+
+    if filter_level == 0:
         return d
 
-    fd = [e for e in d if not IsFilteredProperty(e)]
+    fd = [a for a in d if not IsFilteredAttribute(a)]
 
     return fd
 
 
 
-def CalcIdentity(r, fFilter):
-    if not fFilter:
+def CalcIdentity(r, filter_level):
+    if filter_level == 0:
         return r
 
     if not hasattr(r, 'im_func'):
@@ -2929,41 +3950,73 @@ def CalcIdentity(r, fFilter):
 
 
 
-def CalcDictKeys(r, fFilter):
-    d = CalcFilteredDir(r, fFilter)
-    rs = sets.Set(d)
+def getattr_nothrow(o, a):
+    try:
+        return getattr(o, a)
 
-    if hasattr(r, '__class__'):
-        c = getattr(r, '__class__')
-        d = CalcFilteredDir(c, fFilter)
-        cs = sets.Set(d)
+    except AttributeError:
+        return ERROR_NO_ATTRIBUTE
+
+    except:
+        print_debug_exception()
+        return ERROR_NO_ATTRIBUTE
+
+
+
+def calc_attribute_list(r, filter_level):
+    d = CalcFilteredDir(r, filter_level)
+    rs = set(d)
+
+    c = getattr_nothrow(r, '__class__')
+    if not c is ERROR_NO_ATTRIBUTE:
+        d = CalcFilteredDir(c, False)
+        cs = set(d)
         s = rs & cs
 
         for e in s:
-            o1 = getattr(r, e)
-            o2 = getattr(c, e)
+            o1 = getattr_nothrow(r, e)
+            o2 = getattr_nothrow(c, e)
 
-            if CalcIdentity(o1, fFilter) is CalcIdentity(o2, fFilter):
+            if o1 is ERROR_NO_ATTRIBUTE or CalcIdentity(o1, filter_level) is CalcIdentity(o2, filter_level):
                 rs.discard(e)
 
-    if hasattr(r, '__bases__'):
-        bl = getattr(r, '__bases__')
-        if type(bl) == tuple:
-            for b in bl:
-                d = CalcFilteredDir(b, fFilter)
-                bs = sets.Set(d)
-                s = rs & bs
+            try:
+                if filter_level == 1 and getattr(o1, '__self__') is getattr(o2, '__self__'):
+                    rs.discard(e)
+            except:
+                pass
 
-                for e in s:
-                    o1 = getattr(r, e)
-                    o2 = getattr(b, e)
+    bl = getattr_nothrow(r, '__bases__')
+    if type(bl) == tuple:
+        for b in bl:
+            d = CalcFilteredDir(b, False)
+            bs = set(d)
+            s = rs & bs
 
-                    if CalcIdentity(o1, fFilter) is CalcIdentity(o2, fFilter):
+            for e in s:
+                o1 = getattr_nothrow(r, e)
+                o2 = getattr_nothrow(b, e)
+
+                if o1 is ERROR_NO_ATTRIBUTE or CalcIdentity(o1, filter_level) is CalcIdentity(o2, filter_level):
+                    rs.discard(e)
+
+                try:
+                    if filter_level == 1 and getattr(o1, '__self__') is getattr(o2, '__self__'):
                         rs.discard(e)
+                except:
+                    pass
       
-    l = [a for a in rs]
+    l = [a for a in rs if (filter_level < 2 or not IsFilteredAttribute2(r, a))]
 
-    return l
+    if hasattr(r, '__class__') and not '__class__' in l:
+        l = ['__class__'] + l
+
+    if hasattr(r, '__bases__') and not '__bases__' in l:
+        l = ['__bases__'] + l
+
+    al = [a for a in l if hasattr(r, a)]
+
+    return al
 
 
 
@@ -2976,7 +4029,7 @@ class _RPDB2_FindRepr:
     def __getitem__(self, key):
         index = 0
         for i in self.m_object:
-            if repr_ltd(i, self.m_repr_limit) == key:
+            if repr_ltd(i, self.m_repr_limit, encoding = ENCODING_RAW_I).replace('"', '&quot') == key:
                 if isinstance(self.m_object, dict):
                     return self.m_object[i]
 
@@ -2993,7 +4046,7 @@ class _RPDB2_FindRepr:
 
         index = 0
         for i in self.m_object:
-            if repr_ltd(i, self.m_repr_limit) == key:
+            if repr_ltd(i, self.m_repr_limit, encoding = ENCODING_RAW_I).replace('"', '&quot') == key:
                 self.m_object[i] = value
                 return
 
@@ -3003,15 +4056,322 @@ class _RPDB2_FindRepr:
 
 
 
-def SafeCmp(x, y):
+#
+# Since on Python 3000 the comparison of different types raises exceptions and 
+# the __cmp__ method was removed, sorting of namespace items is based on 
+# lexicographic order except for numbers which are sorted normally and appear 
+# before all other types.
+#
+def sort(s):
+    if sys.version_info[:2] == (2, 3):
+        #
+        # On Python 2.3 the key parameter is not supported.
+        #
+        s.sort(sort_cmp)
+        return
+
+    s.sort(key = sort_key)
+
+
+
+def sort_key(e):
+    if operator.isNumberType(e):
+        return (0, e)
+
+    return (1, repr_ltd(e, 256, encoding = ENCODING_RAW_I))
+
+
+
+def sort_cmp(x, y):
+    skx = sort_key(x)
+    sky = sort_key(y)
+
+    return cmp(skx, sky)
+
+
+
+def recalc_sys_path(old_pythonpath):
+    opl = old_pythonpath.split(os.path.pathsep)
+    del sys.path[1: 1 + len(opl)]
+
+    pythonpath = os.environ.get('PYTHONPATH', '')
+    ppl = pythonpath.split(os.path.pathsep)
+
+    for i, p in enumerate(ppl):
+        abspath = my_abspath(p)
+        lowered = winlower(abspath)
+
+        sys.path.insert(1 + i, lowered)
+
+
+
+def calc_signame(signum):
+    for k, v in vars(signal).items():
+        if not k.startswith('SIG') or k in ['SIG_IGN', 'SIG_DFL', 'SIGRTMIN', 'SIGRTMAX']:
+            continue
+
+        if v == signum:
+            return k
+
+    return '?'
+
+
+
+#
+# Similar to traceback.extract_stack() but fixes path with calc_frame_path()
+#
+def my_extract_stack(f):
+    if f == None:
+        return []
+
     try:
-        return cmp(x, y)
+        g_traceback_lock.acquire()
+        _s = traceback.extract_stack(f)
 
-    except:
-        pass
+    finally:    
+        g_traceback_lock.release()
+    
+    _s.reverse()
 
-    return cmp(repr_ltd(x, 256), repr_ltd(y, 256))
+    s = []
+    for (p, ln, fn, text) in _s:
+        path = as_unicode(calc_frame_path(f), sys.getfilesystemencoding())
+        if text == None:
+            text = ''
 
+        s.append((path, ln, as_unicode(fn), as_unicode(text)))
+
+        f = f.f_back
+        if f == None:
+            break
+
+    s.reverse()
+    return s
+
+
+
+
+#
+# Similar to traceback.extract_tb() but fixes path with calc_frame_path()
+#
+def my_extract_tb(tb):
+    try:
+        g_traceback_lock.acquire()
+        _s = traceback.extract_tb(tb)
+
+    finally:    
+        g_traceback_lock.release()
+
+    s = []
+    for (p, ln, fn, text) in _s:
+        path = as_unicode(calc_frame_path(tb.tb_frame), sys.getfilesystemencoding())
+        if text == None:
+            text = ''
+
+        s.append((path, ln, as_unicode(fn), as_unicode(text)))
+
+        tb = tb.tb_next
+        if tb == None:
+            break
+
+    return s
+
+
+
+def get_traceback(frame):
+    if frame.f_exc_traceback != None:
+        return frame.f_exc_traceback
+
+    locals = copy.copy(frame.f_locals)
+    if not 'traceback' in locals:
+        return None
+
+    tb = locals['traceback']
+    if dir(tb) == ['tb_frame', 'tb_lasti', 'tb_lineno', 'tb_next']:
+        return tb
+
+
+
+class CFirewallTest:
+    m_port = None
+    m_thread_server = None
+    m_thread_client = None
+    m_lock = threading.RLock()
+
+
+    def __init__(self, fremote = False, timeout = 4):
+        if fremote:
+            self.m_loopback = ''
+        else:
+            self.m_loopback = LOOPBACK
+
+        self.m_timeout = timeout
+
+        self.m_result = None
+
+        self.m_last_server_error = None
+        self.m_last_client_error = None
+
+
+    def run(self):
+        CFirewallTest.m_lock.acquire()
+
+        try:
+            #
+            # If either the server or client are alive after a timeout
+            # it means they are blocked by a firewall. Return False.
+            #
+            server = CFirewallTest.m_thread_server
+            if server != None and server.isAlive():
+                server.join(self.m_timeout * 1.5)
+                if server.isAlive():
+                    return False
+
+            client = CFirewallTest.m_thread_client
+            if client != None and client.isAlive():
+                client.join(self.m_timeout * 1.5)
+                if client.isAlive():
+                    return False
+
+            CFirewallTest.m_port = None
+            self.m_result = None
+
+            t0 = time.time()
+            server = threading.Thread(target = self.__server)
+            server.start()
+            CFirewallTest.m_thread_server = server
+
+            #
+            # If server exited or failed to setup after a timeout 
+            # it means it was blocked by a firewall.
+            #
+            while CFirewallTest.m_port == None and server.isAlive():
+                if time.time() - t0 > self.m_timeout * 1.5:
+                    return False
+
+                time.sleep(0.1)
+
+            if not server.isAlive():
+                return False
+
+            t0 = time.time()
+            client = threading.Thread(target = self.__client)
+            client.start()
+            CFirewallTest.m_thread_client = client
+
+            while self.m_result == None and client.isAlive():
+                if time.time() - t0 > self.m_timeout * 1.5:
+                    return False
+
+                time.sleep(0.1)
+
+            return self.m_result
+
+        finally:
+            CFirewallTest.m_lock.release()
+
+
+    def __client(self):
+        s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+        s.settimeout(self.m_timeout)
+
+        try:
+            try:
+                s.connect((LOOPBACK, CFirewallTest.m_port))
+
+                s.send(as_bytes('Hello, world'))
+                data = self.__recv(s, 1024)
+                self.m_result = True
+
+            except socket.error:
+                e = sys.exc_info()[1]
+                self.m_last_client_error = e
+                self.m_result = False
+
+        finally:
+            s.close()
+
+
+    def __server(self):
+        s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+        s.settimeout(self.m_timeout)
+
+        if os.name == POSIX:
+            s.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
+
+        port = SERVER_PORT_RANGE_START
+
+        while True:
+            try:
+                s.bind((self.m_loopback, port))
+                break
+                
+            except socket.error:
+                e = sys.exc_info()[1]
+               
+                if self.__GetSocketError(e) != errno.EADDRINUSE:
+                    self.m_last_server_error = e
+                    s.close()
+                    return
+                    
+                if port >= SERVER_PORT_RANGE_START + SERVER_PORT_RANGE_LENGTH - 1:
+                    self.m_last_server_error = e
+                    s.close()
+                    return
+
+                port += 1
+        
+        CFirewallTest.m_port = port
+
+        try:
+            try:
+                conn = None
+                s.listen(1)
+                conn, addr = s.accept()
+                
+                while True:
+                    data = self.__recv(conn, 1024)
+                    if not data: 
+                        return
+
+                    conn.send(data)
+
+            except socket.error:
+                e = sys.exc_info()[1]
+                self.m_last_server_error = e
+
+        finally:
+            if conn != None:
+                conn.close()
+            s.close()
+
+
+    def __recv(self, s, len):
+        t0 = time.time()
+        
+        while True:
+            try:
+                data = s.recv(1024)
+                return data
+
+            except socket.error:
+                e = sys.exc_info()[1]
+                if self.__GetSocketError(e) != errno.EWOULDBLOCK:
+                    print_debug('socket error was caught, %s' % repr(e))
+                    raise
+                
+                if time.time() - t0 > self.m_timeout:
+                    raise
+
+                continue
+
+
+    def __GetSocketError(self, e):
+        if (not isinstance(e.args, tuple)) or (len(e.args) == 0):
+            return -1
+
+        return e.args[0]
+        
 
 
 #
@@ -3088,13 +4448,13 @@ class CThread (threading.Thread):
 
         CThread.m_fstop = True
 
-        for tid, w in CThread.m_threads.items():
+        for tid, w in list(CThread.m_threads.items()):
             t = w()
             if not t:
                 continue
 
             try:
-                #print_debug('Calling shutdown of thread %s.' % (t.getName(), ))
+                #print_debug('Calling shutdown of thread %s.' % t.getName())
                 t.shutdown()
             except:
                 pass
@@ -3104,7 +4464,7 @@ class CThread (threading.Thread):
         t0 = time.time()
 
         while len(CThread.m_threads) > 0:
-            if time.time() - t0 > 16:
+            if time.time() - t0 > SHUTDOWN_TIMEOUT:
                 print_debug('Shut down of debugger threads has TIMED OUT!')
                 return
 
@@ -3146,6 +4506,9 @@ class CCrypto:
     m_keys = {}
     
     def __init__(self, _rpdb2_pwd, fAllowUnencrypted, rid):
+        assert(is_unicode(_rpdb2_pwd))
+        assert(is_unicode(rid))
+
         self.m_rpdb2_pwd = _rpdb2_pwd
         self.m_key = self.__calc_key(_rpdb2_pwd)
         
@@ -3174,17 +4537,19 @@ class CCrypto:
         if _rpdb2_pwd in CCrypto.m_keys:
             return CCrypto.m_keys[_rpdb2_pwd]
 
-        d = md5.new()
-        key = _rpdb2_pwd 
+        key = as_bytes(_rpdb2_pwd)
+        suffix = key[:16]
+        
+        d = hmac.new(key, digestmod = _md5)
 
         #
         # The following loop takes around a second to complete
-        # and should strengthen the password by ~16 bits.
+        # and should strengthen the password by ~12 bits.
         # a good password is ~30 bits strong so we are looking
-        # at ~45 bits strong key
+        # at ~42 bits strong key
         #
-        for i in range(2 ** 16):
-            d.update(key * 64)       
+        for i in range(2 ** 12):
+            d.update((key + suffix) * 16)       
             key = d.digest()
             
         CCrypto.m_keys[_rpdb2_pwd] = key
@@ -3207,94 +4572,106 @@ class CCrypto:
         return self.m_max_index
 
 
-    def is_encrypted(self, str):
-        return str.startswith(ENCRYPTION_PREFIX)
-
-        
-    def do_crypto(self, s, fEncryption):
+    def do_crypto(self, args, fencrypt):
         """
-        Sign string s and possibly encrypt it. 
+        Sign args and possibly encrypt. 
         Return signed/encrypted string.
         """
         
-        _s = self.__sign(s)
+        if not fencrypt and not self.m_fAllowUnencrypted:
+            raise EncryptionExpected
 
-        if not fEncryption:
-            if self.m_fAllowUnencrypted:
-                return _s
-
-            raise EncryptionExpected  
-            
-        if not is_encryption_supported():
+        if fencrypt and not is_encryption_supported():
             raise EncryptionNotSupported
 
-        s_encrypted = self.__encrypt(_s)
-        return s_encrypted    
+        (digest, s) = self.__sign(args)
+
+        fcompress = False
+
+        if len(s) > 50000:
+            _s = zlib.compress(s)
+
+            if len(_s) < len(s) * 0.4:
+                s = _s
+                fcompress = True
+            
+        if fencrypt:
+            s = self.__encrypt(s)
+
+        s = base64.encodestring(s)
+        u = as_unicode(s)
+        
+        return (fcompress, digest, u)
 
 
-    def undo_crypto(self, s_encrypted, fVerifyIndex = True):
+    def undo_crypto(self, fencrypt, fcompress, digest, msg, fVerifyIndex = True):
         """
         Take crypto string, verify its signature and decrypt it, if
         needed.
         """
 
-        (_s, fEncryption) = self.__decrypt(s_encrypted)            
-        s, id = self.__verify_signature(_s, fVerifyIndex)
+        if not fencrypt and not self.m_fAllowUnencrypted:
+            raise EncryptionExpected
 
-        return (s, id, fEncryption)
+        if fencrypt and not is_encryption_supported():
+            raise EncryptionNotSupported
+
+        s = as_bytes(msg)
+        s = base64.decodestring(s)
+
+        if fencrypt:
+            s = self.__decrypt(s)
+
+        if fcompress:
+            s = zlib.decompress(s)
+
+        args, id = self.__verify_signature(digest, s, fVerifyIndex)
+
+        return (args, id)
 
     
     def __encrypt(self, s):
-        s_padded = s + '0' * (DES.block_size - (len(s) % DES.block_size))
+        s_padded = s + as_bytes('\x00') * (DES.block_size - (len(s) % DES.block_size))
 
-        key_padded = (self.m_key + '0' * (DES.key_size - (len(self.m_key) % DES.key_size)))[:DES.key_size]
+        key_padded = (self.m_key + as_bytes('0') * (DES.key_size - (len(self.m_key) % DES.key_size)))[:DES.key_size]
         iv = '0' * DES.block_size
         
         d = DES.new(key_padded, DES.MODE_CBC, iv)
         r = d.encrypt(s_padded)
 
-        s_encoded = base64.encodestring(r)
-        return ENCRYPTION_PREFIX + s_encoded
+        return r
 
 
     def __decrypt(self, s):
-        if not s.startswith(ENCRYPTION_PREFIX):
-            if self.m_fAllowUnencrypted:
-                return (s, False)
-                
-            raise EncryptionExpected
-
-        if not is_encryption_supported():
-            raise EncryptionNotSupported
-        
-        s_encoded = s[len(ENCRYPTION_PREFIX):]
-        
         try:
-            _r = base64.decodestring(s_encoded)
-
-            key_padded = (self.m_key + '0' * (DES.key_size - (len(self.m_key) % DES.key_size)))[:DES.key_size]
+            key_padded = (self.m_key + as_bytes('0') * (DES.key_size - (len(self.m_key) % DES.key_size)))[:DES.key_size]
             iv = '0' * DES.block_size
             
             d = DES.new(key_padded, DES.MODE_CBC, iv)
-            _s = d.decrypt(_r)
+            _s = d.decrypt(s).strip(as_bytes('\x00'))
 
-            return (_s, True)
+            return _s
             
         except:
             self.__wait_a_little()
             raise DecryptionFailure
 
 
-    def __sign(self, s):
+    def __sign(self, args):
         i = self.__get_next_index()
-        _s = pickle.dumps((self.m_index_anchor_ex, i, self.m_rid, s))
+        pack = (self.m_index_anchor_ex, i, self.m_rid, args)
         
-        h = hmac.new(self.m_key, _s, md5)
-        _d = h.digest()
-        r = (_d, _s)
-        s_signed = pickle.dumps(r)
+        #print_debug('***** 1' + repr(args)[:50]) 
+        s = pickle.dumps(pack, 2)
+        #print_debug('***** 2' + repr(args)[:50]) 
+        
+        h = hmac.new(self.m_key, s, digestmod = _md5)
+        d = h.hexdigest()
 
-        return s_signed
+        #if 'coding:' in s:
+        #    print_debug('%s, %s, %s\n\n==========\n\n%s' % (len(s), d, repr(args), repr(s)))
+
+        return (d, s)
 
 
     def __get_next_index(self):
@@ -3308,23 +4685,24 @@ class CCrypto:
             self.m_lock.release()
 
 
-    def __verify_signature(self, s, fVerifyIndex):
+    def __verify_signature(self, digest, s, fVerifyIndex):
         try:
-            r = pickle.loads(s)
-            
-            (_d, _s) = r
-            
-            h = hmac.new(self.m_key, _s, md5)
-            d = h.digest()
+            h = hmac.new(self.m_key, s, digestmod = _md5)
+            d = h.hexdigest()
 
-            if _d != d:
+            #if 'coding:' in s:
+            #    print_debug('%s, %s, %s, %s' % (len(s), digest, d, repr(s)))
+
+            if d != digest:
                 self.__wait_a_little()
                 raise AuthenticationFailure
 
-            (anchor, i, id, s_original) = pickle.loads(_s)
+            pack = pickle.loads(s)
+            (anchor, i, id, args) = pack
                 
         except AuthenticationFailure:
             raise
+
         except:
             print_debug_exception()
             self.__wait_a_little()
@@ -3333,7 +4711,7 @@ class CCrypto:
         if fVerifyIndex:
             self.__verify_index(anchor, i, id)
 
-        return s_original, id
+        return args, id
 
         
     def __verify_index(self, anchor, i, id):
@@ -3348,7 +4726,7 @@ class CCrypto:
                 if anchor != self.m_index_anchor_in:
                     raise AuthenticationBadIndex(self.m_max_index, self.m_index_anchor_in)
 
-                if i > self.m_max_index + INDEX_TABLE_SIZE / 2:
+                if i > self.m_max_index + INDEX_TABLE_SIZE // 2:
                     raise AuthenticationBadIndex(self.m_max_index, self.m_index_anchor_in)
 
                 i_mod = i % INDEX_TABLE_SIZE
@@ -3391,28 +4769,109 @@ class CCrypto:
 
 
 
-class CEvent:
+class CEvent(object):
     """
     Base class for events.
     """
-    
+   
+    def __reduce__(self):
+        rv = (copy_reg.__newobj__, (type(self), ), vars(self), None, None)
+        return rv
+
+
     def is_match(self, arg):
         pass
 
 
 
-class CEventPsycoWarning(CEvent):
+class CEventNull(CEvent):
     """
-    The psyco module was detected. Rpdb2 is incompatible with this module.
+    Sent to release event listeners (Internal, speeds up shutdown).
     """
     
     pass
 
 
 
+class CEventEmbeddedSync(CEvent):
+    """
+    Sent when an embedded interpreter becomes active if it needs to 
+    determine if there are pending break requests. (Internal)
+    """
+
+    pass
+
+
+
+class CEventClearSourceCache(CEvent):
+    """
+    Sent when the source cache is cleared.
+    """
+
+    pass
+
+
+
+class CEventSignalIntercepted(CEvent):
+    """
+    This event is sent when a signal is intercepted inside tracing code.
+    Such signals are held pending until tracing code is returned from.
+    """
+    
+    def __init__(self, signum):
+        self.m_signum = signum
+        self.m_signame = calc_signame(signum)
+
+
+
+class CEventSignalException(CEvent):
+    """
+    This event is sent when the handler of a previously intercepted signal
+    raises an exception. Such exceptions are ignored because of technical 
+    limitations.
+    """
+
+    def __init__(self, signum, description):
+        self.m_signum = signum
+        self.m_signame = calc_signame(signum)
+        self.m_description = description
+
+
+
+class CEventEncoding(CEvent):
+    """
+    The encoding has been set.
+    """
+
+    def __init__(self, encoding, fraw):
+        self.m_encoding = encoding
+        self.m_fraw = fraw
+
+
+
+class CEventPsycoWarning(CEvent):
+    """
+    The psyco module was detected. rpdb2 is incompatible with this module.
+    """
+    
+    pass
+
+
+
+class CEventConflictingModules(CEvent):
+    """
+    Conflicting modules were detected. rpdb2 is incompatible with these modules.
+    """
+    
+    def __init__(self, modules_list):
+        self.m_modules_list = modules_list
+
+
+
 class CEventSyncReceivers(CEvent):
     """
-    A base class for events that sync all receivers before being fired.
+    A base class for events that need to be received by all listeners at
+    the same time. The synchronization mechanism is internal to rpdb2.
     """
 
     def __init__(self, sync_n):
@@ -3454,11 +4913,26 @@ class CEventState(CEvent):
     """
     
     def __init__(self, state):
-        self.m_state = state
+        self.m_state = as_unicode(state)
 
 
     def is_match(self, arg):
-        return self.m_state == arg
+        return self.m_state == as_unicode(arg)
+
+
+
+class CEventSynchronicity(CEvent):
+    """
+    Mode of synchronicity.
+    Sent when mode changes.
+    """
+
+    def __init__(self, fsynchronicity):
+        self.m_fsynchronicity = fsynchronicity
+
+
+    def is_match(self, arg):
+        return self.m_fsynchronicity == arg
 
 
 
@@ -3536,7 +5010,7 @@ class CEventThreadBroken(CEvent):
     
     def __init__(self, tid, name):
         self.m_tid = tid
-        self.m_name = name
+        self.m_name = as_unicode(name)
 
 
         
@@ -3577,16 +5051,13 @@ class CEventBreakpoint(CEvent):
     A breakpoint or breakpoints changed.
     """
     
-    DISABLE = 'disable'
-    ENABLE = 'enable'
-    REMOVE = 'remove'
-    SET = 'set'
+    DISABLE = as_unicode('disable')
+    ENABLE = as_unicode('enable')
+    REMOVE = as_unicode('remove')
+    SET = as_unicode('set')
     
     def __init__(self, bp, action = SET, id_list = [], fAll = False):
-        self.m_bp = copy.copy(bp)
-        if self.m_bp is not None:
-            self.m_bp.m_code = None
-        
+        self.m_bp = breakpoint_copy(bp)
         self.m_action = action
         self.m_id_list = id_list
         self.m_fAll = fAll
@@ -3619,7 +5090,7 @@ class CEventDispatcherRecord:
     
     def __init__(self, callback, event_type_dict, fSingleUse):
         self.m_callback = callback
-        self.m_event_type_dict = event_type_dict
+        self.m_event_type_dict = copy.copy(event_type_dict)
         self.m_fSingleUse = fSingleUse
 
 
@@ -3665,7 +5136,7 @@ class CEventDispatcher:
 
 
     def shutdown(self):
-        for er in self.m_registrants.keys():
+        for er in list(self.m_registrants.keys()):
             self.__remove_dispatcher_record(er)
 
         
@@ -3686,7 +5157,7 @@ class CEventDispatcher:
 
 
     def remove_callback(self, callback):
-        erl = [er for er in self.m_registrants.keys() if er.m_callback == callback]
+        erl = [er for er in list(self.m_registrants.keys()) if er.m_callback == callback]
         for er in erl:
             self.__remove_dispatcher_record(er)
 
@@ -3697,7 +5168,7 @@ class CEventDispatcher:
 
 
     def fire_event(self, event):
-        for er in self.m_registrants.keys():
+        for er in list(self.m_registrants.keys()):
             self.__fire_er(event, er)
 
                         
@@ -3725,7 +5196,7 @@ class CEventDispatcher:
         dispatchers for specific event types.
         """
         
-        for t in event_type_dict.keys():
+        for t in list(event_type_dict.keys()):
             self.m_chain_override_types[t] = True
 
 
@@ -3770,7 +5241,7 @@ class CEventQueue:
     def __init__(self, event_dispatcher, max_event_list_length = MAX_EVENT_LIST_LENGTH):
         self.m_event_dispatcher = event_dispatcher
 
-        self.m_event_lock = threading.Condition(threading.RLock())
+        self.m_event_lock = threading.Condition()
         self.m_max_event_list_length = max_event_list_length
         self.m_event_list = []
         self.m_event_index = 0
@@ -3820,7 +5291,7 @@ class CEventQueue:
 
             self.m_event_lock.acquire()
             if event_index >= self.m_event_index:
-                self.m_event_lock.wait(timeout)
+                safe_wait(self.m_event_lock, timeout)
 
             if event_index >= self.m_event_index:
                 return (self.m_event_index, [])
@@ -3858,7 +5329,7 @@ class CStateManager:
             if self.m_event_dispatcher_output is not None:
                 self.m_event_dispatcher_output.register_chain_override(event_type_dict)
 
-        self.m_state_lock = threading.Condition(threading.Lock())
+        self.m_state_lock = threading.Condition()
 
         self.m_state_queue = []
         self.m_state_index = 0        
@@ -3913,7 +5384,7 @@ class CStateManager:
         if len(self.m_waiter_list) == 0:
             return self.m_state_index
 
-        index_list = self.m_waiter_list.keys()
+        index_list = list(self.m_waiter_list.keys())
         min_index = min(index_list)
 
         return min_index
@@ -3977,7 +5448,7 @@ class CStateManager:
             while True:
                 index = self.__add_waiter()
             
-                self.m_state_lock.wait(PING_TIMEOUT)
+                alertable_wait(self.m_state_lock, PING_TIMEOUT)
 
                 states = self.__get_states(index)
                 self.__remove_waiter(index)
@@ -4005,12 +5476,20 @@ class CStateManager:
 
 
 
+def myord(c):
+    try:
+        return ord(c)
+    except:
+        return c
+
+
+
 def CalcValidLines(code):
     l = code.co_firstlineno
     vl = [l]
 
-    bl = [ord(c) for c in code.co_lnotab[2::2]]
-    sl = [ord(c) for c in code.co_lnotab[1::2]]
+    bl = [myord(c) for c in code.co_lnotab[2::2]]
+    sl = [myord(c) for c in code.co_lnotab[1::2]]
 
     for (bi, si) in zip(bl, sl):
         l += si
@@ -4068,19 +5547,9 @@ class CFileBreakInfo:
 
 
     def CalcBreakInfo(self):
-        if is_blender_file(self.m_filename):
-            lines = get_blender_source(self.m_filename)
-            source = '\n'.join(lines) + '\n'
-        else:    
-            f = open(self.m_filename, "r")
-            source = f.read()
-            f.close()
+        (source, encoding) = get_source(self.m_filename)
+        _source = as_string(source + as_unicode('\n'), encoding)
         
-        self.__CalcBreakInfoFromSource(source)
-
-
-    def __CalcBreakInfoFromSource(self, source):
-        _source = source.replace('\r\n', '\n') + '\n'
         code = compile(_source, self.m_filename, "exec")
         
         self.m_scope_break_info = []
@@ -4101,7 +5570,7 @@ class CFileBreakInfo:
             fqn = fqn + [c.co_name]  
             valid_lines = CalcValidLines(c)
             self.m_last_line = max(self.m_last_line, valid_lines[-1])
-            _fqn = '.'.join(fqn)
+            _fqn = as_unicode('.'.join(fqn), encoding)
             si = (_fqn, valid_lines)  
             subcodeslist = self.__CalcSubCodesList(c)
             t = subcodeslist + [si] + t
@@ -4156,6 +5625,8 @@ class CFileBreakInfo:
                 l = sbi.CalcScopeLine(sbi.m_first_line + offset)
                 return (sbi, l)
 
+        print_debug('Invalid scope: %s' % repr(name))
+
         raise InvalidScopeName
     
 
@@ -4189,8 +5660,23 @@ class CBreakInfoManager:
 
 
 
-class CBreakPoint:    
-    def __init__(self, filename, scope_fqn, scope_first_line, lineno, fEnabled, expr, fTemporary = False):
+def breakpoint_copy(bp):
+    if bp is None:
+        return None
+
+    _bp = copy.copy(bp)
+        
+    #filename = g_found_unicode_files.get(bp.m_filename, bp.m_filename)
+
+    _bp.m_filename = as_unicode(bp.m_filename, sys.getfilesystemencoding())   
+    _bp.m_code = None
+
+    return _bp
+
+
+
+class CBreakPoint(object):    
+    def __init__(self, filename, scope_fqn, scope_first_line, lineno, fEnabled, expr, encoding, fTemporary = False):
         """
         Breakpoint constructor.
 
@@ -4206,13 +5692,21 @@ class CBreakPoint:
         self.m_scope_offset = lineno - scope_first_line
         self.m_lineno = lineno
         self.m_expr = expr
+        self.m_encoding = encoding
         self.m_code = None
         self.m_fTemporary = fTemporary
 
         if (expr is not None) and (expr != ''):
-            self.m_code = compile(expr, '', 'eval')
+            _expr = as_bytes(ENCODING_SOURCE % encoding + expr, encoding)
+            print_debug('Breakpoint expression: %s' % repr(_expr))
+            self.m_code = compile(_expr, '<string>', 'eval')
 
         
+    def __reduce__(self):
+        rv = (copy_reg.__newobj__, (type(self), ), vars(self), None, None)
+        return rv
+
+
     def calc_enclosing_scope_name(self):
         if self.m_scope_offset != 0:
             return None
@@ -4278,7 +5772,7 @@ class CBreakPointsManagerProxy:
             self.m_lock.acquire()
 
             if event.m_fAll:
-                id_list = self.m_break_points_by_id.keys()
+                id_list = list(self.m_break_points_by_id.keys())
             else:
                 id_list = event.m_id_list
                 
@@ -4340,7 +5834,7 @@ class CBreakPointsManagerProxy:
 
             self.m_break_points_by_id.update(break_points_by_id)
 
-            for bp in self.m_break_points_by_id.values():
+            for bp in list(self.m_break_points_by_id.values()):
                 bpm = self.m_break_points_by_file.get(bp.m_filename, {})
                 bpm[bp.m_lineno] = bp
             
@@ -4398,7 +5892,7 @@ class CBreakPointsManager:
         bpmpt.clear()
 
         bpm = self.m_break_points_by_file.get(filename, {})
-        for bp in bpm.values():
+        for bp in list(bpm.values()):
             if bp.m_fEnabled:
                 bpmpt[bp.m_lineno] = bp
                 
@@ -4516,7 +6010,7 @@ class CBreakPointsManager:
         else:
             (s, l) = mbi.FindScopeByLineno(lineno)
 
-        bp = CBreakPoint(_filename, s.m_fqn, s.m_first_line, l, fEnabled = True, expr = '', fTemporary = True)
+        bp = CBreakPoint(_filename, s.m_fqn, s.m_first_line, l, fEnabled = True, expr = as_unicode(''), encoding = as_unicode('utf-8'), fTemporary = True)
 
         try:    
             self.m_lock.acquire()
@@ -4533,7 +6027,7 @@ class CBreakPointsManager:
             self.m_lock.release()
 
 
-    def set_breakpoint(self, filename, scope, lineno, fEnabled, expr):
+    def set_breakpoint(self, filename, scope, lineno, fEnabled, expr, encoding):
         """
         Set breakpoint.
 
@@ -4555,7 +6049,7 @@ class CBreakPointsManager:
         else:
             (s, l) = mbi.FindScopeByLineno(lineno)
 
-        bp = CBreakPoint(_filename, s.m_fqn, s.m_first_line, l, fEnabled, expr)
+        bp = CBreakPoint(_filename, s.m_fqn, s.m_first_line, l, fEnabled, expr, encoding)
 
         try:    
             self.m_lock.acquire()
@@ -4577,7 +6071,7 @@ class CBreakPointsManager:
                 # Find the smallest available ID.
                 #
                 
-                bpids = self.m_break_points_by_id.keys()
+                bpids = list(self.m_break_points_by_id.keys())
                 bpids.sort()
                 
                 id = 0
@@ -4610,7 +6104,7 @@ class CBreakPointsManager:
             self.m_lock.acquire()
 
             if fAll:
-                id_list = self.m_break_points_by_id.keys()
+                id_list = list(self.m_break_points_by_id.keys())
 
             for id in id_list:    
                 try:
@@ -4635,7 +6129,7 @@ class CBreakPointsManager:
             self.m_lock.acquire()
 
             if fAll:
-                id_list = self.m_break_points_by_id.keys()
+                id_list = list(self.m_break_points_by_id.keys())
 
             for id in id_list:  
                 try:
@@ -4660,7 +6154,7 @@ class CBreakPointsManager:
             self.m_lock.acquire()
 
             if fAll:
-                id_list = self.m_break_points_by_id.keys()
+                id_list = list(self.m_break_points_by_id.keys())
 
             for id in id_list:    
                 try:
@@ -4763,7 +6257,7 @@ class CDebuggerCoreThread:
         self.m_core = core_debugger
         self.m_bp_manager = core_debugger.m_bp_manager
 
-        self.m_frame_lock = threading.Condition(threading.Lock())
+        self.m_frame_lock = threading.Condition()
         self.m_frame_external_references = 0
 
         
@@ -4774,8 +6268,11 @@ class CDebuggerCoreThread:
         mainly to handle synchronization issues related to the 
         life time of the frame structure.
         """
-        
-        if event == 'return':            
+        #print_debug('profile: %s, %s, %s, %s, %s' % (repr(frame), event, frame.f_code.co_name, frame.f_code.co_filename, repr(arg)[:40])) 
+        if event == 'return':  
+            if sys.excepthook != g_excepthook:
+                set_excepthook()
+
             self.m_frame = frame.f_back
 
             try:
@@ -4817,7 +6314,7 @@ class CDebuggerCoreThread:
                 self.m_frame_lock.acquire() 
 
                 while self.m_frame_external_references != 0:
-                    self.m_frame_lock.wait(1.0)
+                    safe_wait(self.m_frame_lock, 1.0)
 
             finally:
                 self.m_frame_lock.release()
@@ -4867,7 +6364,7 @@ class CDebuggerCoreThread:
         """
         
         if fException:
-            tb = base_frame.f_exc_traceback
+            tb = get_traceback(base_frame)
             if tb is None:
                 raise NoExceptionFound
                 
@@ -4878,7 +6375,14 @@ class CDebuggerCoreThread:
         else:    
             f = base_frame
             
-        while (index > 0) and (f is not None):
+        while f is not None:
+            if not g_fDebug and f.f_code.co_name == 'rpdb2_import_wrapper':
+                f = f.f_back
+                continue
+
+            if index <= 0:
+                break
+
             f = f.f_back
             index -= 1
 
@@ -4891,7 +6395,7 @@ class CDebuggerCoreThread:
             lineno = f.f_lineno
             
         if fException:
-            tb = base_frame.f_exc_traceback
+            tb = get_traceback(base_frame)
             while tb is not None:
                 if tb.tb_frame == f:
                     lineno = tb.tb_lineno
@@ -4907,7 +6411,7 @@ class CDebuggerCoreThread:
         A copy scheme is used for locals to work around a bug in 
         Python 2.3 and 2.4 that prevents modifying the local dictionary.
         """
-        
+       
         try:
             base_frame = self.frame_acquire()
 
@@ -4954,18 +6458,15 @@ class CDebuggerCoreThread:
 
         (lc, base) = lct
         cr = copy.copy(self.m_frame.f_locals)
-        
-        b = [(k, repr(v)) for k, v in base.items()]
-        sb = sets.Set(b)
 
-        c = [(k, repr(v)) for k, v in cr.items()]
-        sc = sets.Set(c)
+        for k in cr:
+            if not k in base:
+                lc[k] = cr[k]
+                continue
 
-        nsc = [k for (k, v) in sc - sb]
-
-        for k in nsc:
-            lc[k] = cr[k]
-
+            if not cr[k] is base[k]:
+                lc[k] = cr[k]
+ 
             
     def update_locals(self):
         """
@@ -5003,7 +6504,7 @@ class CDebuggerCoreThread:
             return False
 
 
-    def set_local_trace(self, frame):
+    def set_local_trace(self, frame, fsignal_exception = False):
         """
         Set trace callback of frame. 
         Specialized trace methods are selected here to save switching time 
@@ -5012,6 +6513,10 @@ class CDebuggerCoreThread:
         
         if not self.m_core.m_ftrace:
             frame.f_trace = self.trace_dispatch_stop
+            return
+
+        if fsignal_exception:
+            frame.f_trace = self.trace_dispatch_signal
             return
 
         code_context = self.m_core.get_code_context(frame)
@@ -5035,7 +6540,7 @@ class CDebuggerCoreThread:
             del frame.f_trace
 
 
-    def set_tracers(self): 
+    def set_tracers(self, fsignal_exception = False): 
         """
         Set trace callbacks for all frames in stack.
         """
@@ -5044,7 +6549,7 @@ class CDebuggerCoreThread:
             try:
                 f = self.frame_acquire()
                 while f is not None:
-                    self.set_local_trace(f)
+                    self.set_local_trace(f, fsignal_exception)
                     f = f.f_back
                     
             except ThreadDone:
@@ -5100,7 +6605,7 @@ class CDebuggerCoreThread:
         
         if not self.m_core.m_ftrace:
             return self.trace_dispatch_stop(frame, event, arg)
-            
+        
         self.m_frame = frame
 
         try:
@@ -5177,7 +6682,7 @@ class CDebuggerCoreThread:
 
         return frame.f_trace     
 
-        
+
     def trace_dispatch_trap(self, frame, event, arg):
         """
         Trace method used for frames in which unhandled exceptions
@@ -5245,6 +6750,15 @@ class CDebuggerCoreThread:
 
         return frame.f_trace     
 
+
+    def trace_dispatch_signal(self, frame, event, arg):
+        #print_debug('*** trace_dispatch_signal %s, %s, %s' % (frame.f_lineno, event, repr(arg)))
+        self.set_exc_info(arg)
+        self.set_tracers()
+        sys.setprofile(self.profile)
+
+        return self.trace_dispatch_trap(frame, event, arg)
+
         
     def set_exc_info(self, arg):
         """
@@ -5300,7 +6814,7 @@ class CDebuggerCore:
 
         self.m_timer_embedded_giveup = None
         
-        self.m_threads_lock = threading.Condition(threading.Lock())
+        self.m_threads_lock = threading.Condition()
 
         self.m_threads = {}
 
@@ -5310,6 +6824,7 @@ class CDebuggerCore:
         self.m_ffork_into_child = False
         self.m_ffork_auto = False
 
+        self.m_fsynchronicity = True
         self.m_ftrap = True
         self.m_fUnhandledException = False        
         self.m_fBreak = False
@@ -5326,6 +6841,9 @@ class CDebuggerCore:
         self.m_code_contexts = {None: None}
 
         self.m_fembedded = fembedded
+        self.m_embedded_event = threading.Event()
+        self.m_embedded_sync_t0 = 0
+        self.m_embedded_sync_t1 = 0
 
         self.m_heartbeats = {0: time.time() + 3600}
         
@@ -5382,12 +6900,26 @@ class CDebuggerCore:
         to attach.
         """
         
+        self.cancel_request_go_timer()
+
         if timeout is None:
             return
-            
-        _timeout = max(5.0, timeout)
-        self.m_timer_embedded_giveup = threading.Timer(_timeout, self.request_go)
+        
+        _timeout = max(1.0, timeout)
+
+        f = lambda: ( 
+            self.record_client_heartbeat(0, False, True),
+            self.request_go()
+            )
+ 
+        self.m_timer_embedded_giveup = threading.Timer(_timeout, f)
         self.m_timer_embedded_giveup.start()
+        
+        #
+        # sleep() releases control and allow timer thread to actually start 
+        # before this scope returns.
+        #
+        time.sleep(0.1)
 
     
     def cancel_request_go_timer(self):
@@ -5471,7 +7003,7 @@ class CDebuggerCore:
             if self.m_builtins_hack != None:
                 if calc_frame_path(frame) == self.m_builtins_hack:
                     self.m_builtins_hack = None
-                    frame.f_globals['__builtins__'] = sys.modules['__builtin__']
+                    frame.f_globals['__builtins__'] = g_builtins_module
 
             code_context = CCodeContext(frame, self.m_bp_manager)
             return self.m_code_contexts.setdefault(frame.f_code, code_context)
@@ -5484,6 +7016,14 @@ class CDebuggerCore:
         return self.m_current_ctx 
 
         
+    def get_ctx(self, tid):
+        ctx = self.m_threads.get(tid, None)
+        if ctx == None:
+            raise ThreadNotFound 
+
+        return ctx 
+
+
     def wait_for_first_thread(self):
         """
         Wait until at least one debuggee thread is alive.
@@ -5498,7 +7038,7 @@ class CDebuggerCore:
             self.m_threads_lock.acquire() 
 
             while self.m_current_ctx is None:
-                self.m_threads_lock.wait(1.0)
+                safe_wait(self.m_threads_lock, 1.0)
 
         finally:
             self.m_threads_lock.release()
@@ -5530,6 +7070,31 @@ class CDebuggerCore:
             frame = frame.f_back
 
 
+    def __set_signal_handler(self):
+        """
+        Set rpdb2 to wrap all signal handlers.
+        """
+        for key, value in list(vars(signal).items()):
+            if not key.startswith('SIG') or key in ['SIG_IGN', 'SIG_DFL', 'SIGRTMIN', 'SIGRTMAX']:
+                continue
+
+            handler = signal.getsignal(value)
+            if handler in [signal.SIG_IGN, signal.SIG_DFL]:
+                continue
+
+            try:
+                signal.signal(value, handler)
+            except:
+                print_debug('Failed to set signal handler for signal %s(%d)' % (key, value))
+
+
+    def clear_source_cache(self):
+        g_lines_cache.clear()
+        
+        event = CEventClearSourceCache()
+        self.m_event_dispatcher.fire_event(event)
+
+
     def trace_dispatch_init(self, frame, event, arg):   
         """
         Initial tracing method.
@@ -5549,13 +7114,27 @@ class CDebuggerCore:
             name = t.getName()
         except:
             name = ''
-        
+       
+        if name == 'MainThread':
+            self.__set_signal_handler()
+
         ctx = CDebuggerCoreThread(name, self, frame, event)
         ctx.set_tracers()
-        self.m_threads[ctx.m_thread_id] = ctx
 
-        if len(self.m_threads) == 1:
-            g_blender_text.clear()
+        try:
+            self.m_threads_lock.acquire() 
+
+            self.m_threads[ctx.m_thread_id] = ctx
+            nthreads = len(self.m_threads)
+
+            if nthreads == 1:
+                self.prepare_embedded_sync()
+
+        finally:
+            self.m_threads_lock.release()
+
+        if nthreads == 1:
+            self.clear_source_cache()
             
             self.m_current_ctx = ctx
             self.notify_first_thread()
@@ -5566,7 +7145,9 @@ class CDebuggerCore:
 
         sys.settrace(ctx.trace_dispatch_call)
         sys.setprofile(ctx.profile)
-        
+      
+        self.wait_embedded_sync(nthreads == 1)
+
         if event == 'call':
             return ctx.trace_dispatch_call(frame, event, arg)
         elif hasattr(frame, 'f_trace') and (frame.f_trace is not None):    
@@ -5574,13 +7155,61 @@ class CDebuggerCore:
         else:
             return None
 
+    
+    def prepare_embedded_sync(self):
+        if not self.m_fembedded:
+            return
+
+        t = time.time()
+        t0 = self.m_embedded_sync_t0
+
+        if t0 != 0:
+            self.fix_heartbeats(t - t0)
+
+        if self.get_clients_attached() == 0:
+            return
+
+        if t - t0 < EMBEDDED_SYNC_THRESHOLD:
+            return
+
+        self.m_embedded_sync_t1 = t
+        self.m_embedded_event.clear()
+
+
+    def wait_embedded_sync(self, ftrigger):
+        if not self.m_fembedded:
+            return
+
+        t = time.time()
+        t0 = self.m_embedded_sync_t0
+        t1 = self.m_embedded_sync_t1
+
+        if t - t0 < EMBEDDED_SYNC_THRESHOLD:
+            return
+
+        if t - t1 >= EMBEDDED_SYNC_TIMEOUT:
+            return
+
+        if ftrigger:
+            event = CEventEmbeddedSync()
+            self.m_event_dispatcher.fire_event(event)
+
+        safe_wait(self.m_embedded_event, EMBEDDED_SYNC_TIMEOUT - (t - t1))
+
+        if ftrigger:
+            self.m_embedded_sync_t1 = 0
+
+
+    def embedded_sync(self):
+        self.m_embedded_event.set()
+
 
     def set_all_tracers(self):
         """
         Set trace methods for all frames of all threads.
         """
         
-        for ctx in self.m_threads.values():
+        for ctx in list(self.m_threads.values()):
             ctx.set_tracers()
 
             
@@ -5589,10 +7218,10 @@ class CDebuggerCore:
             del self.m_threads[thread_id]
             
             if self.m_current_ctx.m_thread_id == thread_id:
-                self.m_current_ctx = self.m_threads.values()[0]
+                self.m_current_ctx = list(self.m_threads.values())[0]
                 
         except (KeyError, IndexError):
-            pass            
+            self.m_embedded_sync_t0 = time.time()           
 
 
     def set_break_flag(self):
@@ -5634,15 +7263,30 @@ class CDebuggerCore:
             self.m_heartbeats[id] = time.time()
 
 
+    def fix_heartbeats(self, missing_pulse):
+        for k, v in list(self.m_heartbeats.items()):
+            self.m_heartbeats[k] = v + missing_pulse
+
+
     def get_clients_attached(self):
         n = 0
         t = time.time()
         
-        for v in self.m_heartbeats.values():
+        for v in list(self.m_heartbeats.values()):
             if t < v + HEARTBEAT_TIMEOUT:
                 n += 1
 
         return n
+
+
+    def is_waiting_for_attach(self):
+        if self.get_clients_attached() != 1:
+            return False
+
+        if list(self.m_heartbeats.keys()) != [0]:
+            return False
+
+        return True
 
 
     def _break(self, ctx, frame, event, arg):
@@ -5660,7 +7304,9 @@ class CDebuggerCore:
         ctx.m_fBroken = True
         f_full_notification = False
         f_uhe_notification = False
-        
+      
+        step_tid = self.m_step_tid
+
         try: 
             self.m_state_manager.acquire()
             if self.m_state_manager.get_state() != STATE_BROKEN:
@@ -5722,6 +7368,9 @@ class CDebuggerCore:
         elif self.get_clients_attached() == 0:
             #print_debug('state: %s' % self.m_state_manager.get_state())
             self.request_go_quiet()
+
+        elif step_tid == ctx.m_thread_id and frame.f_code.co_name == 'rpdb2_import_wrapper':
+            self.request_step_quiet()
 
         else:
             if f_full_notification:
@@ -5958,7 +7607,7 @@ class CDebuggerCore:
         """
         Let debugger run.
         """
-        
+       
         try:
             if fLock:
                 self.m_state_manager.acquire()
@@ -5982,6 +7631,9 @@ class CDebuggerCore:
         """
         Let debugger run until temp breakpoint as defined in the arguments.
         """
+
+        assert(is_unicode(filename))
+        assert(is_unicode(scope))
         
         try:
             self.m_state_manager.acquire()
@@ -5989,8 +7641,8 @@ class CDebuggerCore:
 
             if filename in [None, '']:
                 _filename = self.get_current_filename(frame_index, fException)
-            elif is_blender_file(filename):
-                _filename = filename
+            elif not is_provider_filesystem(filename):
+                _filename = as_string(filename, sys.getfilesystemencoding())
             else:
                 _filename = FindFile(filename, fModules = True)
 
@@ -6000,6 +7652,14 @@ class CDebuggerCore:
 
         finally:    
             self.m_state_manager.release()
+
+
+    def request_step_quiet(self, fLock = True):
+        try:
+            self.request_step(fLock)
+        
+        except DebuggerNotBroken:
+            pass
 
 
     def request_step(self, fLock = True):
@@ -6102,7 +7762,7 @@ class CDebuggerCore:
             code = frame.f_code
 
             valid_lines = CalcValidLines(code)
-            sbi = CScopeBreakInfo('', valid_lines)
+            sbi = CScopeBreakInfo(as_unicode(''), valid_lines)
             l = sbi.CalcScopeLine(lineno)
 
             frame.f_lineno = l
@@ -6125,7 +7785,7 @@ class CDebuggerCore:
 
             try:
                 if (tid >= 0) and (tid < 100):
-                    _tid = self.m_threads.keys()[tid]
+                    _tid = list(self.m_threads.keys())[tid]
                 else:
                     _tid = tid
                     
@@ -6162,12 +7822,19 @@ class CDebuggerEngine(CDebuggerCore):
             CEventNamespace: {},
             CEventUnhandledException: {},
             CEventStack: {},
+            CEventNull: {},
             CEventExit: {},
             CEventForkSwitch: {},
             CEventExecSwitch: {},
+            CEventSynchronicity: {},
             CEventTrap: {},
             CEventForkMode: {},
-            CEventPsycoWarning: {}
+            CEventPsycoWarning: {},
+            CEventConflictingModules: {},
+            CEventSignalIntercepted: {},
+            CEventSignalException: {},
+            CEventClearSourceCache: {},
+            CEventEmbeddedSync: {}
             }
 
         self.m_event_queue = CEventQueue(self.m_event_dispatcher)
@@ -6198,16 +7865,33 @@ class CDebuggerEngine(CDebuggerCore):
         return index
 
 
-    def trap_psyco_module(self):
-        global g_fsent_psyco_warning
-       
-        if g_fsent_psyco_warning or not 'psyco' in sys.modules:
-            return
+    def trap_conflicting_modules(self):
+        modules_list = []
 
-        g_fsent_psyco_warning = True
+        for m in CONFLICTING_MODULES:
+            if m in g_found_conflicting_modules:
+                continue
 
-        event = CEventPsycoWarning()
+            if not m in sys.modules:
+                continue
+
+            if m == 'psyco':
+                #
+                # Old event kept for compatibility.
+                # 
+                event = CEventPsycoWarning()
+                self.m_event_dispatcher.fire_event(event)
+            
+            g_found_conflicting_modules.append(m)
+            modules_list.append(as_unicode(m))
+
+        if modules_list == []:
+            return False
+
+        event = CEventConflictingModules(modules_list)
         self.m_event_dispatcher.fire_event(event)
+
+        return True
 
 
     def wait_for_event(self, timeout, event_index):
@@ -6216,18 +7900,22 @@ class CDebuggerEngine(CDebuggerCore):
         """
 
         self.cancel_request_go_timer()
-        self.trap_psyco_module()
+        self.trap_conflicting_modules()
 
         (new_event_index, sel) = self.m_event_queue.wait_for_event(timeout, event_index)
+
+        if self.trap_conflicting_modules():
+            (new_event_index, sel) = self.m_event_queue.wait_for_event(timeout, event_index)
+
         return (new_event_index, sel)
 
 
-    def set_breakpoint(self, filename, scope, lineno, fEnabled, expr, frame_index, fException):
-        if expr != '':
-            try:
-                compile(expr, '', 'eval')
-            except:
-                raise SyntaxError
+    def set_breakpoint(self, filename, scope, lineno, fEnabled, expr, frame_index, fException, encoding):
+        print_debug('Setting breakpoint to: %s, %s, %d' % (repr(filename), scope, lineno))
+
+        assert(is_unicode(filename))
+        assert(is_unicode(scope))
+        assert(is_unicode(expr))
 
         fLock = False
         
@@ -6238,15 +7926,26 @@ class CDebuggerEngine(CDebuggerCore):
                 self.verify_broken()
                 
                 _filename = self.get_current_filename(frame_index, fException)
-            elif is_blender_file(filename):
-                _filename = filename
+            elif not is_provider_filesystem(filename):
+                _filename = as_string(filename, sys.getfilesystemencoding())
             else:
                 _filename = FindFile(filename, fModules = True)
-                
-            bp = self.m_bp_manager.set_breakpoint(_filename, scope, lineno, fEnabled, expr)
+            
+            if expr != '':
+                try:
+                    encoding = self.__calc_encoding(encoding, filename = _filename)
+                    _expr = as_bytes(ENCODING_SOURCE % encoding + expr, encoding)
+                    compile(_expr, '<string>', 'eval')
+                except:
+                    raise SyntaxError
+
+            encoding = as_unicode(encoding)
+
+            bp = self.m_bp_manager.set_breakpoint(_filename, scope, lineno, fEnabled, expr, encoding)
             self.set_all_tracers()
 
             event = CEventBreakpoint(bp)
+            #print_debug(repr(vars(bp)))
             self.m_event_dispatcher.fire_event(event)
 
         finally:
@@ -6284,7 +7983,7 @@ class CDebuggerEngine(CDebuggerCore):
         """
         
         bpl = self.m_bp_manager.get_breakpoints()
-        _items = [(id, copy.copy(bp)) for (id, bp) in bpl.items()]
+        _items = [(id, breakpoint_copy(bp)) for (id, bp) in bpl.items()]
         for (id, bp) in _items:
             bp.m_code = None
             
@@ -6335,41 +8034,38 @@ class CDebuggerEngine(CDebuggerCore):
         Send event with stack depth and exception stack depth.
         """
         
+        f = None
+        tb = None
         ctx = self.get_current_ctx()
         
         try:
             try:
-                f = None
                 f = ctx.frame_acquire()
             except ThreadDone:
                 return
 
-            try:
-                g_traceback_lock.acquire()
-                s = traceback.extract_stack(f)
+            s = my_extract_stack(f)
+            s = [1 for (a, b, c, d) in s if g_fDebug or c != 'rpdb2_import_wrapper']
                 
-            finally:    
-                g_traceback_lock.release()
-
             stack_depth = len(s)
 
-            if f.f_exc_traceback is None:
+            tb = get_traceback(f)
+            if tb == None:
                 stack_depth_exception = None
-            else:    
-                try:
-                    g_traceback_lock.acquire()
-                    _s = traceback.extract_tb(f.f_exc_traceback)
-                    
-                finally:    
-                    g_traceback_lock.release()
 
-                stack_depth_exception = stack_depth + len(_s) - 1
+            else:    
+                s = my_extract_stack(tb.tb_frame.f_back)
+                s += my_extract_tb(tb)
+                s = [1 for (a, b, c, d) in s if g_fDebug or c != 'rpdb2_import_wrapper']
+                    
+                stack_depth_exception = len(s)
 
             event = CEventStackDepth(stack_depth, stack_depth_exception)
             self.m_event_dispatcher.fire_event(event)
             
         finally:
             f = None
+            tb = None
             ctx.frame_release()
 
             
@@ -6416,85 +8112,76 @@ class CDebuggerEngine(CDebuggerCore):
         _event = CEventNoThreads()
         self.m_event_dispatcher.fire_event(_event)
 
+
+    def send_event_null(self):
+        """
+        Make the event waiter return.
+        """
         
+        event = CEventNull()
+        self.m_event_dispatcher.fire_event(event)
+
+
     def __get_stack(self, ctx, ctid, fException):
         tid = ctx.m_thread_id    
 
+        f = None
+        _f = None
+        tb = None
+        _tb = None
+
         try:
             try:
-                f = None
                 f = ctx.frame_acquire()
             except ThreadDone:
                 return None
 
-            _f = f
-
-            try:
-                g_traceback_lock.acquire()
-                s = traceback.extract_stack(f)
-                
-            finally:    
-                g_traceback_lock.release()
-
             if fException: 
-                if f.f_exc_traceback is None:
+                tb = get_traceback(f)
+                if tb == None:
                     raise NoExceptionFound
 
-                _tb = f.f_exc_traceback
+                _tb = tb
                 while _tb.tb_next is not None:
                     _tb = _tb.tb_next
 
                 _f = _tb.tb_frame    
-                    
-                try:
-                    g_traceback_lock.acquire()
-                    _s = traceback.extract_tb(f.f_exc_traceback)
-                    
-                finally:    
-                    g_traceback_lock.release()
+                s = my_extract_stack(tb.tb_frame.f_back)
+                s += my_extract_tb(tb)
 
-                s = s[:-1] + _s
-
+            else:
+                _f = f
+                s = my_extract_stack(f)
+                    
             code_list = []
             while _f is not None:
                 rc = repr(_f.f_code).split(',')[0].split()[-1]
+                rc = as_unicode(rc)
                 code_list.insert(0, rc)
                 _f = _f.f_back
                 
         finally:
             f = None
             _f = None
+            tb = None
+            _tb = None
+
             ctx.frame_release()
 
         #print code_list
-
-        path_dict = {}
-        for e in s:
-            path = e[0]
-            if path in path_dict:
-                continue
-
-            try:
-                expanded_path = FindFile(path, fModules = True)
-            except IOError:
-                expanded_path = path
-
-            path_dict[path] = winlower(expanded_path)                   
-        
-            #print >> sys.__stderr__, path, path_dict[path]
-                
-        __s = [(path_dict[a], b, c, d) for (a, b, c, d) in s]
+               
+        __s = [(a, b, c, d) for (a, b, c, d) in s if g_fDebug or c != 'rpdb2_import_wrapper']
 
         if (ctx.m_uef_lineno is not None) and (len(__s) > 0):
             (a, b, c, d) = __s[0]
             __s = [(a, ctx.m_uef_lineno, c, d)] + __s[1:] 
-            
+           
         r = {}
         r[DICT_KEY_STACK] = __s
         r[DICT_KEY_CODE_LIST] = code_list
         r[DICT_KEY_TID] = tid
         r[DICT_KEY_BROKEN] = ctx.m_fBroken
-        r[DICT_KEY_EVENT] = ctx.m_event
+        r[DICT_KEY_EVENT] = as_unicode([ctx.m_event, 'exception'][fException])
         
         if tid == ctid:
             r[DICT_KEY_CURRENT_TID] = True
@@ -6510,7 +8197,7 @@ class CDebuggerEngine(CDebuggerCore):
         ctid = ctx.m_thread_id
 
         if fAll:
-            ctx_list = self.get_threads().values()
+            ctx_list = list(self.get_threads().values())
         elif fException or (len(tid_list) == 0):
             ctx_list = [ctx]
         else:
@@ -6523,6 +8210,8 @@ class CDebuggerEngine(CDebuggerCore):
 
 
     def get_source_file(self, filename, lineno, nlines, frame_index, fException):  
+        assert(is_unicode(filename))
+
         if lineno < 1:
             lineno = 1
             nlines = -1
@@ -6553,14 +8242,11 @@ class CDebuggerEngine(CDebuggerCore):
             if filename in [None, '']:
                 raise
 
-        fBlender = False
-        
         if filename in [None, '']:
             __filename = frame_filename
             r[DICT_KEY_TID] = ctx.m_thread_id
-        elif is_blender_file(filename):
-            fBlender = True
-            __filename = filename
+        elif not is_provider_filesystem(filename):
+            __filename = as_string(filename, sys.getfilesystemencoding())
         else:    
             __filename = FindFile(filename, fModules = True)
             if not IsPythonSourceFile(__filename):
@@ -6575,7 +8261,7 @@ class CDebuggerEngine(CDebuggerCore):
         while nlines != 0:
             try:
                 g_traceback_lock.acquire()
-                line = get_source_line(_filename, _lineno, fBlender)
+                line = get_source_line(_filename, _lineno)
                 
             finally:    
                 g_traceback_lock.release()
@@ -6590,7 +8276,7 @@ class CDebuggerEngine(CDebuggerCore):
 
             if fhide_pwd_mode:
                 if not ')' in line:
-                    line = '...\n'
+                    line = as_unicode('...\n')
                 else:
                     line = '...""")' + line.split(')', 1)[1]
                     fhide_pwd_mode = False
@@ -6609,7 +8295,7 @@ class CDebuggerEngine(CDebuggerCore):
 
             try:
                 bp = self.m_bp_manager.get_breakpoint(_filename, _lineno)
-                breakpoints[_lineno] = [STATE_DISABLED, STATE_ENABLED][bp.isEnabled()]
+                breakpoints[_lineno] = as_unicode([STATE_DISABLED, STATE_ENABLED][bp.isEnabled()])
             except KeyError:
                 pass
                 
@@ -6618,11 +8304,11 @@ class CDebuggerEngine(CDebuggerCore):
 
         if frame_filename == _filename:
             r[DICT_KEY_FRAME_LINENO] = frame_lineno
-            r[DICT_KEY_EVENT] = frame_event
+            r[DICT_KEY_EVENT] = as_unicode(frame_event)
             r[DICT_KEY_BROKEN] = ctx.m_fBroken
             
         r[DICT_KEY_LINES] = lines
-        r[DICT_KEY_FILENAME] = _filename
+        r[DICT_KEY_FILENAME] = as_unicode(_filename, sys.getfilesystemencoding())
         r[DICT_KEY_BREAKPOINTS] = breakpoints
         r[DICT_KEY_FIRST_LINENO] = lineno
         
@@ -6652,10 +8338,9 @@ class CDebuggerEngine(CDebuggerCore):
             
         frame_event = [[ctx.m_event, 'call'][frame_index > 0], 'exception'][fException]
 
-        first_line = max(1, frame_lineno - nlines / 2)     
+        first_line = max(1, frame_lineno - nlines // 2)     
         _lineno = first_line
 
-        fBlender = is_blender_file(frame_filename)
         lines = []
         breakpoints = {}
         fhide_pwd_mode = False
@@ -6663,7 +8348,7 @@ class CDebuggerEngine(CDebuggerCore):
         while nlines != 0:
             try:
                 g_traceback_lock.acquire()
-                line = get_source_line(frame_filename, _lineno, fBlender)
+                line = get_source_line(frame_filename, _lineno)
                 
             finally:    
                 g_traceback_lock.release()
@@ -6678,7 +8363,7 @@ class CDebuggerEngine(CDebuggerCore):
 
             if fhide_pwd_mode:
                 if not ')' in line:
-                    line = '...\n'
+                    line = as_unicode('...\n')
                 else:
                     line = '...""")' + line.split(')', 1)[1]
                     fhide_pwd_mode = False
@@ -6697,7 +8382,7 @@ class CDebuggerEngine(CDebuggerCore):
 
             try:
                 bp = self.m_bp_manager.get_breakpoint(frame_filename, _lineno)
-                breakpoints[_lineno] = [STATE_DISABLED, STATE_ENABLED][bp.isEnabled()]
+                breakpoints[_lineno] = as_unicode([STATE_DISABLED, STATE_ENABLED][bp.isEnabled()])
             except KeyError:
                 pass
                 
@@ -6707,11 +8392,11 @@ class CDebuggerEngine(CDebuggerCore):
         r = {}
         
         r[DICT_KEY_FRAME_LINENO] = frame_lineno
-        r[DICT_KEY_EVENT] = frame_event
+        r[DICT_KEY_EVENT] = as_unicode(frame_event)
         r[DICT_KEY_BROKEN] = ctx.m_fBroken
         r[DICT_KEY_TID] = tid
         r[DICT_KEY_LINES] = lines
-        r[DICT_KEY_FILENAME] = frame_filename
+        r[DICT_KEY_FILENAME] = as_unicode(frame_filename, sys.getfilesystemencoding())
         r[DICT_KEY_BREAKPOINTS] = breakpoints
         r[DICT_KEY_FIRST_LINENO] = first_line
         
@@ -6723,7 +8408,7 @@ class CDebuggerEngine(CDebuggerCore):
             raise BadArgument
             
         if fAll:
-            ctx_list = self.get_threads().values()
+            ctx_list = list(self.get_threads().values())
         else:
             ctx = self.get_current_ctx()
             ctx_list = [ctx]
@@ -6740,66 +8425,50 @@ class CDebuggerEngine(CDebuggerCore):
 
         return (_globals, _locals, _original_locals_copy)
 
-
-    def __calc_attribute_list(self, r, fFilter):
-        al = CalcDictKeys(r, fFilter)    
-                
-        if hasattr(r, '__class__') and not '__class__' in al:
-            al = ['__class__'] + al
-
-        if hasattr(r, '__bases__') and not '__bases__' in al:
-            al = ['__bases__'] + al
-
-        _al = [a for a in al if hasattr(r, a)] 
-  
-        return _al
-
-    
+   
     def __calc_number_of_subnodes(self, r):
-        if self.__parse_type(type(r)) in BASIC_TYPES_LIST:
-            return 0
-        
+        for t in [bytearray, bytes, str, str8, unicode, int, long, float, bool, type(None)]:
+            if t is type(r):
+                return 0
+       
         try:
-            if isinstance(r, set) or isinstance(r, frozenset):
+            try:
+                if isinstance(r, frozenset) or isinstance(r, set):
+                    return len(r)
+
+            except NameError:
+                pass
+
+            if isinstance(r, sets.BaseSet):
                 return len(r)
 
-        except NameError:
-            pass
+            if isinstance(r, dict):
+                return len(r)
 
-        if isinstance(r, sets.BaseSet):
-            return len(r)
+            if isinstance(r, list):
+                return len(r)
 
-        if isinstance(r, dict):
-            return len(r)
+            if isinstance(r, tuple):
+                return len(r)
 
-        if isinstance(r, list):
-            return len(r)
-
-        if isinstance(r, tuple):
-            return len(r)
-
-        if hasattr(r, '__class__') or hasattr(r, '__bases__'):
-            return 1
+            return len(dir(r))
+            
+        except AttributeError:
+            return 0
 
         return 0
 
 
-    def __parse_type(self, t):
-        rt = repr(t)
-        st = rt.split("'")[1]
-        return st
-
-
-    def __calc_subnodes(self, expr, r, fForceNames, fFilter, repr_limit):
+    def __calc_subnodes(self, expr, r, fForceNames, filter_level, repr_limit, encoding):
         snl = []
         
         try:
-            if isinstance(r, set) or isinstance(r, frozenset):
+            if isinstance(r, frozenset) or isinstance(r, set):
                 if len(r) > MAX_SORTABLE_LENGTH:
                     g = r
                 else:
                     g = [i for i in r]
-                    g.sort(SafeCmp)
+                    sort(g)
 
                 for i in g:
                     if len(snl) >= MAX_NAMESPACE_ITEMS:
@@ -6807,14 +8476,14 @@ class CDebuggerEngine(CDebuggerCore):
                         break
                     
                     is_valid = [True]
-                    rk = repr_ltd(i, REPR_ID_LENGTH)
+                    rk = repr_ltd(i, REPR_ID_LENGTH, encoding = ENCODING_RAW_I)
 
                     e = {}
-                    e[DICT_KEY_EXPR] = '_RPDB2_FindRepr((%s), %d)["%s"]' % (expr, REPR_ID_LENGTH, rk)
-                    e[DICT_KEY_NAME] = repr_ltd(i, repr_limit)
-                    e[DICT_KEY_REPR] = repr_ltd(i, repr_limit, is_valid)
+                    e[DICT_KEY_EXPR] = as_unicode('_RPDB2_FindRepr((%s), %d)["%s"]' % (expr, REPR_ID_LENGTH, rk.replace('"', '&quot')))
+                    e[DICT_KEY_NAME] = repr_ltd(i, repr_limit, encoding)
+                    e[DICT_KEY_REPR] = repr_ltd(i, repr_limit, encoding, is_valid)
                     e[DICT_KEY_IS_VALID] = is_valid[0]
-                    e[DICT_KEY_TYPE] = self.__parse_type(type(i))
+                    e[DICT_KEY_TYPE] = as_unicode(parse_type(type(i)))
                     e[DICT_KEY_N_SUBNODES] = self.__calc_number_of_subnodes(i)
 
                     snl.append(e)
@@ -6829,7 +8498,7 @@ class CDebuggerEngine(CDebuggerCore):
                 g = r
             else:
                 g = [i for i in r]
-                g.sort(SafeCmp)
+                sort(g)
 
             for i in g:
                 if len(snl) >= MAX_NAMESPACE_ITEMS:
@@ -6837,14 +8506,14 @@ class CDebuggerEngine(CDebuggerCore):
                     break
 
                 is_valid = [True]
-                rk = repr_ltd(i, REPR_ID_LENGTH)
+                rk = repr_ltd(i, REPR_ID_LENGTH, encoding = ENCODING_RAW_I)
 
                 e = {}
-                e[DICT_KEY_EXPR] = '_RPDB2_FindRepr((%s), %d)["%s"]' % (expr, REPR_ID_LENGTH, rk)
-                e[DICT_KEY_NAME] = repr_ltd(i, repr_limit)
-                e[DICT_KEY_REPR] = repr_ltd(i, repr_limit, is_valid)
+                e[DICT_KEY_EXPR] = as_unicode('_RPDB2_FindRepr((%s), %d)["%s"]' % (expr, REPR_ID_LENGTH, rk.replace('"', '&quot')))
+                e[DICT_KEY_NAME] = repr_ltd(i, repr_limit, encoding)
+                e[DICT_KEY_REPR] = repr_ltd(i, repr_limit, encoding, is_valid)
                 e[DICT_KEY_IS_VALID] = is_valid[0]
-                e[DICT_KEY_TYPE] = self.__parse_type(type(i))
+                e[DICT_KEY_TYPE] = as_unicode(parse_type(type(i)))
                 e[DICT_KEY_N_SUBNODES] = self.__calc_number_of_subnodes(i)
 
                 snl.append(e)
@@ -6855,11 +8524,11 @@ class CDebuggerEngine(CDebuggerCore):
             for i, v in enumerate(r[0: MAX_NAMESPACE_ITEMS]):
                 is_valid = [True]
                 e = {}
-                e[DICT_KEY_EXPR] = '(%s)[%d]' % (expr, i)
-                e[DICT_KEY_NAME] = repr(i)
-                e[DICT_KEY_REPR] = repr_ltd(v, repr_limit, is_valid)
+                e[DICT_KEY_EXPR] = as_unicode('(%s)[%d]' % (expr, i))
+                e[DICT_KEY_NAME] = as_unicode(repr(i))
+                e[DICT_KEY_REPR] = repr_ltd(v, repr_limit, encoding, is_valid)
                 e[DICT_KEY_IS_VALID] = is_valid[0]
-                e[DICT_KEY_TYPE] = self.__parse_type(type(v))
+                e[DICT_KEY_TYPE] = as_unicode(parse_type(type(v)))
                 e[DICT_KEY_N_SUBNODES] = self.__calc_number_of_subnodes(v)
 
                 snl.append(e)
@@ -6870,18 +8539,24 @@ class CDebuggerEngine(CDebuggerCore):
             return snl
 
         if isinstance(r, dict):
+            if filter_level == 2 and expr in ['locals()', 'globals()']:
+                r = copy.copy(r)
+                for k, v in list(r.items()):
+                    if parse_type(type(v)) in ['function', 'classobj', 'type']:
+                        del r[k]
+
             if len(r) > MAX_SORTABLE_LENGTH:
                 kl = r
             else:
-                kl = r.keys()
-                kl.sort(SafeCmp)
+                kl = list(r.keys())
+                sort(kl)
 
             for k in kl:
                 #
                 # Remove any trace of session password from data structures that 
                 # go over the network.
                 #
-                if k in ['_RPDB2_FindRepr', '_rpdb2_args', '_rpdb2_pwd', 'm_rpdb2_pwd']:
+                if k in ['_RPDB2_FindRepr', '_RPDB2_builtins', '_rpdb2_args', '_rpdb2_pwd', 'm_rpdb2_pwd']:
                     continue
 
                 v = r[k]
@@ -6893,27 +8568,32 @@ class CDebuggerEngine(CDebuggerCore):
                 is_valid = [True]
                 e = {}
 
-                if type(k) in [bool, int, float, str, unicode, type(None)]:
+                if [True for t in [bool, int, float, bytes, str, unicode, type(None)] if t is type(k)]:
                     rk = repr(k)
                     if len(rk) < REPR_ID_LENGTH:
-                        e[DICT_KEY_EXPR] = '(%s)[%s]' % (expr, rk)
+                        e[DICT_KEY_EXPR] = as_unicode('(%s)[%s]' % (expr, rk))
+
+                if type(k) is str8:
+                    rk = repr(k)
+                    if len(rk) < REPR_ID_LENGTH:
+                        e[DICT_KEY_EXPR] = as_unicode('(%s)[str8(%s)]' % (expr, rk[1:]))
 
                 if not DICT_KEY_EXPR in e:
-                    rk = repr_ltd(k, REPR_ID_LENGTH)
-                    e[DICT_KEY_EXPR] = '_RPDB2_FindRepr((%s), %d)["%s"]' % (expr, REPR_ID_LENGTH, rk)
+                    rk = repr_ltd(k, REPR_ID_LENGTH, encoding = ENCODING_RAW_I)
+                    e[DICT_KEY_EXPR] = as_unicode('_RPDB2_FindRepr((%s), %d)["%s"]' % (expr, REPR_ID_LENGTH, rk.replace('"', '&quot')))
 
-                e[DICT_KEY_NAME] = [repr_ltd(k, repr_limit), k][fForceNames]
-                e[DICT_KEY_REPR] = repr_ltd(v, repr_limit, is_valid)
+                e[DICT_KEY_NAME] = as_unicode([repr_ltd(k, repr_limit, encoding), k][fForceNames])
+                e[DICT_KEY_REPR] = repr_ltd(v, repr_limit, encoding, is_valid)
                 e[DICT_KEY_IS_VALID] = is_valid[0]
-                e[DICT_KEY_TYPE] = self.__parse_type(type(v))
+                e[DICT_KEY_TYPE] = as_unicode(parse_type(type(v)))
                 e[DICT_KEY_N_SUBNODES] = self.__calc_number_of_subnodes(v)
 
                 snl.append(e)
 
             return snl            
 
-        al = self.__calc_attribute_list(r, fFilter)
-        al.sort(SafeCmp)
+        al = calc_attribute_list(r, filter_level)
+        sort(al)
 
         for a in al:
             if a == 'm_rpdb2_pwd':
@@ -6930,11 +8610,11 @@ class CDebuggerEngine(CDebuggerCore):
 
             is_valid = [True]
             e = {}
-            e[DICT_KEY_EXPR] = '(%s).%s' % (expr, a)
-            e[DICT_KEY_NAME] = a
-            e[DICT_KEY_REPR] = repr_ltd(v, repr_limit, is_valid)
+            e[DICT_KEY_EXPR] = as_unicode('(%s).%s' % (expr, a))
+            e[DICT_KEY_NAME] = as_unicode(a)
+            e[DICT_KEY_REPR] = repr_ltd(v, repr_limit, encoding, is_valid)
             e[DICT_KEY_IS_VALID] = is_valid[0]
-            e[DICT_KEY_TYPE] = self.__parse_type(type(v))
+            e[DICT_KEY_TYPE] = as_unicode(parse_type(type(v)))
             e[DICT_KEY_N_SUBNODES] = self.__calc_number_of_subnodes(v)
 
             snl.append(e)
@@ -6970,7 +8650,7 @@ class CDebuggerEngine(CDebuggerCore):
         return False        
 
 
-    def calc_expr(self, expr, fExpand, fFilter, frame_index, fException, _globals, _locals, lock, rl, index, repr_limit):
+    def calc_expr(self, expr, fExpand, filter_level, frame_index, fException, _globals, _locals, lock, event, rl, index, repr_limit, encoding):
         e = {}
 
         try:
@@ -6987,28 +8667,60 @@ class CDebuggerEngine(CDebuggerCore):
             is_valid = [True]
             r = eval(expr, __globals, __locals)
 
-            e[DICT_KEY_EXPR] = expr
-            e[DICT_KEY_REPR] = repr_ltd(r, repr_limit, is_valid)
+            e[DICT_KEY_EXPR] = as_unicode(expr)
+            e[DICT_KEY_REPR] = repr_ltd(r, repr_limit, encoding, is_valid)
             e[DICT_KEY_IS_VALID] = is_valid[0]
-            e[DICT_KEY_TYPE] = self.__parse_type(type(r))
+            e[DICT_KEY_TYPE] = as_unicode(parse_type(type(r)))
             e[DICT_KEY_N_SUBNODES] = self.__calc_number_of_subnodes(r)
             
             if fExpand and (e[DICT_KEY_N_SUBNODES] > 0):
                 fForceNames = (expr in ['globals()', 'locals()']) or (RPDB_EXEC_INFO in expr)
-                e[DICT_KEY_SUBNODES] = self.__calc_subnodes(expr, r, fForceNames, fFilter, repr_limit)
+                e[DICT_KEY_SUBNODES] = self.__calc_subnodes(expr, r, fForceNames, filter_level, repr_limit, encoding)
                 e[DICT_KEY_N_SUBNODES] = len(e[DICT_KEY_SUBNODES])
                 
         except:
             print_debug_exception()
-            e[DICT_KEY_ERROR] = repr(sys.exc_info())
+            e[DICT_KEY_ERROR] = as_unicode(safe_repr(sys.exc_info()))
         
         lock.acquire()
         if len(rl) == index:    
             rl.append(e)
         lock.release()    
 
+        event.set()
+
+    
+    def __calc_encoding(self, encoding, fvalidate = False, filename = None):
+        if encoding != ENCODING_AUTO and not fvalidate:
+            return encoding
+
+        if encoding != ENCODING_AUTO:
+            try:
+                codecs.lookup(encoding)
+                return encoding
+            
+            except:
+                pass
+
+        if filename == None:
+            ctx = self.get_current_ctx()
+            filename = ctx.m_code_context.m_filename
+
+        try:
+            encoding = get_file_encoding(filename)
+            return encoding
+
+        except:
+            return 'utf-8'
         
-    def get_namespace(self, nl, fFilter, frame_index, fException, repr_limit):
+
+
+    def get_namespace(self, nl, filter_level, frame_index, fException, repr_limit, encoding, fraw):
+        if fraw:
+            encoding = ENCODING_RAW_I
+        else:
+            encoding = self.__calc_encoding(encoding, fvalidate = True)
+
         try:
             (_globals, _locals, x) = self.__get_locals_globals(frame_index, fException, fReadOnly = True)
         except:    
@@ -7024,11 +8736,20 @@ class CDebuggerEngine(CDebuggerCore):
             if self.is_child_of_failure(failed_expr_list, expr):
                 continue
 
-            args = (expr, fExpand, fFilter, frame_index, fException, _globals, _locals, lock, rl, index, repr_limit)
-            t = CThread(name = 'calc_expr %s' % (expr, ), target = self.calc_expr, args = args)
-            t.start()
-            t.join(2)
-            t = None
+            event = threading.Event()
+            args = (expr, fExpand, filter_level, frame_index, fException, _globals, _locals, lock, event, rl, index, repr_limit, encoding)
+
+            if self.m_fsynchronicity:
+                g_server.m_work_queue.post_work_item(target = self.calc_expr, args = args, name = 'calc_expr %s' % expr)
+            else:
+                try:
+                    ctx = self.get_current_ctx()
+                    tid = ctx.m_thread_id
+                    send_job(tid, 0, self.calc_expr, *args)
+                except:
+                    pass
+
+            safe_wait(event, 2)
             
             lock.acquire()
             if len(rl) == index:
@@ -7044,12 +8765,34 @@ class CDebuggerEngine(CDebuggerCore):
         
         return _rl 
 
-            
-    def evaluate(self, expr, frame_index, fException):
+
+    def evaluate(self, expr, frame_index, fException, encoding, fraw):
         """
         Evaluate expression in context of frame at depth 'frame-index'.
         """
         
+        result = [(as_unicode(''), as_unicode(STR_SYNCHRONICITY_BAD), as_unicode(''))]
+
+        if self.m_fsynchronicity:
+            self._evaluate(result, expr, frame_index, fException, encoding, fraw)
+        else:
+            try:
+                ctx = self.get_current_ctx()
+                tid = ctx.m_thread_id
+                send_job(tid, 1000, self._evaluate, result, expr, frame_index, fException, encoding, fraw) 
+            except:
+                pass
+
+        return result[-1]
+
+            
+    def _evaluate(self, result, expr, frame_index, fException, encoding, fraw):
+        """
+        Evaluate expression in context of frame at depth 'frame-index'.
+        """
+        
+        encoding = self.__calc_encoding(encoding)
+
         (_globals, _locals, x) = self.__get_locals_globals(frame_index, fException)
 
         v = ''
@@ -7061,9 +8804,26 @@ class CDebuggerEngine(CDebuggerCore):
                 r = '...Removed-password-from-output...'
             
             else:
-                r = eval(expr, _globals, _locals)
+                _expr = as_bytes(ENCODING_SOURCE % encoding + expr, encoding, fstrict = True)
 
-            v = repr_ltd(r, MAX_EVALUATE_LENGTH)
+                if '_RPDB2_builtins' in expr:
+                    _locals['_RPDB2_builtins'] = vars(g_builtins_module)
+
+                try:                
+                    redirect_exc_info = True
+                    r = eval(_expr, _globals, _locals)
+
+                finally:
+                    del redirect_exc_info
+                    
+                    if '_RPDB2_builtins' in expr:
+                        del _locals['_RPDB2_builtins']
+
+        
+            if fraw:
+                encoding = ENCODING_RAW_I
+
+            v = repr_ltd(r, MAX_EVALUATE_LENGTH, encoding)
             
             if len(v) > MAX_EVALUATE_LENGTH:
                 v += '... *** %s ***' % STR_MAX_EVALUATE_LENGTH_WARNING 
@@ -7071,19 +8831,44 @@ class CDebuggerEngine(CDebuggerCore):
 
         except:
             exc_info = sys.exc_info()
-            e = "%s, %s" % (str(exc_info[0]), str(exc_info[1]))
+            e = "%s, %s" % (safe_str(exc_info[0]), safe_str(exc_info[1]))
 
         self.notify_namespace()
 
-        return (v, w, e)
+        result.append((as_unicode(v), as_unicode(w), as_unicode(e)))
 
         
-    def execute(self, suite, frame_index, fException):
+    def execute(self, suite, frame_index, fException, encoding):
         """
         Execute suite (Python statement) in context of frame at 
         depth 'frame-index'.
         """
         
+        result = [(as_unicode(STR_SYNCHRONICITY_BAD), as_unicode(''))]
+
+        if self.m_fsynchronicity:
+            self._execute(result, suite, frame_index, fException, encoding)
+        else:
+            try:
+                ctx = self.get_current_ctx()
+                tid = ctx.m_thread_id
+                send_job(tid, 1000, self._execute, result, suite, frame_index, fException, encoding) 
+            except:
+                pass
+
+        return result[-1]
+
+
+    def _execute(self, result, suite, frame_index, fException, encoding):
+        """
+        Execute suite (Python statement) in context of frame at 
+        depth 'frame-index'.
+        """
+       
+        print_debug('exec called with: ' + repr(suite))
+
+        encoding = self.__calc_encoding(encoding)
+
         (_globals, _locals, _original_locals_copy) = self.__get_locals_globals(frame_index, fException)
 
         if frame_index > 0 and not _globals is _locals:
@@ -7097,21 +8882,32 @@ class CDebuggerEngine(CDebuggerCore):
                 _locals['_RPDB2_FindRepr'] = _RPDB2_FindRepr
 
             try:
-                exec suite in _globals, _locals
+                _suite = as_bytes(ENCODING_SOURCE % encoding + suite, encoding, fstrict = True)
+                #print_debug('suite is %s' % repr(_suite))
+                
+                _code = compile(_suite, '<string>', 'exec')
+
+                try:
+                    redirect_exc_info = True
+                    exec(_code, _globals, _locals)
+
+                finally:
+                    del redirect_exc_info
+
             finally:
                 if '_RPDB2_FindRepr' in suite and not '_RPDB2_FindRepr' in _original_locals_copy:
                     del _locals['_RPDB2_FindRepr']
 
         except:    
             exc_info = sys.exc_info()
-            e = "%s, %s" % (str(exc_info[0]), str(exc_info[1]))
+            e = "%s, %s" % (safe_str(exc_info[0]), safe_str(exc_info[1]))
 
         if frame_index > 0 and (not _globals is _locals) and _locals != _locals_copy:
-            l = [(k, repr(v)) for k, v in _locals.items()]
-            sl = sets.Set(l)
+            l = [(k, safe_repr(v)) for k, v in _locals.items()]
+            sl = set(l)
 
-            lc = [(k, repr(v)) for k, v in _locals_copy.items()]
-            slc = sets.Set(lc)
+            lc = [(k, safe_repr(v)) for k, v in _locals_copy.items()]
+            slc = set(lc)
 
             nsc = [k for (k, v) in sl - slc if k in _original_locals_copy]
             if len(nsc) != 0:
@@ -7119,7 +8915,12 @@ class CDebuggerEngine(CDebuggerCore):
         
         self.notify_namespace()
         
-        return (w, e)
+        result.append((as_unicode(w), as_unicode(e)))
+
+
+    def __decode_thread_name(self, name):
+        name = as_unicode(name)
+        return name
 
 
     def get_thread_list(self):
@@ -7134,8 +8935,16 @@ class CDebuggerEngine(CDebuggerCore):
         else:
             current_thread_id = ctx.m_thread_id  
             
-        ctx_list = self.get_threads().values()
-        tl = [{DICT_KEY_TID: c.m_thread_id, DICT_KEY_NAME: c.m_thread_name, DICT_KEY_BROKEN: c.m_fBroken, DICT_KEY_EVENT: c.m_event} for c in ctx_list]
+        ctx_list = list(self.get_threads().values())
+       
+        tl = []
+        for c in ctx_list:
+            d = {}
+            d[DICT_KEY_TID] = c.m_thread_id
+            d[DICT_KEY_NAME] = self.__decode_thread_name(c.m_thread_name)
+            d[DICT_KEY_BROKEN] = c.m_fBroken
+            d[DICT_KEY_EVENT] = as_unicode(c.m_event)
+            tl.append(d)
 
         return (current_thread_id, tl)
 
@@ -7145,7 +8954,17 @@ class CDebuggerEngine(CDebuggerCore):
         Notify the client and terminate this proccess.
         """
 
-        CThread(name = '_atexit', target = _atexit, args = (True, )).start()
+        g_server.m_work_queue.post_work_item(target = _atexit, args = (True, ), name = '_atexit')
+
+
+    def set_synchronicity(self, fsynchronicity):
+        self.m_fsynchronicity = fsynchronicity
+
+        event = CEventSynchronicity(fsynchronicity)
+        self.m_event_dispatcher.fire_event(event)
+
+        if self.m_state_manager.get_state() == STATE_BROKEN:
+            self.notify_namespace()
 
 
     def set_trap_unhandled_exceptions(self, ftrap):
@@ -7155,12 +8974,56 @@ class CDebuggerEngine(CDebuggerCore):
         self.m_event_dispatcher.fire_event(event)
 
 
+    def is_unhandled_exception(self):
+        return self.m_fUnhandledException
+
+
     def set_fork_mode(self, ffork_into_child, ffork_auto):
         self.m_ffork_into_child = ffork_into_child
         self.m_ffork_auto = ffork_auto
 
         event = CEventForkMode(ffork_into_child, ffork_auto)
         self.m_event_dispatcher.fire_event(event)
+
+
+    def set_environ(self, envmap):
+        global g_fignorefork
+
+        print_debug('Entered set_environ() with envmap = %s' % repr(envmap))
+
+        if len(envmap) == 0:
+            return
+
+        old_pythonpath = os.environ.get('PYTHONPATH', '')
+
+        encoding = detect_locale() 
+
+        for k, v in envmap:
+            try:
+                k = as_string(k, encoding, fstrict = True)
+                v = as_string(v, encoding, fstrict = True)
+            except:
+                continue
+
+            command = 'echo %s' % v
+            
+            try:
+                g_fignorefork = True
+                f = platform.popen(command)
+
+            finally:
+                g_fignorefork = False
+
+            value = f.read()
+            f.close()
+            
+            if value[-1:] == '\n':
+                value = value[:-1]
+
+            os.environ[k] = value
+
+        if 'PYTHONPATH' in [k for (k, v) in envmap]:
+            recalc_sys_path(old_pythonpath)
 
 
     
@@ -7207,11 +9070,17 @@ class CWorkQueue:
         self.m_f_shutdown = True
         self.m_lock.notifyAll()
 
+        t0 = time.time()
+
         while self.m_n_threads > 0:
-            self.m_lock.wait()
+            if time.time() - t0 > SHUTDOWN_TIMEOUT:
+                self.m_lock.release()
+                print_debug('Shut down of worker queue has TIMED OUT!')
+                return
+
+            safe_wait(self.m_lock, 0.1)
             
         self.m_lock.release()
-
         print_debug('Shutting down worker queue, done.')
 
 
@@ -7231,7 +9100,7 @@ class CWorkQueue:
             self.m_lock.acquire()
 
             while not self.m_f_shutdown:
-                self.m_lock.wait()
+                safe_wait(self.m_lock)
 
                 if self.m_f_shutdown:
                     break
@@ -7241,18 +9110,23 @@ class CWorkQueue:
                     
                 fcreate_thread = self.m_n_available == 1
 
-                (target, args) = self.m_work_items.pop()
+                (target, args, name) = self.m_work_items.pop()
 
                 self.m_n_available -= 1                
                 self.m_lock.release()
 
                 if fcreate_thread:
+                    print_debug('Creating an extra worker thread.')
                     self.__create_thread()
                     
+                threading.currentThread().setName('__worker_target - ' + name)
+
                 try:
                     target(*args)
                 except:
                     print_debug_exception()
+
+                threading.currentThread().setName('__worker_target')
 
                 self.m_lock.acquire()
                 self.m_n_available += 1
@@ -7268,7 +9142,7 @@ class CWorkQueue:
             self.m_lock.release()
 
 
-    def post_work_item(self, target, args):
+    def post_work_item(self, target, args, name = ''):
         if self.m_f_shutdown:
             return
             
@@ -7278,7 +9152,7 @@ class CWorkQueue:
             if self.m_f_shutdown:
                 return
             
-            self.m_work_items.append((target, args))
+            self.m_work_items.append((target, args, name))
 
             self.m_lock.notify()
             
@@ -7286,7 +9160,10 @@ class CWorkQueue:
             self.m_lock.release()
                 
         
-            
+
+#
+# MOD
+#
 class CUnTracedThreadingMixIn(SocketServer.ThreadingMixIn):
     """
     Modification of SocketServer.ThreadingMixIn that uses a worker thread
@@ -7294,18 +9171,15 @@ class CUnTracedThreadingMixIn(SocketServer.ThreadingMixIn):
     This mod was needed to resolve deadlocks that were generated in some 
     circumstances.
     """
-    
-    def init_work_queue(self):
-        self.m_work_queue = CWorkQueue()
-    
-    def shutdown_work_queue(self):
-        self.m_work_queue.shutdown()
 
     def process_request(self, request, client_address):
-        self.m_work_queue.post_work_item(target = SocketServer.ThreadingMixIn.process_request_thread, args = (self, request, client_address))
+        g_server.m_work_queue.post_work_item(target = SocketServer.ThreadingMixIn.process_request_thread, args = (self, request, client_address), name = 'process_request')
 
 
 
+#
+# MOD
+#
 def my_xmlrpclib_loads(data):
     """
     Modification of Python 2.3 xmlrpclib.loads() that does not do an 
@@ -7319,8 +9193,14 @@ def my_xmlrpclib_loads(data):
 
 
 
+#
+# MOD
+#
 class CXMLRPCServer(CUnTracedThreadingMixIn, SimpleXMLRPCServer.SimpleXMLRPCServer):
-    allow_reuse_address = False
+    if os.name == POSIX:
+        allow_reuse_address = True
+    else:
+        allow_reuse_address = False
     
     """
     Modification of Python 2.3 SimpleXMLRPCServer.SimpleXMLRPCDispatcher 
@@ -7339,7 +9219,8 @@ class CXMLRPCServer(CUnTracedThreadingMixIn, SimpleXMLRPCServer.SimpleXMLRPCServ
             # wrap response in a singleton tuple
             response = (response,)
             response = xmlrpclib.dumps(response, methodresponse=1)
-        except xmlrpclib.Fault, fault:
+        except xmlrpclib.Fault:
+            fault = sys.exc_info()[1]
             response = xmlrpclib.dumps(fault)
         except:
             # report exception back to server
@@ -7352,6 +9233,10 @@ class CXMLRPCServer(CUnTracedThreadingMixIn, SimpleXMLRPCServer.SimpleXMLRPCServ
 
     if sys.version_info[:2] <= (2, 3):
         _marshaled_dispatch = __marshaled_dispatch
+
+
+    #def server_activate(self):
+    #    self.socket.listen(1)
 
 
     def handle_error(self, request, client_address):
@@ -7398,25 +9283,30 @@ class CPwdServerProxy:
                 #
                 # Encrypt method and params.
                 #
-                _params = self.m_crypto.do_crypto((name, params, self.m_target_rid), self.get_encryption())
+                fencrypt = self.get_encryption()
+                args = (as_unicode(name), params, self.m_target_rid)
+                (fcompress, digest, msg) = self.m_crypto.do_crypto(args, fencrypt)
 
-                rpdb_version = get_interface_compatibility_version()
+                rpdb_version = as_unicode(get_interface_compatibility_version())
 
-                r = self.m_method(rpdb_version + _params)
+                r = self.m_method(rpdb_version, fencrypt, fcompress, digest, msg)
+                (fencrypt, fcompress, digest, msg) = r
                 
                 #
                 # Decrypt response.
                 #
-                ((max_index, _r, _e), id, fe)= self.m_crypto.undo_crypto(r, fVerifyIndex = False)
+                ((max_index, _r, _e), id) = self.m_crypto.undo_crypto(fencrypt, fcompress, digest, msg, fVerifyIndex = False)
                 
                 if _e is not None:
                     raise _e
 
-            except AuthenticationBadIndex, e:
+            except AuthenticationBadIndex:
+                e = sys.exc_info()[1]
                 self.m_crypto.set_index(e.m_max_index, e.m_anchor)
                 continue
 
-            except xmlrpclib.Fault, fault:
+            except xmlrpclib.Fault:
+                fault = sys.exc_info()[1] 
                 if class_name(BadVersion) in fault.faultString:
                     s = fault.faultString.split("'")
                     version = ['', s[1]][len(s) > 0]
@@ -7464,6 +9354,9 @@ class CIOServer:
     """
     
     def __init__(self, _rpdb2_pwd, fAllowUnencrypted, fAllowRemote, rid):
+        assert(is_unicode(_rpdb2_pwd))
+        assert(is_unicode(rid))
+
         self.m_thread = None
 
         self.m_crypto = CCrypto(_rpdb2_pwd, fAllowUnencrypted, rid)
@@ -7474,6 +9367,8 @@ class CIOServer:
         self.m_port = None
         self.m_stop = False
         self.m_server = None
+
+        self.m_work_queue = None
         
 
     def shutdown(self):
@@ -7510,7 +9405,12 @@ class CIOServer:
 
         self.m_thread = None
 
-        self.m_server.shutdown_work_queue()
+        self.m_work_queue.shutdown()
+
+        #try:
+        #    self.m_server.socket.close()
+        #except:
+        #    pass
 
         print_debug('Stopping IO server, done.')
 
@@ -7522,76 +9422,83 @@ class CIOServer:
     def run(self):
         if self.m_server == None:
             (self.m_port, self.m_server) = self.__StartXMLRPCServer()
-
-        self.m_server.init_work_queue()
+       
+        self.m_work_queue = CWorkQueue()
         self.m_server.register_function(self.dispatcher_method)        
         
         while not self.m_stop:
             self.m_server.handle_request()
             
         
-    def dispatcher_method(self, params):
+    def dispatcher_method(self, rpdb_version, fencrypt, fcompress, digest, msg):
         """
         Process RPC call.
         """
         
-        rpdb_version = get_interface_compatibility_version()
+        #print_debug('dispatcher_method() called with: %s, %s, %s, %s' % (rpdb_version, fencrypt, digest, msg[:100]))
 
-        if params[: len(rpdb_version)] != rpdb_version:
-            raise BadVersion(get_version())
-
-        _params = params[len(rpdb_version):]
+        if rpdb_version != as_unicode(get_interface_compatibility_version()):
+            raise BadVersion(as_unicode(get_version()))
 
         try:
-            #
-            # Decrypt parameters.
-            #
-            ((name, _params, target_rid), client_id, fEncryption) = self.m_crypto.undo_crypto(_params)
-        except AuthenticationBadIndex, e:
-            #print_debug_exception()
+            try:
+                #
+                # Decrypt parameters.
+                #
+                ((name, __params, target_rid), client_id) = self.m_crypto.undo_crypto(fencrypt, fcompress, digest, msg)
+                
+            except AuthenticationBadIndex:
+                e = sys.exc_info()[1]
+                #print_debug_exception()
+
+                #
+                # Notify the caller on the expected index.
+                #
+                max_index = self.m_crypto.get_max_index()
+                args = (max_index, None, e)
+                (fcompress, digest, msg) = self.m_crypto.do_crypto(args, fencrypt)
+                return (fencrypt, fcompress, digest, msg)
+                
+            r = None
+            e = None
+
+            try:
+                #
+                # We are forcing the 'export_' prefix on methods that are
+                # callable through XML-RPC to prevent potential security
+                # problems
+                #
+                func = getattr(self, 'export_' + name)
+            except AttributeError:
+                raise Exception('method "%s" is not supported' % ('export_' + name))
+
+            try:
+                if (target_rid != 0) and (target_rid != self.m_rid):
+                    raise NotAttached
+                
+                #
+                # Record that client id is still attached. 
+                #
+                self.record_client_heartbeat(client_id, name, __params)
+
+                r = func(*__params)
+
+            except Exception:
+                _e = sys.exc_info()[1]
+                print_debug_exception()
+                e = _e            
 
             #
-            # Notify the caller on the expected index.
+            # Send the encrypted result.
             #
-            fEncryption = self.m_crypto.is_encrypted(_params)                           
             max_index = self.m_crypto.get_max_index()
-            _r = self.m_crypto.do_crypto((max_index, None, e), fEncryption)
-            return _r
-            
-        r = None
-        e = None
+            args = (max_index, r, e)
+            (fcompress, digest, msg) = self.m_crypto.do_crypto(args, fencrypt)
+            return (fencrypt, fcompress, digest, msg)
 
-        try:
-            #
-            # We are forcing the 'export_' prefix on methods that are
-            # callable through XML-RPC to prevent potential security
-            # problems
-            #
-            func = getattr(self, 'export_' + name)
-        except AttributeError:
-            raise Exception('method "%s" is not supported' % ('export_' + name, ))
-
-        try:
-            if (target_rid != 0) and (target_rid != self.m_rid):
-                raise NotAttached
-            
-            #
-            # Record that client id is still attached. 
-            #
-            self.record_client_heartbeat(client_id, name, _params)
-
-            r = func(*_params)
-
-        except Exception, _e:
+        except:
             print_debug_exception()
-            e = _e            
-
-        #
-        # Send the encrypted result.
-        #
-        max_index = self.m_crypto.get_max_index()
-        _r = self.m_crypto.do_crypto((max_index, r, e), fEncryption)
-        return _r
+            raise
 
 
     def __StartXMLRPCServer(self):
@@ -7608,7 +9515,8 @@ class CIOServer:
                 server = CXMLRPCServer((host, port), logRequests = 0)
                 return (port, server)
                 
-            except socket.error, e:
+            except socket.error:
+                e = sys.exc_info()[1]
                 if GetSocketError(e) != errno.EADDRINUSE:
                     raise
                     
@@ -7624,16 +9532,24 @@ class CIOServer:
 
 
 
-class CServerInfo:
+class CServerInfo(object):
     def __init__(self, age, port, pid, filename, rid, state, fembedded):
+        assert(is_unicode(rid))
+
         self.m_age = age 
         self.m_port = port
         self.m_pid = pid
-        self.m_filename = filename
-        self.m_module_name = CalcModuleName(filename)
+        self.m_filename = as_unicode(filename, sys.getfilesystemencoding())
+        self.m_module_name = as_unicode(CalcModuleName(filename), sys.getfilesystemencoding())
         self.m_rid = rid
-        self.m_state = state
+        self.m_state = as_unicode(state)
         self.m_fembedded = fembedded
+
+
+    def __reduce__(self):
+        rv = (copy_reg.__newobj__, (type(self), ), vars(self), None, None)
+        return rv
+
 
     def __str__(self):
         return 'age: %d, port: %d, pid: %d, filename: %s, rid: %s' % (self.m_age, self.m_port, self.m_pid, self.m_filename, self.m_rid)
@@ -7648,7 +9564,10 @@ class CDebuggeeServer(CIOServer):
     def __init__(self, filename, debugger, _rpdb2_pwd, fAllowUnencrypted, fAllowRemote, rid = None):
         if rid is None:
             rid = generate_rid()
-            
+        
+        assert(is_unicode(_rpdb2_pwd))
+        assert(is_unicode(rid))
+
         CIOServer.__init__(self, _rpdb2_pwd, fAllowUnencrypted, fAllowRemote, rid)
         
         self.m_filename = filename
@@ -7667,6 +9586,10 @@ class CDebuggeeServer(CIOServer):
         fdetach = (name == 'request_go' and True in params)
 
         self.m_debugger.record_client_heartbeat(id, finit, fdetach)
+
+        
+    def export_null(self):
+        return self.m_debugger.send_event_null()
 
 
     def export_server_info(self):
@@ -7688,8 +9611,8 @@ class CDebuggeeServer(CIOServer):
         return (new_event_index, s)
 
                 
-    def export_set_breakpoint(self, filename, scope, lineno, fEnabled, expr, frame_index, fException):
-        self.m_debugger.set_breakpoint(filename, scope, lineno, fEnabled, expr, frame_index, fException)
+    def export_set_breakpoint(self, filename, scope, lineno, fEnabled, expr, frame_index, fException, encoding):
+        self.m_debugger.set_breakpoint(filename, scope, lineno, fEnabled, expr, frame_index, fException, encoding)
         return 0
 
         
@@ -7773,23 +9696,28 @@ class CDebuggeeServer(CIOServer):
         return 0
 
 
-    def export_get_namespace(self, nl, fFilter, frame_index, fException, repr_limit):
-        r = self.m_debugger.get_namespace(nl, fFilter, frame_index, fException, repr_limit)
+    def export_get_namespace(self, nl, filter_level, frame_index, fException, repr_limit, encoding, fraw):
+        r = self.m_debugger.get_namespace(nl, filter_level, frame_index, fException, repr_limit, encoding, fraw)
         return r
 
         
-    def export_evaluate(self, expr, frame_index, fException):
-        (v, w, e) = self.m_debugger.evaluate(expr, frame_index, fException)
+    def export_evaluate(self, expr, frame_index, fException, encoding, fraw):
+        (v, w, e) = self.m_debugger.evaluate(expr, frame_index, fException, encoding, fraw)
         return (v, w, e)
 
         
-    def export_execute(self, suite, frame_index, fException):
-        (w, e) = self.m_debugger.execute(suite, frame_index, fException)
+    def export_execute(self, suite, frame_index, fException, encoding):
+        (w, e) = self.m_debugger.execute(suite, frame_index, fException, encoding)
         return (w, e)
 
         
     def export_stop_debuggee(self):
         self.m_debugger.stop_debuggee()
+        return 0
+
+    
+    def export_set_synchronicity(self, fsynchronicity):
+        self.m_debugger.set_synchronicity(fsynchronicity)
         return 0
 
 
@@ -7798,8 +9726,22 @@ class CDebuggeeServer(CIOServer):
         return 0
 
 
+    def export_is_unhandled_exception(self):
+        return self.m_debugger.is_unhandled_exception()
+
+
     def export_set_fork_mode(self, ffork_into_child, ffork_auto):
         self.m_debugger.set_fork_mode(ffork_into_child, ffork_auto)
+        return 0
+
+
+    def export_set_environ(self, envmap):
+        self.m_debugger.set_environ(envmap)
+        return 0
+
+
+    def export_embedded_sync(self):
+        self.m_debugger.embedded_sync()
         return 0
 
 
@@ -7810,88 +9752,191 @@ class CDebuggeeServer(CIOServer):
 
 
 
-class CTimeoutHTTPConnection(httplib.HTTPConnection):
-    """
-    Modification of httplib.HTTPConnection with timeout for sockets.
-    """
+if not is_py3k():
+    #
+    # MOD
+    #
+    class CTimeoutHTTPConnection(httplib.HTTPConnection):
+        """
+        Modification of httplib.HTTPConnection with timeout for sockets.
+        """
 
-    _rpdb2_timeout = PING_TIMEOUT
-    
-    def connect(self):
-        """Connect to the host and port specified in __init__."""
-        msg = "getaddrinfo returns an empty list"
-        for res in socket.getaddrinfo(self.host, self.port, 0,
-                                      socket.SOCK_STREAM):
-            af, socktype, proto, canonname, sa = res
-            try:
-                self.sock = socket.socket(af, socktype, proto)
-                self.sock.settimeout(self._rpdb2_timeout)
-                if self.debuglevel > 0:
-                    print_debug("connect: (%s, %s)" % (self.host, self.port))
-                self.sock.connect(sa)
-            except socket.error, msg:
-                if self.debuglevel > 0:
-                    print_debug('connect fail: ' + repr((self.host, self.port)))
-                if self.sock:
-                    self.sock.close()
-                self.sock = None
-                continue
-            break
-        if not self.sock:
-            raise socket.error, msg
-
-
-
-class CLocalTimeoutHTTPConnection(CTimeoutHTTPConnection):
-    """
-    Modification of httplib.HTTPConnection with timeout for sockets.
-    """
-
-    _rpdb2_timeout = LOCAL_TIMEOUT
+        _rpdb2_timeout = PING_TIMEOUT
+        
+        def connect(self):
+            """Connect to the host and port specified in __init__."""
+            msg = "getaddrinfo returns an empty list"
+            for res in socket.getaddrinfo(self.host, self.port, 0,
+                                          socket.SOCK_STREAM):
+                af, socktype, proto, canonname, sa = res
+                try:
+                    self.sock = socket.socket(af, socktype, proto)
+                    self.sock.settimeout(self._rpdb2_timeout)
+                    if self.debuglevel > 0:
+                        print_debug("connect: (%s, %s)" % (self.host, self.port))
+                    self.sock.connect(sa)
+                except socket.error:
+                    msg = sys.exc_info()[1]
+                    if self.debuglevel > 0:
+                        print_debug('connect fail: ' + repr((self.host, self.port)))
+                    if self.sock:
+                        self.sock.close()
+                    self.sock = None
+                    continue
+                break
+            if not self.sock:
+                raise socket.error(msg)
 
 
 
-class CTimeoutHTTP(httplib.HTTP):
-    """
-    Modification of httplib.HTTP with timeout for sockets.
-    """
-    
-    _connection_class = CTimeoutHTTPConnection
+    #
+    # MOD
+    #
+    class CLocalTimeoutHTTPConnection(CTimeoutHTTPConnection):
+        """
+        Modification of httplib.HTTPConnection with timeout for sockets.
+        """
+
+        _rpdb2_timeout = LOCAL_TIMEOUT
+
+
+
+    #
+    # MOD
+    #
+    class CTimeoutHTTP(httplib.HTTP):
+        """
+        Modification of httplib.HTTP with timeout for sockets.
+        """
+        
+        _connection_class = CTimeoutHTTPConnection
+
+        
+            
+    #
+    # MOD
+    #
+    class CLocalTimeoutHTTP(httplib.HTTP):
+        """
+        Modification of httplib.HTTP with timeout for sockets.
+        """
+        
+        _connection_class = CLocalTimeoutHTTPConnection
 
     
         
-class CLocalTimeoutHTTP(httplib.HTTP):
-    """
-    Modification of httplib.HTTP with timeout for sockets.
-    """
-    
-    _connection_class = CLocalTimeoutHTTPConnection
-
-    
+    #
+    # MOD
+    #
+    class CTimeoutTransport(xmlrpclib.Transport):
+        """
+        Modification of xmlrpclib.Transport with timeout for sockets.
+        """
         
-class CTimeoutTransport(xmlrpclib.Transport):
-    """
-    Modification of xmlrpclib.Transport with timeout for sockets.
-    """
-    
-    def make_connection(self, host):
-        # create a HTTP connection object from a host descriptor
-        host, extra_headers, x509 = self.get_host_info(host)
-        return CTimeoutHTTP(host)
+        def make_connection(self, host):
+            # create a HTTP connection object from a host descriptor
+            host, extra_headers, x509 = self.get_host_info(host)
+            return CTimeoutHTTP(host)
+
+        
+        
+    #
+    # MOD
+    #
+    class CLocalTimeoutTransport(xmlrpclib.Transport):
+        """
+        Modification of xmlrpclib.Transport with timeout for sockets.
+        """
+        
+        def make_connection(self, host):
+            # create a HTTP connection object from a host descriptor
+            host, extra_headers, x509 = self.get_host_info(host)
+            return CLocalTimeoutHTTP(host)
+
+else:
+    #
+    # MOD
+    #
+    class CTimeoutTransport(xmlrpclib.Transport):
+        """
+        Modification of xmlrpclib.Transport with timeout for sockets.
+        """
+        
+        def send_request(self, host, handler, request_body, debug):
+            host, extra_headers, x509 = self.get_host_info(host)
+            connection = httplib.HTTPConnection(host, timeout = PING_TIMEOUT)
+            if debug:
+                connection.set_debuglevel(1)
+            headers = {}
+            if extra_headers:
+                for key, val in extra_headers:
+                    header[key] = val
+            headers["Content-Type"] = "text/xml"
+            headers["User-Agent"] = self.user_agent
+            connection.request("POST", handler, request_body, headers)
+            return connection
+
+        
+        
+    #
+    # MOD
+    #
+    class CLocalTimeoutTransport(xmlrpclib.Transport):
+        """
+        Modification of xmlrpclib.Transport with timeout for sockets.
+        """
+        
+        def send_request(self, host, handler, request_body, debug):
+            host, extra_headers, x509 = self.get_host_info(host)
+            connection = httplib.HTTPConnection(host, timeout = LOCAL_TIMEOUT)
+            if debug:
+                connection.set_debuglevel(1)
+            headers = {}
+            if extra_headers:
+                for key, val in extra_headers:
+                    header[key] = val
+            headers["Content-Type"] = "text/xml"
+            headers["User-Agent"] = self.user_agent
+            connection.request("POST", handler, request_body, headers)
+            return connection
+
 
     
-    
-class CLocalTimeoutTransport(xmlrpclib.Transport):
+#
+# MOD
+#
+class CLocalTransport(xmlrpclib.Transport):
     """
-    Modification of xmlrpclib.Transport with timeout for sockets.
+    Modification of xmlrpclib.Transport to work around Zonealarm sockets
+    bug.
     """
     
-    def make_connection(self, host):
-        # create a HTTP connection object from a host descriptor
-        host, extra_headers, x509 = self.get_host_info(host)
-        return CLocalTimeoutHTTP(host)
+    def __parse_response(self, file, sock):
+        # read response from input file/socket, and parse it
 
-    
+        p, u = self.getparser()
+
+        while 1:
+            if sock:
+                response = sock.recv(1024)
+            else:
+                time.sleep(0.002)
+                response = file.read(1024)
+            if not response:
+                break
+            if self.verbose:
+                _print("body: " + repr(response))
+            p.feed(response)
+
+        file.close()
+        p.close()
+
+        return u.close()
+
+    if os.name == 'nt':
+        _parse_response = __parse_response
+
+
     
 class CSession:
     """
@@ -7991,7 +10036,7 @@ class CSession:
         server = CPwdServerProxy(self.m_crypto, calcURL(host, self.m_port), CTimeoutTransport())
         server_info = server.server_info()
 
-        self.m_proxy = CPwdServerProxy(self.m_crypto, calcURL(host, self.m_port), target_rid = server_info.m_rid)
+        self.m_proxy = CPwdServerProxy(self.m_crypto, calcURL(host, self.m_port), CLocalTransport(), target_rid = server_info.m_rid)
         self.m_server_info = server_info
 
                 
@@ -8007,7 +10052,7 @@ class CServerList:
         self.m_errors = {}
 
 
-    def calcList(self, _rpdb2_pwd, rid):
+    def calcList(self, _rpdb2_pwd, rid, key = None):
         sil = []
         sessions = []
         self.m_errors = {}
@@ -8032,8 +10077,21 @@ class CServerList:
             if si is not None:
                 sil.append((-si.m_age, si))
         
+            sil.sort()
+            self.m_list = [s[1] for s in sil]
+
+            if key != None:
+                try:
+                    return self.findServers(key)[0]
+                except:
+                    pass
+
+        if key != None:
+            raise UnknownServer
+
         sil.sort()
         self.m_list = [s[1] for s in sil]
+        
         return self.m_list 
 
 
@@ -8042,17 +10100,13 @@ class CServerList:
 
 
     def findServers(self, key):
-        fname = False
-
         try:
             n = int(key)
-        except ValueError:   
-            fname = True
-
-        if fname:
-            _s = [s for s in self.m_list if key in s.m_filename]
-        else:
             _s = [s for s in self.m_list if (s.m_pid == n) or (s.m_rid == key)]
+
+        except ValueError:
+            key = as_string(key, sys.getfilesystemencoding())
+            _s = [s for s in self.m_list if key in s.m_filename]
 
         if _s == []:
             raise UnknownServer
@@ -8083,6 +10137,8 @@ class CSessionManagerInternal:
         self.m_frame_index = 0
         self.m_frame_index_exception = 0
 
+        self.m_completions = {}
+
         self.m_remote_event_index = 0
         self.m_event_dispatcher_proxy = CEventDispatcher()
         self.m_event_dispatcher = CEventDispatcher(self.m_event_dispatcher_proxy)
@@ -8102,8 +10158,21 @@ class CSessionManagerInternal:
         event_type_dict = {CEventExit: {}}
         self.register_callback(self.on_event_exit, event_type_dict, fSingleUse = False)
 
-        event_type_dict = {CEventPsycoWarning: {}}
-        self.register_callback(self.on_event_psyco, event_type_dict, fSingleUse = False)
+        event_type_dict = {CEventConflictingModules: {}}
+        self.register_callback(self.on_event_conflicting_modules, event_type_dict, fSingleUse = False)
+        
+        event_type_dict = {CEventSignalIntercepted: {}}
+        self.register_callback(self.on_event_signal_intercept, event_type_dict, fSingleUse = False)
+        
+        event_type_dict = {CEventSignalException: {}}
+        self.register_callback(self.on_event_signal_exception, event_type_dict, fSingleUse = False)
+
+        event_type_dict = {CEventEmbeddedSync: {}}
+        self.register_callback(self.on_event_embedded_sync, event_type_dict, fSingleUse = False)
+        
+        event_type_dict = {CEventSynchronicity: {}}
+        self.m_event_dispatcher_proxy.register_callback(self.on_event_synchronicity, event_type_dict, fSingleUse = False)
+        self.m_event_dispatcher.register_chain_override(event_type_dict)
         
         event_type_dict = {CEventTrap: {}}
         self.m_event_dispatcher_proxy.register_callback(self.on_event_trap, event_type_dict, fSingleUse = False)
@@ -8118,19 +10187,25 @@ class CSessionManagerInternal:
         self.m_last_command_line = None
         self.m_last_fchdir = None
 
+        self.m_fsynchronicity = True
         self.m_ftrap = True
 
         self.m_ffork_into_child = False
         self.m_ffork_auto = False
+
+        self.m_environment = []
+
+        self.m_encoding = ENCODING_AUTO
+        self.m_fraw = False
         
     
-    def __del__(self):
+    def shutdown(self):
         self.m_event_dispatcher_proxy.shutdown()
         self.m_event_dispatcher.shutdown()
         self.m_state_manager.shutdown()
 
         
-    def __nul_printer(self, str):
+    def __nul_printer(self, _str):
         pass
 
         
@@ -8148,16 +10223,23 @@ class CSessionManagerInternal:
 
     def __wait_for_debuggee(self, rid):
         try:
-            for i in range(0,STARTUP_RETRIES):
+            time.sleep(STARTUP_TIMEOUT / 2)
+
+            for i in range(STARTUP_RETRIES):
                 try:
-                    self.m_server_list_object.calcList(self.m_rpdb2_pwd, self.m_rid)
-                    return self.m_server_list_object.findServers(rid)[0]
+                    print_debug('Scanning for debuggee...')
+
+                    t0 = time.time()
+                    return self.m_server_list_object.calcList(self.m_rpdb2_pwd, self.m_rid, rid)
+                
                 except UnknownServer:
-                    time.sleep(STARTUP_TIMEOUT)
+                    dt = time.time() - t0
+                    if dt < STARTUP_TIMEOUT:
+                        time.sleep(STARTUP_TIMEOUT - dt)
+
                     continue
                     
-            self.m_server_list_object.calcList(self.m_rpdb2_pwd, self.m_rid)
-            return self.m_server_list_object.findServers(rid)[0]
+            return self.m_server_list_object.calcList(self.m_rpdb2_pwd, self.m_rid, rid)
 
         finally:
             errors = self.m_server_list_object.get_errors()
@@ -8169,12 +10251,21 @@ class CSessionManagerInternal:
 
     
     def launch(self, fchdir, command_line, fload_breakpoints = True):
+        assert(is_unicode(command_line))
+
         self.__verify_unattached()
 
         if not os.name in [POSIX, 'nt']:
             self.m_printer(STR_SPAWN_UNSUPPORTED)
             raise SpawnUnsupported
-            
+        
+        if g_fFirewallTest:
+            firewall_test = CFirewallTest(self.get_remote())
+            if not firewall_test.run():
+                raise FirewallBlock
+        else:
+            print_debug('Skipping firewall test.')
+
         if self.m_rpdb2_pwd is None:
             self.set_random_password()
             
@@ -8186,7 +10277,7 @@ class CSessionManagerInternal:
         #if not IsPythonSourceFile(filename):
         #    raise NotPythonSource
 
-        _filename = os.path.join(path, filename) 
+        _filename = my_os_path_join(path, filename) 
            
         ExpandedFilename = FindFile(_filename)
         self.set_host(LOCALHOST)
@@ -8203,7 +10294,7 @@ class CSessionManagerInternal:
             try:
                 self._spawn_server(fchdir, ExpandedFilename, args, rid)            
                 server = self.__wait_for_debuggee(rid)
-                self.attach(server.m_rid, server.m_filename, fsupress_pwd_warning = True)
+                self.attach(server.m_rid, server.m_filename, fsupress_pwd_warning = True, fsetenv = True, ffirewall_test = False, server = server, fload_breakpoints = fload_breakpoints)
 
                 self.m_last_command_line = command_line
                 self.m_last_fchdir = fchdir
@@ -8213,12 +10304,6 @@ class CSessionManagerInternal:
                     self.m_state_manager.set_state(STATE_DETACHED)
 
                 raise
-
-            try:
-                if fload_breakpoints:
-                    self.load_breakpoints()
-            except:
-                pass
 
         finally:
             delete_pwd_file(rid)
@@ -8275,26 +10360,48 @@ class CSessionManagerInternal:
         e = ['', ' --encrypt'][not self.m_fAllowUnencrypted]
         r = ['', ' --remote'][self.m_fAllowRemote]
         c = ['', ' --chdir'][fchdir]
-        p = ['', ' --pwd="%s"' % (self.m_rpdb2_pwd, )][os.name == 'nt']
-        
+        p = ['', ' --pwd="%s"' % self.m_rpdb2_pwd][os.name == 'nt']
+       
+        b = ''
+
+        encoding = detect_locale()
+        fse = sys.getfilesystemencoding()
+
+        ExpandedFilename = g_found_unicode_files.get(ExpandedFilename, ExpandedFilename)
+        ExpandedFilename = as_unicode(ExpandedFilename, fse)
+
+        if as_bytes('?') in as_bytes(ExpandedFilename, encoding, fstrict = False):
+            _u = as_bytes(ExpandedFilename)
+            _b = base64.encodestring(_u)
+            _b = _b.strip(as_bytes('\n')).translate(g_safe_base64_to)
+            _b = as_string(_b, fstrict = True)
+            b = ' --base64=%s' % _b
+
         debugger = os.path.abspath(__file__)
         if debugger[-1:] == 'c':
             debugger = debugger[:-1]
 
+        debugger = as_unicode(debugger, fse)
+
         debug_prints = ['', ' --debug'][g_fDebug]    
             
-        options = '"%s"%s --debugee%s%s%s%s --rid=%s "%s" %s' % (debugger, debug_prints, p, e, r, c, rid, ExpandedFilename, args)
+        options = '"%s"%s --debugee%s%s%s%s%s --rid=%s "%s" %s' % (debugger, debug_prints, p, e, r, c, b, rid, ExpandedFilename, args)
 
         python_exec = sys.executable
         if python_exec.endswith('w.exe'):
             python_exec = python_exec[:-5] + '.exe'
 
+        python_exec = as_unicode(python_exec, fse)
+
+        if as_bytes('?') in as_bytes(python_exec + debugger, encoding, fstrict = False):
+            raise BadMBCSPath
+
         if name == POSIX:
             shell = CalcUserShell()
             terminal_command = CalcTerminalCommand()
 
-            if terminal_command == GNOME_DEFAULT_TERM:
-                command = osSpawn[GNOME_DEFAULT_TERM] % {'shell': shell, 'exec': python_exec, 'options': options}
+            if terminal_command in osSpawn:
+                command = osSpawn[terminal_command] % {'shell': shell, 'exec': python_exec, 'options': options}
             else:    
                 command = osSpawn[name] % {'term': terminal_command, 'shell': shell, 'exec': python_exec, 'options': options}
         else:    
@@ -8304,22 +10411,35 @@ class CSessionManagerInternal:
             s = 'cd "%s" ; %s' % (os.getcwdu(), command)
             command = CalcMacTerminalCommand(s)
 
+        print_debug('Terminal open string: %s' % repr(command))
+
+        command = as_string(command, encoding)
+        
         if name == MAC:
             terminalcommand.run(command)
         else:
             os.popen(command)
 
     
-    def attach(self, key, name = None, fsupress_pwd_warning = False):
+    def attach(self, key, name = None, fsupress_pwd_warning = False, fsetenv = False, ffirewall_test = True, server = None, fload_breakpoints = True):
+        assert(is_unicode(key))
+
         self.__verify_unattached()
 
         if key == '':
             raise BadArgument
 
         if self.m_rpdb2_pwd is None:
-            self.m_printer(STR_PASSWORD_MUST_BE_SET)
+            #self.m_printer(STR_PASSWORD_MUST_BE_SET)
             raise UnsetPassword
-        
+       
+        if g_fFirewallTest and ffirewall_test:
+            firewall_test = CFirewallTest(self.get_remote())
+            if not firewall_test.run():
+                raise FirewallBlock
+        elif not g_fFirewallTest and ffirewall_test:
+            print_debug('Skipping firewall test.')
+
         if name is None:
             name = key
 
@@ -8329,9 +10449,11 @@ class CSessionManagerInternal:
         self.m_state_manager.set_state(STATE_ATTACHING)
 
         try:
-            self.m_server_list_object.calcList(self.m_rpdb2_pwd, self.m_rid)                
-            servers = self.m_server_list_object.findServers(key)
-            server = servers[0] 
+            servers = [server]
+            if server == None:
+                self.m_server_list_object.calcList(self.m_rpdb2_pwd, self.m_rid)                
+                servers = self.m_server_list_object.findServers(key)
+                server = servers[0] 
 
             _name = server.m_filename
             
@@ -8339,15 +10461,20 @@ class CSessionManagerInternal:
             if not key in [server.m_rid, str(server.m_pid)]:
                 self.__report_server_errors(errors, fsupress_pwd_warning)
 
-            self.__attach(server)
+            self.__attach(server, fsetenv)
             if len(servers) > 1:
-                self.m_printer(STR_MULTIPLE_DEBUGGEES % (key, ))
-            self.m_printer(STR_ATTACH_CRYPTO_MODE % ([' ' + STR_ATTACH_CRYPTO_MODE_NOT, ''][self.get_encryption()], ))    
-            self.m_printer(STR_ATTACH_SUCCEEDED % (server.m_filename, ))
-            return
+                self.m_printer(STR_MULTIPLE_DEBUGGEES % key)
+            self.m_printer(STR_ATTACH_CRYPTO_MODE % ([' ' + STR_ATTACH_CRYPTO_MODE_NOT, ''][self.get_encryption()]))    
+            self.m_printer(STR_ATTACH_SUCCEEDED % server.m_filename)
+
+            try:
+                if fload_breakpoints:
+                    self.load_breakpoints()
+            except:
+                pass
 
         except (socket.error, CConnectionException):
-            self.m_printer(STR_ATTACH_FAILED_NAME % (_name, ))
+            self.m_printer(STR_ATTACH_FAILED_NAME % _name)
             self.m_state_manager.set_state(STATE_DETACHED)
             raise
             
@@ -8386,7 +10513,7 @@ class CSessionManagerInternal:
             self.report_exception(t, v, tb)    
 
         
-    def __attach(self, server):
+    def __attach(self, server, fsetenv):
         self.__verify_unattached()
 
         session = CSession(self.m_host, server.m_port, self.m_rpdb2_pwd, self.m_fAllowUnencrypted, self.m_rid)
@@ -8399,13 +10526,19 @@ class CSessionManagerInternal:
         
         self.m_server_info = self.get_server_info()
 
+        self.getSession().getProxy().set_synchronicity(self.m_fsynchronicity)
         self.getSession().getProxy().set_trap_unhandled_exceptions(self.m_ftrap)
         self.getSession().getProxy().set_fork_mode(self.m_ffork_into_child, self.m_ffork_auto)
+
+        if fsetenv and len(self.m_environment) != 0:
+            self.getSession().getProxy().set_environ(self.m_environment)
 
         self.request_break()
         self.refresh(True)
         
         self.__start_event_monitor()
+        
+        print_debug('Attached to debuggee on port %d.' % session.m_port)
 
         #self.enable_breakpoint([], fAll = True)
 
@@ -8498,8 +10631,26 @@ class CSessionManagerInternal:
                 return
 
 
-    def on_event_psyco(self, event):
-        self.m_printer(STR_PSYCO_WARNING)
+    def on_event_conflicting_modules(self, event):
+        s = ', '.join(event.m_modules_list)
+        self.m_printer(STR_CONFLICTING_MODULES % s)
+
+
+    def on_event_signal_intercept(self, event):
+        if self.m_state_manager.get_state() in [STATE_ANALYZE, STATE_BROKEN]:
+            self.m_printer(STR_SIGNAL_INTERCEPT % (event.m_signame, event.m_signum))
+
+
+    def on_event_signal_exception(self, event):
+        self.m_printer(STR_SIGNAL_EXCEPTION % (event.m_description, event.m_signame, event.m_signum))
+
+
+    def on_event_embedded_sync(self, event):
+        #
+        # time.sleep() allows pending break requests to go through...
+        #
+        time.sleep(0.001)
+        self.getSession().getProxy().embedded_sync()
 
 
     def on_event_exit(self, event):
@@ -8567,7 +10718,12 @@ class CSessionManagerInternal:
     def __stop_event_monitor(self):
         self.m_fStop = True
         if self.m_worker_thread is not None:
-            if thread.get_ident() != self.m_worker_thread_ident:  
+            if thread.get_ident() != self.m_worker_thread_ident:
+                try:
+                    self.getSession().getProxy().null()
+                except:
+                    pass
+
                 self.m_worker_thread.join()
 
             self.m_worker_thread = None
@@ -8605,11 +10761,14 @@ class CSessionManagerInternal:
         self.getSession().getProxy().request_jump(lineno)
 
     
-    def set_breakpoint(self, filename, scope, lineno, fEnabled, expr):
+    def set_breakpoint(self, filename, scope, lineno, fEnabled, expr, encoding = None):
         frame_index = self.get_frame_index()
         fAnalyzeMode = (self.m_state_manager.get_state() == STATE_ANALYZE) 
 
-        self.getSession().getProxy().set_breakpoint(filename, scope, lineno, fEnabled, expr, frame_index, fAnalyzeMode)
+        if encoding == None:
+            encoding = self.m_encoding
+
+        self.getSession().getProxy().set_breakpoint(filename, scope, lineno, fEnabled, expr, frame_index, fAnalyzeMode, encoding)
 
         
     def disable_breakpoint(self, id_list, fAll):
@@ -8638,8 +10797,16 @@ class CSessionManagerInternal:
         if module_name[:1] == '<':
             return
 
+        if sys.platform == 'OpenVMS':
+            #
+            # OpenVMS filesystem does not support byte stream.
+            #
+            mode = 'w'
+        else:
+            mode = 'wb'
+
         path = calc_bpl_filename(module_name + filename)            
-        file = open(path, 'wb')
+        file = open(path, mode)
 
         try:
             try:
@@ -8662,8 +10829,16 @@ class CSessionManagerInternal:
         if module_name[:1] == '<':
             return
 
+        if sys.platform == 'OpenVMS':
+            #
+            # OpenVMS filesystem does not support byte stream.
+            #
+            mode = 'r'
+        else:
+            mode = 'rb'
+
         path = calc_bpl_filename(module_name + filename)                            
-        file = open(path, 'rb')
+        file = open(path, mode)
 
         ferror = False
         
@@ -8684,7 +10859,19 @@ class CSessionManagerInternal:
                 
             for bp in bpl.values():
                 try:
-                    self.set_breakpoint(bp.m_filename, bp.m_scope_fqn, bp.m_scope_offset, bp.m_fEnabled, bp.m_expr)
+                    if bp.m_scope_fqn != None:
+                        bp.m_scope_fqn = as_unicode(bp.m_scope_fqn)
+
+                    if bp.m_filename != None:
+                        bp.m_filename = as_unicode(bp.m_filename)
+
+                    if bp.m_expr != None:
+                        bp.m_expr = as_unicode(bp.m_expr)
+
+                    if bp.m_expr in [None, '']:
+                        bp.m_encoding = as_unicode('utf-8')
+
+                    self.set_breakpoint(bp.m_filename, bp.m_scope_fqn, bp.m_scope_offset, bp.m_fEnabled, bp.m_expr, bp.m_encoding)
                 except:
                     print_debug_exception()
                     ferror = True
@@ -8694,6 +10881,32 @@ class CSessionManagerInternal:
                 
         finally:
             file.close()
+
+
+    def on_event_synchronicity(self, event):
+        ffire = self.m_fsynchronicity != event.m_fsynchronicity
+        self.m_fsynchronicity = event.m_fsynchronicity
+
+        if ffire:
+            event = CEventSynchronicity(event.m_fsynchronicity)
+            self.m_event_dispatcher.fire_event(event)
+
+
+    def set_synchronicity(self, fsynchronicity):
+        self.m_fsynchronicity = fsynchronicity
+
+        if self.__is_attached():
+            try:
+                self.getSession().getProxy().set_synchronicity(fsynchronicity)
+            except NotAttached:
+                pass
+
+        event = CEventSynchronicity(fsynchronicity)
+        self.m_event_dispatcher.fire_event(event)
+
+    
+    def get_synchronicity(self):
+        return self.m_fsynchronicity
 
 
     def on_event_trap(self, event):
@@ -8720,6 +10933,12 @@ class CSessionManagerInternal:
     
     def get_trap_unhandled_exceptions(self):
         return self.m_ftrap
+
+
+    def is_unhandled_exception(self):
+        self.__verify_attached()
+
+        return self.getSession().getProxy().is_unhandled_exception()
 
 
     def on_event_fork_mode(self, event):
@@ -8762,7 +10981,9 @@ class CSessionManagerInternal:
         return r
 
 
-    def get_source_file(self, filename, lineno, nlines): 
+    def get_source_file(self, filename, lineno, nlines):
+        assert(is_unicode(filename))
+
         frame_index = self.get_frame_index()
         fAnalyzeMode = (self.m_state_manager.get_state() == STATE_ANALYZE) 
 
@@ -8788,38 +11009,79 @@ class CSessionManagerInternal:
         self.getSession().getProxy().set_thread(tid)
 
         
-    def get_namespace(self, nl, fFilter, repr_limit):
+    def get_namespace(self, nl, filter_level, repr_limit):
         frame_index = self.get_frame_index()
         fAnalyzeMode = (self.m_state_manager.get_state() == STATE_ANALYZE) 
 
-        r = self.getSession().getProxy().get_namespace(nl, fFilter, frame_index, fAnalyzeMode, repr_limit)
+        r = self.getSession().getProxy().get_namespace(nl, filter_level, frame_index, fAnalyzeMode, repr_limit, self.m_encoding, self.m_fraw)
         return r
 
 
-    def evaluate(self, expr):
+    def evaluate(self, expr, fclear_completions = True):
+        assert(is_unicode(expr))
+
         self.__verify_attached()
         self.__verify_broken()
 
         frame_index = self.get_frame_index()
         fAnalyzeMode = (self.m_state_manager.get_state() == STATE_ANALYZE) 
 
-        (value, warning, error) = self.getSession().getProxy().evaluate(expr, frame_index, fAnalyzeMode)
+        (value, warning, error) = self.getSession().getProxy().evaluate(expr, frame_index, fAnalyzeMode, self.m_encoding, self.m_fraw)
+        
+        if fclear_completions:
+            self.m_completions.clear()
+
         return (value, warning, error)
 
         
     def execute(self, suite):
+        assert(is_unicode(suite))
+
         self.__verify_attached()
         self.__verify_broken()
 
         frame_index = self.get_frame_index()
         fAnalyzeMode = (self.m_state_manager.get_state() == STATE_ANALYZE)
 
-        (warning, error) = self.getSession().getProxy().execute(suite, frame_index, fAnalyzeMode)
+        (warning, error) = self.getSession().getProxy().execute(suite, frame_index, fAnalyzeMode, self.m_encoding)
+
+        self.m_completions.clear()
+
         return (warning, error)
+
+
+    def set_encoding(self, encoding, fraw):
+        if (self.m_encoding, self.m_fraw) == (encoding, fraw):
+            return
+
+        self.m_encoding = encoding
+        self.m_fraw = fraw
+        
+        event = CEventEncoding(encoding, fraw)
+        self.m_event_dispatcher.fire_event(event)
+
+        if self.__is_attached():
+            self.refresh()
+
+
+    def get_encoding(self):
+        return (self.m_encoding, self.m_fraw)
 
 
     def set_host(self, host):
         self.__verify_unattached()
+
+        try:
+            if not is_unicode(host):
+                host = host.decode('ascii')
+
+            host.encode('ascii')
+
+        except:
+            raise BadArgument
+
+        host = as_string(host, 'ascii') 
+
         try:
             socket.getaddrinfo(host, 0, 0, socket.SOCK_STREAM)
 
@@ -8837,13 +11099,20 @@ class CSessionManagerInternal:
 
 
     def get_host(self):
-        return self.m_host
+        return as_unicode(self.m_host)
 
 
     def calc_server_list(self):
         if self.m_rpdb2_pwd is None:
             raise UnsetPassword
         
+        if g_fFirewallTest:
+            firewall_test = CFirewallTest(self.get_remote())
+            if not firewall_test.run():
+                raise FirewallBlock
+        else:
+            print_debug('Skipping firewall test.')
+
         server_list = self.m_server_list_object.calcList(self.m_rpdb2_pwd, self.m_rid)
         errors = self.m_server_list_object.get_errors()
         self.__report_server_errors(errors)
@@ -8853,6 +11122,51 @@ class CSessionManagerInternal:
 
     def get_server_info(self): 
         return self.getSession().getServerInfo()
+
+
+    def complete_expression(self, expr):
+        match = re.search(
+                r'(?P<unsupported> \.)? (?P<match> ((?P<scope> (\w+\.)* \w+) \.)? (?P<complete>\w*) $)', 
+                expr, 
+                re.U | re.X
+                )
+
+        if match == None:
+            raise BadArgument
+
+        d = match.groupdict()
+
+        unsupported, scope, complete = (d['unsupported'], d['scope'], d['complete'])
+
+        if unsupported != None:
+            raise BadArgument
+
+        if scope == None:
+            _scope = as_unicode('list(globals().keys()) + list(locals().keys()) + list(_RPDB2_builtins.keys())')
+        else:
+            _scope = as_unicode('dir(%s)' % scope)
+
+        if not _scope in self.m_completions:
+            (v, w, e) = self.evaluate(_scope, fclear_completions = False)
+            if w != '' or e != '':
+                print_debug('evaluate() returned the following warning/error: %s' % w + e)
+                return (expr, [])
+
+            cl = list(set(eval(v)))
+            if '_RPDB2_builtins' in cl:
+                cl.remove('_RPDB2_builtins')
+            self.m_completions[_scope] = cl
+
+        completions = [attr for attr in self.m_completions[_scope] if attr.startswith(complete)]
+        completions.sort()
+
+        if complete == '':
+            prefix = expr
+        else:
+            prefix = expr[:-len(complete)]
+
+        return (prefix, completions)
+
 
 
     def _reset_frame_indexes(self, event):
@@ -8871,6 +11185,8 @@ class CSessionManagerInternal:
             self.m_stack_depth_exception = None
             self.m_frame_index = 0
             self.m_frame_index_exception = 0
+
+            self.m_completions.clear()
 
         finally:
             self.m_state_manager.release()
@@ -8961,10 +11277,15 @@ class CSessionManagerInternal:
 
 
     def get_state(self):
-        return self.m_state_manager.get_state()
+        return as_unicode(self.m_state_manager.get_state())
 
 
-    def set_password(self, _rpdb2_pwd):    
+    def set_password(self, _rpdb2_pwd):
+        assert(is_unicode(_rpdb2_pwd))
+
+        if not is_valid_pwd(_rpdb2_pwd):
+            raise BadArgument
+
         try:
             self.m_state_manager.acquire()
 
@@ -9007,6 +11328,24 @@ class CSessionManagerInternal:
         return self.m_fAllowRemote
 
 
+    def set_environ(self, envmap):
+        self.m_environment = []
+
+        try:
+            for k, v in envmap: 
+                k = as_unicode(k, fstrict = True)
+                v = as_unicode(v, fstrict = True)
+
+                self.m_environment.append((k, v))
+        
+        except:
+            raise BadArgument
+
+
+    def get_environ(self):
+        return self.m_environment
+
+
     def stop_debuggee(self):
         self.__verify_attached()
 
@@ -9043,12 +11382,17 @@ class CConsoleInternal(cmd.Cmd, threading.Thread):
         self.fAnalyzeMode = False
         self.fPrintBroken = True
 
-        self.m_filename = None
+        self.m_filename = as_unicode('')
+        
+        self.m_completion_thread = None
         
         self.use_rawinput = [1, 0][fSplit]
         self.m_fSplit = fSplit
         self.prompt = [[CONSOLE_PROMPT, CONSOLE_PROMPT_ANALYZE][self.fAnalyzeMode], ""][fSplit]
         self.intro = CONSOLE_INTRO
+        if fSplit:
+            self.intro += '\n'
+        
         #self.setDaemon(True)
         
         self.m_session_manager = session_manager
@@ -9056,6 +11400,9 @@ class CConsoleInternal(cmd.Cmd, threading.Thread):
 
         event_type_dict = {CEventState: {}}
         self.m_session_manager.register_callback(self.event_handler, event_type_dict, fSingleUse = False)
+
+        event_type_dict = {CEventSynchronicity: {}}
+        self.m_session_manager.register_callback(self.synchronicity_handler, event_type_dict, fSingleUse = False)
 
         event_type_dict = {CEventTrap: {}}
         self.m_session_manager.register_callback(self.trap_handler, event_type_dict, fSingleUse = False)
@@ -9070,14 +11417,30 @@ class CConsoleInternal(cmd.Cmd, threading.Thread):
         self.m_eInLoop = threading.Event()
         self.cmdqueue.insert(0, '')
 
+        self.m_stdout = self.stdout
+        self.m_encoding = detect_encoding(self.stdin)
+
         g_fDefaultStd = (stdin == None)
+
+        if self.use_rawinput:
+            try:
+                import readline
+                cd = readline.get_completer_delims()
+                if not '.' in cd:
+                    readline.set_completer_delims(cd + '.')
+            except:
+                pass
 
 
     def set_filename(self, filename):
+        assert(is_unicode(filename))
+
         self.m_filename = filename
 
 
     def precmd(self, line):
+        line = as_unicode(line, self.m_encoding)
+
         self.m_fAddPromptBeforeMsg = True
         if not self.m_eInLoop.isSet():
             self.m_eInLoop.set()
@@ -9117,10 +11480,165 @@ class CConsoleInternal(cmd.Cmd, threading.Thread):
             print_debug_exception(True)
 
         return False
-        
+
+
+    def default(self, line):
+        """
+        Called on an input line when the command prefix is not recognized.
+        Over-rides base method at cmd.py.
+        """
+
+        self.printer(STR_BAD_SYNTAX % line)
+       
         
     def emptyline(self):
         pass
+
+        
+    def complete(self, text, state):
+        """
+        Return the next possible completion for 'text'.
+        If a command has not been entered, then complete against command list.
+        Otherwise try to call complete_<command> to get list of completions.
+        """
+
+        if self.use_rawinput:
+            #
+            # Import cmd to workaround a strange bug in Python.
+            #
+            import cmd
+            return cmd.Cmd.complete(self, text, state)
+
+        #
+        # Without rawinput assuming text includes entire buffer up to cursor.
+        #
+
+        try:
+            if state != 0:
+                return self.completion_matches[state]
+
+            if not ' ' in text:
+                self.completion_matches = self.completenames(text)
+                return self.completion_matches[state]
+
+            cmd, args, foo = self.parseline(text)
+            if cmd == '' or not hasattr(self, 'complete_' + cmd):
+                self.completion_matches = self.completedefault(text)
+                return self.completion_matches[state]
+
+            compfunc = getattr(self, 'complete_' + cmd)
+            
+            self.completion_matches = compfunc(text)
+            return self.completion_matches[state]
+
+        except IndexError:
+            return None
+
+
+    def complete_launch(self, text, line = None, begidx = None, endidx = None):
+        if line != None and endidx != None:
+            text = line[:endidx]
+
+        if text.endswith(' '):
+            dn, bn = '', ''
+        else:
+            path = text.split()[-1]
+            dn, bn = os.path.split(path)
+
+        prefix = text
+        if bn != '':
+            prefix = prefix[:-len(bn)]
+
+        if dn == '' and bn.startswith('~'):
+            if bn == os.path.expanduser(bn):
+                c = text
+            else:
+                c = os.path.join(text, '')
+
+            if begidx != None:
+                c = c[begidx:]
+
+            return [c]
+
+        pl = [dn]
+        if dn == '':
+            pl += os.environ['PATH'].split(os.pathsep)
+
+        fl = []
+        for p in pl:
+            if p == '':
+                p = '.'
+
+            try:
+                ep = os.path.expanduser(p)
+                l = os.listdir(ep)
+                for f in l:
+                    if not f.startswith(bn):
+                        continue
+
+                    root, ext = os.path.splitext(f)
+                    if not ext in ['.py', '.pyw', '']:
+                        continue
+
+                    if os.path.isdir(os.path.join(ep, f)):
+                        c = prefix + os.path.join(f, '')
+                    else:
+                        c = prefix + f
+
+                    if begidx != None:
+                        c = c[begidx:]
+
+                    fl.append(c)
+            except:
+                pass
+
+        fs = set(fl)
+        cl = list(fs)
+        cl.sort()
+
+        return cl
+
+
+    def complete_eval(self, text, line = None, begidx = None, endidx = None):
+        t = self.m_completion_thread
+        if t != None and t.isAlive():
+            return []
+
+        self.m_completion_thread = None
+        result = [('', [])]
+
+        if line != None and endidx != None:
+            text = line[:endidx]
+
+        t = threading.Thread(target = self.complete_expression_job, args = (text, result))
+        t.start()
+        t.join(PING_TIMEOUT)
+
+        if t.isAlive():
+            self.m_completion_thread = t
+            return []
+
+        (prefix, completions) = result[-1]
+
+        if begidx != None:
+            prefix = prefix[begidx:]
+
+        ce = [prefix + c for c in completions]
+
+        return ce
+
+    complete_v = complete_eval
+    complete_exec = complete_eval
+    complete_x = complete_exec
+
+
+    def complete_expression_job(self, text, result):
+        try:
+            (prefix, completions) = self.m_session_manager.complete_expression(text)
+            result.append((prefix, completions))
+
+        except:
+            print_debug_exception()
 
         
     def run(self):
@@ -9155,10 +11673,10 @@ class CConsoleInternal(cmd.Cmd, threading.Thread):
         s = _str
         while s != '':
             s, _s = self.__get_str_wrap(s, CONSOLE_WRAP_INDEX - len(prefix + suffix))
-            self.stdout.write(prefix + s + suffix)
+            _print(prefix + s + suffix, self.m_stdout, feol = False)
             s = _s 
 
-        self.stdout.flush()
+        self.m_stdout.flush()
         
 
     def print_notice(self, notice):
@@ -9166,15 +11684,15 @@ class CConsoleInternal(cmd.Cmd, threading.Thread):
 
         i = 0
         for l in nl:
-            print >> self.stdout, l
+            _print(l, self.m_stdout)
             i += 1
             if i % PRINT_NOTICE_LINES_PER_SECTION == 0:
-                print >> self.stdout, "\n" + PRINT_NOTICE_PROMPT,
+                _print("\n" + PRINT_NOTICE_PROMPT, self.m_stdout, feol = False)
                 response = self.stdin.readline()
                 if response != '\n':
                     break
 
-                print >> self.stdout
+                _print('', self.m_stdout)
 
         
     def event_handler(self, event): 
@@ -9187,18 +11705,22 @@ class CConsoleInternal(cmd.Cmd, threading.Thread):
         if (state != STATE_ANALYZE) and self.fAnalyzeMode:
             self.fAnalyzeMode = False
             self.prompt = [CONSOLE_PROMPT, ""][self.m_fSplit]
-            self.printer(STR_ANALYZE_MODE_TOGGLE % (MODE_OFF, ))
+            self.printer(STR_ANALYZE_MODE_TOGGLE % MODE_OFF)
             return
         
         if (state == STATE_ANALYZE) and not self.fAnalyzeMode:
             self.fAnalyzeMode = True
             self.prompt = [CONSOLE_PROMPT_ANALYZE, ""][self.m_fSplit]
-            self.printer(STR_ANALYZE_MODE_TOGGLE % (MODE_ON, ))
+            self.printer(STR_ANALYZE_MODE_TOGGLE % MODE_ON)
             return
 
 
+    def synchronicity_handler(self, event):
+        self.printer(STR_SYNCHRONICITY_MODE % str(event.m_fsynchronicity))
+
+
     def trap_handler(self, event):
-        self.printer(STR_TRAP_MODE_SET % (str(event.m_ftrap), ))
+        self.printer(STR_TRAP_MODE_SET % str(event.m_ftrap))
 
         
     def fork_mode_handler(self, event):
@@ -9229,7 +11751,7 @@ class CConsoleInternal(cmd.Cmd, threading.Thread):
         except BadArgument:
             self.printer(STR_BAD_ARGUMENT)            
         except IOError:
-            self.printer(STR_FILE_NOT_FOUND % (arg, ))
+            self.printer(STR_FILE_NOT_FOUND % arg)
         except:
             self.fPrintBroken = False
             raise
@@ -9249,7 +11771,7 @@ class CConsoleInternal(cmd.Cmd, threading.Thread):
         except BadArgument:
             self.printer(STR_BAD_ARGUMENT)
         except IOError:
-            self.printer(STR_FILE_NOT_FOUND % (arg, ))
+            self.printer(STR_FILE_NOT_FOUND % arg)
         except:
             self.fPrintBroken = False
             raise
@@ -9278,16 +11800,16 @@ class CConsoleInternal(cmd.Cmd, threading.Thread):
 
     def __scripts(self, arg):
         if self.m_session_manager.get_password() is None:
-            print >> self.stdout, STR_PASSWORD_MUST_BE_SET
+            _print(STR_PASSWORD_MUST_BE_SET, self.m_stdout)
             return
 
         host = self.m_session_manager.get_host()
-        print >> self.stdout, STR_SCRIPTS_CONNECTING % (host, )
+        _print(STR_SCRIPTS_CONNECTING % host, self.m_stdout)
 
         (server_list, errors) = self.m_session_manager.calc_server_list()
 
         if server_list == []:
-            print >> self.stdout, STR_SCRIPTS_NO_SCRIPTS % (host, )
+            _print(STR_SCRIPTS_NO_SCRIPTS % host, self.m_stdout)
             return
 
         try:
@@ -9295,10 +11817,10 @@ class CConsoleInternal(cmd.Cmd, threading.Thread):
         except NotAttached:
             spid = None
 
-        print >> self.stdout, STR_SCRIPTS_TO_DEBUG % (host, )    
+        _print(STR_SCRIPTS_TO_DEBUG % host, self.m_stdout)    
         for s in server_list:
             m = ['', SYMBOL_MARKER][spid == s.m_pid]
-            print >> self.stdout, ' %1s %-5d  %s' % (m, s.m_pid, s.m_filename)
+            _print(' %1s %-5d  %s' % (m, s.m_pid, s.m_filename), self.m_stdout)
 
 
     def do_detach(self, arg):
@@ -9312,13 +11834,14 @@ class CConsoleInternal(cmd.Cmd, threading.Thread):
     def do_host(self, arg):
         if arg == '':
             host = self.m_session_manager.get_host()
-            print >> self.stdout, host
+            _print(host, self.m_stdout)
             return
 
         try:
             self.m_session_manager.set_host(arg)
 
-        except socket.gaierror, e:
+        except socket.gaierror:
+            e = sys.exc_info()[1]
             self.printer(MSG_ERROR_HOST_TEXT % (arg, e))
 
         
@@ -9383,9 +11906,9 @@ class CConsoleInternal(cmd.Cmd, threading.Thread):
         except BadArgument:    
             self.printer(STR_BAD_ARGUMENT)
         except IOError:
-            self.printer(STR_FILE_NOT_FOUND % (filename, ))
+            self.printer(STR_FILE_NOT_FOUND % filename)
         except InvalidScopeName:
-            self.printer(STR_SCOPE_NOT_FOUND % (scope, ))
+            self.printer(STR_SCOPE_NOT_FOUND % scope)
         except DebuggerNotBroken:
             self.m_session_manager.report_exception(*sys.exc_info())
         except:
@@ -9479,11 +12002,11 @@ class CConsoleInternal(cmd.Cmd, threading.Thread):
         except BadArgument:    
             self.printer(STR_BAD_ARGUMENT)
         except IOError:
-            self.printer(STR_FILE_NOT_FOUND % (filename, ))
+            self.printer(STR_FILE_NOT_FOUND % filename)
         except InvalidScopeName:
-            self.printer(STR_SCOPE_NOT_FOUND % (scope, ))
+            self.printer(STR_SCOPE_NOT_FOUND % scope)
         except SyntaxError:
-            self.printer(STR_BAD_EXPRESSION % (expr, ))
+            self.printer(STR_BAD_EXPRESSION % expr)
         except DebuggerNotBroken:
             self.m_session_manager.report_exception(*sys.exc_info())
 
@@ -9548,17 +12071,23 @@ class CConsoleInternal(cmd.Cmd, threading.Thread):
     def do_bl(self, arg):
         bpl = self.m_session_manager.get_breakpoints()
             
-        bplk = bpl.keys()
+        bplk = list(bpl.keys())
         bplk.sort()
         
-        print >> self.stdout, STR_BREAKPOINTS_LIST    
+        _print(STR_BREAKPOINTS_LIST, self.m_stdout)    
         for id in bplk:
             bp = bpl[id]
 
             if bp.m_expr:
-                expr = bp.m_expr + '\n'
+                expr = bp.m_expr
             else:
                 expr = ''
+            
+            try:
+                expr.encode('ascii', 'strict')
+                encoding = ''
+            except:
+                encoding = bp.m_encoding
 
             scope = bp.m_scope_fqn
 
@@ -9569,19 +12098,20 @@ class CConsoleInternal(cmd.Cmd, threading.Thread):
                 scope = scope[len(MODULE_SCOPE2) + 1:]   
                 
             state = [STATE_DISABLED, STATE_ENABLED][bp.isEnabled()]
-            print >> self.stdout, STR_BREAKPOINTS_TEMPLATE % (id, state, bp.m_lineno, clip_filename(bp.m_filename, 45), calc_suffix(scope, 45), calc_prefix(expr, 50))
+            s = STR_BREAKPOINTS_TEMPLATE % (id, state, bp.m_lineno, clip_filename(bp.m_filename, 45), calc_suffix(scope, 45), calc_prefix(expr, 50), encoding)
+            _print(s.rstrip() + '\n', self.m_stdout)
             
 
     def do_save(self, arg):
         self.m_session_manager.save_breakpoints(arg)
-        print >> self.stdout, STR_BREAKPOINTS_SAVED    
+        _print(STR_BREAKPOINTS_SAVED, self.m_stdout)    
         return
             
         
     def do_load(self, arg):
         try:
             self.m_session_manager.load_breakpoints(arg)
-            print >> self.stdout, STR_BREAKPOINTS_LOADED    
+            _print(STR_BREAKPOINTS_LOADED, self.m_stdout)    
             return
 
         except IOError:
@@ -9618,9 +12148,9 @@ class CConsoleInternal(cmd.Cmd, threading.Thread):
                 fCurrent = st.get(DICT_KEY_CURRENT_TID, False)
 
                 if m is not None:
-                    print >> self.stdout
+                    _print('', self.m_stdout)
                     
-                print >> self.stdout, STR_STACK_TRACE % (tid, )    
+                _print(STR_STACK_TRACE % tid, self.m_stdout)    
                 i = 0
                 while i < len(s):
                     e = s[-(1 + i)]
@@ -9632,7 +12162,7 @@ class CConsoleInternal(cmd.Cmd, threading.Thread):
                     else:
                         m = ['', marker][i == 0]
                         
-                    print >> self.stdout, ' %1s %5d  %-28s  %4d  %s' % (m, i, calc_suffix(e[0], 28), e[1], calc_prefix(e[2], 20))
+                    _print(' %1s %5d  %-28s  %4d  %s' % (m, i, calc_suffix(e[0], 28), e[1], calc_prefix(e[2], 20)), self.m_stdout)
                     i += 1
                     
         except ValueError:
@@ -9681,10 +12211,10 @@ class CConsoleInternal(cmd.Cmd, threading.Thread):
             return
 
         if fMore and self.m_last_source_line:
-            l = max(1, self.m_last_source_line + self.m_last_nlines / 2 + 1)
+            l = max(1, self.m_last_source_line + self.m_last_nlines // 2 + 1)
             fLine = True
         elif fLess and self.m_last_source_line:
-            l = max(1, self.m_last_source_line - (self.m_last_nlines - 1) / 2 - nlines)
+            l = max(1, self.m_last_source_line - (self.m_last_nlines - 1) // 2 - nlines)
             fLine = True
             
         try:
@@ -9717,9 +12247,9 @@ class CConsoleInternal(cmd.Cmd, threading.Thread):
                 frame_lineno = d.get(DICT_KEY_FRAME_LINENO, 0)
                 
                 if m is not None:
-                    print >> self.stdout
+                    _print('', self.m_stdout)
                     
-                print >> self.stdout, STR_SOURCE_LINES % (tid, filename)    
+                _print(STR_SOURCE_LINES % (tid, filename), self.m_stdout)    
                 for i, line in enumerate(source_lines):
                     lineno = first_lineno + i
                     if lineno != frame_lineno:
@@ -9742,12 +12272,14 @@ class CConsoleInternal(cmd.Cmd, threading.Thread):
                     else:
                         b = ''
                         
-                    print >> self.stdout, ' %2s %1s %5d  %s' % (m, b, lineno, calc_prefix(line[:-1], 60))
+                    line = line.replace('\t', ' ' * PYTHON_TAB_WIDTH)
+
+                    _print(' %2s %1s %5d  %s' % (m, b, lineno, calc_prefix(line[:-1], 60)), self.m_stdout)
 
             if fAll or fEntire:
                 self.m_last_source_line = None        
             elif len(source_lines) != 0:
-                self.m_last_source_line = [l + (nlines - 1) / 2, frame_lineno][l == -1]
+                self.m_last_source_line = [l + (nlines - 1) // 2, frame_lineno][l == -1]
 
             self.m_last_nlines = nlines
                 
@@ -9790,15 +12322,15 @@ class CConsoleInternal(cmd.Cmd, threading.Thread):
             (value, warning, error) = self.m_session_manager.evaluate(expr)
 
             if warning:
-                self.printer(STR_WARNING % (warning, ))
+                self.printer(STR_WARNING % warning)
 
             if error:
-                print >> self.stdout, error + '\n'
+                _print(error + '\n', self.m_stdout)
 
-            print >> self.stdout, value
+            _print(value, self.m_stdout)
 
             if sync_event.isSet():
-                print >> self.stdout, self.prompt, 
+                _print(self.prompt, self.m_stdout, feol = False)
 
             return
                 
@@ -9825,24 +12357,24 @@ class CConsoleInternal(cmd.Cmd, threading.Thread):
         t.join(WAIT_FOR_BREAK_TIMEOUT)
 
         if t.isAlive():
-            print >> self.stdout, STR_OUTPUT_WARNING_ASYNC
+            _print(STR_OUTPUT_WARNING_ASYNC, self.m_stdout)
             sync_event.set()
                         
     do_v = do_eval
 
-    
+  
     def execute_job(self, sync_event, suite):
         try:
             (warning, error) = self.m_session_manager.execute(suite)
 
             if warning:
-                self.printer(STR_WARNING % (warning, ))
+                self.printer(STR_WARNING % warning)
 
             if error:
-                print >> self.stdout, error + '\n'
+                _print(error + '\n', self.m_stdout)
 
             if sync_event.isSet():
-                print >> self.stdout, self.prompt, 
+                _print(self.prompt, self.m_stdout, feol = False) 
 
             return    
                 
@@ -9863,7 +12395,7 @@ class CConsoleInternal(cmd.Cmd, threading.Thread):
             self.printer(STR_BAD_ARGUMENT)
             return
             
-        print >> self.stdout, STR_OUTPUT_WARNING
+        _print(STR_OUTPUT_WARNING, self.m_stdout)
 
         sync_event = threading.Event()
         t = threading.Thread(target = self.execute_job, args = (sync_event, arg))
@@ -9871,12 +12403,53 @@ class CConsoleInternal(cmd.Cmd, threading.Thread):
         t.join(WAIT_FOR_BREAK_TIMEOUT)
 
         if t.isAlive():
-            print >> self.stdout, STR_OUTPUT_WARNING_ASYNC
+            _print(STR_OUTPUT_WARNING_ASYNC, self.m_stdout)
             sync_event.set()
         
     do_x = do_exec
 
-    
+
+    def do_encoding(self, arg):
+        if arg == '':
+            encoding, fraw = self.m_session_manager.get_encoding()
+            if encoding != ENCODING_AUTO:
+                try:
+                    codecs.lookup(encoding)
+                except:
+                    encoding += ' (?)'
+
+            if fraw:
+                encoding += ', ' + ENCODING_RAW
+
+            _print(STR_ENCODING_MODE % encoding, self.m_stdout)
+            return
+
+        if ',' in arg:
+            encoding, raw = arg.split(',')
+        else:
+            encoding, raw = arg, ''
+
+        encoding = encoding.strip()
+        if encoding == '':
+            encoding, fraw = self.m_session_manager.get_encoding()
+
+        fraw = 'raw' in raw
+
+        self.m_session_manager.set_encoding(encoding, fraw)
+        
+        if encoding != ENCODING_AUTO:
+            try:
+                codecs.lookup(encoding)
+            except:
+                encoding += ' (?)'
+                _print(STR_ENCODING_BAD, self.m_stdout)
+
+        if fraw:
+            encoding += ', ' + ENCODING_RAW
+
+        _print(STR_ENCODING_MODE_SET % encoding, self.m_stdout)
+
+
     def do_thread(self, arg):
         if self.fAnalyzeMode and (arg != ''):
             self.printer(STR_ILEGAL_ANALYZE_MODE_ARG)
@@ -9887,16 +12460,16 @@ class CConsoleInternal(cmd.Cmd, threading.Thread):
                 tid = int(arg)
                 self.m_session_manager.set_thread(tid)
 
-                print >> self.stdout, STR_THREAD_FOCUS_SET
+                _print(STR_THREAD_FOCUS_SET, self.m_stdout)
                 return
 
             (current_thread_id, tl) = self.m_session_manager.get_thread_list()
 
-            print >> self.stdout, STR_ACTIVE_THREADS    
+            _print(STR_ACTIVE_THREADS, self.m_stdout)    
             for i, t in enumerate(tl):
                 m = ['', SYMBOL_MARKER][t[DICT_KEY_TID] == current_thread_id]
                 state = [STATE_RUNNING, STR_STATE_BROKEN][t[DICT_KEY_BROKEN]]
-                print >> self.stdout, ' %1s %3d  %5d  %-15s  %s' % (m, i, t[DICT_KEY_TID], t[DICT_KEY_NAME], state[:25])
+                _print(' %1s %3d  %5d  %-15s  %s' % (m, i, t[DICT_KEY_TID], t[DICT_KEY_NAME], state[:25]), self.m_stdout)
                 
         except ValueError:
             self.printer(STR_BAD_ARGUMENT)
@@ -9922,10 +12495,27 @@ class CConsoleInternal(cmd.Cmd, threading.Thread):
     do_a = do_analyze
 
    
+    def do_synchro(self, arg):
+        if arg == '':
+            fsynchronicity = self.m_session_manager.get_synchronicity()
+            _print(STR_SYNCHRONICITY_MODE % str(fsynchronicity), self.m_stdout)
+            return
+
+        if arg == str(True):
+            fsynchronicity = True
+        elif arg == str(False):
+            fsynchronicity = False
+        else:
+            _print(STR_BAD_ARGUMENT, self.m_stdout)
+            return
+
+        self.m_session_manager.set_synchronicity(fsynchronicity)
+
+   
     def do_trap(self, arg):
         if arg == '':
             ftrap = self.m_session_manager.get_trap_unhandled_exceptions()
-            print >> self.stdout, STR_TRAP_MODE % (str(ftrap), )
+            _print(STR_TRAP_MODE % str(ftrap), self.m_stdout)
             return
 
         if arg == str(True):
@@ -9933,7 +12523,7 @@ class CConsoleInternal(cmd.Cmd, threading.Thread):
         elif arg == str(False):
             ftrap = False
         else:
-            print >> self.stdout, STR_BAD_ARGUMENT
+            _print(STR_BAD_ARGUMENT, self.m_stdout)
             return
 
         self.m_session_manager.set_trap_unhandled_exceptions(ftrap)
@@ -9946,7 +12536,7 @@ class CConsoleInternal(cmd.Cmd, threading.Thread):
             x = [FORK_PARENT, FORK_CHILD][ffork_into_child]
             y = [FORK_MANUAL, FORK_AUTO][ffork_auto]
 
-            print >> self.stdout, STR_FORK_MODE % (x, y)
+            _print(STR_FORK_MODE % (x, y), self.m_stdout)
             return 
 
         arg = arg.lower()
@@ -9962,27 +12552,31 @@ class CConsoleInternal(cmd.Cmd, threading.Thread):
             ffork_auto = False
 
         self.m_session_manager.set_fork_mode(ffork_into_child, ffork_auto)
- 
+
 
     def do_password(self, arg):
         if arg == '':
             _rpdb2_pwd = self.m_session_manager.get_password()
             if _rpdb2_pwd is None:
-                print >> self.stdout, STR_PASSWORD_NOT_SET
+                _print(STR_PASSWORD_NOT_SET, self.m_stdout)
             else:    
-                print >> self.stdout, STR_PASSWORD_SET % (_rpdb2_pwd, )
+                _print(STR_PASSWORD_SET % _rpdb2_pwd, self.m_stdout)
             return
 
         _rpdb2_pwd = arg.strip('"\'')
         
-        self.m_session_manager.set_password(_rpdb2_pwd)
-        print >> self.stdout, STR_PASSWORD_SET % (_rpdb2_pwd, )
+        try:
+            self.m_session_manager.set_password(_rpdb2_pwd)
+            _print(STR_PASSWORD_SET % _rpdb2_pwd, self.m_stdout)
+
+        except BadArgument:
+            _print(STR_PASSWORD_BAD, self.m_stdout)
 
             
     def do_remote(self, arg):
         if arg == '':
             fAllowRemote = self.m_session_manager.get_remote()
-            print >> self.stdout, STR_REMOTE_MODE % (str(fAllowRemote), )
+            _print(STR_REMOTE_MODE % str(fAllowRemote), self.m_stdout)
             return
 
         if arg == str(True):
@@ -9990,11 +12584,45 @@ class CConsoleInternal(cmd.Cmd, threading.Thread):
         elif arg == str(False):
             fAllowRemote = False
         else:
-            print >> self.stdout, STR_BAD_ARGUMENT
+            _print(STR_BAD_ARGUMENT, self.m_stdout)
             return
 
         self.m_session_manager.set_remote(fAllowRemote)
-        print >> self.stdout, STR_REMOTE_MODE % (str(fAllowRemote), )
+        _print(STR_REMOTE_MODE % str(fAllowRemote), self.m_stdout)
+
+
+    def do_env(self, arg):
+        env = self.m_session_manager.get_environ()
+
+        if arg == '':
+            if len(env) == 0:
+                _print(STR_ENVIRONMENT_EMPTY, self.m_stdout)
+                return
+
+            _print(STR_ENVIRONMENT, self.m_stdout)
+            for k, v in env:
+                _print('%s=%s' % (k, v), self.m_stdout)
+            return
+
+        if arg[:2] == '-d':
+            k = arg[2:].strip()
+            _env = [(_k, _v) for (_k, _v) in env if _k != k]
+            self.m_session_manager.set_environ(_env)
+            return
+
+        try:
+            k, v = arg.split('=')
+            k = k.strip()
+            v = v.strip()
+
+        except ValueError:
+            self.printer(STR_BAD_ARGUMENT)
+            return
+
+        _env = [(_k, _v) for (_k, _v) in env if _k != k]
+        _env.append((k, v))
+
+        self.m_session_manager.set_environ(_env)
 
 
     def do_stop(self, arg):        
@@ -10018,7 +12646,7 @@ class CConsoleInternal(cmd.Cmd, threading.Thread):
                 self.m_session_manager.report_exception(*sys.exc_info())
                 print_debug_exception(True)
 
-        print >> self.stdout, ''
+        _print('', self.m_stdout)
 
         return True 
 
@@ -10050,6 +12678,7 @@ remote      - Get or set "allow connections from remote machines" mode.
 Session Control:
 -----------------
 
+env         - Display or set the environment setting for new sessions.
 host        - Display or change host.
 attach      - Display scripts or attach to a script on host.
 detach      - Detach from script.
@@ -10087,11 +12716,13 @@ list        - List source code.
 stack       - Display stack trace.
 up          - Go up one frame in stack.
 down        - Go down one frame in stack.
+encoding    - Set the source encoding used by exec and eval commands.
 eval        - Evaluate expression in the context of the current frame.
 exec        - Execute suite in the context of the current frame.
 analyze     - Toggle analyze last exception mode.
 trap        - Get or set "trap unhandled exceptions" mode.
 fork        - Get or set fork handling mode.
+synchro     - Get or set synchronicity mode.
 
 License:
 ----------------
@@ -10107,32 +12738,32 @@ type help <topic> for futher information."""
 
         
     def help_copyright(self):
-        print >> self.stdout, """copyright
+        _print("""copyright
 
-Print copyright notice."""  
+Print copyright notice.""", self.m_stdout) 
 
 
     def help_license(self):
-        print >> self.stdout, """license
+        _print("""license
 
-Print license."""  
+Print license.""", self.m_stdout)    
 
 
     def help_credits(self):
-        print >> self.stdout, """credits
+        _print("""credits
 
-Print credits information."""  
+Print credits information.""", self.m_stdout)  
 
 
     def help_help(self):
-        print >> self.stdout, """help <cmd>
+        _print("""help <cmd>
 
 Print help for command <cmd>.
-On the other hand I guess that you already know that, don't you?"""  
+On the other hand I guess that you already know that, don't you?""", self.m_stdout)  
 
 
     def help_analyze(self):
-        print >> self.stdout, """analyze
+        _print("""analyze
 
 (shorthand - a)
 
@@ -10145,13 +12776,13 @@ The debugger prompt changes to 'Analyze>'.
 'stack' allows no arguments.
 'list' does not accept the '*' (all threads) argument
 'stack', 'list', 'eval', 'exec', 'up', and 'down' operate on the thrown 
-exception."""
+exception.""", self.m_stdout)
 
     help_a = help_analyze    
 
 
     def help_password(self):
-        print >> self.stdout, """password <password>
+        _print("""password <password>
 
 Get or set the channel password.
 
@@ -10161,11 +12792,11 @@ debuggee alone) governs both security methods. The password is never
 communicated between the two components on the communication channel.
 
 A password is always required since unsecured communication between the 
-console and the debuggee may expose your machine to attacks."""
+console and the debuggee might expose your machine to attacks.""", self.m_stdout)
 
 
     def help_remote(self):
-        print >> self.stdout, """remote [True | False]
+        _print("""remote [True | False]
 
 Get or set "allow connections from remote machines" mode.
 
@@ -10175,11 +12806,11 @@ consoles on remote machines will NOT BE able to see or attach to the debuggee.
 
 When set to True: 
 Newly launched debuggees will listen on INADDR_ANY. In this mode, debugger 
-consoles on remote machines will BE able to see and attach to the debuggee."""
+consoles on remote machines will BE able to see and attach to the debuggee.""", self.m_stdout)
 
 
     def help_trap(self):
-        print >> self.stdout, """trap [True | False]
+        _print("""trap [True | False]
 
 Get or set "trap unhandled exceptions" mode.
 
@@ -10187,11 +12818,32 @@ When set to False:
 Debuggee will ignore unhandled exceptions.
 
 When set to True: 
-Debuggee will pause on unhandled exceptions for inspection."""
+Debuggee will pause on unhandled exceptions for inspection.""", self.m_stdout)
+
+
+    def help_synchro(self):
+        _print("""synchro [True | False]
+
+Get or set the synchronicity mode.
+
+Traditional Python debuggers that use the inspected thread 
+(usually the main thread) to query or modify the script 
+name-space have to wait until the script hits a break-point. 
+Synchronicity allows the debugger to query and modify the 
+script name-space even if its threads are still running or 
+blocked in C library code by using special worker threads. 
+In some rare cases querying or modifying data in 
+synchronicity can crash the script. For example in some 
+Linux builds of wxPython querying the state of wx objects 
+from a thread other than the GUI thread can crash the 
+script. If this happens or if you want to restrict these 
+operations to the inspected thread, turn synchronicity off.
+
+Default is True.""", self.m_stdout)
 
 
     def help_fork(self):
-        print >> self.stdout, """fork [parent | child] [manual | auto]
+        _print("""fork [parent | child] [manual | auto]
 
 Get or set fork handling mode.
 
@@ -10214,33 +12866,33 @@ On some Posix OS such as FreeBSD, Stepping into the child fork
 can result in termination of the child process since the debugger
 uses threading for its operation and on these systems threading and 
 forking can conflict.
-"""
+""", self.m_stdout)
 
 
     def help_stop(self):
-        print >> self.stdout, """stop
+        _print("""stop
 
-Shutdown the debugged script."""
+Shutdown the debugged script.""", self.m_stdout)
 
 
     def help_launch(self):
-        print >> self.stdout, """launch [-k] <script_name> [<script_args>]
+        _print("""launch [-k] <script_name> [<script_args>]
 
 Start script <script_name> and attach to it.
 
 -k  Don't change the current working directory. By default the working
-    directory of the launched script is set to its folder."""
+    directory of the launched script is set to its folder.""", self.m_stdout)
 
 
     def help_restart(self):
-        print >> self.stdout, """restart
+        _print("""restart
 
-Restart a script with same arguments from last launch."""
+Restart a script with same arguments from last launch.""", self.m_stdout)
 
 
 
     def help_attach(self):
-        print >> self.stdout, """attach [<arg>]
+        _print("""attach [<arg>]
 
 Without an argument, 'attach' prints the scripts available for debugging
 on the selected host. To select a host use the 'host' command. A script is
@@ -10252,18 +12904,18 @@ mark that script in the list.
 When <arg> is an integer the debugger will try to attach to a script with
 that pid. 
 When <arg> is a string the debugger will try to attach to a script
-with that name in the list."""  
+with that name in the list.""", self.m_stdout)  
 
 
     def help_detach(self):
-        print >> self.stdout, """detach
+        _print("""detach
 
 Detach from the script the debugger is currently attached to. The detached
-script will continue execution."""  
+script will continue execution.""", self.m_stdout)  
 
 
     def help_break(self):
-        print >> self.stdout, """break 
+        _print("""break 
 
 (shorthand - b)
 
@@ -10271,13 +12923,13 @@ Request script to break (pause execution as if it hit a breakpoint).
 The 'break' command returns immdeiately but the break is only established 
 when an active thread submits to the debugger control. If a thread is 
 doing a system call or executing C code, this will happen only when 
-it returns to do python code."""  
+it returns to do python code.""", self.m_stdout)  
 
     help_b = help_break
     
 
     def help_bp(self):
-        print >> self.stdout, """bp [<filename>':'] (<line> | <scope>) [',' <expr>]
+        _print("""bp [<filename>':'] (<line> | <scope>) [',' <expr>]
 
 Set a breakpoint.
 
@@ -10298,62 +12950,62 @@ Examples:
     bp test_file.py:MyClass.Foo
     bp 304
 
-Type 'help break' for more information on breakpoints and threads."""
+Type 'help break' for more information on breakpoints and threads.""", self.m_stdout)
 
 
     def help_be(self):
-        print >> self.stdout, """be (<id_list> | '*')
+        _print("""be (<id_list> | '*')
         
 Enable breakpoints.
 
 <id_list> - is a space delimited list of at least one breakpoint id
-'*' - Enable all breakpoints."""
+'*' - Enable all breakpoints.""", self.m_stdout)
 
 
     def help_bd(self):
-        print >> self.stdout, """bd (<id_list> | '*')
+        _print("""bd (<id_list> | '*')
         
 Disable breakpoints.
 
 <id_list> - is a space delimited list of at least one breakpoint id
-'*' - disable all breakpoints."""
+'*' - disable all breakpoints.""", self.m_stdout)
 
 
     def help_bc(self):
-        print >> self.stdout, """bc (<id_list> | '*')
+        _print("""bc (<id_list> | '*')
         
 Clear (delete) breakpoints.
 
 <id_list> - is a space delimited list of at least one breakpoint id
-'*' - clear all breakpoints."""
+'*' - clear all breakpoints.""", self.m_stdout)
 
 
     def help_bl(self):
-        print >> self.stdout, """bl
+        _print("""bl
 
-List all breakpoints, sorted by their id."""
+List all breakpoints, sorted by their id.""", self.m_stdout)
 
 
     def help_load(self):
-        print >> self.stdout, """load [<filename>]
+        _print("""load [<filename>]
         
 Load breakpoints.
 
 <filename> - optional breakpoints filename. The filename should not include
-             a file extension."""
+             a file extension.""", self.m_stdout)
 
 
     def help_save(self):
-        print >> self.stdout, """save [<filename>]
+        _print("""save [<filename>]
         
 save breakpoints.
 
 <filename> - optional breakpoints filename. The filename should not include
-             a file extension."""
+             a file extension.""", self.m_stdout)
 
 
     def help_go(self):
-        print >> self.stdout, """go [[<filename>':'] (<line> | <scope>)]
+        _print("""go [[<filename>':'] (<line> | <scope>)]
 
 (shorthand - g)
 
@@ -10365,22 +13017,22 @@ If an argument is present, continue execution until that argument is reached.
 <line>   - is the line number to assign the breakpoint to.
 <scope>  - is a "fully qualified" function name. That is, not only the 
            function name but also the class name (in case of a member 
-           function), such as MyClass.MyMemberFunction."""
+           function), such as MyClass.MyMemberFunction.""", self.m_stdout)
 
     help_g = help_go
     
 
     def help_exit(self):
-        print >> self.stdout, """exit
+        _print("""exit
 
 Exit the debugger. If the debugger is attached to a script, the debugger
-will attempt to detach from the script first."""  
+will attempt to detach from the script first.""", self.m_stdout) 
 
     help_EOF = help_exit
     
 
     def help_host(self):
-        print >> self.stdout, """host [<arg>]
+        _print("""host [<arg>]
 
 Without an argument, 'host' prints the current selected host.
 With an argument <arg>, 'host' attempts to resolve <arg> to a known ip 
@@ -10389,10 +13041,10 @@ selected host.
 The default selected host is the local host.
 Subsequent 'attach' commands will be done on the selected host. 
 
-Type 'help attach' for more information."""  
+Type 'help attach' for more information.""", self.m_stdout)  
 
     def help_stack(self):
-        print >> self.stdout, """stack [<tid> | '*']
+        _print("""stack [<tid> | '*']
 
 (shorthand - k)
 
@@ -10404,13 +13056,13 @@ focused frame.
 '*'   - print the stacks of all active threads.
 
 Type 'help break' for more information on breakpoints and threads.
-Type 'help up' or 'help down' for more information on focused frames."""  
+Type 'help up' or 'help down' for more information on focused frames.""", self.m_stdout)  
 
     help_k = help_stack
-    
 
+    
     def help_list(self):
-        print >> self.stdout, """list [<file_name>:][<line_no> | '+' | '-' | '^' | '*'] [',' <nlines>]
+        _print("""list [<file_name>:][<line_no> | '+' | '-' | '^' | '*'] [',' <nlines>]
 
 (shorthand - l)
 
@@ -10439,13 +13091,13 @@ If a breakpoint is assigned to a line, that line will be marked with:
 <nlines>    - Print <nlines> of source
 
 Type 'help break' for more information on breakpoints and threads.
-Type 'help up' or 'help down' for more information on focused frames."""  
+Type 'help up' or 'help down' for more information on focused frames.""", self.m_stdout)  
 
     help_l = help_list
     
 
     def help_thread(self):
-        print >> self.stdout, """thread [<no> | <tid>]
+        _print("""thread [<no> | <tid>]
 
 (shorthand - t)
 
@@ -10458,55 +13110,55 @@ the thread of that tid.
 With an argument <no>, 'thread' will attempt to set the debugger focus to 
 the thread of that order in the thread list.
 
-Type 'help break' for more information on breakpoints and threads."""
+Type 'help break' for more information on breakpoints and threads.""", self.m_stdout)
 
     help_t = help_thread
 
 
     def help_jump(self):
-        print >> self.stdout, """jump <lineno>
+        _print("""jump <lineno>
 
 (shorthand - j)
 
-Jump to line <lineno> in the current scope."""
+Jump to line <lineno> in the current scope.""", self.m_stdout)
 
     help_j = help_jump
     
 
     def help_next(self):
-        print >> self.stdout, """next
+        _print("""next
 
 (shorthand - n)
 
 Continue execution until the next line in the current function
-is reached or it returns."""
+is reached or it returns.""", self.m_stdout)
 
     help_n = help_next
     
 
     def help_step(self):
-        print >> self.stdout, """next
+        _print("""step
 
 (shorthand - s)
 
 Execute the current line, stop at the first possible occasion
-(either in a function that is called or in the current function)."""
+(either in a function that is called or in the current function).""", self.m_stdout)
 
     help_s = help_step    
 
 
     def help_return(self):
-        print >> self.stdout, """next
+        _print("""next
 
 (shorthand - r)
 
-Continue execution until the current function returns."""
+Continue execution until the current function returns.""", self.m_stdout)
 
     help_r = help_return    
 
 
     def help_up(self):
-        print >> self.stdout, """up
+        _print("""up
 
 move the debugger focus one frame up the stack of the debugged thread 
 (closer to the current, most recently executed frame). Evaluation of 
@@ -10514,11 +13166,11 @@ expressions or execution of statements will be done at the local and global
 name spaces of the focused frame.
 
 Type 'help eval' for more information on evaluation of expressions.
-Type 'help exec' for more information on execution of statements."""
+Type 'help exec' for more information on execution of statements.""", self.m_stdout)
 
 
     def help_down(self):
-        print >> self.stdout, """down
+        _print("""down
 
 move the debugger focus one frame down the stack of the debugged thread 
 (closer to the current, most recently executed frame). Evaluation of 
@@ -10526,11 +13178,11 @@ expressions or execution of statements will be done at the local and global
 name spaces of the focused frame.
 
 Type 'help eval' for more information on evaluation of expressions.
-Type 'help exec' for more information on execution of statements."""
+Type 'help exec' for more information on execution of statements.""", self.m_stdout)
 
 
     def help_eval(self):
-        print >> self.stdout, """eval <expr>
+        _print("""eval <expr>
 
 (shorthand - v)
 
@@ -10543,13 +13195,13 @@ Example:
 IMPORTANT: Any changes to the global name space will be discarded unless the
 focused stack frame is the top most frame.
 
-Type 'help up' or 'help down' for more information on focused frames."""  
+Type 'help up' or 'help down' for more information on focused frames.""", self.m_stdout)  
 
     help_v = help_eval
 
 
     def help_exec(self):
-        print >> self.stdout, """exec <stmt>
+        _print("""exec <stmt>
 
 (shorthand - x)
 
@@ -10562,11 +13214,52 @@ Example:
 IMPORTANT: Any changes to the global name space will be discarded unless the
 focused stack frame is the top most frame.
 
-Type 'help up' or 'help down' for more information on focused frames."""  
+Type 'help up' or 'help down' for more information on focused frames.""", self.m_stdout)  
 
     help_x = help_exec
 
-    
+
+    def help_encoding(self):
+        _print("""encoding [<encoding> [, raw]]
+
+Set the source encoding for the exec and eval commands.
+
+Without an argument returns the current encoding.
+
+The specified encoding can be either 'auto' or any encoding accepted 
+by the codecs module. If 'auto' is specified, the source encoding of 
+the active scope will be used, which is utf-8 by default.
+
+The default encoding value is 'auto'.
+
+If 'raw' is specified, strings returned by the eval command
+will represent non ASCII characters as an escape sequence.""", self.m_stdout)
+
+
+    def help_env(self):
+        _print("""env [-d key | key = value] 
+
+Set the environment variables mapping. This mapping is used 
+when a new script is launched to modify its environment.
+
+Example for a mapping on Windows: 
+env Path = %Path%;c:\\mydir
+
+Example for a mapping on Linux: 
+env PATH = $PATH:~/mydir
+
+To delete the mapping for PATH
+env -d PATH
+
+Without an argument returns the current list of mappings.
+
+Note that the mapping will be evaluated and used to modify 
+the environment after the debugger engine at the debuggee
+has imported the modules it requires. The order in which the
+mappings will be evaluated and applied is: 
+last set, last evaluated.""", self.m_stdout)  
+
+
 
 #
 # ---------------------------------------- Replacement Functions ------------------------------------
@@ -10574,9 +13267,257 @@ Type 'help up' or 'help down' for more information on focused frames."""
 
 
 
+def rpdb2_import_wrapper(*args, **kwargs):
+    if len(args) > 0:
+        name = args[0]
+    elif 'name' in kwargs:
+        name = kwargs['name']
+    else:
+        return g_import(*args, **kwargs)
+
+    if name in sys.modules:
+        return g_import(*args, **kwargs)
+
+    #
+    # rpdb2 avoids stepping through this 
+    # function (rpdb2_import_wrapper) to
+    # prevent confusion when stepping into
+    # an import statement.
+    #
+    m = g_import(*args, **kwargs)
+
+    if name != 'gtk':
+        return m
+
+    try:
+        m.gdk.threads_init()
+        return m
+    except:
+        pass
+    
+    try:
+        m.threads_init()
+        return m
+    except:
+        pass
+
+    return m
+
+
+
+g_import = None
+
+if __name__ == 'rpdb2' and g_builtins_module.__import__ != rpdb2_import_wrapper:
+    g_import = g_builtins_module.__import__
+    g_builtins_module.__import__ = rpdb2_import_wrapper
+
+
+
+def __find_eval_exec_frame_in_stack():
+    f = sys._getframe(0)
+    
+    while f != None:
+        filename = f.f_code.co_filename
+        name = f.f_code.co_name
+        
+        if DEBUGGER_FILENAME in filename and name in ['_evaluate', '_execute'] and 'redirect_exc_info' in f.f_locals:
+            return f
+
+        f = f.f_back
+
+    return None
+
+
+
+def __exc_info():
+    f = __find_eval_exec_frame_in_stack()
+    if f == None:
+        return g_sys_exc_info()
+
+    try:
+        frame_index = f.f_locals['frame_index']
+        fException = f.f_locals['fException']
+
+        e = g_debugger.get_exception(frame_index, fException)
+        exc_info = (e['type'], e['value'], e['traceback'])
+
+        return exc_info
+
+    except:
+        return g_sys_exc_info()
+
+
+
+g_sys_exc_info = None
+
+if __name__ == 'rpdb2' and 'exc_info' in dir(sys) and sys.exc_info != __exc_info:
+    g_sys_exc_info = sys.exc_info
+    sys.exc_info = __exc_info
+
+
+
+def __find_debugger_frame():
+    frame = None
+
+    f = sys._getframe(0)
+    
+    while f != None:
+        filename = f.f_code.co_filename
+        name = f.f_code.co_name
+        
+        if DEBUGGER_FILENAME in filename and (name.startswith('trace_dispatch') or name == 'profile'):
+            frame = f 
+
+        f = f.f_back
+
+    return frame
+
+
+
+class CSignalHandler:
+    def __del__(self):
+        while len(g_signals_pending) != 0:
+            (handler, signum, frameobj) = g_signals_pending.pop(0)
+            print_debug('Handling pending signal: %s, %s' % (repr(signum), repr(frameobj)))
+            
+            try:
+                handler(signum, frameobj)
+
+            except:
+                #
+                # Can not raise from inside a destructor. Report that handler
+                # exception will be ignored.
+                #
+                (t, v, tb) = sys.exc_info()
+
+                _t = safe_repr(t)
+                if _t.startswith("<type '"):
+                    _t = _t.split("'")[1]
+
+                event = CEventSignalException(signum, '%s: %s' % (_t, safe_repr(v)))
+                g_debugger.m_event_dispatcher.fire_event(event)
+
+
+
+def signal_handler(signum, frameobj):
+    frame = __find_debugger_frame()
+    if frame == None:
+        #
+        # A debugger tracing frame was not found in the stack.
+        # This means that the handler can be run without risk
+        # for state corruption.
+        #
+        handler = signal.getsignal(signum)
+        return handler(signum, frameobj)
+
+    if frame.f_code.co_name == 'profile' and frame.f_locals['event'] != 'return':
+        #
+        # signal was caught inside the profile hook but not while
+        # doing some debugger stuff. Call the handler but in case
+        # of exception schedule the debugger to re-enable the 
+        # profile hook.
+        #
+        try:
+            handler = signal.getsignal(signum)
+            return handler(signum, frameobj)
+        except:
+            ctx = g_debugger.get_ctx(thread.get_ident())
+            ctx.set_tracers(fsignal_exception = True)
+            raise
+
+    #
+    # Set the handler to be run when the debugger is about 
+    # to return from the tracing code.
+    #
+
+    print_debug('Intercepted signal: %s, %s' % (repr(signum), repr(frameobj)))
+
+    f = frameobj
+    while f != None:
+        if f == frame:
+            frameobj = frame.f_back
+            break
+
+        f = f.f_back
+
+    handler = signal.getsignal(signum)
+    g_signals_pending.append((handler, signum, frameobj))
+
+    if not 'signal_handler' in frame.f_locals:
+        frame.f_locals.update({'signal_handler': CSignalHandler()})
+
+    event = CEventSignalIntercepted(signum)
+    g_debugger.m_event_dispatcher.fire_event(event)
+
+    if signum == signal.SIGINT and g_debugger.is_waiting_for_attach():
+        g_debugger.set_request_go_timer(0)
+
+
+
+def __getsignal(signum):
+    handler = g_signal_handlers.get(signum, g_signal_getsignal(signum))
+    return handler
+
+
+
+g_signal_getsignal = None
+
+if __name__ == 'rpdb2' and 'getsignal' in dir(signal) and signal.getsignal != __getsignal:
+    g_signal_getsignal = signal.getsignal
+    signal.getsignal = __getsignal
+
+
+
+def __signal(signum, handler):
+    old_handler = __getsignal(signum)
+    
+    if handler in [signal.SIG_IGN, signal.SIG_DFL]:
+        g_signal_signal(signum, handler)
+        return old_handler
+
+    g_signal_signal(signum, signal_handler)
+    g_signal_handlers[signum] = handler
+
+    return old_handler
+
+
+
+g_signal_signal = None
+
+if __name__ == 'rpdb2' and 'signal' in dir(signal) and signal.signal != __signal:
+    g_signal_signal = signal.signal
+    signal.signal = __signal
+
+
+
+"""
+def __setprofile(foo):
+    global g_profile
+
+    print_debug('*** setprofile to %s' % repr(foo))
+    traceback.print_stack(file = sys.__stderr__)
+
+    if threading.currentThread().getName() == 'MainThread':
+        g_profile = foo
+
+    g_sys_setprofile(foo)
+
+
+
+g_sys_setprofile = None
+
+if __name__ == 'rpdb2' and sys.setprofile != __setprofile:
+    g_sys_setprofile = sys.setprofile
+    sys.setprofile = __setprofile
+"""
+
+
+
 def __fork():
     global g_forktid
-    g_forktid = setbreak()
+    
+    if not g_fignorefork:
+        g_forktid = setbreak()
 
     #
     # os.fork() has been called. 
@@ -10634,7 +13575,7 @@ if __name__ == 'rpdb2' and '_exit' in dir(os) and os._exit != __exit:
 def __execv(path, args):
     global g_exectid
     
-    if os.path.isfile(path):
+    if os.path.isfile(path) and not g_fignorefork:
         g_exectid = setbreak()
 
     #
@@ -10659,7 +13600,7 @@ if __name__ == 'rpdb2' and 'execv' in dir(os) and os.execv != __execv:
 def __execve(path, args, env):
     global g_exectid
 
-    if os.path.isfile(path):
+    if os.path.isfile(path) and not g_fignorefork:
         g_exectid = setbreak()
 
     #
@@ -10678,6 +13619,64 @@ g_os_execve = None
 if __name__ == 'rpdb2' and 'execve' in dir(os) and os.execve != __execve:
     g_os_execve = os.execve
     os.execve = __execve
+
+
+
+def __excepthook(type, value, traceback, next_excepthook, index):
+    if index + 1 < len(g_excepthooks):
+        return next_excepthook(type, value, traceback)
+
+    if traceback.tb_frame.f_back == None:
+        return next_excepthook(type, value, traceback)
+
+    if not g_debugger.m_ftrap:
+        return next_excepthook(type, value, traceback)
+
+    settrace()
+    ctx = g_debugger.get_ctx(thread.get_ident())
+    ctx.m_fUnhandledException = True
+    setbreak()
+
+    #
+    # Debuggee breaks (pauses) here
+    # on unhandled exceptions.
+    # Use analyze mode for post mortem.
+    # type 'help analyze' for more information.
+    #
+    return next_excepthook(type, value, traceback)
+
+
+
+g_excepthooks = []
+
+g_excepthook = None
+
+#
+# Set the debugger hook for unhandled exceptions. It only kicks in on 
+# unhandled exceptions that are declared unhandled in the middle of the
+# stack as in wxPython. Normally unhandled exceptions are trapped at the 
+# last stack frame by another mechanism.
+#
+# This mechaism is designed to work even if the excepthook is over-written.
+# by the debugged script.
+#
+def set_excepthook():
+    global g_excepthook
+
+    if len(g_excepthooks) >= 4:
+        #
+        # Give up. We have been over-written 4 times already.
+        #
+        return
+
+    next_excepthook = sys.excepthook
+    index = len(g_excepthooks)
+
+    eh = lambda type, value, traceback: __excepthook(type, value, traceback, next_excepthook, index)
+
+    g_excepthooks.append(eh)
+    g_excepthook = eh
+    sys.excepthook = eh
 
 
 
@@ -10731,6 +13730,11 @@ def __setbreak():
 
     return thread.get_ident()
 
+
+
+def __set_temp_breakpoint(path, scopename, lineno):
+    return g_debugger.m_bp_manager.set_temp_breakpoint(path, scopename, lineno)
+
     
 
 def _atexit(fabort = False):
@@ -10752,12 +13756,17 @@ def _atexit(fabort = False):
     g_server.shutdown()
     g_debugger.shutdown()
 
-    if fabort:
+    if not fabort:
+        return
+
+    if hasattr(os, 'kill') and hasattr(signal, 'SIGKILL'):
+        os.kill(os.getpid(), signal.SIGKILL)
+    else:
         os.abort()
         
 
 
-def myimport(*args, **kwargs):
+def my_pickle_import(*args, **kwargs):
     if len(args) != 1 or len(kwargs) != 0:
         return __import__(*args, **kwargs)
 
@@ -10769,29 +13778,46 @@ def myimport(*args, **kwargs):
 
 
 
+#
+# MOD
+#
 def workaround_import_deadlock():
-    xmlrpclib.loads(XML_DATA)    
-    pickle.loads('(S\'\\xb3\\x95\\xf9\\x1d\\x105c\\xc6\\xe2t\\x9a\\xa5_`\\xa59\'\np0\nS"(I0\\nI1\\nS\'5657827\'\\np0\\n(S\'server_info\'\\np1\\n(tI0\\ntp2\\ntp3\\n."\np1\ntp2\n.0000000')
-    pickle.__import__ = myimport
+    xmlrpclib.loads(XML_DATA)
+    s = as_bytes('(S\'\\xb3\\x95\\xf9\\x1d\\x105c\\xc6\\xe2t\\x9a\\xa5_`\\xa59\'\np0\nS"(I0\\nI1\\nS\'5657827\'\\np0\\n(S\'server_info\'\\np1\\n(tI0\\ntp2\\ntp3\\n."\np1\ntp2\n.0000000')
+    pickle.loads(s)
+    pickle.__import__ = my_pickle_import
 
 
 
-def __start_embedded_debugger(_rpdb2_pwd, fAllowUnencrypted, fAllowRemote, timeout, fDebug):
+def __start_embedded_debugger(_rpdb2_pwd, fAllowUnencrypted, fAllowRemote, timeout, source_provider, fDebug):
     global g_server
     global g_debugger
     global g_fDebug
     global g_initial_cwd
+    global g_source_provider_aux
+
+    _rpdb2_pwd = as_unicode(_rpdb2_pwd)
 
     try:
         g_server_lock.acquire()
         
+        if g_debugger is not None and timeout == 0:
+            f = sys._getframe(2)
+            g_debugger.settrace(f, f_break_on_init = False)
+            return
+
         if g_debugger is not None:
             f = sys._getframe(2)
+            g_debugger.record_client_heartbeat(0, True, False)
             g_debugger.setbreak(f)
             return
 
+        if not is_valid_pwd(_rpdb2_pwd):
+            raise BadArgument(STR_PASSWORD_BAD)
+
         g_fDebug = fDebug
-       
+        g_source_provider_aux = source_provider
+
         workaround_import_deadlock()
 
         if (not fAllowUnencrypted) and not is_encryption_supported():
@@ -10805,7 +13831,15 @@ def __start_embedded_debugger(_rpdb2_pwd, fAllowUnencrypted, fAllowRemote, timeo
         # relative paths in __file__ members of modules in the following case.
         #
         if sys.path[0] == '':
-            g_initial_cwd = [os.getcwd()]
+            try:
+                g_initial_cwd = [os.getcwd(), os.getcwdu()]
+    
+            except UnicodeDecodeError:
+                #
+                # This exception can be raised in py3k (alpha) on nt.
+                #
+                g_initial_cwd = [os.getcwdu()]
+
             
         atexit.register(_atexit)
         
@@ -10814,23 +13848,42 @@ def __start_embedded_debugger(_rpdb2_pwd, fAllowUnencrypted, fAllowRemote, timeo
         g_server = CDebuggeeServer(filename, g_debugger, _rpdb2_pwd, fAllowUnencrypted, fAllowRemote)
         g_server.start()
 
+        if timeout == 0:
+            g_debugger.settrace(f, f_break_on_init = False)
+            return
+
         g_debugger.settrace(f, timeout = timeout)
 
     finally:
         g_server_lock.release()
 
 
-    
+
 def StartServer(args, fchdir, _rpdb2_pwd, fAllowUnencrypted, fAllowRemote, rid): 
+    assert(is_unicode(_rpdb2_pwd))
+
     global g_server
     global g_debugger
     global g_module_main
-    
+     
     try:
         ExpandedFilename = FindFile(args[0])
+        _path = g_found_unicode_files.get(ExpandedFilename, ExpandedFilename)
+        
+        if fchdir:   
+            os.chdir(os.path.dirname(_path))
+
+        if ExpandedFilename in g_found_unicode_files:
+            prefix = os.path.join(os.getcwdu(), '')
+            _path = _path.replace(winlower(prefix), '')
+        
     except IOError:
-        print 'File', args[0], ' not found.'
+        _print('File ' + args[0] + ' not found.')
         return
+
+    print_debug('Starting server with: %s' % ExpandedFilename)
+
+    workaround_import_deadlock()
 
     #
     # Replace the rpdb2.py directory with the script directory in 
@@ -10843,10 +13896,9 @@ def StartServer(args, fchdir, _rpdb2_pwd, fAllowUnencrypted, fAllowRemote, rid):
 
     sys.path[0] = os.path.dirname(spe)
 
-    if fchdir:   
-        os.chdir(os.path.dirname(ExpandedFilename))
-
-    sys.argv = args
+    encoding = detect_locale()
+    argv = [as_string(arg, encoding) for arg in args]
+    sys.argv = argv
 
     atexit.register(_atexit)
 
@@ -10871,15 +13923,18 @@ def StartServer(args, fchdir, _rpdb2_pwd, fAllowUnencrypted, fAllowRemote, rid):
     # there is a syntax error in the debugged script or if
     # there was a problem loading the debugged script.
     #
-    imp.load_source('__main__', ExpandedFilename)    
+    imp.load_source('__main__', _path)    
         
 
 
 def StartClient(command_line, fAttach, fchdir, _rpdb2_pwd, fAllowUnencrypted, fAllowRemote, host):
+    assert(is_unicode(command_line))
+    assert(_rpdb2_pwd == None or is_unicode(_rpdb2_pwd))
+
     if (not fAllowUnencrypted) and not is_encryption_supported():
-        print STR_ENCRYPTION_SUPPORT_ERROR
+        _print(STR_ENCRYPTION_SUPPORT_ERROR)
         return 2
-        
+    
     sm = CSessionManager(_rpdb2_pwd, fAllowUnencrypted, fAllowRemote, host)
     c = CConsole(sm)
     c.start()
@@ -10901,23 +13956,35 @@ def StartClient(command_line, fAttach, fchdir, _rpdb2_pwd, fAllowUnencrypted, fA
         print_debug_exception(True)
         
     c.join()
+    sm.shutdown()
 
 
 
 def PrintUsage(fExtended = False):
     scriptName = os.path.basename(sys.argv[0])
-    print """ %(rpdb)s [options] [<script-name> [<script-args>...]]
+    _print(""" %(rpdb)s [options] [<script-name> [<script-args>...]]
 
-    Where the options can be a combination of the following:
-    -h, --help      print this help.
-    -d, --debuggee  start debuggee and break into it, without starting a 
-                    debugger console. 
-    -a, --attach    Attach to an already started debuggee.
-    -o, --host      Specify host for attachment.
+    %(rpdb)s uses the client-server model where the debugger UI/console is
+    the client and the debugged script is the server (also called debuggee).
+    The client and the server are separate processes and communicate over 
+    sockets.
+
+    Example: The following command starts the debugger UI/console and then 
+    launches and attaches to the specified script:
+    %(rpdb)s some_script.py 
+
+    Options can be a combination of the following:
+    -h, --help      Print this help.
+    -d, --debuggee  Start the debugged script (server) and wait for a 
+                    debugger console (client) to attach. 
+    -a, --attach    Start the debugger console (client) and attach to the 
+                    specified debugged script (server).
+    -o, --host=     Specify host (or IP address) for remote connections.
     -r, --remote    Allow debuggees to accept connections from remote machines.
-    -e, --encrypt   Force encrypted connections between debugger and debuggees.
-    -p, --pwd       Password. This flag is available only on NT systems. 
-                    On other systems the password will be queried interactively 
+    -e, --encrypt   Force encrypted socket communication.
+    -p, --pwd=      Specify password for socket communication. 
+                    This flag is available only on Windows. On other 
+                    systems the password will be queried interactively 
                     if it is needed.
     -s, --screen    Use the Unix screen utility when starting the debuggee.
                     Note that the debugger should be started as follows:
@@ -10925,30 +13992,45 @@ def PrintUsage(fExtended = False):
     -c, --chdir     Change the working directory to that of the launched 
                     script.
     --debug         Debug prints.
-""" % {"rpdb": scriptName}
+
+    Note that each option is available in short form (example -e) and in a 
+    long form (example --encrypt).
+
+    Options that end with '=' accept an argument that should follow without
+    a space. For example to specify 192.168.0.10 as host use the following 
+    option: 
+
+        long form: --host=192.168.0.10
+        short form: -o192.168.0.10
+""" % {"rpdb": scriptName})
     
     if not fExtended:
         return
         
-    print __doc__
+    _print(__doc__)
 
 
 
 def main(StartClient_func = StartClient):
     global g_fScreen
     global g_fDebug
+    global g_fFirewallTest
     
     create_rpdb_settings_folder()
 
+    encoding = detect_locale()
+    argv = [as_unicode(arg, encoding) for arg in sys.argv]
+    
     try:
         options, _rpdb2_args = getopt.getopt(
-                            sys.argv[1:], 
+                            argv[1:], 
                             'hdao:rtep:sc', 
-                            ['help', 'debugee', 'debuggee', 'attach', 'host=', 'remote', 'plaintext', 'encrypt', 'pwd=', 'rid=', 'screen', 'chdir', 'debug']
+                            ['help', 'debugee', 'debuggee', 'attach', 'host=', 'remote', 'plaintext', 'encrypt', 'pwd=', 'rid=', 'screen', 'chdir', 'base64=', 'nofwtest', 'debug']
                             )
 
-    except getopt.GetoptError, e:
-        print e
+    except getopt.GetoptError:
+        e = sys.exc_info()[1]
+        _print(e)
         return 2
         
     fWrap = False
@@ -10956,6 +14038,7 @@ def main(StartClient_func = StartClient):
     fSpawn = False
     fStart = False
     
+    encoded_path = None
     secret = None
     host = None
     _rpdb2_pwd = None
@@ -10989,37 +14072,47 @@ def main(StartClient_func = StartClient):
             g_fScreen = True
         if o in ['-c', '--chdir']:
             fchdir = True
+        if o in ['--base64']:
+            encoded_path = a
+        if o in ['--nofwtest']:
+            g_fFirewallTest = False
     
+    arg = None
+    argv = None
     options = None
     o = None
     a = None
 
     if (_rpdb2_pwd is not None) and (os.name != 'nt'):
-        print STR_PASSWORD_NOT_SUPPORTED
+        _print(STR_PASSWORD_NOT_SUPPORTED)
+        return 2
+
+    if _rpdb2_pwd is not None and not is_valid_pwd(_rpdb2_pwd):
+        _print(STR_PASSWORD_BAD)
         return 2
 
     if fWrap and (len(_rpdb2_args) == 0):
-        print "--debuggee option requires a script name with optional <script-arg> arguments"
+        _print("--debuggee option requires a script name with optional <script-arg> arguments")
         return 2
         
     if fWrap and fAttach:
-        print "--debuggee and --attach can not be used together."
+        _print("--debuggee and --attach can not be used together.")
         return 2
         
     if fAttach and (len(_rpdb2_args) == 0):
-        print "--attach option requires a script name to attach to."
+        _print("--attach option requires a script name to attach to.")
         return 2
         
     if fAttach and (len(_rpdb2_args) > 1):
-        print "--attach option does not accept <script-arg> arguments."
+        _print("--attach option does not accept <script-arg> arguments.")
         return 2
 
     if fAttach and fAllowRemote:
-        print "--attach and --remote can not be used together."
+        _print("--attach and --remote can not be used together.")
         return 2
         
     if (host is not None) and not fAttach:
-        print "--host can only be used together with --attach."
+        _print("--host can only be used together with --attach.")
         return 2
 
     if host is None:
@@ -11029,7 +14122,7 @@ def main(StartClient_func = StartClient):
     fStart = (len(_rpdb2_args) == 0)
     
     if fchdir and not (fWrap or fSpawn):
-        print "-c can only be used when launching or starting a script from command line."
+        _print("-c can only be used when launching or starting a script from command line.")
         return 2
 
     assert (fWrap + fAttach + fSpawn + fStart) == 1
@@ -11047,27 +14140,34 @@ def main(StartClient_func = StartClient):
     if (secret is not None) and (os.name == POSIX):
         _rpdb2_pwd = read_pwd_file(secret)
         
-    if (fWrap or fAttach) and (_rpdb2_pwd in [None, '']):
-        print STR_PASSWORD_MUST_BE_SET
+    if (fWrap or fAttach) and not is_valid_pwd(_rpdb2_pwd):
+        _print(STR_PASSWORD_MUST_BE_SET)
         
         while True:
-            _rpdb2_pwd = raw_input(STR_PASSWORD_INPUT)
-            _rpdb2_pwd = _rpdb2_pwd.rstrip('\n')
-            if _rpdb2_pwd != '':
+            _rpdb2_pwd = _raw_input(STR_PASSWORD_INPUT)
+            if is_valid_pwd(_rpdb2_pwd):
                 break
 
-        print STR_PASSWORD_CONFIRM       
+            _print(STR_PASSWORD_BAD)
+
+        _print(STR_PASSWORD_CONFIRM)
                 
     if fWrap or fSpawn:
         try:
+            if encoded_path != None:
+                _b = as_bytes(encoded_path).translate(g_safe_base64_from)
+                _u = base64.decodestring(_b)
+                _path = as_unicode(_u)
+                _rpdb2_args[0] = _path
+
             FindFile(_rpdb2_args[0])
         except IOError:
-            print STR_FILE_NOT_FOUND % (_rpdb2_args[0], )
+            _print(STR_FILE_NOT_FOUND % _rpdb2_args[0])
             return 2
             
     if fWrap:
         if (not fAllowUnencrypted) and not is_encryption_supported():
-            print STR_ENCRYPTION_SUPPORT_ERROR
+            _print(STR_ENCRYPTION_SUPPORT_ERROR)
             return 2
 
         StartServer(_rpdb2_args, fchdir, _rpdb2_pwd, fAllowUnencrypted, fAllowRemote, secret)
@@ -11076,7 +14176,7 @@ def main(StartClient_func = StartClient):
         StartClient_func(_rpdb2_args[0], fAttach, fchdir, _rpdb2_pwd, fAllowUnencrypted, fAllowRemote, host)
         
     elif fStart:
-        StartClient_func('', fAttach, fchdir, _rpdb2_pwd, fAllowUnencrypted, fAllowRemote, host)
+        StartClient_func(as_unicode(''), fAttach, fchdir, _rpdb2_pwd, fAllowUnencrypted, fAllowRemote, host)
         
     else:
         if len(_rpdb2_args) == 0:
