@@ -752,7 +752,7 @@ Description:
             if self.get_modify(obj):
                 objs.append(obj)
         if objs:
-            flag = wx.MessageBox(tr('Some snippet files have been changed, do you want to save them?'), 
+            flag = wx.MessageBox(tr('Some changes have been made to the Code Snippets Window. Do you want to save them?'), 
                 tr('Saving Confirm'), style=wx.YES|wx.NO|wx.CANCEL)
             if flag == wx.CANCEL:
                 return False

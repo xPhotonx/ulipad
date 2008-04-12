@@ -8376,7 +8376,11 @@ def add_mainframe_menu(menulist):
     menulist.extend([
         ('IDM_TOOL',
         [
-            (125, 'IDM_WINDOW_CODESNIPPET', tr('Code Snippet'), wx.ITEM_NORMAL, 'OnWindowCodeSnippet', tr('Opens code snippet window.'))
+            (125, 'IDM_WINDOW_CODESNIPPET', tr('Code Snippets'), wx.ITEM_NORMAL, 'OnWindowCodeSnippet', tr('Opens code snippet window.'))
+        ]),
+        ('IDM_WINDOW',
+        [
+            (151, 'IDM_WINDOW_CODESNIPPETS', tr('Open Code Snippets Window'), wx.ITEM_NORMAL, 'OnWindowSnippet', tr('Opens code snippets window.'))
         ]),
     ])
 Mixin.setPlugin('mainframe', 'add_menu', add_mainframe_menu)
@@ -8384,7 +8388,7 @@ Mixin.setPlugin('mainframe', 'add_menu', add_mainframe_menu)
 def add_notebook_menu(popmenulist):
     popmenulist.extend([(None,
         [
-            (200, 'IDPM_CODESNIPPETWINDOW', tr('Open Code Snippet Window'), wx.ITEM_NORMAL, 'OnCodeSnippetWindow', tr('Opens code snippet window.')),
+            (200, 'IDPM_CODESNIPPETWINDOW', tr('Open Code Snippets Window'), wx.ITEM_NORMAL, 'OnCodeSnippetWindow', tr('Opens code snippet window.')),
         ]),
     ])
 Mixin.setPlugin('notebook', 'add_menu', add_notebook_menu)

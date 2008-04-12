@@ -5,7 +5,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
-"POT-Creation-Date: Sat Apr 12 16:25:52 2008\n"
+"POT-Creation-Date: Sat Apr 12 17:29:33 2008\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -148,7 +148,7 @@ msgid "Open Snippet File"
 msgstr ""
 
 #: ..\mixins\CodeSnippet.py:755
-msgid "Some snippet files have been changed, do you want to save them?"
+msgid "Some changes have been made to the Code Snippets Window. Do you want to save them?"
 msgstr ""
 
 #: ..\mixins\CodeSnippet.py:756 ..\mixins\CodeSnippet.py:948
@@ -159,8 +159,8 @@ msgstr ""
 msgid "There are some errors as openning the Snippet file"
 msgstr ""
 
-#: ..\mixins\CodeSnippet.py:868 ..\mixins\Import.py:8479
-#: ..\mixins\mCodeSnippet.py:143
+#: ..\mixins\CodeSnippet.py:868 ..\mixins\Import.py:8483
+#: ..\mixins\mCodeSnippet.py:147
 msgid "Snippet"
 msgstr ""
 
@@ -728,7 +728,7 @@ msgstr ""
 
 #: ..\mixins\FtpClass.py:808 ..\mixins\FtpClass.py:856
 #: ..\mixins\FtpClass.py:903 ..\mixins\HtmlPage.py:95 ..\mixins\Import.py:3087
-#: ..\mixins\Import.py:8662 ..\mixins\InterpreterDialog.py:56
+#: ..\mixins\Import.py:8666 ..\mixins\InterpreterDialog.py:56
 #: ..\mixins\InterpreterDialog.py:176 ..\mixins\PluginDialog.py:61
 #: ..\mixins\ReloadMixins.py:115 ..\mixins\ScriptDialog.py:71
 #: ..\mixins\ScriptDialog.py:205 ..\mixins\ShellDialog.py:71
@@ -787,7 +787,7 @@ msgstr ""
 #: ..\mixins\HtmlPage.py:134 ..\mixins\Import.py:520 ..\mixins\Import.py:1254
 #: ..\mixins\Import.py:1351 ..\mixins\Import.py:1547 ..\mixins\Import.py:1976
 #: ..\mixins\Import.py:1977 ..\mixins\Import.py:1978 ..\mixins\Import.py:2130
-#: ..\mixins\Import.py:2784 ..\mixins\Import.py:5018 ..\mixins\Import.py:8511
+#: ..\mixins\Import.py:2784 ..\mixins\Import.py:5018 ..\mixins\Import.py:8515
 #: ..\mixins\ScriptDialog.py:67 ..\mixins\ShellDialog.py:67
 #: ..\mixins\mComEdit.py:86 ..\mixins\mDocument.py:56
 #: ..\mixins\mDocument.py:57 ..\mixins\mDocument.py:58
@@ -822,7 +822,7 @@ msgstr ""
 #: ..\mixins\Import.py:2130 ..\mixins\Import.py:2304 ..\mixins\Import.py:2784
 #: ..\mixins\Import.py:3937 ..\mixins\Import.py:3969 ..\mixins\Import.py:3970
 #: ..\mixins\Import.py:4728 ..\mixins\Import.py:4788 ..\mixins\Import.py:5018
-#: ..\mixins\Import.py:5673 ..\mixins\Import.py:6814 ..\mixins\Import.py:8511
+#: ..\mixins\Import.py:5673 ..\mixins\Import.py:6814 ..\mixins\Import.py:8515
 #: ..\mixins\mAutoBak.py:31 ..\mixins\mAutoCheck.py:35
 #: ..\mixins\mAutoCheck.py:36 ..\mixins\mConvert.py:238
 #: ..\mixins\mDocument.py:31 ..\mixins\mDocument.py:56
@@ -3010,55 +3010,63 @@ msgstr ""
 msgid "Enable debug mode"
 msgstr ""
 
-#: ..\mixins\Import.py:8379 ..\mixins\Import.py:8387
-#: ..\mixins\mCodeSnippet.py:33 ..\mixins\mCodeSnippet.py:41
+#: ..\mixins\Import.py:8379 ..\mixins\Import.py:8391
+#: ..\mixins\mCodeSnippet.py:33 ..\mixins\mCodeSnippet.py:45
 msgid "Opens code snippet window."
 msgstr ""
 
-#: ..\mixins\Import.py:8379 ..\mixins\Import.py:8422 ..\mixins\Import.py:8427
-#: ..\mixins\Import.py:8433 ..\mixins\Import.py:8438 ..\mixins\Import.py:8442
-#: ..\mixins\Import.py:8453 ..\mixins\mCodeSnippet.py:33
-#: ..\mixins\mCodeSnippet.py:86 ..\mixins\mCodeSnippet.py:91
-#: ..\mixins\mCodeSnippet.py:97 ..\mixins\mCodeSnippet.py:102
-#: ..\mixins\mCodeSnippet.py:106 ..\mixins\mCodeSnippet.py:117
+#: ..\mixins\Import.py:8379 ..\mixins\mCodeSnippet.py:33
+msgid "Code Snippets"
+msgstr ""
+
+#: ..\mixins\Import.py:8383 ..\mixins\Import.py:8391
+#: ..\mixins\mCodeSnippet.py:37 ..\mixins\mCodeSnippet.py:45
+msgid "Open Code Snippets Window"
+msgstr ""
+
+#: ..\mixins\Import.py:8383 ..\mixins\mCodeSnippet.py:37
+msgid "Opens code snippets window."
+msgstr ""
+
+#: ..\mixins\Import.py:8426 ..\mixins\Import.py:8431 ..\mixins\Import.py:8437
+#: ..\mixins\Import.py:8442 ..\mixins\Import.py:8446 ..\mixins\Import.py:8457
+#: ..\mixins\mCodeSnippet.py:90 ..\mixins\mCodeSnippet.py:95
+#: ..\mixins\mCodeSnippet.py:101 ..\mixins\mCodeSnippet.py:106
+#: ..\mixins\mCodeSnippet.py:110 ..\mixins\mCodeSnippet.py:121
 msgid "Code Snippet"
 msgstr ""
 
-#: ..\mixins\Import.py:8387 ..\mixins\mCodeSnippet.py:41
-msgid "Open Code Snippet Window"
-msgstr ""
-
-#: ..\mixins\Import.py:8511 ..\mixins\mIndentMove.py:34
+#: ..\mixins\Import.py:8515 ..\mixins\mIndentMove.py:34
 msgid "Always select from start of line when moving down to next matching indent"
 msgstr ""
 
-#: ..\mixins\Import.py:8642 ..\mixins\Import.py:8660
+#: ..\mixins\Import.py:8646 ..\mixins\Import.py:8664
 #: ..\mixins\mCheckUpdate.py:38 ..\mixins\mCheckUpdate.py:56
 msgid "Check update when startup"
 msgstr ""
 
-#: ..\mixins\Import.py:8642 ..\mixins\mCheckUpdate.py:38
+#: ..\mixins\Import.py:8646 ..\mixins\mCheckUpdate.py:38
 msgid "Update"
 msgstr ""
 
-#: ..\mixins\Import.py:8650 ..\mixins\Import.py:8676
+#: ..\mixins\Import.py:8654 ..\mixins\Import.py:8680
 #: ..\mixins\mCheckUpdate.py:46 ..\mixins\mCheckUpdate.py:72
 msgid "Check Update"
 msgstr ""
 
-#: ..\mixins\Import.py:8654 ..\mixins\mCheckUpdate.py:50
+#: ..\mixins\Import.py:8658 ..\mixins\mCheckUpdate.py:50
 msgid "There is new version %s of UliPad."
 msgstr ""
 
-#: ..\mixins\Import.py:8657 ..\mixins\mCheckUpdate.py:53
+#: ..\mixins\Import.py:8661 ..\mixins\mCheckUpdate.py:53
 msgid "Goto Download page"
 msgstr ""
 
-#: ..\mixins\Import.py:8676 ..\mixins\mCheckUpdate.py:72
+#: ..\mixins\Import.py:8680 ..\mixins\mCheckUpdate.py:72
 msgid "Check if where is new version of UliPad."
 msgstr ""
 
-#: ..\mixins\Import.py:8697 ..\mixins\mCheckUpdate.py:93
+#: ..\mixins\Import.py:8701 ..\mixins\mCheckUpdate.py:93
 msgid "There is no new version."
 msgstr ""
 
