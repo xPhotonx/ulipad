@@ -5,7 +5,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
-"POT-Creation-Date: Sat Apr 12 10:14:28 2008\n"
+"POT-Creation-Date: Sat Apr 12 11:05:47 2008\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -724,10 +724,11 @@ msgstr ""
 
 #: ..\mixins\FtpClass.py:808 ..\mixins\FtpClass.py:856
 #: ..\mixins\FtpClass.py:903 ..\mixins\HtmlPage.py:95 ..\mixins\Import.py:3087
-#: ..\mixins\InterpreterDialog.py:56 ..\mixins\InterpreterDialog.py:176
-#: ..\mixins\PluginDialog.py:61 ..\mixins\ReloadMixins.py:115
-#: ..\mixins\ScriptDialog.py:71 ..\mixins\ScriptDialog.py:205
-#: ..\mixins\ShellDialog.py:71 ..\mixins\ShellDialog.py:205
+#: ..\mixins\Import.py:8662 ..\mixins\InterpreterDialog.py:56
+#: ..\mixins\InterpreterDialog.py:176 ..\mixins\PluginDialog.py:61
+#: ..\mixins\ReloadMixins.py:115 ..\mixins\ScriptDialog.py:71
+#: ..\mixins\ScriptDialog.py:205 ..\mixins\ShellDialog.py:71
+#: ..\mixins\ShellDialog.py:205 ..\mixins\mCheckUpdate.py:58
 #: ..\mixins\mHelp.py:69
 msgid "OK"
 msgstr ""
@@ -3025,6 +3026,36 @@ msgstr ""
 
 #: ..\mixins\Import.py:8511 ..\mixins\mIndentMove.py:34
 msgid "Always select from start of line when moving down to next matching indent"
+msgstr ""
+
+#: ..\mixins\Import.py:8642 ..\mixins\Import.py:8660
+#: ..\mixins\mCheckUpdate.py:38 ..\mixins\mCheckUpdate.py:56
+msgid "Check update when startup"
+msgstr ""
+
+#: ..\mixins\Import.py:8642 ..\mixins\mCheckUpdate.py:38
+msgid "Update"
+msgstr ""
+
+#: ..\mixins\Import.py:8650 ..\mixins\Import.py:8676
+#: ..\mixins\mCheckUpdate.py:46 ..\mixins\mCheckUpdate.py:72
+msgid "Check Update"
+msgstr ""
+
+#: ..\mixins\Import.py:8654 ..\mixins\mCheckUpdate.py:50
+msgid "There is new version %s of UliPad."
+msgstr ""
+
+#: ..\mixins\Import.py:8657 ..\mixins\mCheckUpdate.py:53
+msgid "Goto Download page"
+msgstr ""
+
+#: ..\mixins\Import.py:8676 ..\mixins\mCheckUpdate.py:72
+msgid "Check if where is new version of UliPad."
+msgstr ""
+
+#: ..\mixins\Import.py:8696 ..\mixins\mCheckUpdate.py:92
+msgid "There is no new version."
 msgstr ""
 
 #: ..\mixins\InputAssistant.py:463

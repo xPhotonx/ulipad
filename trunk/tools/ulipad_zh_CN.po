@@ -1,6 +1,6 @@
 msgid ""
 msgstr ""
-"PO-Revision-Date: 2008-04-12 10:16+0800\n"
+"PO-Revision-Date: 2008-04-12 11:08+0800\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Project-Id-Version: UliPad 3.9\n"
 "Generated-By: pygettext.py 1.5\n"
@@ -12,7 +12,7 @@ msgstr ""
 
 #: ../UliPad.py:157
 msgid "There is something wrong as importing plugins."
-msgstr "在导入插件时有错误"
+msgstr "在导入插件时有错误。"
 
 #: ..\mixins\CodeSnippet.py:106
 #: ..\mixins\CodeSnippet.py:1068
@@ -832,6 +832,7 @@ msgstr "Ftp站点：%s"
 #: ..\mixins\FtpClass.py:903
 #: ..\mixins\HtmlPage.py:95
 #: ..\mixins\Import.py:3087
+#: ..\mixins\Import.py:8662
 #: ..\mixins\InterpreterDialog.py:56
 #: ..\mixins\InterpreterDialog.py:176
 #: ..\mixins\PluginDialog.py:61
@@ -840,6 +841,7 @@ msgstr "Ftp站点：%s"
 #: ..\mixins\ScriptDialog.py:205
 #: ..\mixins\ShellDialog.py:71
 #: ..\mixins\ShellDialog.py:205
+#: ..\mixins\mCheckUpdate.py:58
 #: ..\mixins\mHelp.py:69
 msgid "OK"
 msgstr "确定"
@@ -3973,6 +3975,45 @@ msgstr "打开代码片段窗口"
 #: ..\mixins\mIndentMove.py:34
 msgid "Always select from start of line when moving down to next matching indent"
 msgstr "在向下移动到下一个匹配缩近时总是从行首进行文本选中"
+
+#: ..\mixins\Import.py:8642
+#: ..\mixins\Import.py:8660
+#: ..\mixins\mCheckUpdate.py:38
+#: ..\mixins\mCheckUpdate.py:56
+msgid "Check update when startup"
+msgstr "启动时检查更新"
+
+#: ..\mixins\Import.py:8642
+#: ..\mixins\mCheckUpdate.py:38
+msgid "Update"
+msgstr "更新"
+
+#: ..\mixins\Import.py:8650
+#: ..\mixins\Import.py:8676
+#: ..\mixins\mCheckUpdate.py:46
+#: ..\mixins\mCheckUpdate.py:72
+msgid "Check Update"
+msgstr "更新检查"
+
+#: ..\mixins\Import.py:8654
+#: ..\mixins\mCheckUpdate.py:50
+msgid "There is new version %s of UliPad."
+msgstr "有新版本 %s 的UliPad"
+
+#: ..\mixins\Import.py:8657
+#: ..\mixins\mCheckUpdate.py:53
+msgid "Goto Download page"
+msgstr "去下载页面"
+
+#: ..\mixins\Import.py:8676
+#: ..\mixins\mCheckUpdate.py:72
+msgid "Check if where is new version of UliPad."
+msgstr "检查是否有UliPad的新版本。"
+
+#: ..\mixins\Import.py:8696
+#: ..\mixins\mCheckUpdate.py:92
+msgid "There is no new version."
+msgstr "没有新版本。"
 
 #: ..\mixins\InputAssistant.py:463
 msgid "(Press ESC to close)"

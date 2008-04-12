@@ -152,5 +152,6 @@
 ## 3.9
 #import mCodeSnippet
 #import mIndentMove
+#import mCheckUpdate
 
 import Import
