@@ -701,6 +701,26 @@ Description:
         else:
             event.Skip()
   
+    def OnSaveAsSnippet(self, event):
+        item = self.tree.GetSelection()
+        if not self.is_ok(item): return
+        dlg = wx.FileDialog(self, tr("Save Snippet File As..."), self.pref.snippet_lastdir, '', 'Snippet File(*.spt)|*.spt|All Files(*.*)|*.*', wx.SAVE|wx.OVERWRITE_PROMPT)
+        dlg.SetFilterIndex(0)
+        filename = None
+        if dlg.ShowModal() == wx.ID_OK:
+            filename = dlg.GetPath()
+            self.pref.snippet_lastdir = os.path.dirname(filename)
+            self.pref.save()
+        dlg.Destroy()
+        files = self.getTopSnippets()
+        filename = common.uni_file(filename)
+        if filename in files:
+            common.showerror(tr('The file %s has been existed, so please rename it.') % filename)
+            return
+        data = self.get_node_data(item)
+        data['filename'] = filename
+        self.save_snippet(item)
+        
     def OnNewSnippet(self, event):
         dlg = wx.FileDialog(self, tr("New Snippet File"), self.pref.snippet_lastdir, '', 'Snippet File(*.spt)|*.spt|All Files(*.*)|*.*', wx.SAVE|wx.OVERWRITE_PROMPT)
         dlg.SetFilterIndex(0)
@@ -785,15 +805,18 @@ Description:
             files.append(data['filename'])
         return files
 
+    def deal_recent(self, filename):
+        if filename in self.pref.snippet_recents:
+            self.pref.snippet_recents.remove(filename)
+        self.pref.snippet_recents.insert(0, filename)
+        self.pref.snippet_recents = self.pref.snippet_recents[:30]
+        self.pref.save()
+        
     def addsnippet(self, filename, type='open', expand=True):
         files = self.getTopSnippets()
         filename = common.uni_file(filename)
         if filename not in files:
-            if filename in self.pref.snippet_recents:
-                self.pref.snippet_recents.remove(filename)
-            self.pref.snippet_recents.insert(0, filename)
-            self.pref.snippet_recents = self.pref.snippet_recents[:30]
-            self.pref.save()
+            self.deal_recent(filename)
             
             def f():
                 self.read_snippet_file(filename, type, expand)
@@ -935,6 +958,7 @@ Description:
         try:
             data['etree'].write(data['filename'], 'utf-8')
             self.set_modify(root, False)
+            self.deal_recent(data['filename'])
         except:
             error.traceback()
             common.showerror(self, tr("There is something wrong as saving the snippet file."))
