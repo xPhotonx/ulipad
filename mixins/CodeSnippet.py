@@ -920,7 +920,6 @@ Description:
         
     def get_node_data(self, node):
         try:
-            
             _id = self.tree.GetPyData(node)
             return self.nodes[_id]
         except:
@@ -979,6 +978,10 @@ Description:
         self.tree.Delete(item)
         self.tree.Thaw()
         self._save_files()
+        snippet = None
+        for pagename, panelname, notebook, page in self.mainframe.panel.getPages():
+            if hasattr(page, 'code_snippet') and page.code_snippet:
+                self.mainframe.panel.closePage(page, savestatus=False)
         
     def is_folder(self, node):
         data = self.get_node_data(node)
