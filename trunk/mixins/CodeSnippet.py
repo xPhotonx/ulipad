@@ -227,6 +227,9 @@ class CodeSnippetWindow(wx.Panel, Mixin.Mixin):
             (120, 'IDPM_PASTE', tr('Paste')+'\tCtrl+V', wx.ITEM_NORMAL, 'OnCodeSnippetPaste', ''),
             (125, 'IDPM_PASTE_BEFORE', tr('Paste Before')+'\tCtrl+Shift+V', wx.ITEM_NORMAL, 'OnCodeSnippetPasteBefore', ''),
             (130, '', '-', wx.ITEM_SEPARATOR, None, ''),
+            (132, 'IDPM_EXPANDALL', tr('Expand All'), wx.ITEM_NORMAL, 'OnCodeSnippetExpandAll', ''),
+            (133, 'IDPM_COLLAPSEALL', tr('Collapse All'), wx.ITEM_NORMAL, 'OnCodeSnippetCollapseAll', ''),
+            (137, '', '-', wx.ITEM_SEPARATOR, None, ''),
             (140, 'IDPM_NEW', tr('New Snippet File...'), wx.ITEM_NORMAL, 'OnNewSnippet', ''),
             (150, 'IDPM_OPEN', tr('Open Snippet File...'), wx.ITEM_NORMAL, 'OnOpenSnippet', ''),
             (160, 'IDPM_RECENT', tr('Recent Snippet Files'), wx.ITEM_NORMAL, '', ''),
@@ -235,7 +238,7 @@ class CodeSnippetWindow(wx.Panel, Mixin.Mixin):
             (180, 'IDPM_SAVEAS', tr('Save Snippet File As...'), wx.ITEM_NORMAL, 'OnSaveAsSnippet', ''),
             (185, 'IDPM_CLOSE', tr('Close Snippet File'), wx.ITEM_NORMAL, 'OnCloseSnippet', ''),
             (190, '', '-', wx.ITEM_SEPARATOR, None, ''),
-            (191, 'IDPM_DELETE_ENTRY', tr('Delete Entry')+'\tDel', wx.ITEM_NORMAL, 'OnDeleteEntry', ''),
+            (191, 'IDPM_DELETE_ENTRY', tr('Delete Folder or Node')+'\tDel', wx.ITEM_NORMAL, 'OnDeleteEntry', ''),
             (192, 'IDPM_EDIT_CAPTION', tr('Edit Caption'), wx.ITEM_NORMAL, 'OnEditCaption', ''),
             (900, '', '-', wx.ITEM_SEPARATOR, None, ''),
             (910, 'IDPM_PREFERENCES', tr('Preferences...'), wx.ITEM_NORMAL, 'OnPreferences', ''),
@@ -1207,6 +1210,20 @@ Description:
                 self.set_element_text(item, e, 'snippet/properties/version', values['version'])
                 self.set_element_text(item, e, 'snippet/properties/date', values['date'].strftime('%Y-%m-%d'))
                 self.set_element_text(item, e, 'snippet/properties/description', values['description'])
+                
+    def OnCodeSnippetExpandAll(self, event):
+        item = self.tree.GetSelection()
+        if not self.is_ok(item):
+            self.tree.ExpandAll()
+        else:
+            self.tree.ExpandAllChildren(item)
+        
+    def OnCodeSnippetCollapseAll(self, event):
+        item = self.tree.GetSelection()
+        if not self.is_ok(item):
+            self.tree.CollapseAll()
+        else:
+            self.tree.CollapseAllChildren(item)
         
 class PropertyDialog(wx.Dialog):
     def __init__(self, parent, id=-1, title=tr('Property'), size=(400, 300), values=None):

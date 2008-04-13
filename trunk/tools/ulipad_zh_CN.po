@@ -1,6 +1,6 @@
 msgid ""
 msgstr ""
-"PO-Revision-Date: 2008-04-12 19:23+0800\n"
+"PO-Revision-Date: 2008-04-13 19:17+0800\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Project-Id-Version: UliPad 3.9\n"
 "Generated-By: pygettext.py 1.5\n"
@@ -15,9 +15,9 @@ msgid "There is something wrong as importing plugins."
 msgstr "在导入插件时有错误。"
 
 #: ..\mixins\CodeSnippet.py:106
-#: ..\mixins\CodeSnippet.py:1068
-#: ..\mixins\CodeSnippet.py:1074
-#: ..\mixins\CodeSnippet.py:1080
+#: ..\mixins\CodeSnippet.py:1098
+#: ..\mixins\CodeSnippet.py:1104
+#: ..\mixins\CodeSnippet.py:1110
 msgid "NewNode"
 msgstr "新结点"
 
@@ -59,49 +59,58 @@ msgid "Paste Before"
 msgstr "向前粘贴"
 
 #: ..\mixins\CodeSnippet.py:230
+msgid "Expand All"
+msgstr "全部展开"
+
+#: ..\mixins\CodeSnippet.py:231
+msgid "Collapse All"
+msgstr "全部折叠"
+
+#: ..\mixins\CodeSnippet.py:233
 msgid "New Snippet File..."
 msgstr "新建代码片段文件..."
 
-#: ..\mixins\CodeSnippet.py:231
+#: ..\mixins\CodeSnippet.py:234
 msgid "Open Snippet File..."
 msgstr "打开代码片段文件..."
 
-#: ..\mixins\CodeSnippet.py:232
+#: ..\mixins\CodeSnippet.py:235
 msgid "Recent Snippet Files"
 msgstr "最近访问代码片段文件"
 
-#: ..\mixins\CodeSnippet.py:233
+#: ..\mixins\CodeSnippet.py:236
 msgid "Save Snippet File"
 msgstr "保存代码片段文件"
 
-#: ..\mixins\CodeSnippet.py:234
+#: ..\mixins\CodeSnippet.py:237
 msgid "Save All Snippet Files"
 msgstr "保存全部代码片段文件"
 
-#: ..\mixins\CodeSnippet.py:235
+#: ..\mixins\CodeSnippet.py:238
+#: ..\mixins\CodeSnippet.py:710
 msgid "Save Snippet File As..."
 msgstr "保存代码片段文件为..."
 
-#: ..\mixins\CodeSnippet.py:236
+#: ..\mixins\CodeSnippet.py:239
 msgid "Close Snippet File"
 msgstr "关闭代码片段文件"
 
-#: ..\mixins\CodeSnippet.py:238
-msgid "Delete Entry"
-msgstr "删除条目"
+#: ..\mixins\CodeSnippet.py:241
+msgid "Delete Folder or Node"
+msgstr ""
 
-#: ..\mixins\CodeSnippet.py:239
+#: ..\mixins\CodeSnippet.py:242
 msgid "Edit Caption"
 msgstr "编辑标题"
 
-#: ..\mixins\CodeSnippet.py:241
+#: ..\mixins\CodeSnippet.py:244
 #: ..\mixins\Import.py:55
 #: ..\mixins\mPreference.py:32
 msgid "Preferences..."
 msgstr "参数..."
 
-#: ..\mixins\CodeSnippet.py:245
-#: ..\mixins\CodeSnippet.py:771
+#: ..\mixins\CodeSnippet.py:248
+#: ..\mixins\CodeSnippet.py:794
 #: ..\mixins\DirBrowser.py:75
 #: ..\mixins\DirBrowser.py:234
 #: ..\mixins\Import.py:2592
@@ -121,19 +130,19 @@ msgstr "参数..."
 msgid "(empty)"
 msgstr "(空)"
 
-#: ..\mixins\CodeSnippet.py:261
+#: ..\mixins\CodeSnippet.py:264
 #: ..\mixins\Import.py:841
 #: ..\mixins\mToolbar.py:50
 msgid "save"
 msgstr "保存"
 
-#: ..\mixins\CodeSnippet.py:264
+#: ..\mixins\CodeSnippet.py:267
 #: ..\mixins\Import.py:842
 #: ..\mixins\mToolbar.py:51
 msgid "save all"
 msgstr "全部保存"
 
-#: ..\mixins\CodeSnippet.py:374
+#: ..\mixins\CodeSnippet.py:377
 msgid ""
 "Filename: %(filename)s\n"
 "Title   : %(title)s\n"
@@ -151,118 +160,122 @@ msgstr ""
 "描　述: \n"
 "    %(description)s"
 
-#: ..\mixins\CodeSnippet.py:461
+#: ..\mixins\CodeSnippet.py:464
 #: ..\mixins\SnippetWindow.py:136
 msgid "Code Template"
 msgstr "代码模板"
 
-#: ..\mixins\CodeSnippet.py:503
-#: ..\mixins\CodeSnippet.py:512
+#: ..\mixins\CodeSnippet.py:506
+#: ..\mixins\CodeSnippet.py:515
 msgid "Add Sub Folder"
 msgstr "增加子文件夹"
 
-#: ..\mixins\CodeSnippet.py:505
-#: ..\mixins\CodeSnippet.py:516
+#: ..\mixins\CodeSnippet.py:508
+#: ..\mixins\CodeSnippet.py:519
 msgid "Add Sub Node"
 msgstr "增加子结点"
 
-#: ..\mixins\CodeSnippet.py:513
-#: ..\mixins\CodeSnippet.py:525
+#: ..\mixins\CodeSnippet.py:516
+#: ..\mixins\CodeSnippet.py:528
 msgid "Add Folder Before"
 msgstr "向前增加文件夹"
 
-#: ..\mixins\CodeSnippet.py:514
-#: ..\mixins\CodeSnippet.py:526
+#: ..\mixins\CodeSnippet.py:517
+#: ..\mixins\CodeSnippet.py:529
 msgid "Add Folder After"
 msgstr "向后增加文件夹"
 
-#: ..\mixins\CodeSnippet.py:517
-#: ..\mixins\CodeSnippet.py:528
+#: ..\mixins\CodeSnippet.py:520
+#: ..\mixins\CodeSnippet.py:531
 msgid "Add Node Before"
 msgstr "向前增加结点"
 
-#: ..\mixins\CodeSnippet.py:518
-#: ..\mixins\CodeSnippet.py:529
+#: ..\mixins\CodeSnippet.py:521
+#: ..\mixins\CodeSnippet.py:532
 msgid "Add Node After"
 msgstr "向后增加结点"
 
-#: ..\mixins\CodeSnippet.py:705
+#: ..\mixins\CodeSnippet.py:721
+msgid "The file %s has been existed, so please rename it."
+msgstr "文件 %s 已经存在，请重命名它。"
+
+#: ..\mixins\CodeSnippet.py:728
 msgid "New Snippet File"
 msgstr "新建代码片段文件"
 
-#: ..\mixins\CodeSnippet.py:730
+#: ..\mixins\CodeSnippet.py:753
 msgid "Open Snippet File"
 msgstr "打开代码片段文件"
 
-#: ..\mixins\CodeSnippet.py:755
+#: ..\mixins\CodeSnippet.py:778
 msgid "Some changes have been made to the Code Snippets Window. Do you want to save them?"
 msgstr "代码片段窗口发生了一些变化。想要保存它们吗？"
 
-#: ..\mixins\CodeSnippet.py:756
-#: ..\mixins\CodeSnippet.py:948
+#: ..\mixins\CodeSnippet.py:779
+#: ..\mixins\CodeSnippet.py:974
 msgid "Saving Confirm"
 msgstr "保存确认"
 
-#: ..\mixins\CodeSnippet.py:837
+#: ..\mixins\CodeSnippet.py:863
 msgid "There are some errors as openning the Snippet file"
 msgstr "在打开代码片段文件时有错误"
 
-#: ..\mixins\CodeSnippet.py:868
+#: ..\mixins\CodeSnippet.py:894
 #: ..\mixins\Import.py:8486
 #: ..\mixins\mCodeSnippet.py:147
 msgid "Snippet"
 msgstr "代码片段"
 
-#: ..\mixins\CodeSnippet.py:940
+#: ..\mixins\CodeSnippet.py:966
 msgid "There is something wrong as saving the snippet file."
 msgstr "在保存代码片段文件文件时有错误。"
 
-#: ..\mixins\CodeSnippet.py:948
+#: ..\mixins\CodeSnippet.py:974
 msgid "The snippet has been modified, do you want to save it ?"
 msgstr "代码片段已经被修改了，想要保存吗？"
 
-#: ..\mixins\CodeSnippet.py:1050
-#: ..\mixins\CodeSnippet.py:1056
-#: ..\mixins\CodeSnippet.py:1062
+#: ..\mixins\CodeSnippet.py:1080
+#: ..\mixins\CodeSnippet.py:1086
+#: ..\mixins\CodeSnippet.py:1092
 msgid "NewFolder"
 msgstr "新文件夹"
 
-#: ..\mixins\CodeSnippet.py:1148
+#: ..\mixins\CodeSnippet.py:1178
 #: ..\mixins\Import.py:4717
 #: ..\mixins\mLexerFactory.py:93
 msgid "Select a syntax highlight"
 msgstr "选择语法高亮"
 
-#: ..\mixins\CodeSnippet.py:1148
+#: ..\mixins\CodeSnippet.py:1178
 #: ..\mixins\Import.py:4717
 #: ..\mixins\mLexerFactory.py:93
 msgid "Syntax Highlight"
 msgstr "语法高亮"
 
-#: ..\mixins\CodeSnippet.py:1185
+#: ..\mixins\CodeSnippet.py:1229
 msgid "Property"
 msgstr "属性"
 
-#: ..\mixins\CodeSnippet.py:1190
+#: ..\mixins\CodeSnippet.py:1234
 msgid "Title"
 msgstr "标题"
 
-#: ..\mixins\CodeSnippet.py:1191
+#: ..\mixins\CodeSnippet.py:1235
 #: ..\mixins\PluginDialog.py:53
 msgid "Author"
 msgstr "作者"
 
-#: ..\mixins\CodeSnippet.py:1192
+#: ..\mixins\CodeSnippet.py:1236
 #: ..\mixins\PluginDialog.py:54
 msgid "Version"
 msgstr "版本"
 
-#: ..\mixins\CodeSnippet.py:1193
+#: ..\mixins\CodeSnippet.py:1237
 #: ..\mixins\PluginDialog.py:55
 msgid "Date"
 msgstr "日期"
 
-#: ..\mixins\CodeSnippet.py:1194
+#: ..\mixins\CodeSnippet.py:1238
 #: ..\mixins\InterpreterDialog.py:36
 #: ..\mixins\PluginDialog.py:52
 #: ..\mixins\ScriptDialog.py:39
