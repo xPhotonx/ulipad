@@ -5,7 +5,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
-"POT-Creation-Date: Sat Apr 12 19:22:29 2008\n"
+"POT-Creation-Date: Sun Apr 13 19:14:38 2008\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -19,8 +19,8 @@ msgstr ""
 msgid "There is something wrong as importing plugins."
 msgstr ""
 
-#: ..\mixins\CodeSnippet.py:106 ..\mixins\CodeSnippet.py:1068
-#: ..\mixins\CodeSnippet.py:1074 ..\mixins\CodeSnippet.py:1080
+#: ..\mixins\CodeSnippet.py:106 ..\mixins\CodeSnippet.py:1098
+#: ..\mixins\CodeSnippet.py:1104 ..\mixins\CodeSnippet.py:1110
 msgid "NewNode"
 msgstr ""
 
@@ -50,47 +50,55 @@ msgid "Paste Before"
 msgstr ""
 
 #: ..\mixins\CodeSnippet.py:230
-msgid "New Snippet File..."
+msgid "Expand All"
 msgstr ""
 
 #: ..\mixins\CodeSnippet.py:231
-msgid "Open Snippet File..."
-msgstr ""
-
-#: ..\mixins\CodeSnippet.py:232
-msgid "Recent Snippet Files"
+msgid "Collapse All"
 msgstr ""
 
 #: ..\mixins\CodeSnippet.py:233
-msgid "Save Snippet File"
+msgid "New Snippet File..."
 msgstr ""
 
 #: ..\mixins\CodeSnippet.py:234
-msgid "Save All Snippet Files"
+msgid "Open Snippet File..."
 msgstr ""
 
 #: ..\mixins\CodeSnippet.py:235
-msgid "Save Snippet File As..."
+msgid "Recent Snippet Files"
 msgstr ""
 
 #: ..\mixins\CodeSnippet.py:236
-msgid "Close Snippet File"
+msgid "Save Snippet File"
 msgstr ""
 
-#: ..\mixins\CodeSnippet.py:238
-msgid "Delete Entry"
+#: ..\mixins\CodeSnippet.py:237
+msgid "Save All Snippet Files"
+msgstr ""
+
+#: ..\mixins\CodeSnippet.py:238 ..\mixins\CodeSnippet.py:710
+msgid "Save Snippet File As..."
 msgstr ""
 
 #: ..\mixins\CodeSnippet.py:239
+msgid "Close Snippet File"
+msgstr ""
+
+#: ..\mixins\CodeSnippet.py:241
+msgid "Delete Folder or Node"
+msgstr ""
+
+#: ..\mixins\CodeSnippet.py:242
 msgid "Edit Caption"
 msgstr ""
 
-#: ..\mixins\CodeSnippet.py:241 ..\mixins\Import.py:55
+#: ..\mixins\CodeSnippet.py:244 ..\mixins\Import.py:55
 #: ..\mixins\mPreference.py:32
 msgid "Preferences..."
 msgstr ""
 
-#: ..\mixins\CodeSnippet.py:245 ..\mixins\CodeSnippet.py:771
+#: ..\mixins\CodeSnippet.py:248 ..\mixins\CodeSnippet.py:794
 #: ..\mixins\DirBrowser.py:75 ..\mixins\DirBrowser.py:234
 #: ..\mixins\Import.py:2592 ..\mixins\Import.py:2654 ..\mixins\Import.py:3665
 #: ..\mixins\Import.py:3694 ..\mixins\Import.py:4369 ..\mixins\Import.py:4397
@@ -100,17 +108,17 @@ msgstr ""
 msgid "(empty)"
 msgstr ""
 
-#: ..\mixins\CodeSnippet.py:261 ..\mixins\Import.py:841
+#: ..\mixins\CodeSnippet.py:264 ..\mixins\Import.py:841
 #: ..\mixins\mToolbar.py:50
 msgid "save"
 msgstr ""
 
-#: ..\mixins\CodeSnippet.py:264 ..\mixins\Import.py:842
+#: ..\mixins\CodeSnippet.py:267 ..\mixins\Import.py:842
 #: ..\mixins\mToolbar.py:51
 msgid "save all"
 msgstr ""
 
-#: ..\mixins\CodeSnippet.py:374
+#: ..\mixins\CodeSnippet.py:377
 msgid ""
 "Filename: %(filename)s\n"
 "Title   : %(title)s\n"
@@ -121,103 +129,107 @@ msgid ""
 "    %(description)s"
 msgstr ""
 
-#: ..\mixins\CodeSnippet.py:461 ..\mixins\SnippetWindow.py:136
+#: ..\mixins\CodeSnippet.py:464 ..\mixins\SnippetWindow.py:136
 msgid "Code Template"
 msgstr ""
 
-#: ..\mixins\CodeSnippet.py:503 ..\mixins\CodeSnippet.py:512
+#: ..\mixins\CodeSnippet.py:506 ..\mixins\CodeSnippet.py:515
 msgid "Add Sub Folder"
 msgstr ""
 
-#: ..\mixins\CodeSnippet.py:505 ..\mixins\CodeSnippet.py:516
+#: ..\mixins\CodeSnippet.py:508 ..\mixins\CodeSnippet.py:519
 msgid "Add Sub Node"
 msgstr ""
 
-#: ..\mixins\CodeSnippet.py:513 ..\mixins\CodeSnippet.py:525
+#: ..\mixins\CodeSnippet.py:516 ..\mixins\CodeSnippet.py:528
 msgid "Add Folder Before"
 msgstr ""
 
-#: ..\mixins\CodeSnippet.py:514 ..\mixins\CodeSnippet.py:526
+#: ..\mixins\CodeSnippet.py:517 ..\mixins\CodeSnippet.py:529
 msgid "Add Folder After"
 msgstr ""
 
-#: ..\mixins\CodeSnippet.py:517 ..\mixins\CodeSnippet.py:528
+#: ..\mixins\CodeSnippet.py:520 ..\mixins\CodeSnippet.py:531
 msgid "Add Node Before"
 msgstr ""
 
-#: ..\mixins\CodeSnippet.py:518 ..\mixins\CodeSnippet.py:529
+#: ..\mixins\CodeSnippet.py:521 ..\mixins\CodeSnippet.py:532
 msgid "Add Node After"
 msgstr ""
 
-#: ..\mixins\CodeSnippet.py:705
+#: ..\mixins\CodeSnippet.py:721
+msgid "The file %s has been existed, so please rename it."
+msgstr ""
+
+#: ..\mixins\CodeSnippet.py:728
 msgid "New Snippet File"
 msgstr ""
 
-#: ..\mixins\CodeSnippet.py:730
+#: ..\mixins\CodeSnippet.py:753
 msgid "Open Snippet File"
 msgstr ""
 
-#: ..\mixins\CodeSnippet.py:755
+#: ..\mixins\CodeSnippet.py:778
 msgid "Some changes have been made to the Code Snippets Window. Do you want to save them?"
 msgstr ""
 
-#: ..\mixins\CodeSnippet.py:756 ..\mixins\CodeSnippet.py:948
+#: ..\mixins\CodeSnippet.py:779 ..\mixins\CodeSnippet.py:974
 msgid "Saving Confirm"
 msgstr ""
 
-#: ..\mixins\CodeSnippet.py:837
+#: ..\mixins\CodeSnippet.py:863
 msgid "There are some errors as openning the Snippet file"
 msgstr ""
 
-#: ..\mixins\CodeSnippet.py:868 ..\mixins\Import.py:8486
+#: ..\mixins\CodeSnippet.py:894 ..\mixins\Import.py:8486
 #: ..\mixins\mCodeSnippet.py:147
 msgid "Snippet"
 msgstr ""
 
-#: ..\mixins\CodeSnippet.py:940
+#: ..\mixins\CodeSnippet.py:966
 msgid "There is something wrong as saving the snippet file."
 msgstr ""
 
-#: ..\mixins\CodeSnippet.py:948
+#: ..\mixins\CodeSnippet.py:974
 msgid "The snippet has been modified, do you want to save it ?"
 msgstr ""
 
-#: ..\mixins\CodeSnippet.py:1050 ..\mixins\CodeSnippet.py:1056
-#: ..\mixins\CodeSnippet.py:1062
+#: ..\mixins\CodeSnippet.py:1080 ..\mixins\CodeSnippet.py:1086
+#: ..\mixins\CodeSnippet.py:1092
 msgid "NewFolder"
 msgstr ""
 
-#: ..\mixins\CodeSnippet.py:1148 ..\mixins\Import.py:4717
+#: ..\mixins\CodeSnippet.py:1178 ..\mixins\Import.py:4717
 #: ..\mixins\mLexerFactory.py:93
 msgid "Select a syntax highlight"
 msgstr ""
 
-#: ..\mixins\CodeSnippet.py:1148 ..\mixins\Import.py:4717
+#: ..\mixins\CodeSnippet.py:1178 ..\mixins\Import.py:4717
 #: ..\mixins\mLexerFactory.py:93
 msgid "Syntax Highlight"
 msgstr ""
 
-#: ..\mixins\CodeSnippet.py:1185
+#: ..\mixins\CodeSnippet.py:1229
 msgid "Property"
 msgstr ""
 
-#: ..\mixins\CodeSnippet.py:1190
+#: ..\mixins\CodeSnippet.py:1234
 msgid "Title"
 msgstr ""
 
-#: ..\mixins\CodeSnippet.py:1191 ..\mixins\PluginDialog.py:53
+#: ..\mixins\CodeSnippet.py:1235 ..\mixins\PluginDialog.py:53
 msgid "Author"
 msgstr ""
 
-#: ..\mixins\CodeSnippet.py:1192 ..\mixins\PluginDialog.py:54
+#: ..\mixins\CodeSnippet.py:1236 ..\mixins\PluginDialog.py:54
 msgid "Version"
 msgstr ""
 
-#: ..\mixins\CodeSnippet.py:1193 ..\mixins\PluginDialog.py:55
+#: ..\mixins\CodeSnippet.py:1237 ..\mixins\PluginDialog.py:55
 msgid "Date"
 msgstr ""
 
-#: ..\mixins\CodeSnippet.py:1194 ..\mixins\InterpreterDialog.py:36
+#: ..\mixins\CodeSnippet.py:1238 ..\mixins\InterpreterDialog.py:36
 #: ..\mixins\PluginDialog.py:52 ..\mixins\ScriptDialog.py:39
 #: ..\mixins\ScriptDialog.py:191 ..\mixins\ShellDialog.py:39
 #: ..\mixins\ShellDialog.py:191 ..\mixins\SnippetWindow.py:110
