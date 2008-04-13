@@ -1,6 +1,6 @@
 msgid ""
 msgstr ""
-"PO-Revision-Date: 2008-04-13 19:17+0800\n"
+"PO-Revision-Date: 2008-04-13 19:21+0800\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Project-Id-Version: UliPad 3.9\n"
 "Generated-By: pygettext.py 1.5\n"
@@ -97,7 +97,7 @@ msgstr "关闭代码片段文件"
 
 #: ..\mixins\CodeSnippet.py:241
 msgid "Delete Folder or Node"
-msgstr ""
+msgstr "删除文件夹或结点"
 
 #: ..\mixins\CodeSnippet.py:242
 msgid "Edit Caption"
