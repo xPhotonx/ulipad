@@ -40,7 +40,7 @@ Mixin.setMixin('pythonfiletype', 'toollist', toollist)
 
 #order, IDname, imagefile, short text, long text, func
 toolbaritems = {
-        'debug':(wx.ITEM_NORMAL, 'IDM_PYTHON_DEBUG', 'images/debug.png', tr('debug'), tr('Debug the current program in WinPdb.'), 'OnPythonDebug'),
+        'debug':(wx.ITEM_NORMAL, 'IDM_PYTHON_DEBUG', 'images/debug.png', tr('Debug'), tr('Debug the current program in WinPdb.'), 'OnPythonDebug'),
 }
 Mixin.setMixin('pythonfiletype', 'toolbaritems', toolbaritems)
 

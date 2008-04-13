@@ -482,8 +482,8 @@ def add_editor_menu(popmenulist):
             (500, 'IDPM_SELECTION_SELECT_ENLARGE', tr('Enlarge Selection') + '\tCtrl+Alt+E', wx.ITEM_NORMAL, 'OnSelectionEnlarge', tr('Enlarges selection')),
             (600, 'IDPM_SELECTION_SELECT_LINE', tr('Select Line') + '\tCtrl+R', wx.ITEM_NORMAL, 'OnSelectionLine', tr('Select current phrase')),
             (700, 'IDPM_SELECTION_SELECTALL', tr('Select All') + '\tCtrl+A', wx.ITEM_NORMAL, 'OnPopupEdit', tr('Selects the entire document')),
-            (800, 'IDPM_SELECTION_BEGIN', tr('Select Begin'), wx.ITEM_NORMAL, 'OnSelectionBegin', tr('Set selection begin')),
-            (900, 'IDPM_SELECTION_END', tr('Select End'), wx.ITEM_NORMAL, 'OnSelectionEnd', tr('Set selection end')),
+            (800, 'IDPM_SELECTION_BEGIN', tr('Set Start of Selection'), wx.ITEM_NORMAL, 'OnSelectionBegin', tr('Set selection begin')),
+            (900, 'IDPM_SELECTION_END', tr('Set End of Selection'), wx.ITEM_NORMAL, 'OnSelectionEnd', tr('Set selection end')),
         ]),
     ])
 Mixin.setPlugin('editor', 'add_menu', add_editor_menu)
@@ -836,16 +836,16 @@ def add_tool_list(toollist, toolbaritems):
 
     #order, IDname, imagefile, short text, long text, func
     toolbaritems.update({
-        'new':(wx.ITEM_NORMAL, 'IDM_FILE_NEW', 'images/new.gif', tr('new'), tr('Creates a new document'), 'OnFileNew'),
-        'open':(wx.ITEM_NORMAL, 'IDM_FILE_OPEN', 'images/open.gif', tr('open'), tr('Opens an existing document'), 'OnFileOpen'),
-        'save':(wx.ITEM_NORMAL, 'IDM_FILE_SAVE', 'images/save.gif', tr('save'), tr('Saves an opened document using the same filename'), 'OnFileSave'),
-        'saveall':(wx.ITEM_NORMAL, 'IDM_FILE_SAVE_ALL', 'images/saveall.gif', tr('save all'), tr('Saves all documents'), 'OnFileSaveAll'),
-        'cut':(wx.ITEM_NORMAL, 'IDM_EDIT_CUT', 'images/cut.gif', tr('cut'), tr('Deletes text from the document and moves it to the clipboard'), 'DoSTCBuildIn'),
-        'copy':(wx.ITEM_NORMAL, 'IDM_EDIT_COPY', 'images/copy.gif', tr('copy'), tr('Copies text from the document to the clipboard'), 'DoSTCBuildIn'),
-        'paste':(wx.ITEM_NORMAL, 'IDM_EDIT_PASTE', 'images/paste.gif', tr('paste'), tr('Pastes text from the clipboard into the document'), 'DoSTCBuildIn'),
-        'undo':(wx.ITEM_NORMAL, 'IDM_EDIT_UNDO', 'images/undo.gif', tr('undo'), tr('Reverse previous editing operation'), 'DoSTCBuildIn'),
-        'redo':(wx.ITEM_NORMAL, 'IDM_EDIT_REDO', 'images/redo.gif', tr('redo'), tr('Reverse previous undo operation'), 'DoSTCBuildIn'),
-        'preference':(wx.ITEM_NORMAL, 'wx.ID_PREFERENCES', 'images/prop.gif', tr('preference'), tr('Setup program preferences'), 'OnOptionPreference'),
+        'new':(wx.ITEM_NORMAL, 'IDM_FILE_NEW', 'images/new.gif', tr('New File'), tr('Creates a new document'), 'OnFileNew'),
+        'open':(wx.ITEM_NORMAL, 'IDM_FILE_OPEN', 'images/open.gif', tr('Open File'), tr('Opens an existing document'), 'OnFileOpen'),
+        'save':(wx.ITEM_NORMAL, 'IDM_FILE_SAVE', 'images/save.gif', tr('Save File'), tr('Saves an opened document using the same filename'), 'OnFileSave'),
+        'saveall':(wx.ITEM_NORMAL, 'IDM_FILE_SAVE_ALL', 'images/saveall.gif', tr('Save All Files'), tr('Saves all documents'), 'OnFileSaveAll'),
+        'cut':(wx.ITEM_NORMAL, 'IDM_EDIT_CUT', 'images/cut.gif', tr('Cut'), tr('Deletes text from the document and moves it to the clipboard'), 'DoSTCBuildIn'),
+        'copy':(wx.ITEM_NORMAL, 'IDM_EDIT_COPY', 'images/copy.gif', tr('Copy'), tr('Copies text from the document to the clipboard'), 'DoSTCBuildIn'),
+        'paste':(wx.ITEM_NORMAL, 'IDM_EDIT_PASTE', 'images/paste.gif', tr('Paste'), tr('Pastes text from the clipboard into the document'), 'DoSTCBuildIn'),
+        'undo':(wx.ITEM_NORMAL, 'IDM_EDIT_UNDO', 'images/undo.gif', tr('Undo'), tr('Reverse previous editing operation'), 'DoSTCBuildIn'),
+        'redo':(wx.ITEM_NORMAL, 'IDM_EDIT_REDO', 'images/redo.gif', tr('Redo'), tr('Reverse previous undo operation'), 'DoSTCBuildIn'),
+        'preference':(wx.ITEM_NORMAL, 'wx.ID_PREFERENCES', 'images/prop.gif', tr('Preference'), tr('Setup program preferences'), 'OnOptionPreference'),
     })
 Mixin.setPlugin('mainframe', 'add_tool_list', add_tool_list)
 
@@ -954,7 +954,7 @@ def add_mainframe_menu(menulist):
         [
             (100, 'wx.ID_FIND', tr('Find...') + '\tE=Ctrl+F', wx.ITEM_NORMAL, 'OnSearchFind', tr('Find text')),
             (110, 'IDM_SEARCH_DIRECTFIND', tr('Direct Find') + '\tE=F4', wx.ITEM_NORMAL, 'OnSearchDirectFind', tr('Direct find selected text')),
-            (120, 'wx.ID_REPLACE', tr('Replace...') + '\tE=Ctrl+H', wx.ITEM_NORMAL, 'OnSearchReplace', tr('Find and replace text')),
+            (120, 'wx.ID_REPLACE', tr('Find and Replace...') + '\tE=Ctrl+H', wx.ITEM_NORMAL, 'OnSearchReplace', tr('Find and replace text')),
             (130, 'wx.ID_FORWARD', tr('Find Next') + '\tE=F3', wx.ITEM_NORMAL, 'OnSearchFindNext', tr('Find next occurance of text')),
             (140, 'wx.ID_BACKWARD', tr('Find Previous') + '\tE=Shift+F3', wx.ITEM_NORMAL, 'OnSearchFindPrev', tr('Find previous occurance of text')),
             (150, '', '-', wx.ITEM_SEPARATOR, None, ''),
@@ -981,8 +981,8 @@ def add_tool_list(toollist, toolbaritems):
     ])
 
     toolbaritems.update({
-        'find':(wx.ITEM_NORMAL, 'wx.ID_FIND', 'images/find.gif', tr('find'), tr('Find text'), 'OnSearchFind'),
-        'replace':(wx.ITEM_NORMAL, 'wx.ID_REPLACE', 'images/replace.gif', tr('replace'), tr('Find and replace text'), 'OnSearchReplace'),
+        'find':(wx.ITEM_NORMAL, 'wx.ID_FIND', 'images/find.gif', tr('Find'), tr('Find Text'), 'OnSearchFind'),
+        'replace':(wx.ITEM_NORMAL, 'wx.ID_REPLACE', 'images/replace.gif', tr('Find and Replace'), tr('Find and replace text'), 'OnSearchReplace'),
     })
 Mixin.setPlugin('mainframe', 'add_tool_list', add_tool_list)
 
@@ -1431,7 +1431,7 @@ def add_tool_list(toollist, toolbaritems):
 
     #order, IDname, imagefile, short text, long text, func
     toolbaritems.update({
-        'viewtab':(wx.ITEM_CHECK, 'IDM_VIEW_TAB', 'images/format.gif', tr('toggle white space'), tr('Shows or hides space and tab marks'), 'OnViewTab'),
+        'viewtab':(wx.ITEM_CHECK, 'IDM_VIEW_TAB', 'images/format.gif', tr('Toggle White Space'), tr('Shows or hides space and tab marks'), 'OnViewTab'),
     })
 Mixin.setPlugin('mainframe', 'add_tool_list', add_tool_list)
 
@@ -1994,7 +1994,7 @@ def add_tool_list(toollist, toolbaritems):
 
     #order, IDname, imagefile, short text, long text, func
     toolbaritems.update({
-        'wrap':(wx.ITEM_CHECK, 'IDM_DOCUMENT_WORDWRAP', 'images/wrap.gif', tr('wrap'), tr('Toggles the word wrap feature of the active document'), 'OnDocumentWordWrap'),
+        'wrap':(wx.ITEM_CHECK, 'IDM_DOCUMENT_WORDWRAP', 'images/wrap.gif', tr('Toggle Wrap Mode'), tr('Toggles the word wrap feature of the active document'), 'OnDocumentWordWrap'),
     })
 Mixin.setPlugin('mainframe', 'add_tool_list', add_tool_list)
 
@@ -3361,7 +3361,7 @@ def add_tool_list(toollist, toolbaritems):
 
     #order, IDname, imagefile, short text, long text, func
     toolbaritems.update({
-        'classbrowser':(wx.ITEM_CHECK, 'IDM_PYTHON_CLASSBROWSER', 'images/classbrowser.gif', tr('class browser'), tr('Class browser'), 'OnPythonClassBrowser'),
+        'classbrowser':(wx.ITEM_CHECK, 'IDM_PYTHON_CLASSBROWSER', 'images/classbrowser.gif', tr('Class Browser'), tr('Class browser'), 'OnPythonClassBrowser'),
     })
 Mixin.setPlugin('pythonfiletype', 'add_tool_list', add_tool_list)
 
@@ -4296,8 +4296,8 @@ def add_tool_list(toollist, toolbaritems):
 
     #order, IDname, imagefile, short text, long text, func
     toolbaritems.update({
-        'run':(wx.ITEM_NORMAL, 'IDM_PYTHON_RUN', 'images/run.gif', tr('run'), tr('Run python program'), 'OnPythonRun'),
-        'setargs':(wx.ITEM_NORMAL, 'IDM_PYTHON_SETARGS', 'images/setargs.gif', tr('set arguments'), tr('Set python program command line arugments'), 'OnPythonSetArgs'),
+        'run':(wx.ITEM_NORMAL, 'IDM_PYTHON_RUN', 'images/run.gif', tr('Run'), tr('Run python program'), 'OnPythonRun'),
+        'setargs':(wx.ITEM_NORMAL, 'IDM_PYTHON_SETARGS', 'images/setargs.gif', tr('Set Arguments'), tr('Set python program command line arugments'), 'OnPythonSetArgs'),
         'stop':(wx.ITEM_NORMAL, 'IDM_PYTHON_END', 'images/stop.gif', tr('Stop Program'), tr('Stop current python program.'), 'OnPythonEnd'),
     })
 Mixin.setPlugin('pythonfiletype', 'add_tool_list', add_tool_list)
@@ -4842,7 +4842,7 @@ def add_tool_list(toollist, toolbaritems):
 
     #order, IDname, imagefile, short text, long text, func
     toolbaritems.update({
-        'print':(wx.ITEM_NORMAL, 'wx.ID_PRINT', 'images/printer.gif', tr('print'), tr('Prints a document.'), 'OnFilePrint'),
+        'print':(wx.ITEM_NORMAL, 'wx.ID_PRINT', 'images/printer.gif', tr('Print'), tr('Prints a document.'), 'OnFilePrint'),
     })
 Mixin.setPlugin('mainframe', 'add_tool_list', add_tool_list)
 
@@ -5259,7 +5259,7 @@ def add_tool_list(toollist, toolbaritems):
 
     #order, IDname, imagefile, short text, long text, func
     toolbaritems.update({
-        'ftp':(wx.ITEM_NORMAL, 'IDM_FILE_FTP', 'images/ftp.gif', tr('open ftp window'), tr('Opens ftp window.'), 'OnWindowFtp'),
+        'ftp':(wx.ITEM_NORMAL, 'IDM_FILE_FTP', 'images/ftp.gif', tr('Open Ftp Window'), tr('Opens ftp window.'), 'OnWindowFtp'),
     })
 Mixin.setPlugin('mainframe', 'add_tool_list', add_tool_list)
 
@@ -5344,8 +5344,8 @@ def add_tool_list(toollist, toolbaritems):
 
     #order, IDname, imagefile, short text, long text, func
     toolbaritems.update({
-        'left':(wx.ITEM_CHECK, 'IDM_WINDOW_LEFT', 'images/left.gif', tr('Left Window'), tr('Shows or hides the left Window'), 'OnWindowLeft'),
-        'bottom':(wx.ITEM_CHECK, 'IDM_WINDOW_BOTTOM', 'images/bottom.gif', tr('Bottom Window'), tr('Shows or hides the bottom Window'), 'OnWindowBottom'),
+        'left':(wx.ITEM_CHECK, 'IDM_WINDOW_LEFT', 'images/left.gif', tr('Toggle Left Window'), tr('Shows or hides the left Window'), 'OnWindowLeft'),
+        'bottom':(wx.ITEM_CHECK, 'IDM_WINDOW_BOTTOM', 'images/bottom.gif', tr('Toggle Bottom Window'), tr('Shows or hides the bottom Window'), 'OnWindowBottom'),
     })
 Mixin.setPlugin('mainframe', 'add_tool_list', add_tool_list)
 
@@ -6045,7 +6045,7 @@ def add_tool_list(toollist, toolbaritems):
 
     #order, IDname, imagefile, short text, long text, func
     toolbaritems.update({
-        'dir':(wx.ITEM_NORMAL, 'IDM_WINDOW_DIRBROWSER', 'images/dir.gif', tr('directory browser'), tr('Opens directory browser window.'), 'OnWindowDirBrowser'),
+        'dir':(wx.ITEM_NORMAL, 'IDM_WINDOW_DIRBROWSER', 'images/dir.gif', tr('Directory Browser'), tr('Opens directory browser window.'), 'OnWindowDirBrowser'),
     })
 Mixin.setPlugin('mainframe', 'add_tool_list', add_tool_list)
 
@@ -6526,7 +6526,7 @@ def create_new(win, toolbar):
     _id = Id.makeid(win, 'IDM_FILE_NEW')
     btnNew = FlatButtons.FlatBitmapMenuButton(toolbar, _id, common.getpngimage('images/new.gif'))
     btnNew.SetRightClickFunc(win.OnFileNews)
-    btnNew.SetToolTip(wx.ToolTip(tr('new file')))
+    btnNew.SetToolTip(wx.ToolTip(tr('New File')))
     wx.EVT_BUTTON(btnNew, _id, win.OnFileNew)
 
     return btnNew
@@ -6696,7 +6696,6 @@ Mixin.setPlugin('preference', 'add_pref', add_pref)
 import wx
 import os
 from modules import Mixin
-from modules import common
 
 def mainframe_init(win):
     win.memo_win = None
@@ -6734,7 +6733,7 @@ def add_tool_list(toollist, toolbaritems):
 
     #order, IDname, imagefile, short text, long text, func
     toolbaritems.update({
-        'memo':(wx.ITEM_CHECK, 'IDM_TOOL_MEMO', 'images/memo.gif', tr('easy memo'), tr('Show Easy Memo windows, and you can write down everything what you want.'), 'OnToolMemo'),
+        'memo':(wx.ITEM_CHECK, 'IDM_TOOL_MEMO', 'images/memo.gif', tr('Easy Memo'), tr('Show Easy Memo windows, and you can write down everything what you want.'), 'OnToolMemo'),
     })
 Mixin.setPlugin('mainframe', 'add_tool_list', add_tool_list)
 
@@ -7763,15 +7762,16 @@ menulist = [('IDM_PYTHON', #parent menu id
 ]
 Mixin.setMixin('pythonfiletype', 'menulist', menulist)
 
-toollist = [
+def add_tool_list(toollist, toolbaritems):
+    toollist.extend([
         (2140, 'check'),
-]
-Mixin.setMixin('pythonfiletype', 'toollist', toollist)
+    ])
 
-toolbaritems = {
-        'check':(wx.ITEM_NORMAL, 'IDM_PYTHON_CHECK', 'images/spellcheck.gif', tr('check'), tr('Check python source code syntax.'), 'OnPythonCheck'),
-}
-Mixin.setMixin('pythonfiletype', 'toolbaritems', toolbaritems)
+    #order, IDname, imagefile, short text, long text, func
+    toolbaritems.update({
+        'check':(wx.ITEM_NORMAL, 'IDM_PYTHON_CHECK', 'images/spellcheck.gif', tr('Check Syntax'), tr('Check python source code syntax.'), 'OnPythonCheck'),
+    })
+Mixin.setPlugin('mainframe', 'add_tool_list', add_tool_list)
 
 def OnPythonCheck(win, event):
     import SyntaxCheck
@@ -7984,7 +7984,7 @@ def create_prev(win, toolbar):
     ID_PREV = Id.makeid(win, 'IDM_SEARCH_NAV_PREV')
     btnPrev = FlatButtons.FlatBitmapMenuButton(toolbar, ID_PREV, common.getpngimage('images/nav_left.gif'))
     btnPrev.SetRightClickFunc(win.OnSmartNavPrevFiles)
-    btnPrev.SetToolTip(wx.ToolTip(tr('previous file')))
+    btnPrev.SetToolTip(wx.ToolTip(tr('Previous File')))
     wx.EVT_BUTTON(btnPrev, ID_PREV, win.OnSmartNavPrev)
     wx.EVT_UPDATE_UI(win, win.IDM_SEARCH_NAV_PREV, win.OnUpdateUI)
 
@@ -7994,7 +7994,7 @@ def create_next(win, toolbar):
     ID_NEXT = Id.makeid(win, 'IDM_SEARCH_NAV_NEXT')
     btnNext = FlatButtons.FlatBitmapMenuButton(toolbar, ID_NEXT, common.getpngimage('images/nav_right.gif'))
     btnNext.SetRightClickFunc(win.OnSmartNavNextFiles)
-    btnNext.SetToolTip(wx.ToolTip(tr('next file')))
+    btnNext.SetToolTip(wx.ToolTip(tr('Next File')))
     wx.EVT_BUTTON(btnNext, ID_NEXT, win.OnSmartNavNext)
     wx.EVT_UPDATE_UI(win, win.IDM_SEARCH_NAV_NEXT, win.OnUpdateUI)
 
@@ -8217,7 +8217,7 @@ toollist = [
 Mixin.setMixin('pythonfiletype', 'toollist', toollist)
 
 toolbaritems = {
-        'debug':(wx.ITEM_NORMAL, 'IDM_PYTHON_DEBUG', 'images/debug.png', tr('debug'), tr('Debug the current program in WinPdb.'), 'OnPythonDebug'),
+        'debug':(wx.ITEM_NORMAL, 'IDM_PYTHON_DEBUG', 'images/debug.png', tr('Debug'), tr('Debug the current program in WinPdb.'), 'OnPythonDebug'),
 }
 Mixin.setMixin('pythonfiletype', 'toolbaritems', toolbaritems)
 
