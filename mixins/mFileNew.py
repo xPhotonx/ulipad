@@ -45,7 +45,7 @@ def create_new(win, toolbar):
     _id = Id.makeid(win, 'IDM_FILE_NEW')
     btnNew = FlatButtons.FlatBitmapMenuButton(toolbar, _id, common.getpngimage('images/new.gif'))
     btnNew.SetRightClickFunc(win.OnFileNews)
-    btnNew.SetToolTip(wx.ToolTip(tr('new file')))
+    btnNew.SetToolTip(wx.ToolTip(tr('New File')))
     wx.EVT_BUTTON(btnNew, _id, win.OnFileNew)
 
     return btnNew

@@ -48,8 +48,8 @@ def add_editor_menu(popmenulist):
             (500, 'IDPM_SELECTION_SELECT_ENLARGE', tr('Enlarge Selection') + '\tCtrl+Alt+E', wx.ITEM_NORMAL, 'OnSelectionEnlarge', tr('Enlarges selection')),
             (600, 'IDPM_SELECTION_SELECT_LINE', tr('Select Line') + '\tCtrl+R', wx.ITEM_NORMAL, 'OnSelectionLine', tr('Select current phrase')),
             (700, 'IDPM_SELECTION_SELECTALL', tr('Select All') + '\tCtrl+A', wx.ITEM_NORMAL, 'OnPopupEdit', tr('Selects the entire document')),
-            (800, 'IDPM_SELECTION_BEGIN', tr('Select Begin'), wx.ITEM_NORMAL, 'OnSelectionBegin', tr('Set selection begin')),
-            (900, 'IDPM_SELECTION_END', tr('Select End'), wx.ITEM_NORMAL, 'OnSelectionEnd', tr('Set selection end')),
+            (800, 'IDPM_SELECTION_BEGIN', tr('Set Start of Selection'), wx.ITEM_NORMAL, 'OnSelectionBegin', tr('Set selection begin')),
+            (900, 'IDPM_SELECTION_END', tr('Set End of Selection'), wx.ITEM_NORMAL, 'OnSelectionEnd', tr('Set selection end')),
         ]),
     ])
 Mixin.setPlugin('editor', 'add_menu', add_editor_menu)
