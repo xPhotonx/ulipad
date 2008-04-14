@@ -5,7 +5,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
-"POT-Creation-Date: Sun Apr 13 21:25:07 2008\n"
+"POT-Creation-Date: Mon Apr 14 13:39:41 2008\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -108,12 +108,16 @@ msgstr ""
 msgid "(empty)"
 msgstr ""
 
-#: ..\mixins\CodeSnippet.py:264
-msgid "save"
+#: ..\mixins\CodeSnippet.py:264 ..\mixins\Import.py:130
+#: ..\mixins\Import.py:143 ..\mixins\mEditorCtrl.py:40
+#: ..\mixins\mEditorCtrl.py:53
+msgid "Save"
 msgstr ""
 
-#: ..\mixins\CodeSnippet.py:267
-msgid "save all"
+#: ..\mixins\CodeSnippet.py:267 ..\mixins\Import.py:132
+#: ..\mixins\Import.py:145 ..\mixins\mEditorCtrl.py:42
+#: ..\mixins\mEditorCtrl.py:55
+msgid "Save All"
 msgstr ""
 
 #: ..\mixins\CodeSnippet.py:377
@@ -910,11 +914,6 @@ msgstr ""
 msgid "Saves an opened document using the same filename"
 msgstr ""
 
-#: ..\mixins\Import.py:130 ..\mixins\Import.py:143 ..\mixins\mEditorCtrl.py:40
-#: ..\mixins\mEditorCtrl.py:53
-msgid "Save"
-msgstr ""
-
 #: ..\mixins\Import.py:131 ..\mixins\Import.py:144 ..\mixins\mEditorCtrl.py:41
 #: ..\mixins\mEditorCtrl.py:54
 msgid "Save As"
@@ -928,11 +927,6 @@ msgstr ""
 #: ..\mixins\mEditorCtrl.py:42 ..\mixins\mEditorCtrl.py:55
 #: ..\mixins\mToolbar.py:51
 msgid "Saves all documents"
-msgstr ""
-
-#: ..\mixins\Import.py:132 ..\mixins\Import.py:145 ..\mixins\mEditorCtrl.py:42
-#: ..\mixins\mEditorCtrl.py:55
-msgid "Save All"
 msgstr ""
 
 #: ..\mixins\Import.py:232 ..\mixins\mEditorCtrl.py:142
