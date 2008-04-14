@@ -251,13 +251,15 @@ class DirBrowser(wx.Panel, Mixin.Mixin):
         dlg.Destroy()
         if path:
             self.addpath(path)
-            wx.CallAfter(self.OnSetProject)
+            if self.pref.open_project_setting_dlg:
+                wx.CallAfter(self.OnSetProject)
 
     def OnAddPath(self, event):
         eid = event.GetId()
         index = self.dirmenu_ids.index(eid)
         self.addpath(self.pref.recent_dir_paths[index])
-        wx.CallAfter(self.OnSetProject)
+        if self.pref.open_project_setting_dlg:
+            wx.CallAfter(self.OnSetProject)
 
     def OnCleanDirectories(self, event):
         self.pref.recent_dir_paths = []
@@ -988,7 +990,8 @@ class MyFileDropTarget(wx.FileDropTarget):
         for filename in filenames:
             if os.path.isdir(filename):
                 self.dirwin.addpath(filename)
-                wx.CallAfter(self.dirwin.OnSetProject)
+                if self.pref.open_project_setting_dlg:
+                    wx.CallAfter(self.dirwin.OnSetProject)
             else:
                 Globals.mainframe.editctrl.new(filename)
 

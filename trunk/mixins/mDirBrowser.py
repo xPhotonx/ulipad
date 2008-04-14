@@ -117,12 +117,14 @@ def pref_init(pref):
         pref.command_line = cmdline
     else:
         pref.command_line = 'gnome-terminal --working-directory={path}'
+    pref.open_project_setting_dlg = True
 Mixin.setPlugin('preference', 'init', pref_init)
 
 def add_pref(preflist):
     preflist.extend([
 #        (tr('General'), 100, 'num', 'recent_dir_paths_num', tr('Max number of recent browse directories:'), None),
         (tr('General'), 150, 'check', 'open_last_dir_as_startup', tr('Open last directory browser upon startup'), None),
+        (tr('General'), 151, 'check', 'open_project_setting_dlg', tr('Auto open Project Setting Dialog when adding directory to Directory Browser Window'), None),
         (tr('General'), 160, 'openfile', 'command_line', tr('Command line of Open Command Window Here'), {'span':True}),
     ])
 Mixin.setPlugin('preference', 'add_pref', add_pref)
