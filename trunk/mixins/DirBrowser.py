@@ -251,11 +251,13 @@ class DirBrowser(wx.Panel, Mixin.Mixin):
         dlg.Destroy()
         if path:
             self.addpath(path)
+            wx.CallAfter(self.OnSetProject)
 
     def OnAddPath(self, event):
         eid = event.GetId()
         index = self.dirmenu_ids.index(eid)
         self.addpath(self.pref.recent_dir_paths[index])
+        wx.CallAfter(self.OnSetProject)
 
     def OnCleanDirectories(self, event):
         self.pref.recent_dir_paths = []
@@ -800,7 +802,7 @@ class DirBrowser(wx.Panel, Mixin.Mixin):
         path = Globals.userpath
         self.addpath(path)
 
-    def OnSetProject(self, event):
+    def OnSetProject(self, event=None):
         item = self.tree.GetSelection()
         from modules import dict4ini
         filename = self.get_node_filename(item)
@@ -813,7 +815,7 @@ class DirBrowser(wx.Panel, Mixin.Mixin):
                 ('multi', 'project_name', name, tr('Project Names'), self.project_names),
             ]
         from modules.EasyGuider import EasyDialog
-        dlg = EasyDialog.EasyDialog(self, title=tr("Project Setting"), elements=dialog)
+        dlg = EasyDialog.EasyDialog(self.mainframe, title=tr("Project Setting"), elements=dialog)
         values = None
         if dlg.ShowModal() == wx.ID_OK:
             values = dlg.GetValue()
@@ -986,6 +988,7 @@ class MyFileDropTarget(wx.FileDropTarget):
         for filename in filenames:
             if os.path.isdir(filename):
                 self.dirwin.addpath(filename)
+                wx.CallAfter(self.dirwin.OnSetProject)
             else:
                 Globals.mainframe.editctrl.new(filename)
 
