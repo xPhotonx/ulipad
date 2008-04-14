@@ -5,6 +5,7 @@ mEditorCtrl.py mDirBrowser.py DireBrowser.py
                     Move Close Other to Close menu group in notebook context menu
                     Add tool button snippet and modify open dirbrowser and snippet as check toolbutton
                     Change `explorer.exe %s` as `explorer.exe /e, %s`
+ruler/__init__.py   Fix ruler bug
                     
 [2008/04/12]
 mLexer.py mLexerClass1.py
