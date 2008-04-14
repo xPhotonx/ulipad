@@ -856,7 +856,7 @@ class DirBrowser(wx.Panel, Mixin.Mixin):
         if not self.is_ok(item): return
         filename = self.get_node_filename(item)
         dir = common.getCurrentDir(filename)
-        wx.Execute(r"explorer.exe %s" % dir)
+        wx.Execute(r"explorer.exe /e, %s" % dir)
 
     def OnSearchDir(self, event):
         item = self.tree.GetSelection()

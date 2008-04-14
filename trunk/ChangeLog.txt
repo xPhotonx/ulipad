@@ -1,4 +1,11 @@
 $Rev$
+[2008/04/14]
+mEditorCtrl.py mDirBrowser.py DireBrowser.py 
+                    Add Open Explorer Window Here menu to editoctrl tab
+                    Move Close Other to Close menu group in notebook context menu
+                    Add tool button snippet and modify open dirbrowser and snippet as check toolbutton
+                    Change `explorer.exe %s` as `explorer.exe /e, %s`
+                    
 [2008/04/12]
 mLexer.py mLexerClass1.py
                     Add slice syntax support

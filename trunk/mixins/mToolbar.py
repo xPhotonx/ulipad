@@ -54,7 +54,7 @@ def add_tool_list(toollist, toolbaritems):
         'paste':(wx.ITEM_NORMAL, 'IDM_EDIT_PASTE', 'images/paste.gif', tr('Paste'), tr('Pastes text from the clipboard into the document'), 'DoSTCBuildIn'),
         'undo':(wx.ITEM_NORMAL, 'IDM_EDIT_UNDO', 'images/undo.gif', tr('Undo'), tr('Reverse previous editing operation'), 'DoSTCBuildIn'),
         'redo':(wx.ITEM_NORMAL, 'IDM_EDIT_REDO', 'images/redo.gif', tr('Redo'), tr('Reverse previous undo operation'), 'DoSTCBuildIn'),
-        'preference':(wx.ITEM_NORMAL, 'wx.ID_PREFERENCES', 'images/prop.gif', tr('Preference'), tr('Setup program preferences'), 'OnOptionPreference'),
+        'preference':(wx.ITEM_NORMAL, 'wx.ID_PREFERENCES', 'images/prop.gif', tr('Preferences'), tr('Setup program preferences'), 'OnOptionPreference'),
     })
 Mixin.setPlugin('mainframe', 'add_tool_list', add_tool_list)
 

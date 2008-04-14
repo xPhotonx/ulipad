@@ -33,9 +33,29 @@ def add_tool_list(toollist, toolbaritems):
 
     #order, IDname, imagefile, short text, long text, func
     toolbaritems.update({
-        'dir':(wx.ITEM_NORMAL, 'IDM_WINDOW_DIRBROWSER', 'images/dir.gif', tr('Directory Browser'), tr('Opens directory browser window.'), 'OnWindowDirBrowser'),
+        'dir':(wx.ITEM_CHECK, 'IDTM_DIRBROWSER', 'images/dir.gif', tr('Open Directory Browser'), tr('Opens directory browser window.'), 'OnToolbarDirBrowser'),
     })
 Mixin.setPlugin('mainframe', 'add_tool_list', add_tool_list)
+
+def afterinit(win):
+    wx.EVT_UPDATE_UI(win, win.IDTM_DIRBROWSER, win.OnUpdateUI)
+Mixin.setPlugin('mainframe', 'afterinit', afterinit)
+
+def on_mainframe_updateui(win, event):
+    eid = event.GetId()
+    if eid == win.IDTM_DIRBROWSER:
+        page = win.panel.getPage(tr('Dir Browser'))
+        event.Check(bool(page))
+Mixin.setPlugin('mainframe', 'on_update_ui', on_mainframe_updateui)
+
+def OnToolbarDirBrowser(win, event):
+    page = win.panel.getPage(tr('Dir Browser'))
+    if page:
+        win.panel.closePage(tr('Dir Browser'))
+    else:
+        if win.createDirBrowserWindow():
+            win.panel.showPage(tr('Dir Browser'))
+Mixin.setMixin('mainframe', 'OnToolbarDirBrowser', OnToolbarDirBrowser)
 
 def add_mainframe_menu(menulist):
     menulist.extend([('IDM_FILE',
@@ -65,6 +85,7 @@ def afterinit(win):
 Mixin.setPlugin('mainframe', 'afterinit', afterinit)
 
 def createDirBrowserWindow(win, dirs=None):
+    page = None
     if not win.panel.getPage(tr('Dir Browser')):
         from DirBrowser import DirBrowser
 
@@ -72,6 +93,7 @@ def createDirBrowserWindow(win, dirs=None):
             dirs = win.pref.last_dir_paths
         page = DirBrowser(win.panel.createNotebook('left'), win, dirs)
         win.panel.addPage('left', page, tr('Dir Browser'))
+    return page
 Mixin.setMixin('mainframe', 'createDirBrowserWindow', createDirBrowserWindow)
 
 def OnWindowDirBrowser(win, event):

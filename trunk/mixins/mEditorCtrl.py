@@ -55,6 +55,7 @@ def add_editctrl_menu(popmenulist):
             (150, 'IDPM_FILE_SAVE_ALL', tr('Save All'), wx.ITEM_NORMAL, 'OnPopUpMenu', tr('Saves all documents')),
             (160, '', '-', wx.ITEM_SEPARATOR, None, ''),
             (170, 'IDPM_OPEN_CMD_WINDOW', tr('Open Command Window Here'), wx.ITEM_NORMAL, 'OnOpenCmdWindow', ''),
+            (180, 'IDPM_OPEN_CMD_EXPLORER', tr('Open Explorer Window Here'), wx.ITEM_NORMAL, 'OnOpenCmdExplorerWindow', ''),
         ]),
     ])
 Mixin.setPlugin('editctrl', 'add_menu', add_editctrl_menu)
@@ -299,3 +300,13 @@ def OnOpenCmdWindow(win, event=None):
         cmdline = win.pref.command_line.replace('{path}', filename)
         wx.Execute(cmdline)
 Mixin.setMixin('editctrl', 'OnOpenCmdWindow', OnOpenCmdWindow)
+
+def OnOpenCmdExplorerWindow(win, event=None):
+    filename = win.getCurDoc().getFilename()
+    if not filename:
+        filename = Globals.userpath
+    else:
+        filename = os.path.dirname(filename)
+    wx.Execute(r"explorer.exe /e, %s" % filename)
+Mixin.setMixin('editctrl', 'OnOpenCmdExplorerWindow', OnOpenCmdExplorerWindow)
+    

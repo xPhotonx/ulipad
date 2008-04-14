@@ -121,7 +121,7 @@ class PrefDialog(wx.Dialog, Mixin.Mixin):
         #config.ini
         self.ini = common.get_config_file_obj()
         
-        wx.Dialog.__init__(self, parent, -1, title=tr("Preference..."), size=size, style=style)
+        wx.Dialog.__init__(self, parent, -1, title=tr("Preferences"), size=size, style=style)
 
         self.value_set = []
         self.pages = {}
