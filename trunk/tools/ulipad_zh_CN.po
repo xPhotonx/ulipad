@@ -1,6 +1,6 @@
 msgid ""
 msgstr ""
-"PO-Revision-Date: 2008-04-13 21:28+0800\n"
+"PO-Revision-Date: 2008-04-14 13:40+0800\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Project-Id-Version: UliPad 3.9\n"
 "Generated-By: pygettext.py 1.5\n"
@@ -137,11 +137,19 @@ msgid "(empty)"
 msgstr "(空)"
 
 #: ..\mixins\CodeSnippet.py:264
-msgid "save"
+#: ..\mixins\Import.py:130
+#: ..\mixins\Import.py:143
+#: ..\mixins\mEditorCtrl.py:40
+#: ..\mixins\mEditorCtrl.py:53
+msgid "Save"
 msgstr "保存"
 
 #: ..\mixins\CodeSnippet.py:267
-msgid "save all"
+#: ..\mixins\Import.py:132
+#: ..\mixins\Import.py:145
+#: ..\mixins\mEditorCtrl.py:42
+#: ..\mixins\mEditorCtrl.py:55
+msgid "Save All"
 msgstr "全部保存"
 
 #: ..\mixins\CodeSnippet.py:377
@@ -1123,13 +1131,6 @@ msgstr "关闭全部文档窗口"
 msgid "Saves an opened document using the same filename"
 msgstr "按相同文件名保存一个打开文档"
 
-#: ..\mixins\Import.py:130
-#: ..\mixins\Import.py:143
-#: ..\mixins\mEditorCtrl.py:40
-#: ..\mixins\mEditorCtrl.py:53
-msgid "Save"
-msgstr "保存"
-
 #: ..\mixins\Import.py:131
 #: ..\mixins\Import.py:144
 #: ..\mixins\mEditorCtrl.py:41
@@ -1150,13 +1151,6 @@ msgstr "保存打开文档为指定的文件名"
 #: ..\mixins\mToolbar.py:51
 msgid "Saves all documents"
 msgstr "保存全部文档"
-
-#: ..\mixins\Import.py:132
-#: ..\mixins\Import.py:145
-#: ..\mixins\mEditorCtrl.py:42
-#: ..\mixins\mEditorCtrl.py:55
-msgid "Save All"
-msgstr "全部保存"
 
 #: ..\mixins\Import.py:232
 #: ..\mixins\mEditorCtrl.py:142
@@ -3798,7 +3792,7 @@ msgstr "检查Python源码语法。"
 #: ..\mixins\Import.py:7772
 #: ..\mixins\mSyntaxCheck.py:42
 msgid "Check Syntax"
-msgstr ""
+msgstr "语法检查"
 
 #: ..\mixins\Import.py:7790
 #: ..\mixins\Import.py:7791
