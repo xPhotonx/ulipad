@@ -36,7 +36,7 @@ Mixin.setMixin('mainframe', 'menulist', menulist)
 def add_editctrl_menu(popmenulist):
     popmenulist.extend([ (None,
         [
-            (201, 'IDPM_CLOSE_OTHER', tr('Close Other'), wx.ITEM_NORMAL, 'OnEditCtrlCloseOther', tr('Closes other document windows')),
+            (115, 'IDPM_CLOSE_OTHER', tr('Close Other'), wx.ITEM_NORMAL, 'OnEditCtrlCloseOther', tr('Closes other document windows')),
         ]),
     ])
 Mixin.setPlugin('editctrl', 'add_menu', add_editctrl_menu)

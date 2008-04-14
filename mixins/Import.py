@@ -145,6 +145,7 @@ def add_editctrl_menu(popmenulist):
             (150, 'IDPM_FILE_SAVE_ALL', tr('Save All'), wx.ITEM_NORMAL, 'OnPopUpMenu', tr('Saves all documents')),
             (160, '', '-', wx.ITEM_SEPARATOR, None, ''),
             (170, 'IDPM_OPEN_CMD_WINDOW', tr('Open Command Window Here'), wx.ITEM_NORMAL, 'OnOpenCmdWindow', ''),
+            (180, 'IDPM_OPEN_CMD_EXPLORER', tr('Open Explorer Window Here'), wx.ITEM_NORMAL, 'OnOpenCmdExplorerWindow', ''),
         ]),
     ])
 Mixin.setPlugin('editctrl', 'add_menu', add_editctrl_menu)
@@ -389,6 +390,16 @@ def OnOpenCmdWindow(win, event=None):
         cmdline = win.pref.command_line.replace('{path}', filename)
         wx.Execute(cmdline)
 Mixin.setMixin('editctrl', 'OnOpenCmdWindow', OnOpenCmdWindow)
+
+def OnOpenCmdExplorerWindow(win, event=None):
+    filename = win.getCurDoc().getFilename()
+    if not filename:
+        filename = Globals.userpath
+    else:
+        filename = os.path.dirname(filename)
+    wx.Execute(r"explorer.exe /e, %s" % filename)
+Mixin.setMixin('editctrl', 'OnOpenCmdExplorerWindow', OnOpenCmdExplorerWindow)
+
 
 
 
@@ -845,7 +856,7 @@ def add_tool_list(toollist, toolbaritems):
         'paste':(wx.ITEM_NORMAL, 'IDM_EDIT_PASTE', 'images/paste.gif', tr('Paste'), tr('Pastes text from the clipboard into the document'), 'DoSTCBuildIn'),
         'undo':(wx.ITEM_NORMAL, 'IDM_EDIT_UNDO', 'images/undo.gif', tr('Undo'), tr('Reverse previous editing operation'), 'DoSTCBuildIn'),
         'redo':(wx.ITEM_NORMAL, 'IDM_EDIT_REDO', 'images/redo.gif', tr('Redo'), tr('Reverse previous undo operation'), 'DoSTCBuildIn'),
-        'preference':(wx.ITEM_NORMAL, 'wx.ID_PREFERENCES', 'images/prop.gif', tr('Preference'), tr('Setup program preferences'), 'OnOptionPreference'),
+        'preference':(wx.ITEM_NORMAL, 'wx.ID_PREFERENCES', 'images/prop.gif', tr('Preferences'), tr('Setup program preferences'), 'OnOptionPreference'),
     })
 Mixin.setPlugin('mainframe', 'add_tool_list', add_tool_list)
 
@@ -6045,9 +6056,29 @@ def add_tool_list(toollist, toolbaritems):
 
     #order, IDname, imagefile, short text, long text, func
     toolbaritems.update({
-        'dir':(wx.ITEM_NORMAL, 'IDM_WINDOW_DIRBROWSER', 'images/dir.gif', tr('Directory Browser'), tr('Opens directory browser window.'), 'OnWindowDirBrowser'),
+        'dir':(wx.ITEM_CHECK, 'IDTM_DIRBROWSER', 'images/dir.gif', tr('Open Directory Browser'), tr('Opens directory browser window.'), 'OnToolbarDirBrowser'),
     })
 Mixin.setPlugin('mainframe', 'add_tool_list', add_tool_list)
+
+def afterinit(win):
+    wx.EVT_UPDATE_UI(win, win.IDTM_DIRBROWSER, win.OnUpdateUI)
+Mixin.setPlugin('mainframe', 'afterinit', afterinit)
+
+def on_mainframe_updateui(win, event):
+    eid = event.GetId()
+    if eid == win.IDTM_DIRBROWSER:
+        page = win.panel.getPage(tr('Dir Browser'))
+        event.Check(bool(page))
+Mixin.setPlugin('mainframe', 'on_update_ui', on_mainframe_updateui)
+
+def OnToolbarDirBrowser(win, event):
+    page = win.panel.getPage(tr('Dir Browser'))
+    if page:
+        win.panel.closePage(tr('Dir Browser'))
+    else:
+        if win.createDirBrowserWindow():
+            win.panel.showPage(tr('Dir Browser'))
+Mixin.setMixin('mainframe', 'OnToolbarDirBrowser', OnToolbarDirBrowser)
 
 def add_mainframe_menu(menulist):
     menulist.extend([('IDM_FILE',
@@ -6077,6 +6108,7 @@ def afterinit(win):
 Mixin.setPlugin('mainframe', 'afterinit', afterinit)
 
 def createDirBrowserWindow(win, dirs=None):
+    page = None
     if not win.panel.getPage(tr('Dir Browser')):
         from DirBrowser import DirBrowser
 
@@ -6084,6 +6116,7 @@ def createDirBrowserWindow(win, dirs=None):
             dirs = win.pref.last_dir_paths
         page = DirBrowser(win.panel.createNotebook('left'), win, dirs)
         win.panel.addPage('left', page, tr('Dir Browser'))
+    return page
 Mixin.setMixin('mainframe', 'createDirBrowserWindow', createDirBrowserWindow)
 
 def OnWindowDirBrowser(win, event):
@@ -8418,6 +8451,16 @@ def add_image(imagelist, imageids, name, image):
         imageids[name+f] = index
 Mixin.setPlugin('codesnippet', 'add_image', add_image)
 
+def add_tool_list(toollist, toolbaritems):
+    toollist.extend([
+        (650, 'snippet'),
+    ])
+
+    #order, IDname, imagefile, short text, long text, func
+    toolbaritems.update({
+        'snippet':(wx.ITEM_CHECK, 'IDTM_SNIPPETWINDOW', 'images/snippet.png', tr('Open Snippet Window'), tr('Open code snippet window.'), 'OnToolbarWindowCodeSnippet'),
+    })
+Mixin.setPlugin('mainframe', 'add_tool_list', add_tool_list)
 
 def createCodeSnippetWindow(win):
     from modules import common
@@ -8434,6 +8477,26 @@ def createCodeSnippetWindow(win):
         win.panel.addPage('left', page, tr('Code Snippet'))
     return page
 Mixin.setMixin('mainframe', 'createCodeSnippetWindow', createCodeSnippetWindow)
+
+def afterinit(win):
+    wx.EVT_UPDATE_UI(win, win.IDTM_SNIPPETWINDOW, win.OnUpdateUI)
+Mixin.setPlugin('mainframe', 'afterinit', afterinit)
+
+def on_mainframe_updateui(win, event):
+    eid = event.GetId()
+    if eid == win.IDTM_SNIPPETWINDOW:
+        page = win.panel.getPage(tr('Code Snippet'))
+        event.Check(bool(page))
+Mixin.setPlugin('mainframe', 'on_update_ui', on_mainframe_updateui)
+
+def OnToolbarWindowCodeSnippet(win, event):
+    page = win.panel.getPage(tr('Code Snippet'))
+    if page:
+        win.panel.closePage(tr('Code Snippet'))
+    else:
+        if win.createCodeSnippetWindow():
+            win.panel.showPage(tr('Code Snippet'))
+Mixin.setMixin('mainframe', 'OnToolbarWindowCodeSnippet', OnToolbarWindowCodeSnippet)
 
 def OnWindowCodeSnippet(win, event):
     if win.createCodeSnippetWindow():
