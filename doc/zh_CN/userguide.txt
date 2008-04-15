@@ -60,6 +60,70 @@ Windows安装包
 最新更新
 --------
 
+3.9 Version
+~~~~~~~~~~~~
+
+New Features and Changes:
+
+#. Add php.acp thanks for 魏振 <etggy@163.com>
+#. Replace old snippet with new snippet, more details please see <Snippet Howto>
+#. Binding F5 to editor but not MainFrame, and add F5(Refresh) support in Directory Browser.
+#. Improve python class browser, threading update, change some icons
+#. Add indent cursor move functionality see <Indent Moving Howto>
+#. Improve threading document modification process, so you can get better efficiency
+#. Introduce meide(http://code.google.com/p/meide) project to simplify the interface creation
+#. Add FNB.FNB_DROPDOWN_TABS_LIST style to EditorCtrl
+#. Change auto file check in Editor on_set_focus event handler
+#. Change DDE to asyncore and asynchat framework
+#. Change preference dialog from notebook to treebook
+#. Add icon set theme support
+#. Add strip line ending when saving functionality option in Preferences
+#. Strip leading space when doing "Run in Shell"
+#. Add auto detect python interpreter in windows platform
+#. Improve ReST document render, and fix the setfocus lost bug when auto modified 
+   the html output, thanks a lot to ygao
+#. Change setmenutext to use fix width to set the menu text, replace with '\t'
+#. Chanage notebook left double click to right double click(enlarge notebook size)
+#. Add search text count in Find & Replace pane
+#. Add line ending mixture check when saving file feature
+#. Improve preference dialog input assistant checkbox process. 
+   When you check the first checkbox(Enable input assistant) it'll
+   automatically toggle other 5 checkboxes.
+#. Change new toolbutton to dropdown toolbutton, and it can remember the last 
+   new file type(select new type menu first), then when you select new menu, 
+   it'll create a new file with the last new file type
+#. Improve command search and pairprog plugin caret display process
+#. Add auto new version of UliPad check
+#. Add slice language syntax support
+#. Add auto pop up project setting dialog when adding directory to directoy browser window
+#. Add Open Explorer Window Here menu to editoctrl tab context menu
+#. Add open snippet tool button, change open dirbrowser and open snippet toolbutton to check toolbutton
+#. Change ``explorer.exe %s`` as ``explorer.exe /e, %s`` in windows platform
+
+New Plugins:
+
+#. canvas_test_plugin, you can directly test DC api
+#. web2py_plugin, supply web2py shell
+
+Bug fix:
+
+#. Fix webopen twice open bug
+#. Fix editor shortcuts key caption error
+#. Fix if set DROP_DOWN_TABS_LIST style, right arrow will disappear bug
+#. Fix utf-16 convertion bug
+#. Fix mako tag auto complete bug #issue 14
+#. Fix if lines are folded, when goto hiding lines will no effect bug
+#. Fix DDE bug, thanks to LP <liupengf12@gmail.com>
+#. Fix webopen bug, cann't correctly deal with 'mailto:'
+#. Fix smart tabs bug
+#. Fix copy and paste lineending is not correct bug
+#. Fix tab invisible bug after changing size or changing the page title
+#. Fix template line-ending not match the default line-ending setting
+#. Fix password widget is not Password type widget bug
+#. Fix script filename cannot be unicode(chinese) bug
+#. Fix syntax check exception process bug
+#. Fix ruler bug
+
 3.8 Version
 ~~~~~~~~~~~~~
 

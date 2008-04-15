@@ -42,7 +42,7 @@ Mixin.setPlugin('mainframe', 'add_menu', add_mainframe_menu)
 def add_notebook_menu(popmenulist):
     popmenulist.extend([(None,
         [
-            (200, 'IDPM_CODESNIPPETWINDOW', tr('Open Code Snippets Window'), wx.ITEM_NORMAL, 'OnCodeSnippetWindow', tr('Opens code snippet window.')),
+            (135, 'IDPM_CODESNIPPETWINDOW', tr('Open Code Snippets Window'), wx.ITEM_NORMAL, 'OnCodeSnippetWindow', tr('Opens code snippet window.')),
         ]),
     ])
 Mixin.setPlugin('notebook', 'add_menu', add_notebook_menu)

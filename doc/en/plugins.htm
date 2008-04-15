@@ -340,6 +340,11 @@ ul.auto-toc {
 <li><a class="reference" href="#how-to-run-it" id="id26" name="id26">1.23.2&nbsp;&nbsp;&nbsp;How to run it?</a></li>
 </ul>
 </li>
+<li><a class="reference" href="#web2py-plugin" id="id27" name="id27">1.24&nbsp;&nbsp;&nbsp;web2py_plugin</a></li>
+<li><a class="reference" href="#canvas-test-plugin" id="id28" name="id28">1.25&nbsp;&nbsp;&nbsp;canvas_test_plugin</a><ul class="auto-toc">
+<li><a class="reference" href="#how-to-use-it" id="id29" name="id29">1.25.1&nbsp;&nbsp;&nbsp;How to use it?</a></li>
+</ul>
+</li>
 </ul>
 </li>
 </ul>
@@ -474,6 +479,38 @@ it.</p>
 You'll see a panel appearing in the bottom pane.
 The attatchment is the interface. If you double click on one item,
 then the caret will automatically jump to the line.</p>
+</div>
+</div>
+<div class="section">
+<h2><a class="toc-backref" href="#id27" id="web2py-plugin" name="web2py-plugin">1.24&nbsp;&nbsp;&nbsp;web2py_plugin</a></h2>
+<p>Supply web2py shell menu. You should set a directory as web2py project first,
+then when you select a app folder in <tt class="docutils literal"><span class="pre">applications</span></tt> folder, on the context
+menu there will be a <tt class="docutils literal"><span class="pre">Start</span> <span class="pre">web2py</span> <span class="pre">Shell</span></tt>, so you can start a shell window
+to test current selected app of web2py.</p>
+</div>
+<div class="section">
+<h2><a class="toc-backref" href="#id28" id="canvas-test-plugin" name="canvas-test-plugin">1.25&nbsp;&nbsp;&nbsp;canvas_test_plugin</a></h2>
+<p>You can write graphic drawing code directly, and then see the result.</p>
+<div class="section">
+<h3><a class="toc-backref" href="#id29" id="how-to-use-it" name="how-to-use-it">1.25.1&nbsp;&nbsp;&nbsp;How to use it?</a></h3>
+<ol class="arabic">
+<li><p class="first">Check casvas_test_plugin and restart UliPad</p>
+</li>
+<li><p class="first">Run [Tool]-&gt;[Canvas Test]</p>
+</li>
+<li><p class="first">In Canvas Test window, write down graphic API. You'll see there already
+has two lines:</p>
+<pre class="literal-block">
+import wx
+dc = wx.PaintDC(self)
+</pre>
+<p>these lines are used to enable code completion support.</p>
+</li>
+<li><p class="first">Write down your code after dc = wx.PaintDC(self)</p>
+</li>
+<li><p class="first">Then click the refresh button</p>
+</li>
+</ol>
 <p><a class="reference" href="index.htm">[Return]</a></p>
 </div>
 </div>

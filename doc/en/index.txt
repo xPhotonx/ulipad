@@ -1,64 +1,44 @@
 =======================
- UliPad Document
+ UliPad Documentations
 =======================
 
 :Author: limodou
 :Contact: limodou@gmail.com
 :Homepage: http://code.google.com/p/ulipad/
 :BLOG: http://www.donews.net/limodou
-:Copyright: GPL
 
 Thanks for you downloading and using UliPad Editor Software. This software
-is keeping improvment, so please its mailing list or my blog to get the neweset
-information about it.
+is keeping improvment, so please keep up with its mailing list or my blog 
+to get the latest information about UliPad.
 
-`Project Introduction`_ (Chinese)
-------------------------------------
+Introduction
+---------------
 
-.. _`Project Introduction`: introduce.htm 
+* `Project Introduction <introduce.htm>`_ (Chinese)
+* `Change Log <changelog.htm>`_
+* `Plugin Introduction <plugins.htm>`_
 
-`User Manual`_ (Chinese)
---------------------------
 
-.. _`User Manual`: userguide.htm
+Manual
+--------
 
-`Tech Manual`_ (Chinese)
---------------------------
+* `User Manual <userguide.htm>`_ (Chinese)
+* `Tech Manual <technical.htm>`_ (Chinese)
 
-.. _`Tech Manual`: technical.htm
+HowTo
+~~~~~~~~
 
-`Plugin Introduction`_
-------------------------
+* `Config.ini Description <config.htm>`_
+* `Indent Moving Howto <howto_indent_moving.htm>`_
+* `Write Custom Syntax Support Howto <howto_write_custom_syntax_support.htm>`_
+* `Snippets Howto <howto_snippet.htm>`_
+* `InputAssistant Howto <howto_input_assistant.htm>`_
 
-.. _`Plugin Introduction`: plugins.htm
-
-`FAQ`_
+FAQ
 -------
 
-.. _FAQ: faq.htm
+* `FAQ <faq.htm>`_
 
-`Config.ini Description`_
----------------------------
 
-.. _`Config.ini Description`: config.htm
-
-`Write Custom Syntax Support Howto`_
---------------------------------------
-
-.. _`Write Custom Syntax Support Howto`: howto_write_custom_syntax_support.htm
-
-Contribute Documents
-------------------------
-
-`Snippets Howto`_
-~~~~~~~~~~~~~~~~~~~~
-
-.. _`Snippets Howto`: howto_snippet.htm
-
-`InputAssistant Howto`_
-~~~~~~~~~~~~~~~~~~~~~~~~
-
-.. _`InputAssistant Howto`: howto_input_assistant.htm
-
-This document is written in reStructuredText format, and convert to html by docutils tool¡£
-And all of them is written in UliPad.
+All documents are written in reStructuredText format, and convert to html by docutils tool¡£
+And all of them are written in UliPad.

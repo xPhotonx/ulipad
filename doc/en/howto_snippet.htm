@@ -4,7 +4,7 @@
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
 <meta name="generator" content="Docutils 0.4: http://docutils.sourceforge.net/" />
-<title>HOW TO CREATE SNIPPETS</title>
+<title>How to use the Code Snippets Window (CSW)</title>
 <meta name="author" content="Dick Moores" />
 <style type="text/css">
 
@@ -291,8 +291,8 @@ ul.auto-toc {
 </style>
 </head>
 <body>
-<div class="document" id="how-to-create-snippets">
-<h1 class="title">HOW TO CREATE SNIPPETS</h1>
+<div class="document" id="how-to-use-the-code-snippets-window-csw">
+<h1 class="title">How to use the Code Snippets Window (CSW)</h1>
 <table class="docinfo" frame="void" rules="none">
 <col class="docinfo-name" />
 <col class="docinfo-content" />
@@ -303,58 +303,187 @@ ul.auto-toc {
 <td><a class="first last reference" href="mailto:rdmoores&#64;gmail.com">rdmoores&#64;gmail.com</a></td></tr>
 </tbody>
 </table>
-<p>On the Ulipad menubar, Tool-&gt;Snippets will show 2 items, Snippets Categories Manager... and Snippets Code Manager... .</p>
-<p>To create a snippet you must first have a category for it in the Categories Manager.</p>
-<p>Let's say you want to create a simple snippet such as  &quot;from math import pi&quot;, and you don't yet have a category created for it. You're thinking you'd like &quot;Imports&quot; as its category. So open the Snippets Categories Manager (Tool-&gt;Snippets-&gt;Snippets Categories Manager).</p>
-<ol class="arabic simple">
-<li>In the Category Text textbox (upper right in the Categories Manager) enter &quot;Imports&quot; (no quotes).</li>
-<li>Press the Add button, then the OK button to close the Categories Manager. (If you want to add another category before closing the Categories Manager, press Apply instead of OK.)</li>
-</ol>
-<div class="section">
-<h1><a id="how-to-create-a-snippet-in-the-code-manager" name="how-to-create-a-snippet-in-the-code-manager">HOW TO CREATE A SNIPPET IN THE CODE MANAGER</a></h1>
-<ol class="arabic simple">
-<li>Open the Code Manager (Tool-&gt;Snippets-&gt;Snippets Code Manager)</li>
-<li>In the Snippets Categories textbox (upper left) select the category containing the snippet you want. The Snippet Code textbox should show a list of the snippets already in that category, if any. For your &quot;from math import pi&quot; snippet you made the category, &quot;Imports&quot;. So select it.</li>
-<li>Type an abbreviation for your new snippet in the Abbreviation textbox (uppermost of the righthand column of textboxes). For &quot;from math import pi&quot; you could use the whole snippet as the abbreviation because it's short, or simply use &quot;pi&quot;.</li>
-<li>Enter whatever you like (or nothing) in the textboxes below the Abbreviation textbox. However, the Abbreviation textbox must have an entry for your snippet.</li>
-<li>Type (or paste) the code for your snippet in the big Code textbox at the bottom of the Code Manager.</li>
-<li>Press the Add button. Then if you want to add another snippet in the same or a different category, press the Apply button. If adding to a different category, remember to first select that category in the Snippet Categories textbox. When you're finished adding snippets, press the OK button.</li>
-</ol>
+<div class="contents topic">
+<p class="topic-title first"><a id="content" name="content">Content</a></p>
+<ul class="auto-toc simple">
+<li><a class="reference" href="#usage" id="id1" name="id1">1&nbsp;&nbsp;&nbsp;Usage</a></li>
+<li><a class="reference" href="#appendix" id="id2" name="id2">2&nbsp;&nbsp;&nbsp;Appendix</a><ul class="auto-toc">
+<li><a class="reference" href="#miscellaneous-tips" id="id3" name="id3">2.1&nbsp;&nbsp;&nbsp;Miscellaneous Tips</a></li>
+</ul>
+</li>
+</ul>
 </div>
 <div class="section">
-<h1><a id="how-to-insert-a-snippet-into-your-code" name="how-to-insert-a-snippet-into-your-code">HOW TO INSERT A SNIPPET INTO YOUR CODE</a></h1>
+<h1><a class="toc-backref" href="#id1" id="usage" name="usage">1&nbsp;&nbsp;&nbsp;Usage</a></h1>
+<p>The CSW provides a convenient way to save snippets of code, and categorize them
+into folders and even subfolders of these folders.</p>
+<p>The CWS will open in the left panel, by choosing <strong>Tools</strong> -&gt; <strong>Code Snippets</strong> or
+<strong>Window</strong> -&gt; <strong>Open Code Snippets Window</strong>.</p>
+<p>To begin to add snippets, you must first create a snippets file, with the
+extension &quot;.spt&quot;. To do this, open the CWS's context menu by right-clicking
+anywhere in the CWS, and choose the New Snippet File menu item. This will
+open the New Snippet File dialog. Type a name for the file, e.g.,
+CodeSnippets.spt, and click the Save button. You will then see a folder
+icon appear at the top of the CWS with the caption &quot;Untitled&quot;. This caption
+can be changed to something else, but it's not necessary to do so.</p>
+<p>Next, create one or more subfolders to this &quot;master folder&quot; by using its
+context menu, and choosing <strong>Add Sub Folder</strong>. Do this for each of the main
+categories of snippets you think you may want, and assign captions to each
+of them. Captions can be easily renamed at any time, and new subfolders
+can be added at any time.</p>
+<img alt="snippet_01.jpg" src="snippet_01.jpg" />
+<p>The image shows the &quot;master folder&quot;, &quot;Snippets&quot;, and 3 subfolders, A, B, C.
+More than one snippets file can be created--each one represented in the CSW
+by a &quot;master folder&quot; icon. So users can share their snippets files to others,
+and others can also open these snippets files. The snippets file stores on your
+hard disk all the information about the CSW--all the folders, nodes, and their
+configuration--and is used to create what you see in the CSW. Therefore, the
+CSW folders or their snippets are not to be found separately on your hard disk.
+If you modified some folders or snippets, the master foler icon will be changed
+with a red alert icon, and this will let you know you’ve made some changes.</p>
+<p>Now, let's get a snippet into subfolder A. There are two ways this can be done.</p>
+<dl class="docutils">
+<dt><strong>Method 1</strong>.</dt>
+<dd>Create a blank node by opening A's context menu and choosing <strong>Add Sub Node</strong>.</dd>
+</dl>
+<p>Here's what you'll see:</p>
+<img alt="snippet_02.jpg" src="snippet_02.jpg" />
+<p>Then single-click on the new node. This will open the lower panel, with a
+&quot;Snippet&quot; tab. Into this either type or paste the snippet you want to keep in
+NewNode. Save it by clicking on the Save icon just above the master folder.
+You should identify this snippet by assigning its node an appropriate caption.</p>
+<dl class="docutils">
+<dt><strong>Method 2</strong>.</dt>
+<dd>Create a node by selecting some code or text, dragging it to A and dropping
+it on the A icon. This will create a new node that belongs to A, but this
+node will contain the snippet you dragged. You can see the snippet, and edit
+it if necessary at any time, by single-clicking on the node. The text of the
+snippet will appear in the lower panel. Be sure to save the snippet when
+you have finished with any editing.</dd>
+</dl>
+<p>Continue to add nodes to A by either of the 2 methods. Let's add a couple of
+more nodes, give them appropriate labels, and save them:</p>
+<img alt="snippet_03.jpg" src="snippet_03.jpg" />
+<p>Reordering nodes within a folder.</p>
+<p>Possibly you would want to have the 3 nodes in the order math.log(), math.pow(),
+math.sqrt(). This can be easily done in either of 2 ways:</p>
 <ol class="arabic simple">
-<li>On the Ulipad menubar, Window-&gt;Open Snippets Window. This should open the Snippets Window to the left of the main window. This window has an upper part (with the snippets categories) and a lower part (showing the contents of the category selected above in the snippets categories)</li>
-<li>With the main window showing a document into which you want to insert a snippet, from the upper window select the category you want. For our example, select &quot;Imports&quot;.</li>
-<li>Place the caret exactly where you want the snippet to be inserted in the document.</li>
-<li>Locate the snippet in the lower window and double click on either its abbreviation or its description (if you've given it one). Voila!</li>
+<li>Drag the math.pow() node and drop it on the math.log() node.</li>
 </ol>
+<p>or</p>
+<ol class="arabic simple" start="2">
+<li>Drag the math.log() node and drop in on the math.pow() node while holding
+down the Shift key.</li>
+</ol>
+<p>Either 1 or 2 will result in the reordering you wanted:</p>
+<img alt="snippet_03.jpg" src="snippet_03.jpg" />
+<p>Let's say you decided that math.sqrt() would be more appropriately placed in
+category B. Simply drag and drop the math.sqrt() node onto the B icon. The result:</p>
+<img alt="snippet_05.jpg" src="snippet_05.jpg" />
+<p>But now you realize that it would make sense to keep math.sqrt() in both A
+and B. So you need to copy math.sqrt() to A. Do this with an ordinary Copy
+and Paste: Select math.sqrt(), press Ctrl+C; select math.pow(), press Ctrl+V. Voila!:</p>
+<img alt="snippet_06.jpg" src="snippet_06.jpg" />
+<p>With a little experimentation, you will find that any configuration of folders
+and nodes is possible. Of course, subnodes of nodes, and subfolders of nodes
+are not possible. But subfolders of subfolders of subfolders of ...  ARE possible:</p>
+<img alt="snippet_07.jpg" src="snippet_07.jpg" />
+<p>Should you forget to save any of changes you've made in CSW, whether in a
+snippet itself, or by copying, moving, creating or deleting nodes or folders,
+when you try to close Ulipad a notice will pop up, &quot;Some changes have been
+made to the Code Snippets Window. Do you want to save them?&quot;. Click OK.</p>
+<p>To delete a folder or node, simply highlight the folder or node to be deleted
+and hit the &quot;Delete&quot; key.</p>
+<p>To get a snippet from the CSW into a script in the script window, place the
+caret at the spot you want to insert the snippet. Double-click on the snippets
+node. That pastes a copy of the snippet there.</p>
+<p>Move, copy, paste on multiple snippets files</p>
+<p>You can move, copy, paster folders and nodes between multiple snippets files,
+so these feature enable you easily organize multiple snippets files.</p>
+<p>Change Property of master folder and snippets nodes</p>
+<p>You can change the property of master folder and snippets nodes in content
+menu Preference. For master folder, you can change</p>
+<img alt="snippet_08.jpg" src="snippet_08.jpg" />
+<p>Title, description, author, version, date.</p>
+<p>For snippet node, you can change its syntax highlight language to any supported
+by UliPad.</p>
 </div>
 <div class="section">
-<h1><a id="how-to-edit-a-snippet" name="how-to-edit-a-snippet">HOW TO EDIT A SNIPPET</a></h1>
-<ol class="arabic simple">
-<li>Open the Code Manager (Tool-&gt;Snippets-&gt;Snippets Code Manager).</li>
-<li>Select the snippet's category (in the Snippet Categories textbox) and then the snippet (in the Snippet Code textbox). This should make the snippet's code visible, and also the abbreviation and other (if any) info you entered for the snippet. Make the edits you want and then press the Update button. Then press the OK button. You're done.</li>
+<h1><a class="toc-backref" href="#id2" id="appendix" name="appendix">2&nbsp;&nbsp;&nbsp;Appendix</a></h1>
+<p>Snippet files and the CSW context menu.</p>
+<p>There are 7 items concerning snippet files on the CSW context menu</p>
+<ol class="arabic">
+<li><p class="first"><strong>New Snippet File ...</strong></p>
+<p>Opens the New Snippet File dialogue box. Enter a filename for the new snippet
+file, click Save, and a new snippet file will have been created. This will
+show in the CSW as a new master folder captioned &quot;Untitled&quot;. (A snippet file
+cannot be deleted through the CSW. Find it in Explorer and delete it there.)</p>
+</li>
+<li><p class="first"><strong>Open Snippet File ...</strong></p>
+<p>Opens the Open Snippet File dialogue box. If necessary, navigate to the
+folder containing the snippet file you wish to open. When you double-click
+on the file in the dialogue box, the corresponding master folder will show
+in the CSW.</p>
+</li>
+<li><p class="first"><strong>Recent Snippet Files</strong></p>
+<p>Shows a list of the last snippet files opened, with the most recently
+opened at the top. Clicking on one will open it in CSW, unless it is
+already open.</p>
+</li>
+<li><p class="first"><strong>Save Snippet File</strong></p>
+<p>Save a snippet file to which changes have been made, by selecting
+it's master folder and choosing &quot;Save Snippet File&quot;.</p>
+</li>
+<li><p class="first"><strong>Save All Snippet Files</strong></p>
+<p>This will save all snippet files whether their master folders are
+selected or not.</p>
+</li>
+<li><p class="first"><strong>Save Snippet File As ...</strong></p>
+<p>Save selected snippet file to another filename.</p>
+</li>
+<li><p class="first"><strong>Close Snippet File</strong></p>
+<p>To close a snippet file, selected any folder or node of this snippet file
+and choose Close Snippet File. The master folder (and of course its
+subfolders and nodes) will disappear from the CSW.</p>
+</li>
 </ol>
-</div>
 <div class="section">
-<h1><a id="how-to-edit-a-category-name" name="how-to-edit-a-category-name">HOW TO EDIT A CATEGORY NAME</a></h1>
+<h2><a class="toc-backref" href="#id3" id="miscellaneous-tips" name="miscellaneous-tips">2.1&nbsp;&nbsp;&nbsp;Miscellaneous Tips</a></h2>
 <ol class="arabic simple">
-<li>Open the Category Manager (Tool-&gt;Snippets-&gt;Snippets Categories Manager).</li>
-<li>Select the category you want to edit. The name should now also appear in the Category Text textbox, where you can now edit it.</li>
-<li>When editing is completed, press the Update button, then the OK button. You're done.</li>
+<li>It is convenient to store all snippet files the same Explorer folder.
+This will permit easy access to all snippet files through the Open Snippet
+File dialogue box, which will open that folder in Explorer every time.</li>
+<li>It's convenient also to have the master folder icon captions be the same
+as the filenames of their corresponding snippet files. However, even if
+they are different, a mouse hover on a master icon in the CSW will show
+the path and filename of the corresponding snippet file in a call-up.</li>
+<li>When a master folder icon shows a small red circle with a white &quot;!&quot;
+inside (see image just below), it means that an as yet unsaved change
+has been made to one of its subfolders or nodes, or to the caption of
+the master folder itself&quot;. To save the change, select the master folder
+icon and click on the Save icon above the CSW (or choose Save Snippet
+File on the context menu). Or simply click on the Save All icon. The red
+circle and the &quot;!&quot; will disappear.</li>
 </ol>
+<img alt="snippet_09.jpg" src="snippet_09.jpg" />
+<ol class="arabic simple" start="4">
+<li>Ulipad has a new tool for importing into the CSW the categories and
+snippets made using the old Ulipad tool. If there are any, they can be
+seen by choosing Window -&gt; Open Snippets Window. The new tool is
+snippet_convert.py, in the Ulipad tools folder. To use it, open the
+command prompt window, navigate to the tools folder, and execute the
+command, &quot;python snippet_convert.py&quot;. This will create a snippet file,
+out.spt, in the snippets folder in Explorer. Open out.spt in the CSW
+and you should see your old categories as subfolders to a master folder
+captioned &quot;Untitled&quot;. The snippets will be nodes of these subfolders.
+At this point you may want to heed 1 and 2 above: Move out.spt to the
+folder containing your other snippet file(s); rename out.spt to, say,
+&quot;MyOldSnippets.spt&quot;; open MyOldSnippets.spt in the CSW; and finally,
+change the &quot;Untitled&quot; caption to &quot;MyOldSnippets&quot;. Then close and reopen
+Ulipad to see that the changes have taken place in the CSW.</li>
+</ol>
+<p><a class="reference" href="index.htm">[Return]</a></p>
 </div>
-<div class="section">
-<h1><a id="about-the-group-of-8-buttons-on-the-right-side-of-the-categories-manager" name="about-the-group-of-8-buttons-on-the-right-side-of-the-categories-manager">ABOUT THE GROUP OF 8 BUTTONS ON THE RIGHT SIDE OF THE CATEGORIES MANAGER</a></h1>
-<ol class="arabic simple">
-<li>The Add and Update buttons have already been covered above.</li>
-<li>To use any of the remaining 6 buttons, first select a category.</li>
-<li>The Add Sub button is used to create a sub-category to an already existing category or sub-category. First, select that existing category, for example &quot;Imports&quot;. To create a sub-category to Imports, edit &quot;Imports&quot; in the Category Text textbox to the sub-category name you want, say &quot;used_infrequently&quot;. Then press the Add Sub button. This will create the sub-category. Pressing the OK button or the Apply button will save the change to disk. Upon reopening the Category Manager you should find the sub-category &quot;used_infrequently&quot; indented under the category &quot;Imports&quot;. Sub-categories to sub-categories can be created by the same process.</li>
-<li>The Delete button is used to delete a category or a sub-category. However, you cannot delete a category that has one or more sub-categories. You must delete these first. As usual, after deleting, press the Apply or the OK button to save the change.</li>
-<li>The Up and Down buttons are used to move a selected category up or down in the list of categories. Again, click the OK button or the Apply button to save the change.</li>
-<li>The Left and Right buttons move a selected category in or out of category or sub-category status. For example, selecting the &quot;used_infrequently&quot; sub-category and pressing the Left button will move &quot;used_infrequently&quot; to the left, thereby making it into a main category, and no longer a sub-category of &quot;Imports&quot;. Don't forget to save the change.</li>
-</ol>
 </div>
 </div>
 </body>

@@ -1,4 +1,7 @@
 $Rev$
+[2008/04/15]
+doc                 Modify the documents
+
 [2008/04/14]
 mEditorCtrl.py mDirBrowser.py DireBrowser.py 
                     Add Open Explorer Window Here menu to editoctrl tab
@@ -54,7 +57,7 @@ mScript.py          Fix script filename cannot be unicode(chinese) bug
 *                   Enhance on_modified process, improve the edit speed
 mShell.py           Strip leading space when doing "Run in Shell"
 mAutoCheck.py       Chanage auto file check to Editor on_set_focus event
-SvnSettings.py      Fix password widget it Text bug, changed to Password
+SvnSettings.py      Fix password widget is not Password type widget bug
 mFileNew.py         Fix template line-ending not match the default line-ending setting
 
 [2008/03/03]
@@ -150,7 +153,7 @@ SvnSettings.py      Fix svn bug
 DirBrowser.py       Fix ignore bug
 
 [2007/12/25]
-DirBrowser.py       Add F5(Refresh) support.
+DirBrowser.py       
 mPyRun.py           Binding F5 to editor but not MainFrame
 CodeSnippet.py mCodeSnippet.py
                     Improve xml reading with threading, and change the tooltip
