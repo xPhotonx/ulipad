@@ -76,7 +76,7 @@ def add_tool_list(toollist, toolbaritems):
 
     #order, IDname, imagefile, short text, long text, func
     toolbaritems.update({
-        'snippet':(wx.ITEM_CHECK, 'IDTM_SNIPPETWINDOW', 'images/snippet.png', tr('Open Snippet Window'), tr('Open code snippet window.'), 'OnToolbarWindowCodeSnippet'),
+        'snippet':(wx.ITEM_CHECK, 'IDTM_SNIPPETWINDOW', 'images/snippet.png', tr('Open Snippets Window'), tr('Open code snippet window.'), 'OnToolbarWindowCodeSnippet'),
     })
 Mixin.setPlugin('mainframe', 'add_tool_list', add_tool_list)
 

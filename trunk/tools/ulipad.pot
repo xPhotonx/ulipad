@@ -5,7 +5,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
-"POT-Creation-Date: Tue Apr 15 13:16:50 2008\n"
+"POT-Creation-Date: Tue Apr 15 16:30:09 2008\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -3003,7 +3003,7 @@ msgid "Opens code snippets window."
 msgstr ""
 
 #: ..\mixins\Import.py:8377 ..\mixins\mCodeSnippet.py:79
-msgid "Open Snippet Window"
+msgid "Open Snippets Window"
 msgstr ""
 
 #: ..\mixins\Import.py:8377 ..\mixins\mCodeSnippet.py:79
