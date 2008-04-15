@@ -73,7 +73,7 @@ def simple_buttons(buttons=None):
     if buttons is None, then the buttons will be default 'OK' and 'Cancel'
     """
     if not buttons:
-        buttons = [('Ok', wx.ID_OK, 'btnOk'), ('Cancel', wx.ID_CANCEL, 'btnCancel')]
+        buttons = [('OK', wx.ID_OK, 'btnOk'), ('Cancel', wx.ID_CANCEL, 'btnCancel')]
     h = HBox()
     for caption, id, name in buttons:
         h.add(Button(caption, id=id), name=name)
