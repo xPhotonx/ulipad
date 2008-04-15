@@ -1,6 +1,6 @@
 msgid ""
 msgstr ""
-"PO-Revision-Date: 2008-04-15 13:18+0800\n"
+"PO-Revision-Date: 2008-04-15 16:30+0800\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Project-Id-Version: UliPad 3.9\n"
 "Generated-By: pygettext.py 1.5\n"
@@ -3953,7 +3953,7 @@ msgstr "打开代码片段窗口。"
 
 #: ..\mixins\Import.py:8377
 #: ..\mixins\mCodeSnippet.py:79
-msgid "Open Snippet Window"
+msgid "Open Snippets Window"
 msgstr "打开代码片段窗口"
 
 #: ..\mixins\Import.py:8377
