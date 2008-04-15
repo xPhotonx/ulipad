@@ -201,7 +201,7 @@ automatically create config.ini. And if there is no such file, you can create ma
 
 More details about it you can see `Config Description`_ .
 
-.. _`Config Description`: config.html
+.. _`Config Description`: config.htm
 
 What is debug.txt used for
 ------------------------------

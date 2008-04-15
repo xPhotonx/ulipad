@@ -4428,102 +4428,6 @@ Mixin.setMixin('mainframe', 'OnShellItems', OnShellItems)
 
 
 
-#-----------------------  mSnippets.py ------------------
-
-import wx
-import os
-from modules import Mixin
-from modules import common
-
-def add_mainframe_menu(menulist):
-    menulist.extend([
-        ('IDM_TOOL',
-        [
-            (120, 'IDM_DOCUMENT_SNIPPETS', tr('Snippets'), wx.ITEM_NORMAL, None, ''),
-        ]),
-        ('IDM_DOCUMENT_SNIPPETS',
-        [
-            (100, 'IDM_DOCUMENT_SNIPPETS_CATALOG_MANAGE', tr('Snippets Categories Manager...'), wx.ITEM_NORMAL, 'OnDocumentSnippetsCatalogManage', tr('Manages snippets categories.')),
-            (110, 'IDM_DOCUMENT_SNIPPETS_CODE_MANAGE', tr('Snippets Code Manager...'), wx.ITEM_NORMAL, 'OnDocumentSnippetsCodeManage', tr('Manages snippets code.')),
-        ]),
-        ('IDM_WINDOW',
-        [
-            (150, 'IDM_WINDOW_SNIPPETS', tr('Open Snippets Window'), wx.ITEM_NORMAL, 'OnWindowSnippet', tr('Opens snippets window.'))
-        ]),
-    ])
-Mixin.setPlugin('mainframe', 'add_menu', add_mainframe_menu)
-
-def add_editor_menu(popmenulist):
-    popmenulist.extend([ (None,
-        [
-            (140, 'IDPM_SNIPPETWINDOW', tr('Open Snippets Window'), wx.ITEM_NORMAL, 'OnSnippetWindow', tr('Opens snippets window.')),
-        ]),
-    ])
-Mixin.setPlugin('notebook', 'add_menu', add_editor_menu)
-
-def pref_init(pref):
-    pref.snippet_lastitem = 0
-    pref.snippet_splitter_pos = 150
-    pref.snippet_snippet_firstcolumn = 100
-    pref.snippet_snippet_secondcolumn = 180
-Mixin.setPlugin('preference', 'init', pref_init)
-
-def afterinit(win):
-    win.snippet_catalogfile = common.uni_work_file('snippets/catalog.xml')
-    #check snippets directory, if not exists then create it
-    if not os.path.exists('snippets'):
-        os.mkdir('snippets')
-Mixin.setPlugin('mainframe', 'afterinit', afterinit)
-
-snippet_pagename = tr('Snippets')
-def createSnippetWindow(win):
-    if not win.panel.getPage(snippet_pagename):
-        from SnippetWindow import MySnippet
-
-        page = MySnippet(win.panel.createNotebook('left'), win)
-        win.panel.addPage('left', page, snippet_pagename)
-Mixin.setMixin('mainframe', 'createSnippetWindow', createSnippetWindow)
-
-def OnWindowSnippet(win, event):
-    win.createSnippetWindow()
-    win.panel.showPage(snippet_pagename)
-Mixin.setMixin('mainframe', 'OnWindowSnippet', OnWindowSnippet)
-
-def OnSnippetWindow(win, event):
-    win.mainframe.createSnippetWindow()
-    win.panel.showPage(snippet_pagename)
-Mixin.setMixin('notebook', 'OnSnippetWindow', OnSnippetWindow)
-
-def OnDocumentSnippetsCatalogManage(win, event):
-    from modules import i18n
-    from modules import Resource
-    from SnippetWindow import SnippetsCatalogDialog
-
-    snippets_resfile = common.uni_work_file('resources/snippetsdialog.xrc')
-    filename = i18n.makefilename(snippets_resfile, win.app.i18n.lang)
-    dlg = Resource.loadfromresfile(filename, win, SnippetsCatalogDialog, 'SnippetsCatalogDialog', win)
-    dlg.Show()
-Mixin.setMixin('mainframe', 'OnDocumentSnippetsCatalogManage', OnDocumentSnippetsCatalogManage)
-
-def OnDocumentSnippetsCodeManage(win, event):
-    from modules import i18n
-    from modules import Resource
-    from SnippetWindow import SnippetsCodeDialog
-
-    snippets_resfile = common.uni_work_file('resources/snippetsdialog.xrc')
-    filename = i18n.makefilename(snippets_resfile, win.app.i18n.lang)
-    dlg = Resource.loadfromresfile(filename, win, SnippetsCodeDialog, 'SnippetsCodeDialog', win)
-    dlg.Show()
-Mixin.setMixin('mainframe', 'OnDocumentSnippetsCodeManage', OnDocumentSnippetsCodeManage)
-
-def closewindow(win):
-    page = win.panel.getPage(snippet_pagename)
-    if page:
-        page.save_state()
-Mixin.setPlugin('mainframe', 'closewindow', closewindow)
-
-
-
 #-----------------------  mEncoding.py ------------------
 
 import wx
@@ -8426,7 +8330,7 @@ Mixin.setPlugin('mainframe', 'add_menu', add_mainframe_menu)
 def add_notebook_menu(popmenulist):
     popmenulist.extend([(None,
         [
-            (200, 'IDPM_CODESNIPPETWINDOW', tr('Open Code Snippets Window'), wx.ITEM_NORMAL, 'OnCodeSnippetWindow', tr('Opens code snippet window.')),
+            (135, 'IDPM_CODESNIPPETWINDOW', tr('Open Code Snippets Window'), wx.ITEM_NORMAL, 'OnCodeSnippetWindow', tr('Opens code snippet window.')),
         ]),
     ])
 Mixin.setPlugin('notebook', 'add_menu', add_notebook_menu)

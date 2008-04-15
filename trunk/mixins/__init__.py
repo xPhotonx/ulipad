@@ -68,7 +68,6 @@
 #import mTool
 #import mPyRun
 #import mShellRun
-#import mSnippets
 #import mEncoding
 #import mShowLocale
 #

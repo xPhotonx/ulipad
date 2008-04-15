@@ -165,6 +165,33 @@ You'll see a panel appearing in the bottom pane.
 The attatchment is the interface. If you double click on one item,
 then the caret will automatically jump to the line.
 
-`[Return]`_
+web2py_plugin
+~~~~~~~~~~~~~~~~~~
 
-.. _`[Return]`: index.htm
+Supply web2py shell menu. You should set a directory as web2py project first, 
+then when you select a app folder in ``applications`` folder, on the context
+menu there will be a ``Start web2py Shell``, so you can start a shell window 
+to test current selected app of web2py.
+
+canvas_test_plugin
+~~~~~~~~~~~~~~~~~~~~
+
+You can write graphic drawing code directly, and then see the result. 
+
+How to use it?
+================
+
+#. Check casvas_test_plugin and restart UliPad
+#. Run [Tool]->[Canvas Test]
+#. In Canvas Test window, write down graphic API. You'll see there already 
+   has two lines::
+
+      import wx
+      dc = wx.PaintDC(self)
+
+   these lines are used to enable code completion support.
+#. Write down your code after dc = wx.PaintDC(self)
+#. Then click the refresh button 
+
+
+`[Return] <index.htm>`_

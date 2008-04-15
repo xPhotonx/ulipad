@@ -1,5 +1,5 @@
 ====================================
-HOW TO WRITE CUSTOM SYNTAX SUPPORT
+How to write custom syntax support
 ====================================
 
 :Author: limodou
@@ -147,5 +147,5 @@ For new language syntax support, I suggest that you create a new plugin, just li
 Fortran plugin, and if you want to enable it, you need to check it in [Tool]->
 [Plugins Manager...] menu, and it'll be availabe in the next startup time.
 
-        
+`[Return] <index.htm>`_
         
