@@ -15,7 +15,8 @@ The CSW provides a convenient way to save snippets of code, and categorize them
 into folders and even subfolders of these folders. 
 
 The CWS will open in the left panel, by choosing **Tools** -> **Code Snippets** or 
-**Window** -> **Open Code Snippets Window**.
+**Window** -> **Open Code Snippets Window**. Or click on the 
+**Open Snippets Window** icon on the tool bar.
 
 To begin to add snippets, you must first create a snippets file, with the 
 extension ".spt". To do this, open the CWS's context menu by right-clicking 
@@ -33,15 +34,13 @@ can be added at any time.
 
 .. image:: snippet_01.jpg
 
-The image shows the "master folder", "Snippets", and 3 subfolders, A, B, C. 
-More than one snippets file can be created--each one represented in the CSW 
-by a "master folder" icon. So users can share their snippets files to others, 
-and others can also open these snippets files. The snippets file stores on your 
-hard disk all the information about the CSW--all the folders, nodes, and their 
-configuration--and is used to create what you see in the CSW. Therefore, the 
-CSW folders or their snippets are not to be found separately on your hard disk. 
-If you modified some folders or snippets, the master foler icon will be changed 
-with a red alert icon, and this will let you know you’ve made some changes.
+The image shows the "master folder", "Snippets", and 3 subfolders, A, B, C.
+More than one snippets file can be created--each one represented in the CSW
+by a "master folder" icon. However, for simplicity let's stay with just one 
+snippet file for a while. The snippets file stores on your
+hard disk all the information about the CSW--all the folders, nodes, and their
+configuration--and is used to create what you see in the CSW. Therefore, the
+CSW folders or their snippets are not to be found separately on your hard disk.
 
 Now, let's get a snippet into subfolder A. There are two ways this can be done.
 
@@ -108,29 +107,12 @@ snippet itself, or by copying, moving, creating or deleting nodes or folders,
 when you try to close Ulipad a notice will pop up, "Some changes have been 
 made to the Code Snippets Window. Do you want to save them?". Click OK. 
 
-To delete a folder or node, simply highlight the folder or node to be deleted 
-and hit the "Delete" key. 
+To delete a folder or node, simply highlight the caption of the folder or node 
+to be deleted and press the "Delete" key.
 
 To get a snippet from the CSW into a script in the script window, place the 
 caret at the spot you want to insert the snippet. Double-click on the snippets 
 node. That pastes a copy of the snippet there.
-
-Move, copy, paste on multiple snippets files
-
-You can move, copy, paster folders and nodes between multiple snippets files, 
-so these feature enable you easily organize multiple snippets files.
-
-Change Property of master folder and snippets nodes
-
-You can change the property of master folder and snippets nodes in content 
-menu Preference. For master folder, you can change 
-
-.. image:: snippet_08.jpg
-
-Title, description, author, version, date. 
-
-For snippet node, you can change its syntax highlight language to any supported
-by UliPad.
 
 Appendix
 ----------
@@ -176,18 +158,18 @@ There are 7 items concerning snippet files on the CSW context menu
 
 7. **Close Snippet File**
 
-   To close a snippet file, selected any folder or node of this snippet file 
+   To close a snippet file, select any folder or node of this snippet file
    and choose Close Snippet File. The master folder (and of course its 
    subfolders and nodes) will disappear from the CSW.
 
 Miscellaneous Tips
 ~~~~~~~~~~~~~~~~~~~
 
-1. It is convenient to store all snippet files the same Explorer folder. 
+1. It is convenient to store all snippet files in the same Explorer folder.
    This will permit easy access to all snippet files through the Open Snippet 
    File dialogue box, which will open that folder in Explorer every time.
 
-2. It's convenient also to have the master folder icon captions be the same 
+2. It's also convenient to have the master folder icon captions be the same
    as the filenames of their corresponding snippet files. However, even if 
    they are different, a mouse hover on a master icon in the CSW will show 
    the path and filename of the corresponding snippet file in a call-up.
@@ -195,14 +177,35 @@ Miscellaneous Tips
 3. When a master folder icon shows a small red circle with a white "!" 
    inside (see image just below), it means that an as yet unsaved change 
    has been made to one of its subfolders or nodes, or to the caption of 
-   the master folder itself". To save the change, select the master folder 
+   the master folder itself. To save the change, select the master folder
    icon and click on the Save icon above the CSW (or choose Save Snippet 
    File on the context menu). Or simply click on the Save All icon. The red 
-   circle and the "!" will disappear.
+   circle and its "!" will disappear.
 
 .. image:: snippet_09.jpg
 
-4. Ulipad has a new tool for importing into the CSW the categories and 
+4. It is possible to have more than one snippet file open in the CSW. Each open
+   snippet file will of course have its corresponding master folder in the CSW. 
+   Snippet files can be shared among Ulipad users. To use a friend's snippet 
+   file, just copy it to your harddisk, and open it in the CSW. See item 2 in 
+   the Appendix.
+
+5. Moving or copying folders and nodes into almost any imaginable configuration 
+   is easily accomplished. Even moving and copying between separate master 
+   folders (which represent separate open snippet files).
+
+6. You can change the properties of master folders and snippets nodes through 
+   their context menus, the Preferences.., item. For a master folder, you can 
+   change
+
+.. image:: snippet_08.jpg
+
+Title, Author, Version, Date. and Description
+
+For a snippet node, you can change its syntax highlight language to any supported
+by UliPad.
+
+7. Ulipad has a new tool for importing into the CSW the categories and
    snippets made using the old Ulipad tool. If there are any, they can be 
    seen by choosing Window -> Open Snippets Window. The new tool is 
    snippet_convert.py, in the Ulipad tools folder. To use it, open the 
