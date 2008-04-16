@@ -33,34 +33,25 @@ def add_tool_list(toollist, toolbaritems):
 
     #order, IDname, imagefile, short text, long text, func
     toolbaritems.update({
-        'dir':(wx.ITEM_CHECK, 'IDTM_DIRBROWSER', 'images/dir.gif', tr('Open Directory Browser'), tr('Opens directory browser window.'), 'OnToolbarDirBrowser'),
+        'dir':(wx.ITEM_CHECK, 'IDM_WINDOW_DIRBROWSER', 'images/dir.gif', tr('Open Directory Browser'), tr('Opens directory browser window.'), 'OnWindowDirBrowser'),
     })
 Mixin.setPlugin('mainframe', 'add_tool_list', add_tool_list)
 
 def afterinit(win):
-    wx.EVT_UPDATE_UI(win, win.IDTM_DIRBROWSER, win.OnUpdateUI)
+    wx.EVT_UPDATE_UI(win, win.IDM_WINDOW_DIRBROWSER, win.OnUpdateUI)
 Mixin.setPlugin('mainframe', 'afterinit', afterinit)
 
 def on_mainframe_updateui(win, event):
     eid = event.GetId()
-    if eid == win.IDTM_DIRBROWSER:
+    if eid == win.IDM_WINDOW_DIRBROWSER:
         page = win.panel.getPage(tr('Dir Browser'))
         event.Check(bool(page))
 Mixin.setPlugin('mainframe', 'on_update_ui', on_mainframe_updateui)
 
-def OnToolbarDirBrowser(win, event):
-    page = win.panel.getPage(tr('Dir Browser'))
-    if page:
-        win.panel.closePage(tr('Dir Browser'))
-    else:
-        if win.createDirBrowserWindow():
-            win.panel.showPage(tr('Dir Browser'))
-Mixin.setMixin('mainframe', 'OnToolbarDirBrowser', OnToolbarDirBrowser)
-
 def add_mainframe_menu(menulist):
     menulist.extend([('IDM_FILE',
         [
-            (138, 'IDM_WINDOW_DIRBROWSER', tr('Open Directory Browser')+'\tF2', wx.ITEM_NORMAL, 'OnWindowDirBrowser', tr('Opens directory browser window.'))
+            (138, 'IDM_WINDOW_DIRBROWSER', tr('Open Directory Browser')+'\tF2', wx.ITEM_CHECK, 'OnWindowDirBrowser', tr('Opens directory browser window.'))
         ]),
     ])
 Mixin.setPlugin('mainframe', 'add_menu', add_mainframe_menu)
@@ -96,14 +87,21 @@ def createDirBrowserWindow(win, dirs=None):
     return page
 Mixin.setMixin('mainframe', 'createDirBrowserWindow', createDirBrowserWindow)
 
+def toggleDirBrowserWindow(win):
+    page = win.panel.getPage(tr('Dir Browser'))
+    if page:
+        win.panel.closePage(tr('Dir Browser'))
+    else:
+        if win.createDirBrowserWindow():
+            win.panel.showPage(tr('Dir Browser'))
+Mixin.setMixin('mainframe', 'toggleDirBrowserWindow', toggleDirBrowserWindow)
+
 def OnWindowDirBrowser(win, event):
-    win.createDirBrowserWindow()
-    win.panel.showPage(tr('Dir Browser'))
+    win.toggleDirBrowserWindow()
 Mixin.setMixin('mainframe', 'OnWindowDirBrowser', OnWindowDirBrowser)
 
 def OnDirBrowserWindow(win, event):
-    win.mainframe.createDirBrowserWindow()
-    win.panel.showPage(tr('Dir Browser'))
+    win.mainframe.toggleDirBrowserWindow()
 Mixin.setMixin('notebook', 'OnDirBrowserWindow', OnDirBrowserWindow)
 
 def pref_init(pref):
