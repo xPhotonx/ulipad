@@ -173,7 +173,7 @@ Miscellaneous Tips
 2. It's also convenient to have the master folder icon captions be the same
    as the filenames of their corresponding snippet files. However, even if
    they are different, a mouse hover on a master icon in the CSW will show
-   the path and filename of the corresponding snippet file in a tool tip.
+   the path and filename of the corresponding snippet file in a tooltip.
 
 3. When a master folder icon shows a small red circle with a white "!"
    inside (see image just below), it means that an as yet unsaved change
