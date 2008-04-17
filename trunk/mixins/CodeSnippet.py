@@ -291,7 +291,7 @@ class CodeSnippetWindow(wx.Panel, Mixin.Mixin):
         self.changing = False
 
 #        wx.EVT_TREE_SEL_CHANGING(self.tree, self.tree.GetId(), self.OnChanging)
-        wx.EVT_TREE_SEL_CHANGED(self.tree, self.tree.GetId(), self.OnChanged)
+#        wx.EVT_TREE_SEL_CHANGED(self.tree, self.tree.GetId(), self.OnChanged)
 #        wx.EVT_TREE_BEGIN_LABEL_EDIT(self.tree, self.tree.GetId(), self.OnBeginChangeLabel)
         wx.EVT_TREE_END_LABEL_EDIT(self.tree, self.tree.GetId(), self.OnChangeLabel)
         wx.EVT_TREE_ITEM_ACTIVATED(self.tree, self.tree.GetId(), self.OnSelected)
@@ -431,14 +431,19 @@ Description:
                     wx.CallAfter(self.tree.Expand, item)
                 return
         if item.IsOk():
-            if item == self.tree.GetSelection():
-                self.tree.SelectItem(self.tree.GetSelection(), False)
-                wx.CallAfter(self.tree.SelectItem, item, True)
+#            if item == self.tree.GetSelection():
+#                self.tree.SelectItem(self.tree.GetSelection(), False)
+#                wx.CallAfter(self.tree.SelectItem, item, True)
+            if event.ControlDown():
+                self.node_paste(item)
         event.Skip()
 
     def OnSelected(self, event):
         item = event.GetItem()
         if not item.IsOk(): return
+        self.node_active(item)
+    
+    def node_paste(self, item):
         if self.is_node(item):
             text = self.get_element(item).text
             if text:
@@ -581,9 +586,12 @@ Description:
                 break
         return snippet
     
-    def OnChanged(self, event):
-        item = event.GetItem()
-        if not item.IsOk(): return
+#    def OnChanged(self, event):
+#        item = event.GetItem()
+#        if not item.IsOk(): return
+#        self.node_active(item)
+        
+    def node_active(self, item):
         if self.changing:return
         else:
             self.changing = True
