@@ -450,7 +450,7 @@ Description:
                 doc = Globals.mainframe.editctrl.getCurDoc()
                 elements = []
                 
-                def dosup(self, matchobj, elements=elements):
+                def dosup(matchobj):
                     text = matchobj.groups()[0]
                     v = text.split(',')
                     result = ''
@@ -466,7 +466,7 @@ Description:
                 text = re.sub(r, dosup, text)
                 if elements:
                     from modules.EasyGuider import EasyDialog
-                    dlg = EasyDialog.EasyDialog(self, title=tr("Code Template"), elements=self.elements)
+                    dlg = EasyDialog.EasyDialog(Globals.mainframe, title=tr("Code Template"), elements=elements)
                     values = None
                     if dlg.ShowModal() == wx.ID_OK:
                         values = dlg.GetValue()
