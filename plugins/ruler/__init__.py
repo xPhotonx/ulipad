@@ -66,23 +66,27 @@ def on_char(win, event):
 Mixin.setPlugin('editor', 'on_char', on_char, nice=5)
 
 def on_mouse_down(win, event):
-    win.ruler.setoffset(cal_offset(win))
-    win.ruler.position(cal_column(win))
+    if win.edittype == 'edit' and hasattr(win, 'ruler'):
+        win.ruler.setoffset(cal_offset(win))
+        win.ruler.position(cal_column(win))
 Mixin.setPlugin('editor', 'on_mouse_down', on_mouse_down)
 
 def on_key_down(win, event):
-    win.ruler.setoffset(cal_offset(win))
-    win.ruler.position(cal_column(win))
+    if win.edittype == 'edit' and hasattr(win, 'ruler'):
+        win.ruler.setoffset(cal_offset(win))
+        win.ruler.position(cal_column(win))
 Mixin.setPlugin('editor', 'on_key_down', on_key_down, nice=5)
 
 def on_key_up(win, event):
-    win.ruler.setoffset(cal_offset(win))
-    win.ruler.position(cal_column(win))
+    if win.edittype == 'edit' and hasattr(win, 'ruler'):
+        win.ruler.setoffset(cal_offset(win))
+        win.ruler.position(cal_column(win))
 Mixin.setPlugin('editor', 'on_key_up', on_key_up)
 
 def on_mouse_up(win, event):
-    win.ruler.setoffset(cal_offset(win))
-    win.ruler.position(cal_column(win))
+    if win.edittype == 'edit' and hasattr(win, 'ruler'):
+        win.ruler.setoffset(cal_offset(win))
+        win.ruler.position(cal_column(win))
 Mixin.setPlugin('editor', 'on_mouse_up', on_mouse_up)
 
 def on_document_enter(win, document):
