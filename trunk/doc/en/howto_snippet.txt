@@ -60,7 +60,7 @@ You should identify this snippet by assigning its node an appropriate caption.
     Create a node by selecting some code or text, dragging it to A and dropping
     it on the A icon. This will create a new node that belongs to A, but this
     node will contain the snippet you dragged. You can see the snippet, and edit
-    it if necessary at any time, by single-clicking on the node. The text of the
+    it if necessary at any time, by double-clicking on the node. The text of the
     snippet will appear in the lower panel. Be sure to save the snippet when
     you have finished with any editing.
     
@@ -111,8 +111,9 @@ To delete a folder or node, simply highlight the caption of the folder or node
 to be deleted and press the "Delete" key.
 
 To get a snippet from the CSW into a script in the script window, place the
-caret (or cursor) at the spot you want to insert the snippet. Double-click on the snippets
-node. That pastes a copy of the snippet there.
+caret (or cursor) at the spot you want to insert the snippet. Hold down the Ctrl
+key and click on the snippet's node. That pastes a copy of the snippet at your
+chosen spot.
 
 Appendix
 ----------
@@ -219,5 +220,13 @@ by UliPad.
    "MyOldSnippets.spt"; open MyOldSnippets.spt in the CSW; and finally,
    change the "Untitled" caption to "MyOldSnippets". Then close and reopen
    Ulipad to see that the changes have taken place in the CSW.
+
+8. To repeat from above:
+
+    a. To inspect or edit a snippet, double-click on it's node in the CSW. The
+       snippet's text will appear in the lower panel.
+
+    b. To paste the text of a snippet,whether or not it is showing in the lower
+       panel, hold down the Ctrl key and click on the snippet's node in the CSW.
 
 `[Return] <index.htm>`_
