@@ -226,7 +226,7 @@ by UliPad.
     a. To inspect or edit a snippet, double-click on it's node in the CSW. The
        snippet's text will appear in the lower panel.
 
-    b. To paste the text of a snippet,whether or not it is showing in the lower
+    b. To paste the text of a snippet, whether or not it is showing in the lower
        panel, hold down the Ctrl key and click on the snippet's node in the CSW.
 
 `[Return] <index.htm>`_

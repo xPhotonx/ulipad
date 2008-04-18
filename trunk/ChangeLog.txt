@@ -1,4 +1,8 @@
 $Rev$
+[2008/04/18]
+mWrapText.py wraptext.py
+                    Add wrap text feature
+                    
 [2008/04/15]
 doc                 Modify the documents
 mEditorCtrl.py      Add copy filename to clipboard menu on document area tab context menu
