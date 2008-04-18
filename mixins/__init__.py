@@ -152,5 +152,6 @@
 #import mCodeSnippet
 #import mIndentMove
 #import mCheckUpdate
+#import mWrapText
 
 import Import
