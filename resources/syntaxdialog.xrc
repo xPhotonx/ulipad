@@ -128,7 +128,7 @@
       <size>390, 130</size>
     </object>
     <object class="wxButton" name="ID_OK">
-      <label>Ok</label>
+      <label>OK</label>
       <default>1</default>
       <pos>150,360</pos>
       <size>60,-1</size>
