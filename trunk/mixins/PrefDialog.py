@@ -140,7 +140,7 @@ class PrefDialog(wx.Dialog, Mixin.Mixin):
 
         box.add(wx.StaticLine(self), flag=wx.EXPAND|wx.ALL)
         
-        buttons = [(tr('Ok'), wx.ID_OK, 'btnOk'), 
+        buttons = [(tr('OK'), wx.ID_OK, 'btnOk'), 
             (tr('Cancel'), wx.ID_CANCEL, 'btnCancel'),
             (tr('Apply'), wx.ID_APPLY, 'btnApply')]
         box.add(ui.simple_buttons(buttons), flag=wx.ALIGN_CENTER|wx.BOTTOM)
