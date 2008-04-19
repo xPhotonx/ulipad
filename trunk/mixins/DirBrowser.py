@@ -357,7 +357,7 @@ class DirBrowser(wx.Panel, Mixin.Mixin):
                 self.addnode(parent, path, filename, item_index, None, self.getid(), self.FILE_NODE)
             else:
                 if self.is_ok(node):
-                    obj = self.insertnode(parent, node, path, filename, self.close_image, self.open_image, self.getid(), self.FILE_NODE)
+                    obj = self.insertnode(parent, node, path, filename, self.close_image, self.open_image, self.getid(), self.DIR_NODE)
                     self.tree.SetItemHasChildren(obj, True)
                 else:
                     obj = self.addnode(node, path, filename, self.close_image, self.open_image, self.getid(), self.DIR_NODE)

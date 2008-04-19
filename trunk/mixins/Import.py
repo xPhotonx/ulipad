@@ -6318,6 +6318,15 @@ def add_mainframe_menu(menulist):
         [
             (127, 'IDM_DOCUMENT_APPLYACP', tr('Apply Auto-complete Files'), wx.ITEM_NORMAL, 'OnDocumentApplyAcp', tr('Apply auto-complete files to current document.')),
         ]),
+        (None,
+        [
+            (800, 'IDM_CONFIG', tr('Config'), wx.ITEM_NORMAL, '', ''),
+        ]),
+        ('IDM_CONFIG',
+        [
+            (100, 'IDM_CONFIG_INPUTASSISTANT', tr('Toggle Input Assistant')+'\tAlt+A', wx.ITEM_CHECK, 'OnConfigInputAssistant', tr('Toggle input assistant.')),
+        ]),
+
     ])
 Mixin.setPlugin('mainframe', 'add_menu', add_mainframe_menu)
 
@@ -6444,6 +6453,21 @@ def main_init(win):
     win.auto_routin_ac_action = InputAssistantAction(float(win.pref.inputass_typing_rate)/1000)
     win.auto_routin_ac_action.start()
 Mixin.setPlugin('mainframe', 'init', main_init)
+
+def OnConfigInputAssistant(win, event):
+    Globals.pref.input_assistant = not Globals.pref.input_assistant
+    Globals.pref.save()
+Mixin.setMixin('mainframe', 'OnConfigInputAssistant', OnConfigInputAssistant)
+
+def afterinit(win):
+    wx.EVT_UPDATE_UI(win, win.IDM_CONFIG_INPUTASSISTANT, win.OnUpdateUI)
+Mixin.setPlugin('mainframe', 'afterinit', afterinit)
+
+def on_mainframe_updateui(win, event):
+    eid = event.GetId()
+    if eid == win.IDM_CONFIG_INPUTASSISTANT:
+        event.Check(Globals.pref.input_assistant)
+Mixin.setPlugin('mainframe', 'on_update_ui', on_mainframe_updateui)
 
 
 

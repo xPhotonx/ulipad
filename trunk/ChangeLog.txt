@@ -1,4 +1,8 @@
 $Rev$
+[2008/04/19]
+mInputAssistant.py  Add config menu, and add toggle input assistant menu item
+DirBrowser.py       Fix refresh directory bug
+
 [2008/04/18]
 mWrapText.py wraptext.py
                     Add wrap text feature
