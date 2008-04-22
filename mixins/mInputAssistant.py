@@ -208,7 +208,7 @@ def get_acp_files(win):
     sfiles = [obj.filename for obj in win.custom_assistant]
 
     elements = [
-    ('static', 'applied', '\n'.join(files), tr('Deault acp files:'), None),
+    ('static', 'applied', '\n'.join(files), tr('Default acp files:'), None),
     ('multi', 'custom', sfiles, tr('Available acp files:'), afiles),
     ]
     from modules.EasyGuider import EasyDialog
