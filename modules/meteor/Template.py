@@ -235,7 +235,7 @@ class Template:
                 obj[key] = self.str_object(value, encoding)
             return obj
         else:
-            raise Exception, "Cann't deal with other object type %s" % type(obj)
+            raise Exception, "Can't deal with other object type %s" % type(obj)
 
     def _value(self, target, values):
         self.values_stack.append(values)

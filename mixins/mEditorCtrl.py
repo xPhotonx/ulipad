@@ -125,7 +125,7 @@ def getFilterIndex(win):
                     s = v.split('|')[0]
                     if s.startswith(w):
                         return i
-                
+
     if len(win.pref.recent_files) > 0:
         filename = win.pref.recent_files[0]
         ext = os.path.splitext(filename)[1]
@@ -235,7 +235,7 @@ def SaveFile(win, ctrl, issaveas=False):
             #check if the filename has been openned, if openned then fail
             for document in win.editctrl.getDocuments():
                 if (not ctrl is document ) and (filename == document.filename):
-                    wx.MessageDialog(win, tr("Ths file %s has been openned!\nCann't save new file to it.") % document.getFilename(),
+                    wx.MessageDialog(win, tr("Ths file %s has been openned!\nCan't save new file to it.") % document.getFilename(),
                         tr("Save As..."), wx.OK|wx.ICON_INFORMATION).ShowModal()
                     return False
         else:
@@ -279,7 +279,7 @@ def savepreference(mainframe, pref):
     else:
         if style & FNB.FNB_BOTTOM:
             style ^= FNB.FNB_BOTTOM
-    
+
     mainframe.editctrl.SetWindowStyleFlag(style)
     mainframe.editctrl.Refresh()
 Mixin.setPlugin('prefdialog', 'savepreference', savepreference)
@@ -289,7 +289,7 @@ def findDocument(document):
         return document.document
     else:
         return document
-    
+
 def OnOpenCmdWindow(win, event=None):
     filename = win.getCurDoc().getFilename()
     if not filename:
@@ -311,7 +311,7 @@ def OnOpenCmdExplorerWindow(win, event=None):
         filename = os.path.dirname(filename)
     wx.Execute(r"explorer.exe /e, %s" % filename)
 Mixin.setMixin('editctrl', 'OnOpenCmdExplorerWindow', OnOpenCmdExplorerWindow)
-    
+
 def OnCopyFilenameToClipboard(win, event):
     filename = win.getCurDoc().getFilename()
     do = wx.TextDataObject()

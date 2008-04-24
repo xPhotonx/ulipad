@@ -55,7 +55,7 @@ def other_popup_menu(dirwin, projectname, menus):
             (900, 'IDPM_VC_COMMANDS_SETTINGS', tr('Settings...'), wx.ITEM_NORMAL, 'OnVC_Settings', ''),
         ]),
     ])
-    
+
     if is_svn_dir:
         menus.extend([ (None,
             [
@@ -109,7 +109,7 @@ Mixin.setMixin('dirbrowser', 'OnVC_DoCommand', OnVC_DoCommand)
 
 def OnVC_Settings(win, event):
     from SvnSettings import SVNSettings
-    
+
     try:
         dlg = SVNSettings(win)
         dlg.ShowModal()
@@ -127,7 +127,7 @@ def add_image(imagelist, image, imgindex):
         ('deleted', common.getpngimage('images/TortoiseDeleted.gif')),
         ('normal', common.getpngimage('images/TortoiseInSubVersion.gif')),
     ]
-    
+
     _image_ids[imgindex] = {}
     for f, imgfile in m:
         bmp = common.merge_bitmaps(image, imgfile)
@@ -139,13 +139,17 @@ def get_fix_imgindex(index, f):
     return _image_ids[index].get(f, index)
 
 def set_image(tree, node, index, img_flag):
-    wx.CallAfter(tree.SetItemImage, node, index, img_flag) 
-    
+    wx.CallAfter(tree.SetItemImage, node, index, img_flag)
+
+#import threading
+#svn_lock = threading.Lock()
 def after_addpath(dirwin, item):
     from modules import common
     import SvnSupport as vc
-    
+
     def walk(dirwin, item):
+#        svn_lock.acquire()
+#        try:
         if dirwin.isFile(item):
             path = dirwin.get_node_filename(item)
             entries = vc.get_entries(path)
@@ -155,7 +159,7 @@ def after_addpath(dirwin, item):
             new_img_index = get_fix_imgindex(img_index, f)
             old_img_index = dirwin.tree.GetItemImage(item)
             if new_img_index != old_img_index:
-                set_image(dirwin.tree, item, new_img_index, wx.TreeItemIcon_Normal)    
+                set_image(dirwin.tree, item, new_img_index, wx.TreeItemIcon_Normal)
             return
         else:
             if dirwin.tree.GetChildrenCount(item) == 0 and not dirwin.tree.IsExpanded(item):
@@ -171,7 +175,7 @@ def after_addpath(dirwin, item):
                 new_img_index = get_fix_imgindex(img_index, f)
                 old_img_index = dirwin.tree.GetItemImage(node)
                 if new_img_index != old_img_index:
-                    set_image(dirwin.tree, node, new_img_index, wx.TreeItemIcon_Normal)    
+                    set_image(dirwin.tree, node, new_img_index, wx.TreeItemIcon_Normal)
             else:
                 img_index = (dirwin.close_image, dirwin.open_image)
                 new_img_index = (get_fix_imgindex(dirwin.close_image, f),
@@ -179,32 +183,34 @@ def after_addpath(dirwin, item):
                 old_img_index = dirwin.tree.GetItemImage(node)
                 if old_img_index not in new_img_index:
                     set_image(dirwin.tree, node, new_img_index[1], wx.TreeItemIcon_Expanded)
-                    set_image(dirwin.tree, node, new_img_index[0], wx.TreeItemIcon_Normal)    
+                    set_image(dirwin.tree, node, new_img_index[0], wx.TreeItemIcon_Normal)
                 if dirwin.tree.GetChildrenCount(node) > 0:
                     walk(dirwin, node)
             node, cookie = dirwin.tree.GetNextChild(item, cookie)
-    
+#        finally:
+#            svn_lock.release()
+
     from modules import Casing
     d = Casing.Casing(walk, dirwin, item)
     d.start_thread()
-    
+
 Mixin.setPlugin('dirbrowser', 'after_expanding', after_addpath)
 Mixin.setPlugin('dirbrowser', 'after_refresh', after_addpath)
 
 def aftersavefile(editor, filename):
     from modules import Globals
     m = Globals.mainframe
-    
+
     #get dirbrowser instance
     dirwin = m.panel.getPage(tr('Dir Browser'))
     if not dirwin: return
-    
+
     def get_node(tree, parent):
         node, cookie = tree.GetFirstChild(parent)
         while node.IsOk():
             yield node
             node, cookie = tree.GetNextChild(node, cookie)
-    
+
     class StopException(Exception):pass
     dir = os.path.dirname(filename)
     def find(dirwin, parent, dir, filename):
@@ -219,13 +225,13 @@ def aftersavefile(editor, filename):
                 else:
                     if dirwin.tree.IsExpanded(node):
                         find(dirwin, node, dir, filename)
-                        
+
     try:
         find(dirwin, dirwin.root, dir, filename)
     except StopException:
         pass
 Mixin.setPlugin('editor', 'aftersavefile', aftersavefile)
-    
+
 #functions
 ########################################################
 

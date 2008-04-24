@@ -69,7 +69,7 @@ def OnDocumentStartRead(win, event):
             win.pytts.OnEndStream = win.OnTTSEndStream
         except:
             error.traceback()
-            common.showerror(win, tr("Cann't import pyTTS module, please install it first."))
+            common.showerror(win, tr("Can't import pyTTS module, please install it first."))
             return
     if win.document.hasSelection():
         text = win.document.GetSelectedText()
@@ -102,7 +102,7 @@ def OnDocumentVoiceConfig(win, event):
             win.pytts.OnEndStream = win.OnTTSEndStream
         except:
             error.traceback()
-            common.showerror(win, tr("Cann't import pyTTS module, please install it first."))
+            common.showerror(win, tr("Can't import pyTTS module, please install it first."))
             return
     voices = win.pytts.GetVoiceNames()
     if not voices:

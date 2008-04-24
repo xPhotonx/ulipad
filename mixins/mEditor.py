@@ -64,7 +64,7 @@ class OnModified(AsyncAction.AsyncAction):
             return
         try:
             if not obj: return
-            obj.callplugin('on_modified', obj)
+            wx.CallAfter(obj.callplugin, 'on_modified', obj)
             return True
         except:
             error.traceback()

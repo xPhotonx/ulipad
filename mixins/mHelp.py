@@ -33,6 +33,7 @@ from modules import meide as ui
 homepage = 'http://code.google.com/p/ulipad/'
 blog = 'http://www.donews.net/limodou'
 email = 'limodou@gmail.com'
+ulispot = 'http://ulipad.appspot.com'
 author = 'limodou'
 maillist = 'http://groups.google.com/group/ulipad'
 
@@ -49,7 +50,7 @@ class AboutDialog(wx.Dialog):
         self.version.SetFont(font)
         box.add(ui.Label(tr('Author: %s (%s)') % (author, email)))
         box.add(ui.Label(tr('If you have any question please contact me !')))
-        
+
         self.ID_HOMEPAGE = wx.NewId()
         self.homepage = HyperLinkCtrl(self, self.ID_HOMEPAGE, "The UliPad project homepage", URL=homepage)
         box.add(self.homepage).bind(EVT_HYPERLINK_LEFT, self.OnLink)
@@ -57,6 +58,10 @@ class AboutDialog(wx.Dialog):
         self.ID_MAILLIST = wx.NewId()
         self.maillist = HyperLinkCtrl(self, self.ID_MAILLIST, "The UliPad maillist", URL=maillist)
         box.add(self.maillist).bind(EVT_HYPERLINK_LEFT, self.OnLink)
+
+        self.ID_ULISPOT = wx.NewId()
+        self.ulispot = HyperLinkCtrl(self, self.ID_ULISPOT, "The UliPad Snippets Site", URL=ulispot)
+        box.add(self.ulispot).bind(EVT_HYPERLINK_LEFT, self.OnLink)
 
         self.ID_BLOG = wx.NewId()
         self.blog = HyperLinkCtrl(self, self.ID_BLOG, "My Blog", URL=blog)
@@ -78,6 +83,8 @@ class AboutDialog(wx.Dialog):
             mainframe.OnHelpProject(event)
         elif eid == self.ID_MAILLIST:
             mainframe.OnHelpMaillist(event)
+        elif eid == self.ID_ULISPOT:
+            mainframe.OnHelpUlispot(event)
         elif eid == self.ID_BLOG:
             mainframe.OnHelpMyBlog(event)
         elif eid == self.ID_EMAIL:
@@ -91,7 +98,8 @@ def add_mainframe_menu(menulist):
             (210, 'wx.ID_HOME', tr('Visit Project Homepage'), wx.ITEM_NORMAL, 'OnHelpProject', tr('Visit Project Homepage: %s') % homepage),
             (220, 'IDM_HELP_MAILLIST', tr('Visit maillist'), wx.ITEM_NORMAL, 'OnHelpMaillist', tr('Visit Project Maillist: %s') % maillist),
             (230, 'IDM_HELP_MYBLOG', tr('Visit My Blog'), wx.ITEM_NORMAL, 'OnHelpMyBlog', tr('Visit My blog: %s') % blog),
-            (240, 'IDM_HELP_EMAIL', tr('Contact Me'), wx.ITEM_NORMAL, 'OnHelpEmail', tr('Send email to me mailto:%s') % email),
+            (240, 'IDM_HELP_ULISPOT', tr('Visit UliPad Snippets Site'), wx.ITEM_NORMAL, 'OnHelpUlispot', tr('Visit UliPas snippets site: %s') % ulispot),
+            (250, 'IDM_HELP_EMAIL', tr('Contact Me'), wx.ITEM_NORMAL, 'OnHelpEmail', tr('Send email to me mailto:%s') % email),
             (900, 'wx.ID_ABOUT', tr('About...'), wx.ITEM_NORMAL, 'OnHelpAbout', tr('About this program')),
         ]),
     ])
@@ -126,3 +134,7 @@ Mixin.setMixin('mainframe', 'OnHelpEmail', OnHelpEmail)
 def OnHelpMyBlog(win, event):
     common.webopen(blog)
 Mixin.setMixin('mainframe', 'OnHelpMyBlog', OnHelpMyBlog)
+
+def OnHelpUlispot(win, event):
+    common.webopen(ulispot)
+Mixin.setMixin('mainframe', 'OnHelpUlispot', OnHelpUlispot)

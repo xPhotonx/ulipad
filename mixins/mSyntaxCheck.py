@@ -65,7 +65,7 @@ Mixin.setMixin('preference', 'preflist', preflist)
 def aftersavefile(win, filename):
     if win.edittype == 'edit' and win.languagename == 'python' and win.pref.auto_py_check:
         import SyntaxCheck
-        SyntaxCheck.Check(win.mainframe, win)
+        wx.CallAfter(SyntaxCheck.Check, win.mainframe, win)
 Mixin.setPlugin('editor', 'aftersavefile', aftersavefile, Mixin.LOW)
 
 def createSyntaxCheckWindow(win):

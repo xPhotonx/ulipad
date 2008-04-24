@@ -74,7 +74,7 @@ class EasyElements(object):
         try:
             klass = element_classes[kind]
         except:
-            raise EasyException, "Cann't support this type [%s]" % kind
+            raise EasyException, "Can't support this type [%s]" % kind
         obj = klass(self, value, message, extern, size, enabledflag)
         self.items[name] = obj
         if enabledflag is not None:

@@ -70,7 +70,7 @@ def aftersavefile(win, filename):
         and win.languagename == 'python'
         and win.pref.python_classbrowser_refresh_as_save
         and win.init_class_browser):
-        win.outlinebrowser.show()
+        wx.CallAfter(win.outlinebrowser.show)
 Mixin.setPlugin('editor', 'aftersavefile', aftersavefile)
 
 def OnPythonClassBrowserRefresh(win, event):

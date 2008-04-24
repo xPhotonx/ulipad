@@ -36,21 +36,21 @@ import CommandRecord
 class ConcurrentWindow(wx.Panel, Mixin.Mixin):
     __mixinname__ = 'concurrent'
     concurrent_id = 0
-    
+
     def __init__(self, parent):
         self.initmixin()
-        
+
         wx.Panel.__init__(self, parent, -1)
-        
+
         self.mainframe = Globals.mainframe
         self.pref = self.mainframe.pref
-        
+
         sizer = wx.BoxSizer(wx.VERTICAL)
         sizer1 = wx.BoxSizer(wx.HORIZONTAL)
-        
+
         if not self.pref.pairprog_username:
             self.pref.pairprog_username = self.pref.personal_username
-        
+
         sizer1.Add(wx.StaticText(self, -1, tr("Name") + ':'), 0, wx.ALIGN_CENTER_VERTICAL|wx.RIGHT|wx.LEFT, 2)
         self.txtName = wx.TextCtrl(self, -1, self.pref.pairprog_username, size=(100, -1))
         sizer1.Add(self.txtName, 0, wx.ALIGN_CENTER_VERTICAL|wx.RIGHT|wx.LEFT, 2)
@@ -66,7 +66,7 @@ class ConcurrentWindow(wx.Panel, Mixin.Mixin):
         sizer1.Add(self.btnConnect, 0, wx.ALIGN_CENTER_VERTICAL|wx.RIGHT, 2)
 
         sizer.Add(sizer1, 0, wx.EXPAND|wx.TOP|wx.BOTTOM, 2)
-        
+
         self.splitter = MultiSplitterWindow(self, -1)
 
         userpanel = UserPanel(self.splitter)
@@ -86,12 +86,12 @@ class ConcurrentWindow(wx.Panel, Mixin.Mixin):
         self.btnSave = chatpanel.btnSave
         self.splitter.SetMinimumPaneSize(150)
         self.splitter.SetOrientation(wx.HORIZONTAL)
-        
+
         sizer.Add(self.splitter, 1, wx.EXPAND|wx.ALL, 2)
 
         self.SetSizer(sizer)
         self.SetAutoLayout(True)
-        
+
         self.btnStart.Bind(wx.EVT_BUTTON, self.OnStart)
         self.btnConnect.Bind(wx.EVT_BUTTON, self.OnConnect)
         self.btnSend.Bind(wx.EVT_BUTTON, self.OnSend)
@@ -112,19 +112,19 @@ class ConcurrentWindow(wx.Panel, Mixin.Mixin):
         self.filelistpopmenus = None
         self.userlistpopmenus = None
 
-        
+
     def __get_me(self):
         return self.txtName.GetValue()
-    
+
     me = property(__get_me)
-        
+
     def OnStart(self, event=None):
         if not self.status:
             if not self.me or self.me == '*':
                 common.showerror(self, tr("Username should not be empty or '*'"))
                 self.txtName.SetFocus()
-                return 
-            
+                return
+
             ip = self.txtIP.GetValue()
             if not ip:
                 common.showerror(self, tr("Host address cannot be empty!"))
@@ -149,14 +149,14 @@ class ConcurrentWindow(wx.Panel, Mixin.Mixin):
             self.server = None
             self.change_status('stopserver')
             self.callplugin('stop', self, 'server')
-            
+
     def OnConnect(self, event=None):
         if not self.status:
             if not self.me or self.me == '*':
                 common.showerror(self, tr("Username should not be empty or '*'"))
                 self.txtName.SetFocus()
-                return 
-            
+                return
+
             ip = self.txtIP.GetValue()
             if not ip:
                 common.showerror(self, tr("Host address cannot be empty!"))
@@ -171,7 +171,7 @@ class ConcurrentWindow(wx.Panel, Mixin.Mixin):
             self.client = Client.start_client(ip, port, self.clientcommands)
             if self.client:
                 self.client.call('join', self.me)
-                
+
                 self.change_status('connectserver')
                 self.callplugin('start', self, 'client')
 #            except:
@@ -182,7 +182,7 @@ class ConcurrentWindow(wx.Panel, Mixin.Mixin):
             self.client = None
             self.change_status('disconnectserver')
             self.callplugin('stop', self, 'client')
-    
+
     def OnSend(self, event=None):
         message = self.chat.GetValue()
         self.chat.SetValue('')
@@ -192,18 +192,18 @@ class ConcurrentWindow(wx.Panel, Mixin.Mixin):
                 self.server.broadcast('message', self.me, message)
             else:
                 self.client.call('message', self.me, message)
-                
+
     def OnClear(self, event=None):
         self.chatroom.SetReadOnly(0)
         self.chatroom.SetText('')
         self.chatroom.SetReadOnly(1)
-        
+
     def OnClose(self, win):
         if self.status == 'startserver':
             self.OnStart()
         elif self.status == 'connectserver':
             self.OnConnect()
-        
+
     def OnSave(self, event=None):
         filename = None
         dlg = wx.FileDialog(self, tr("Save File"), self.pref.last_dir, '', 'Text file|*.txt', wx.SAVE|wx.OVERWRITE_PROMPT)
@@ -217,7 +217,7 @@ class ConcurrentWindow(wx.Panel, Mixin.Mixin):
                 common.warn(tr("There is error as saving the file"))
             else:
                 common.note(tr("Finished!"))
-        
+
     def OnFilelistRClick(self, event):
         pt = event.GetPosition();
         item, flags = self.filelist.HitTest(pt)
@@ -236,7 +236,7 @@ class ConcurrentWindow(wx.Panel, Mixin.Mixin):
                     (10, 'IDPM_REGET', tr('Reget Document'), wx.ITEM_NORMAL, 'OnRegetDocument', ''),
                 ]),
             ]
-        
+
         other_menus = []
         if self.filelistpopmenus:
             self.filelistpopmenus.Destroy()
@@ -248,9 +248,9 @@ class ConcurrentWindow(wx.Panel, Mixin.Mixin):
         else:
             pop_menus = copy.deepcopy(popmenulist)
         self.filelistpopmenus = makemenu.makepopmenu(self, pop_menus)
-    
+
         self.filelist.PopupMenu(self.filelistpopmenus)
-        
+
     def OnUserlistRClick(self, event):
         pt = event.GetPosition();
         item, flags = self.userlist.HitTest(pt)
@@ -261,7 +261,7 @@ class ConcurrentWindow(wx.Panel, Mixin.Mixin):
                 (10, 'IDPM_KICK', tr('Kick User'), wx.ITEM_NORMAL, 'OnKickUser', ''),
             ]),
         ]
-        
+
         other_menus = []
         if self.userlistpopmenus:
             self.userlistpopmenus.Destroy()
@@ -273,9 +273,9 @@ class ConcurrentWindow(wx.Panel, Mixin.Mixin):
         else:
             pop_menus = copy.deepcopy(popmenulist)
         self.userlistpopmenus = makemenu.makepopmenu(self, pop_menus)
-        
+
         self.filelist.PopupMenu(self.userlistpopmenus)
-        
+
     def OnAddDocument(self, event):
         document = self.mainframe.editctrl.getCurDoc()
         if not self.has_document(document):
@@ -292,7 +292,7 @@ class ConcurrentWindow(wx.Panel, Mixin.Mixin):
                 self.server.broadcast('editcmd', 'setlex', (_id, document.languagename))
                 self.server.broadcast('message', '*', tr("%(user)s selects %(filename)s") % {'user':self.me, 'filename':filename})
             wx.CallAfter(f, self)
-            
+
     def OnRemoveDocument(self, event=None):
         index = self.filelist.GetFirstSelected()
         if index > -1:
@@ -308,7 +308,7 @@ class ConcurrentWindow(wx.Panel, Mixin.Mixin):
                 common.showerror(self, tr("You should select one item first"))
             else:
                 common.showerror(self, tr("No item exists"))
-            
+
     def OnRegetDocument(self, event=None):
         index = self.filelist.GetFirstSelected()
         if index > -1:
@@ -322,7 +322,7 @@ class ConcurrentWindow(wx.Panel, Mixin.Mixin):
                 common.showerror(self, tr("You should select one item first"))
             else:
                 common.showerror(self, tr("No item exists"))
-                
+
     def OnKickUser(self, event):
         index = self.userlist.GetFirstSelected()
         if index > -1:
@@ -345,7 +345,7 @@ class ConcurrentWindow(wx.Panel, Mixin.Mixin):
                 common.showerror(self, tr("You should select one item first"))
             else:
                 common.showerror(self, tr("No item exists"))
-                
+
     def OnKeyDown(self, event):
         key = event.GetKeyCode()
         shift = event.ShiftDown()
@@ -357,24 +357,24 @@ class ConcurrentWindow(wx.Panel, Mixin.Mixin):
             self.chat.WriteText('\n')
         else:
             event.Skip()
-        
+
     def has_username(self, username):
         for user in self.users.values():
             if user.name == username:
                 return True
         else:
             return False
-    
+
     def has_document(self, document):
         return document in self.files.values()
-    
+
     def get_doc_id(self, document):
         for _id, doc in self.files.items():
             if doc is document:
                 return _id
         else:
             return None
-        
+
     def change_status(self, status='startserver'):
         self.status = status
         if status == 'startserver':
@@ -429,7 +429,7 @@ class ConcurrentWindow(wx.Panel, Mixin.Mixin):
             self.users = {}
             self.files = {}
             self.cmdrecorder.clear()
-            
+
     def put_message(self, username, message):
         self.chatroom.SetReadOnly(0)
         self.chatroom.GotoPos(self.chatroom.GetLength())
@@ -449,16 +449,16 @@ class ConcurrentWindow(wx.Panel, Mixin.Mixin):
             self.chatroom.SetStyling(length, 1)
             self.chatroom.StartStyling(pos + length + 3, 0xff)
             self.chatroom.SetStyling(len(message.encode('utf-8')), 2)
-            
+
         self.chatroom.SetReadOnly(1)
-        
+
     def get_user(self, addr):
         for k, user in self.users.items():
             if user.addr == addr:
                 return user
         else:
             return None
-            
+
     def __get_userlist(self):
         items = self.users.items()
         items.sort()
@@ -466,7 +466,7 @@ class ConcurrentWindow(wx.Panel, Mixin.Mixin):
         for index, user in items:
             userlist.append((user.name, user.manager))
         return userlist
-            
+
     def __get_filelist(self):
         items = self.files.items()
         items.sort()
@@ -479,8 +479,8 @@ class ConcurrentWindow(wx.Panel, Mixin.Mixin):
         if self.has_username(username):
             self.server.sendto(addr, 'message', '*', tr('Username [%s] has also existed! Please try another') % username)
             self.server.sendto(addr, 'close')
-            return 
-        
+            return
+
         user = User(username, manager=manager, addr=addr)
         def f(self):
             if manager:
@@ -500,7 +500,7 @@ class ConcurrentWindow(wx.Panel, Mixin.Mixin):
                 self.server.sendto(addr, 'editcmd', 'openfile', (sid, doc.getShortFilename(), doc.getRawText()))
                 self.server.sendto(addr, 'editcmd', 'setlex', (sid, doc.languagename))
         wx.CallAfter(f, self)
-        
+
     def UpdateUsers(self, userlist):    #for client
         """
         @param userlist: is a list of list [(username, manager)]
@@ -515,7 +515,7 @@ class ConcurrentWindow(wx.Panel, Mixin.Mixin):
                     m = ''
                 self.userlist.addline([m, username, ''])
         wx.CallAfter(f, self)
-        
+
     def UpdateFiles(self, filelist):    #for client
         def f(self):
             self.filelist.DeleteAllItems()
@@ -523,7 +523,7 @@ class ConcurrentWindow(wx.Panel, Mixin.Mixin):
                 index = self.filelist.addline([filename])
                 self.filelist.SetItemData(index, _id)
         wx.CallAfter(f, self)
-        
+
     def UserQuit(self, addr):   #for server
         for i in range(self.userlist.GetItemCount()):
             _id = self.userlist.GetItemData(i)
@@ -538,13 +538,13 @@ class ConcurrentWindow(wx.Panel, Mixin.Mixin):
                 self.server.sendto(addr, 'message', '*', 'See you next time!')
                 self.server.broadcast('update_users', self.__get_userlist())
                 break
-            
+
     def ServerMessage(self, addr, username, message):    #for server
         def f(self):
             self.put_message(username, message)
             self.server.broadcastexceptfor(addr, 'message', username, message)
         wx.CallAfter(f, self)
-       
+
     def ClientMessage(self, username, message):    #for client
         def f(self):
             self.put_message(username, message)
@@ -565,7 +565,7 @@ class ConcurrentWindow(wx.Panel, Mixin.Mixin):
             self.ChangeUserAction(username, cmd)
             self.server.broadcast('activing', username, cmd)
         wx.CallAfter(f, self)
-        
+
     def ClientCommandPlay(self, cmd, para):
         def f(self):
             self.cmdrecorder.do_command(cmd, para)
@@ -573,7 +573,7 @@ class ConcurrentWindow(wx.Panel, Mixin.Mixin):
                 doc = self.cmdrecorder.check_document(para[0])
                 self.files[para[0]] = doc
         wx.CallAfter(f, self)
-        
+
     def RemoveFile(self, _id):  #for client
         def f(self):
             for i in range(self.filelist.GetItemCount()):
@@ -582,10 +582,10 @@ class ConcurrentWindow(wx.Panel, Mixin.Mixin):
                     self.filelist.DeleteItem(i)
                     self.cmdrecorder.remove_document(_id)
         wx.CallAfter(f, self)
-        
+
     def ClientClose(self):
         self.OnConnect()
-        
+
     def ServerRegetFile(self, addr, _id, filename):
         self.put_message('*', tr("User [%(user)s] asks file [%(filename)s]") % {'user':self.get_user(addr).name, 'filename':filename})
         doc = self.files.get(_id, None)
@@ -593,79 +593,79 @@ class ConcurrentWindow(wx.Panel, Mixin.Mixin):
             self.server.sendto(addr, 'editcmd', 'openfile', (_id, doc.getShortFilename(), doc.getRawText()))
             self.server.sendto(addr, 'editcmd', 'setlex', (_id, doc.languagename))
         else:
-            self.server.sendto(addr, 'message', '*', tr("Cann't find the file [%s]") % filename)
-    
+            self.server.sendto(addr, 'message', '*', tr("Can't find the file [%s]") % filename)
+
     def ChangeUserAction(self, username, action):
         for i in range(self.userlist.GetItemCount()):
             name = self.userlist.GetItem(i, 1).GetText()
             self.userlist.SetStringItem(i, 2, '')
             if name == username:
                 self.userlist.SetStringItem(i, 2, 'active')
-        
+
 class ServerCommands(object):
     def __init__(self, concurrent):
         self.concurrent = concurrent
-        
+
     def join(self, addr, username):
         self.concurrent.AddUser(username, addr=addr)
-        
+
     def client_close(self, addr):
         self.concurrent.UserQuit(addr)
-    
+
     def client_create(self, addr):
         pass
-    
+
     def message(self, addr, username, message):
         self.concurrent.ServerMessage(addr, username, message)
-        
+
     def editcmd(self, addr, cmd, para):
         self.concurrent.ServerCommandPlay(addr, cmd, para)
-        
+
     def regetfile(self, addr, _id, filename):
         self.concurrent.ServerRegetFile(addr, _id, filename)
-        
+
 class ClientCommands(object):
     def __init__(self, concurrent):
         self.concurrent = concurrent
-        
+
     def update_users(self, userlist):
         self.concurrent.UpdateUsers(userlist)
-    
+
     def message(self, username, message):
         self.concurrent.ClientMessage(username, message)
-    
+
     def editcmd(self, cmd, para):
         self.concurrent.ClientCommandPlay(cmd, para)
-        
+
     def update_files(self, filelist):
         self.concurrent.UpdateFiles(filelist)
-        
+
     def server_close(self):
         self.concurrent.put_message('*', tr("Server is closed"))
         self.concurrent.OnConnect()
-        
+
     def forgivefile(self, _id):
         self.concurrent.RemoveFile(_id)
-        
+
     def close(self):
         self.concurrent.ClientClose()
-        
+
     def activing(self, username, action):
         self.concurrent.ChangeUserAction(username, action)
-            
+
 class User(object):
     def __init__(self, name, manager=False, addr=None, color=''):
         self.name = name
         self.color = color
         self.manager = manager
         self.addr = addr
-        
+
     def isManager(self):
         return self.manager
-    
+
     def __str__(self):
         return 'user=' + self.name + "manager=" + repr(self.manager) + "addr" + repr(self.addr)
-    
+
 class UserPanel(wx.Panel):
     def __init__(self, parent):
         self.parent = parent
@@ -681,7 +681,7 @@ class UserPanel(wx.Panel):
         sizer.Add(self.list, 1, wx.EXPAND|wx.ALL, 2)
         self.SetSizer(sizer)
         self.SetAutoLayout(True)
-        
+
 class FileListPanel(wx.Panel):
     def __init__(self, parent):
         self.parent = parent
@@ -721,10 +721,10 @@ class ChatPanel(wx.Panel):
         sizer.Add(sizer1, 0, wx.EXPAND)
         self.SetSizer(sizer)
         self.SetAutoLayout(True)
-        
+
         self.chat.Enable(False)
         self.btnSend.Enable(False)
-        
+
         if wx.Platform == '__WXMSW__':
             face1 = 'Arial'
             face2 = 'Times New Roman'
@@ -741,5 +741,5 @@ class ChatPanel(wx.Panel):
         self.chatroom.StyleSetSpec(1, "size:%d,bold,face:%s,fore:#0000FF" % (pb, face1))  #username
         self.chatroom.StyleSetSpec(2, "face:%s,fore:#000000,size:%d" % (face1, pb))  #message
         self.chatroom.StyleSetSpec(3, "face:%s,bold,size:%d,fore:#FF0000" % (face1, pb))               #system
-        
-        
+
+

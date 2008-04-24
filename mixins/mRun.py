@@ -1,10 +1,10 @@
 #   Programmer:     limodou
 #   E-mail:         limodou@gmail.com
-#  
+#
 #   Copyleft 2006 limodou
-#  
+#
 #   Distributed under the terms of the GPL (GNU Public License)
-#  
+#
 #   UliPad is free software; you can redistribute it and/or modify
 #   it under the terms of the GNU General Public License as published by
 #   the Free Software Foundation; either version 2 of the License, or
@@ -26,7 +26,7 @@
 #       * Add callback support, when the process is terminated, the callback
 #         will be invoked
 #   2008/08/27
-#       * if the result cann't be convert to unicode, then display the result 
+#       * if the result can't be convert to unicode, then display the result
 #         as repr().
 
 
@@ -36,7 +36,7 @@ from modules import Mixin
 from modules import common
 
 def message_init(win):
-    
+
     wx.EVT_IDLE(win, win.OnIdle)
     wx.EVT_END_PROCESS(win.mainframe, -1, win.mainframe.OnProcessEnded)
     wx.EVT_KEY_DOWN(win, win.OnKeyDown)
@@ -58,11 +58,11 @@ Mixin.setPlugin('messagewindow', 'init', message_init)
 
 #patameters:
 #   (redirect=True, hide=False, input_decorator=None, callback=None)
-def RunCommand(win, command, redirect=True, hide=False, input_decorator=None, 
+def RunCommand(win, command, redirect=True, hide=False, input_decorator=None,
         callback=None):
     """replace $file = current document filename"""
     global input_appendtext
-    
+
     #test if there is already a running process
     if hasattr(win, 'messagewindow') and win.messagewindow and win.messagewindow.process:
         common.showmessage(win, tr("The last command has not finished, please try later."))
@@ -78,7 +78,7 @@ def RunCommand(win, command, redirect=True, hide=False, input_decorator=None,
         win.messagewindow.SetReadOnly(0)
         win.messagewindow.callback = callback
         appendtext(win.messagewindow, '> ' + command + '\n')
-        
+
         win.messagewindow.editpoint = win.messagewindow.GetLength()
         win.messagewindow.writeposition = win.messagewindow.GetLength()
         win.SetStatusText(tr("Running "), 0)

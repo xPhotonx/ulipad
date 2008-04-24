@@ -81,7 +81,7 @@ class TextEditor(wx.stc.StyledTextCtrl, Mixin.Mixin, DocumentBase.DocumentBase):
 
         #editor style
         self.SetMargins(2,2)        #set left and right outer margins to 0 width
-        self.SetMarginMask(1, 0)    #cann't place any marker in margin 1
+        self.SetMarginMask(1, 0)    #can't place any marker in margin 1
         self.SetMarginWidth(0, 0)   #used as symbol
         self.SetMarginWidth(2, 0)   #used as folder
 
@@ -764,4 +764,3 @@ class TextEditor(wx.stc.StyledTextCtrl, Mixin.Mixin, DocumentBase.DocumentBase):
 
     def OnClose(self, note, **kwargs):
         Globals.mainframe.editctrl.switch(Globals.mainframe.editctrl.getCurDoc())
-    
