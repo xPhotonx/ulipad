@@ -79,21 +79,23 @@ def OnNTodoWindow(win, event):
 Mixin.setMixin('notebook', 'OnNTodoWindow', OnNTodoWindow)
 
 def aftersavefile(win, filename):
-    todo = win.mainframe.panel.getPage(todo_pagename)
-    if todo:
-        data = read_todos(win)
-        if data:
-            win.mainframe.todowindow.show(win, data)
-            return
-    else:
-        if win.pref.auto_todo and win.todo_show_status:
+    def f():
+        todo = win.mainframe.panel.getPage(todo_pagename)
+        if todo:
             data = read_todos(win)
             if data:
-                win.mainframe.createtodowindow()
-                win.mainframe.panel.showPage(todo_pagename)
                 win.mainframe.todowindow.show(win, data)
                 return
-    win.mainframe.panel.closePage(todo_pagename, savestatus=False)
+        else:
+            if win.pref.auto_todo and win.todo_show_status:
+                data = read_todos(win)
+                if data:
+                    win.mainframe.createtodowindow()
+                    win.mainframe.panel.showPage(todo_pagename)
+                    win.mainframe.todowindow.show(win, data)
+                    return
+        win.mainframe.panel.closePage(todo_pagename, savestatus=False)
+    wx.CallAfter(f)
 Mixin.setPlugin('editor', 'aftersavefile', aftersavefile)
 
 def on_document_enter(win, editor):

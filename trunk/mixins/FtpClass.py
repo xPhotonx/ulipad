@@ -502,7 +502,7 @@ class Ftp(wx.Panel, Mixin):
         if answer == wx.ID_OK:
             filename, newfile, bin = dlg.GetValue()
             if not filename:
-                common.showerror(self, tr("The upload filename cann't be empty."))
+                common.showerror(self, tr("The upload filename can't be empty."))
                 return
             if not newfile:
                 newfile = os.path.basename(filename)
@@ -548,7 +548,7 @@ class Ftp(wx.Panel, Mixin):
             if answer == wx.ID_OK:
                 newfile, bin = dlg.GetValue()
                 if not newfile:
-                    common.showerror(self, tr("The download filename cann't be empty."))
+                    common.showerror(self, tr("The download filename can't be empty."))
                     return
             else:
                 return
@@ -603,7 +603,7 @@ def getuserpassword(mainframe, siteno):
 
 def readfile(mainframe, filename, siteno, user=None, password=None):
     if siteno >= len(mainframe.pref.ftp_sites):
-        common.showerror(mainframe, tr("Cann't find the ftp site entry."))
+        common.showerror(mainframe, tr("Can't find the ftp site entry."))
         return
 
     site = mainframe.pref.sites_info[mainframe.pref.ftp_sites[siteno]]
@@ -636,7 +636,7 @@ def readfile(mainframe, filename, siteno, user=None, password=None):
 
 def writefile(mainframe, filename, siteno, text, user=None, password=None):
     if siteno >= len(mainframe.pref.ftp_sites):
-        common.showerror(mainframe, tr("Cann't find the ftp site entry."))
+        common.showerror(mainframe, tr("Can't find the ftp site entry."))
         return
 
     site = mainframe.pref.sites_info[mainframe.pref.ftp_sites[siteno]]

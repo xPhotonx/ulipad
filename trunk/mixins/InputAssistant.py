@@ -1,10 +1,10 @@
 #   Programmer:     limodou
 #   E-mail:         limodou@gmail.com
-# 
+#
 #   Copyleft 2006 limodou
-# 
+#
 #   Distributed under the terms of the GPL (GNU Public License)
-# 
+#
 #   UliPad is free software; you can redistribute it and/or modify
 #   it under the terms of the GNU General Public License as published by
 #   the Free Software Foundation; either version 2 of the License, or
@@ -34,7 +34,7 @@ try:
     set
 except:
     from sets import Set as set
-    
+
 #mylocal = threading.local()
 class DUMY_CLASS:pass
 
@@ -62,12 +62,12 @@ class InputAssistant(Mixin.Mixin):
 
         if not hasattr(editor, 'lexer') or editor.lexer.cannot_expand(editor):
             return False
-        
+
         if not syncvar.empty:
             return True
-        
+
         self.syncvar = syncvar
-        
+
         key = event.GetKeyCode()
         ctrl = event.ControlDown()
         alt = event.AltDown()
@@ -89,7 +89,7 @@ class InputAssistant(Mixin.Mixin):
 
         if editor.hasSelection() and on_char and not ctrl and not alt and (31 < key < 127 or key > wx.WXK_PAGEDOWN):
             self.check_selection(editor)
-        
+
         f = 0
         if not on_char:
             if ctrl:
@@ -98,11 +98,11 @@ class InputAssistant(Mixin.Mixin):
                 f |= wx.stc.STC_SCMOD_ALT
             elif shift:
                 f |= wx.stc.STC_SCMOD_SHIFT
-            
+
         self.key = (f, key)
         if not self.install_acp(editor, self.language) and not self.editor.custom_assistant:
             return False
-       
+
         try:
             return self._run()
         except StopException:
@@ -123,14 +123,14 @@ class InputAssistant(Mixin.Mixin):
             if not changeflag:
                 changeflag = self.install_assistant(language, filename)
         self.editor = editor
-        
+
         try:
             self.lasteditor
         except:
             error.traceback()
             self.lasteditor = None
             self.lastlanguage = None
-            
+
         if changeflag or not self.lasteditor is editor or self.lastlanguage != editor.languagename:
             self.lasteditor = editor
             self.lastlanguage = editor.languagename
@@ -147,13 +147,13 @@ class InputAssistant(Mixin.Mixin):
                 self.install_locals(obj)
                 self.install_analysis(obj)
         return True
-    
+
     def get_acp(self, language):
         return assistant.get(language, [])
-    
+
     def get_all_acps(self):
         return self.get_acp(self.language) + self.editor.custom_assistant
-        
+
     def _run(self):
         if not self.syncvar.empty:
             return True
@@ -331,7 +331,7 @@ class InputAssistant(Mixin.Mixin):
                                     win.EndUndoAction()
                                 self.postcall(f)
                                 return True
-                            
+
             else:
                 if self.on_char: #in on_char event
                     #deal with auto identifiers
@@ -355,7 +355,7 @@ class InputAssistant(Mixin.Mixin):
                     except:
                         error.traceback()
             return False
-        
+
     def run_default(self, editor, syncvar):
         self.syncvar = syncvar
         self.oldpos = editor.GetCurrentPos()
@@ -364,7 +364,7 @@ class InputAssistant(Mixin.Mixin):
             return self.process_default(True, editor)
         except StopException:
             return False
-        
+
     def process_default(self, skipkey=False, editor=None):
         if not editor:
             win = self.editor
@@ -374,17 +374,17 @@ class InputAssistant(Mixin.Mixin):
             return False
         if not win.pref.inputass_identifier:
             return False
-        
+
         win = self.editor
         if not skipkey and self.key[1] > 127:
             return False
-        
+
         if not self.syncvar.empty:
             return False
-        
+
         word = _getWord(win)
         win.word_len = win.GetCurrentPos(), -1
-        
+
         v = self.call_locals(win.GetCurrentLine() + 1, word, self.syncvar)
         if v:
             length, words = v
@@ -401,7 +401,7 @@ class InputAssistant(Mixin.Mixin):
 #                        win.word_len = win.GetCurrentPos(), -1
 #                        win.UserListShow(list_type, " ".join(slist))
 #                    self.postcall(f)
-                    
+
                     win.word_len = win.GetCurrentPos() - length, -1
                     self.postcall(win.AutoCompShow, length, ' '.join(slist))
                     return True
@@ -423,13 +423,13 @@ class InputAssistant(Mixin.Mixin):
 #                        win.UserListShow(list_type, " ".join(slist))
 #                    self.postcall(f)
 #                    print 'end2 process_default', win.AutoCompActive()
-                    
+
                     win.word_len = win.GetCurrentPos() - length, -1
                     self.postcall(win.AutoCompShow, len(s), ' '.join(slist))
                     return True
-            
+
         return False
-    
+
     def _get_popup_list(self, word, words):
         r = []
         flag = False
@@ -443,12 +443,12 @@ class InputAssistant(Mixin.Mixin):
                 if len(w) > 1 and w.upper().startswith(s) and slen < len(w):
                     flag = True
                     break
-        
-        if flag:  
-            r = list(r)  
-            r.sort(lambda x, y:cmp(x.upper(), y.upper()))            
+
+        if flag:
+            r = list(r)
+            r.sort(lambda x, y:cmp(x.upper(), y.upper()))
             return r
-        
+
     def process_calltip_begin(self):
         win = self.editor
         if not win.pref.inputass_calltip:
@@ -473,7 +473,7 @@ class InputAssistant(Mixin.Mixin):
             win.calltip_line = win.GetCurrentLine()
             return True
         return False
-    
+
     def postcall(self, f, *args):
         if self.on_char and not self.syncvar.empty or self.oldpos != self.editor.GetCurrentPos():
             raise StopException
@@ -481,7 +481,7 @@ class InputAssistant(Mixin.Mixin):
             wx.CallAfter(self.editor.AutoCompCancel)
         wx.CallAfter(f, *args)
         return
-        
+
     def process_calltip_end(self):
         win = self.editor
         braceAtCaret = -1
@@ -511,7 +511,7 @@ class InputAssistant(Mixin.Mixin):
                         wx.CallAfter(win.calltip.cancel)
                         win.calltip_stack.clear()
                         del win.function_parameter[:]
-                        return 
+                        return
                     if  len(win.calltip_stack)>1:
                         del win.calltip_stack[braceOpposite]
                     calltip_text = win.calltip_stack.get(s, None)
@@ -528,12 +528,12 @@ class InputAssistant(Mixin.Mixin):
         except:
             error.traceback()
         return False
-        
+
     def process_autocomplete(self):
         win = self.editor
         if not win.pref.inputass_autocomplete:
             return False
-        
+
         word = _getWord(win)
         result = self.call_autodot(word, self.syncvar)
         if result:
@@ -548,7 +548,7 @@ class InputAssistant(Mixin.Mixin):
             self.postcall(win.AutoCompShow, 0, s)
             return True
         return False
-        
+
     def parse_result(self, assistant_obj, text, start, end, key='', matchtext='', line=None, matchobj=None):
         """ return True if success
             return False is failed
@@ -622,7 +622,7 @@ class InputAssistant(Mixin.Mixin):
                 elif flag == "blank":
                     return True
                 else:
-                    error.error("Cann't recognize result type " + flag)
+                    error.error("Can't recognize result type " + flag)
                     error.traceback()
                     return True
 
@@ -674,7 +674,7 @@ class InputAssistant(Mixin.Mixin):
             obj.projectname = obj.ini.default.get('projectname', '')
             assistant_objs[filename] = obj
             return obj
-        
+
     def get_function(self, modstring):
         func = None
         if not isinstance(modstring, list) and modstring.startswith('@'):
@@ -700,7 +700,7 @@ class InputAssistant(Mixin.Mixin):
                 func.module_name = module
                 func.function_name = function
         return func
-        
+
     def install_default_auto_identifier(self, obj):
         if not obj.ini.has_key('auto_default'):
             return
@@ -734,14 +734,14 @@ class InputAssistant(Mixin.Mixin):
                 s.append(i)
         for k, v in d.items():
             d[k].sort(lambda x, y:cmp(x.upper(), y.upper()))
-            
+
     def install_calltip(self, obj):
         if not obj.ini.auto_complete.calltip:
             return
         func = self.get_function(obj.ini.auto_complete.calltip)
         if func:
             self.editor.input_calltip.append(func)
-            
+
     def install_autodot(self, obj):
         if not obj.ini.auto_complete.autodot:
             return
@@ -755,7 +755,7 @@ class InputAssistant(Mixin.Mixin):
         func = self.get_function(obj.ini.auto_complete.locals)
         if func:
             self.editor.input_locals.append(func)
-    
+
     def install_analysis(self, obj):
         if not obj.ini.auto_complete.analysis:
             return
@@ -773,7 +773,7 @@ class InputAssistant(Mixin.Mixin):
             pass
         except:
             error.traceback()
-           
+
     def call_autodot(self, word, syncvar):
         result = []
         for f in self.editor.input_autodot:
@@ -786,7 +786,7 @@ class InputAssistant(Mixin.Mixin):
             except:
                 error.traceback()
         return result
-    
+
     def call_locals(self, line, word, syncvar):
         try:
             if not self.editor:
@@ -810,7 +810,7 @@ class InputAssistant(Mixin.Mixin):
             pass
         except:
             error.traceback()
-                
+
     r_key = re.compile(r'(.*?)%(.*?)%$')
     def install_keylist(self, items, re_flag=False):
         d = {}
@@ -887,7 +887,7 @@ class InputAssistant(Mixin.Mixin):
             win.GotoPos(cur_pos)
         win.EnsureCaretVisible()
         self.call_snippet(win.GetTextRange(start, end), start, end)
-        
+
     def call_snippet(self, tpl, start, end):
         if self.editor.snippet:
             snippet = self.editor.snippet
@@ -898,7 +898,7 @@ class InputAssistant(Mixin.Mixin):
     def check_selection(self, win):
         if win.GetSelectedText():
             win.ReplaceSelection('')
-            
+
     def set_modules_time(self, mod):
         try:
             sfile = mod.__file__
@@ -919,7 +919,7 @@ class InputAssistant(Mixin.Mixin):
         except:
             error.traceback()
             return False
-    
+
 from modules.Accelerator import keylist
 def convert_key(s):
     f = 0

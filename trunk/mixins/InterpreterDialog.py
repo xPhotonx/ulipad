@@ -1,10 +1,10 @@
 #   Programmer:     limodou
 #   E-mail:         limodou@gmail.com
-#  
+#
 #   Copyleft 2006 limodou
-#  
+#
 #   Distributed under the terms of the GPL (GNU Public License)
-#  
+#
 #   UliPad is free software; you can redistribute it and/or modify
 #   it under the terms of the GNU General Public License as published by
 #   the Free Software Foundation; either version 2 of the License, or
@@ -80,7 +80,7 @@ class InterpreterDialog(wx.Dialog):
         item = self.list.GetNextItem(lastitem, wx.LIST_NEXT_ALL, wx.LIST_STATE_SELECTED)
         while item > -1:
             if self.getItemText(item)[0] == tr('default'):
-                common.showmessage(self, tr("You cann't delete the default interpreter!"))
+                common.showmessage(self, tr("You can't delete the default interpreter!"))
                 return
             dlg = wx.MessageDialog(self, tr("Do you realy want to delete current item [%s]?") % self.getItemText(item)[0],
                     tr("Deleting Interpreter"), wx.YES_NO | wx.CANCEL | wx.ICON_QUESTION)

@@ -1,10 +1,10 @@
 #   Programmer:     limodou
 #   E-mail:         limodou@gmail.com
-# 
+#
 #   Copyleft 2006 limodou
-# 
+#
 #   Distributed under the terms of the GPL (GNU Public License)
-# 
+#
 #   UliPad is free software; you can redistribute it and/or modify
 #   it under the terms of the GNU General Public License as published by
 #   the Free Software Foundation; either version 2 of the License, or
@@ -78,10 +78,10 @@ def openfileencoding(win, filename, stext, encoding):
                 win.locale = encoding
             except:
                 error.traceback()
-                raise MyUnicodeException(win, tr("Cann't convert file encoding [%s] to unicode!\nThe file cann't be openned!") % encoding, tr("Unicode Error"))
+                raise MyUnicodeException(win, tr("Can't convert file encoding [%s] to unicode!\nThe file cann't be openned!") % encoding, tr("Unicode Error"))
         else:
             error.traceback()
-            raise MyUnicodeException(win, tr("Cann't convert file encoding [%s] to unicode!\nThe file cann't be openned!") % encoding, tr("Unicode Error"))
+            raise MyUnicodeException(win, tr("Can't convert file encoding [%s] to unicode!\nThe file cann't be openned!") % encoding, tr("Unicode Error"))
     stext[0] = s
 Mixin.setPlugin('editor', 'openfileencoding', openfileencoding)
 
@@ -121,7 +121,7 @@ def savefileencoding(win, stext, encoding):
             try:
                 s = text.encode(encoding, 'replace')
             except:
-                raise MyUnicodeException(win, tr("Cann't convert file to [%s] encoding!\nThe file cann't be saved!") % encoding,
+                raise MyUnicodeException(win, tr("Can't convert file to [%s] encoding!\nThe file cann't be saved!") % encoding,
                     tr("Unicode Error"))
     else:
         s = text

@@ -50,10 +50,10 @@
 # 0.9-------------------------
 #   2007/06/13
 #     Thanks for Victor Stinner giving a output format patch, so you can define your own
-#     output format "%s = %s" to anything you want, for example "%s=%s" or "%s:%s". And 
-#     Dict4Ini will auto remove '%s' from the fromat string, and the strip() the rest of 
-#     the string, then use it to split the key and value in Ini file. For example, if you 
-#     using "%s:%s", Dict4Ini will get "%s:%s".replace('%s', '').strip(), then use ':' to 
+#     output format "%s = %s" to anything you want, for example "%s=%s" or "%s:%s". And
+#     Dict4Ini will auto remove '%s' from the fromat string, and the strip() the rest of
+#     the string, then use it to split the key and value in Ini file. For example, if you
+#     using "%s:%s", Dict4Ini will get "%s:%s".replace('%s', '').strip(), then use ':' to
 #     split the line.
 # 0.8-------------------------
 #   2007/04/20
@@ -95,10 +95,10 @@ try:
     import p3 as crypt
 except:
     crypt = None
-    
+
 class DictNode(object):
-    def __init__(self, values, encoding=None, root=None, section=[], orders=[], 
-            sectiondelimeter=section_delimeter, onelevel=False, format="%s = %s", 
+    def __init__(self, values, encoding=None, root=None, section=[], orders=[],
+            sectiondelimeter=section_delimeter, onelevel=False, format="%s = %s",
             normal=False, commentdelimeter='#'):
         self._items = values
         self._orders = orders
@@ -115,16 +115,16 @@ class DictNode(object):
         if self._items.has_key(name):
             value = self._items[name]
             if isinstance(value, dict):
-                return DictNode(value, self._encoding, self._root, self._section + [name], 
-                    sectiondelimeter=self._section_delimeter, onelevel=self._onelevel, 
+                return DictNode(value, self._encoding, self._root, self._section + [name],
+                    sectiondelimeter=self._section_delimeter, onelevel=self._onelevel,
                     format=self._format, normal=self._normal, commentdelimeter=self._commentdelimeter)
             else:
                 return value
         else:
             self._items[name] = {}
             self._root.setorder(self.get_full_keyname(name))
-            return DictNode(self._items[name], self._encoding, self._root, self._section + [name], 
-                sectiondelimeter=self._section_delimeter, onelevel=self._onelevel, 
+            return DictNode(self._items[name], self._encoding, self._root, self._section + [name],
+                sectiondelimeter=self._section_delimeter, onelevel=self._onelevel,
                 format=self._format, normal=self._normal, commentdelimeter=self._commentdelimeter)
 
     def __setitem__(self, name, value):
@@ -182,7 +182,7 @@ class DictNode(object):
             else:
                 s.append(x)
         return '\n'.join(s)
-    
+
     def comment(self, name, comment):
         comment = self._get_comment_value(comment)
         if name:
@@ -199,14 +199,14 @@ class DictNode(object):
 
     def __len__(self):
         return len(self._items)
-    
+
     #add iterator support
     def __iter__(self):
         return self._items.iteritems()
 
     def has_key(self, name):
         return self._items.has_key(name)
-    
+
     #add in test support
     def __contains__(self, name):
         return self.has_key(name)
@@ -235,7 +235,7 @@ class DictNode(object):
             s.append((self._root._orders.get(self._section_delimeter.join(sec + [key]), 99999), key, value))
         s.sort()
         return [(x, y) for z, x, y in s]
-    
+
     def clear(self):
         self._items = {}
         self._orders = []
@@ -246,7 +246,7 @@ class DictIni(DictNode):
                     commentdelimeter='#', sectiondelimeter=section_delimeter,
                     onelevel=False, format="%s = %s", normal=False,
                     hideData=False, secretKey=None, secretSections=None ):
-                        
+
         self._items = {}
         self._inifile = inifile
         self._root = self
@@ -267,7 +267,7 @@ class DictIni(DictNode):
             self._secretSections = secretSections.split(',')
         assert not self
         if not self._section_delimeter:
-            raise Exception, "section_delimeter cann't be empty!"
+            raise Exception, "section_delimeter can't be empty!"
         if values is not None:
             self._items = values
 
@@ -431,19 +431,19 @@ class DictIni(DictNode):
         if not self._orders.has_key(key):
             self._orders[key] = self._ID
             self._ID += 1
-            
+
     def clear(self):
         self._items = {}
         self._section = []
         self._comments = {}
         self._orders = {}
-        
+
     def process_value(self, value, encoding=None, section=None):
         value = self.protect_value(value, 1, section)
-        
+
         if self._normal:
             return value
-        
+
         length = len(value)
         t = value
         i = 0
@@ -492,14 +492,14 @@ class DictIni(DictNode):
                     result.append(b)
                 except:
                     result.append(unescstr(i))
-    
+
         if listflag:
             return result
         elif result:
             return result[0]
         else:
             return ''
-    
+
     def protect_value(self, value, mode=0, section=None):
         if self._secretSections is not None and section is not None:
             for s in self._secretSections:
@@ -507,7 +507,7 @@ class DictIni(DictNode):
                     break
             else:
                 return value
-            
+
         if mode == 0:
             # encrypt
             if crypt != None and self._secretKey != None :
@@ -524,13 +524,13 @@ class DictIni(DictNode):
                 return base64.b64decode(value)
 
         return value
-    
+
     def uni_str(self, a, encoding=None, section=None):
         if section and isinstance(section, list):
             current_section = section[0]
         else:
             current_section = section
-        
+
         if self._normal:
             if isinstance(a, (int, float, str)):
                 v = str(a)
@@ -542,9 +542,9 @@ class DictIni(DictNode):
         else:
             v = uni_prt(a, encoding)
         return self.protect_value(v, section=self._section_delimeter.join(section))
-    
-    
-unescapechars = {'"':'"', 't':'\t', 'r':'\r', 'n':'\n', '\\':'\\', 'a':'\a', 'f':'\f', 
+
+
+unescapechars = {'"':'"', 't':'\t', 'r':'\r', 'n':'\n', '\\':'\\', 'a':'\a', 'f':'\f',
     "'":"'", 'b':'\b', 'v':'\v'}
 def unescstr(value):
     if value.startswith('"') and value.endswith('"') or value.startswith("'") and value.endswith("'"):

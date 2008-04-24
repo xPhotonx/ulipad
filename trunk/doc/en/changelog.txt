@@ -28,17 +28,17 @@ New Features and Changes:
 #. Add strip line ending when saving functionality option in Preferences
 #. Strip leading space when doing "Run in Shell"
 #. Add auto detect python interpreter in windows platform
-#. Improve ReST document render, and fix the setfocus lost bug when auto modified 
+#. Improve ReST document render, and fix the setfocus lost bug when auto modified
    the html output, thanks a lot to ygao
 #. Change setmenutext to use fix width to set the menu text, replace with '\t'
 #. Chanage notebook left double click to right double click(enlarge notebook size)
 #. Add search text count in Find & Replace pane
 #. Add line ending mixture check when saving file feature
-#. Improve preference dialog input assistant checkbox process. 
+#. Improve preference dialog input assistant checkbox process.
    When you check the first checkbox(Enable input assistant) it'll
    automatically toggle other 5 checkboxes.
-#. Change new toolbutton to dropdown toolbutton, and it can remember the last 
-   new file type(select new type menu first), then when you select new menu, 
+#. Change new toolbutton to dropdown toolbutton, and it can remember the last
+   new file type(select new type menu first), then when you select new menu,
    it'll create a new file with the last new file type
 #. Improve command search and pairprog plugin caret display process
 #. Add auto new version of UliPad check
@@ -63,7 +63,7 @@ Bug fix:
 #. Fix mako tag auto complete bug #issue 14
 #. Fix if lines are folded, when goto hiding lines will no effect bug
 #. Fix DDE bug, thanks to LP <liupengf12@gmail.com>
-#. Fix webopen bug, cann't correctly deal with 'mailto:'
+#. Fix webopen bug, can't correctly deal with 'mailto:'
 #. Fix smart tabs bug
 #. Fix copy and paste lineending is not correct bug
 #. Fix tab invisible bug after changing size or changing the page title
@@ -79,20 +79,20 @@ Bug fix:
 New Features and Changes:
 
 #. Add mako template syntax highlight support
-#. Add new option in preference, [Python]->Automatically save modified file 
-   when running python program, if it's checked, it'll automatically save 
+#. Add new option in preference, [Python]->Automatically save modified file
+   when running python program, if it's checked, it'll automatically save
    the modified file.
 #. Add Shift+Delete => Cut, Shift+Insert => Paste
 #. Upgrade winpdb to lastest version
-#. Now you can set pythonpath option in config.ini/[default], 
-   and ulipad will insert it into the sys.path. pythonpath can 
+#. Now you can set pythonpath option in config.ini/[default],
+   and ulipad will insert it into the sys.path. pythonpath can
    be a string or a string list of directory.
 #. Svn support, you should install pysvn first, and also support proxy.
 #. Change long line indicator default is true.
 #. Add doctest support, you can run the doctest of current document in UliPad
 #. Add time stamp info in debug and error file
-#. Replace the shell window popup menu, and add Copy Without Prompts 
-   and Paste and Run menu items. And if the result cann't be convert to 
+#. Replace the shell window popup menu, and add Copy Without Prompts
+   and Paste and Run menu items. And if the result can't be convert to
    unicode, then display the result as repr().
 #. Script Manager can find menu name from the script content, you
    can define it as a comment line, format is: #\s*name:(.*)$
@@ -106,8 +106,8 @@ New Features and Changes:
 #. Add some config.ini options support in Preference Dialog
 #. Refactor Find & Replace with pane, but not dialog
 #. Made Open Command Here work in Linux
-#. Add dropfile plugin. thanks Tyberius Prime. Now you can drop files on 
-   toolbar, then UliPad will open it. Just like drop files on Directory 
+#. Add dropfile plugin. thanks Tyberius Prime. Now you can drop files on
+   toolbar, then UliPad will open it. Just like drop files on Directory
    Browser window.
 #. Add new custom lexer class and refactor related lexer process
 #. Upgrade FlatNotebook.py to lastest version, thanks to swordsp

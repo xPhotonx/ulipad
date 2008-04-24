@@ -89,7 +89,7 @@ def _OnExecuteMenuCommand(win, event):
     _id = event.GetId()
     idname = win._menuids.get(_id, None)
     if not idname:
-        raise EasyUtils.EasyException, "Cann't find the id[%s]'s name!" % _id
+        raise EasyUtils.EasyException, "Can't find the id[%s]'s name!" % _id
 
     obj = win._actionlist.get(idname, None)
     if not obj:

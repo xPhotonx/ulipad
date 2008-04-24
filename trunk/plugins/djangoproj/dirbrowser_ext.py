@@ -128,7 +128,7 @@ def OnDjangoStartApp(win):
                 if win.isFile(item):
                     item = win.tree.GetItemParent(item)
                     filename = win.get_node_filename(item)
-                
+
                 dir = filename
                 os.chdir(dir)
                 os.system('django-admin.py startapp %s' % appname)
@@ -217,7 +217,7 @@ def OnCreateDot(win):
         create_dot_and_show(Globals.mainframe, imagefile, dotfile)
     else:
         common.showerror(win, tr("Current directory seems not a real Django app"))
- 
+
 def create_dot_and_show(win, imagefile, dotfile):
     try:
         cmd = 'dot -T%s -o%s %s' % ('png', imagefile, dotfile)
@@ -227,7 +227,7 @@ def create_dot_and_show(win, imagefile, dotfile):
         os.system(cmd)
     except:
         error.traceback()
-        common.showerror(win, tr("Cann't execute [%s]") % cmd)
+        common.showerror(win, tr("Can't execute [%s]") % cmd)
         return
     if os.path.exists(imagefile):
         from modules import ImageWin
@@ -235,8 +235,8 @@ def create_dot_and_show(win, imagefile, dotfile):
             win = ImageWin.ImageWin(win, imagefile)
             win.Show()
         except:
-            common.showerror(win, tr("Cann't open image file %s") % imagefile)
-    
+            common.showerror(win, tr("Can't open image file %s") % imagefile)
+
 def get_django_name(win):
     elements = [
     ('string', 'appname', '', tr('Django application name:'), None),

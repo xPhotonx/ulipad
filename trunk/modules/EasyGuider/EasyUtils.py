@@ -48,7 +48,7 @@ def str_object(obj, encoding=None):
             obj[key] = str_object(value, encoding)
         return obj
     else:
-        return obj  #cann't deal class instance
+        return obj  #can't deal class instance
 
 def getimage(imageobj):
     if isinstance(imageobj, (str, unicode)):

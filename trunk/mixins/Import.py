@@ -325,7 +325,7 @@ def SaveFile(win, ctrl, issaveas=False):
             #check if the filename has been openned, if openned then fail
             for document in win.editctrl.getDocuments():
                 if (not ctrl is document ) and (filename == document.filename):
-                    wx.MessageDialog(win, tr("Ths file %s has been openned!\nCann't save new file to it.") % document.getFilename(),
+                    wx.MessageDialog(win, tr("Ths file %s has been openned!\nCan't save new file to it.") % document.getFilename(),
                         tr("Save As..."), wx.OK|wx.ICON_INFORMATION).ShowModal()
                     return False
         else:
@@ -458,7 +458,7 @@ class OnModified(AsyncAction.AsyncAction):
             return
         try:
             if not obj: return
-            obj.callplugin('on_modified', obj)
+            wx.CallAfter(obj.callplugin, 'on_modified', obj)
             return True
         except:
             error.traceback()
@@ -2190,10 +2190,10 @@ def openfileencoding(win, filename, stext, encoding):
                 win.locale = encoding
             except:
                 error.traceback()
-                raise MyUnicodeException(win, tr("Cann't convert file encoding [%s] to unicode!\nThe file cann't be openned!") % encoding, tr("Unicode Error"))
+                raise MyUnicodeException(win, tr("Can't convert file encoding [%s] to unicode!\nThe file cann't be openned!") % encoding, tr("Unicode Error"))
         else:
             error.traceback()
-            raise MyUnicodeException(win, tr("Cann't convert file encoding [%s] to unicode!\nThe file cann't be openned!") % encoding, tr("Unicode Error"))
+            raise MyUnicodeException(win, tr("Can't convert file encoding [%s] to unicode!\nThe file cann't be openned!") % encoding, tr("Unicode Error"))
     stext[0] = s
 Mixin.setPlugin('editor', 'openfileencoding', openfileencoding)
 
@@ -2233,7 +2233,7 @@ def savefileencoding(win, stext, encoding):
             try:
                 s = text.encode(encoding, 'replace')
             except:
-                raise MyUnicodeException(win, tr("Cann't convert file to [%s] encoding!\nThe file cann't be saved!") % encoding,
+                raise MyUnicodeException(win, tr("Can't convert file to [%s] encoding!\nThe file cann't be saved!") % encoding,
                     tr("Unicode Error"))
     else:
         s = text
@@ -3074,6 +3074,7 @@ from modules import meide as ui
 homepage = 'http://code.google.com/p/ulipad/'
 blog = 'http://www.donews.net/limodou'
 email = 'limodou@gmail.com'
+ulispot = 'http://ulipad.appspot.com'
 author = 'limodou'
 maillist = 'http://groups.google.com/group/ulipad'
 
@@ -3097,6 +3098,10 @@ class AboutDialog(wx.Dialog):
         self.maillist = HyperLinkCtrl(self, self.ID_MAILLIST, "The UliPad maillist", URL=maillist)
         box.add(self.maillist).bind(EVT_HYPERLINK_LEFT, self.OnLink)
 
+        self.ID_ULISPOT = wx.NewId()
+        self.ulispot = HyperLinkCtrl(self, self.ID_ULISPOT, "The UliPad Snippets Site", URL=ulispot)
+        box.add(self.ulispot).bind(EVT_HYPERLINK_LEFT, self.OnLink)
+
         self.ID_BLOG = wx.NewId()
         self.blog = HyperLinkCtrl(self, self.ID_BLOG, "My Blog", URL=blog)
         box.add(self.blog)
@@ -3117,6 +3122,8 @@ class AboutDialog(wx.Dialog):
             mainframe.OnHelpProject(event)
         elif eid == self.ID_MAILLIST:
             mainframe.OnHelpMaillist(event)
+        elif eid == self.ID_ULISPOT:
+            mainframe.OnHelpUlispot(event)
         elif eid == self.ID_BLOG:
             mainframe.OnHelpMyBlog(event)
         elif eid == self.ID_EMAIL:
@@ -3130,7 +3137,8 @@ def add_mainframe_menu(menulist):
             (210, 'wx.ID_HOME', tr('Visit Project Homepage'), wx.ITEM_NORMAL, 'OnHelpProject', tr('Visit Project Homepage: %s') % homepage),
             (220, 'IDM_HELP_MAILLIST', tr('Visit maillist'), wx.ITEM_NORMAL, 'OnHelpMaillist', tr('Visit Project Maillist: %s') % maillist),
             (230, 'IDM_HELP_MYBLOG', tr('Visit My Blog'), wx.ITEM_NORMAL, 'OnHelpMyBlog', tr('Visit My blog: %s') % blog),
-            (240, 'IDM_HELP_EMAIL', tr('Contact Me'), wx.ITEM_NORMAL, 'OnHelpEmail', tr('Send email to me mailto:%s') % email),
+            (240, 'IDM_HELP_ULISPOT', tr('Visit UliPad Snippets Site'), wx.ITEM_NORMAL, 'OnHelpUlispot', tr('Visit UliPas snippets site: %s') % ulispot),
+            (250, 'IDM_HELP_EMAIL', tr('Contact Me'), wx.ITEM_NORMAL, 'OnHelpEmail', tr('Send email to me mailto:%s') % email),
             (900, 'wx.ID_ABOUT', tr('About...'), wx.ITEM_NORMAL, 'OnHelpAbout', tr('About this program')),
         ]),
     ])
@@ -3165,6 +3173,10 @@ Mixin.setMixin('mainframe', 'OnHelpEmail', OnHelpEmail)
 def OnHelpMyBlog(win, event):
     common.webopen(blog)
 Mixin.setMixin('mainframe', 'OnHelpMyBlog', OnHelpMyBlog)
+
+def OnHelpUlispot(win, event):
+    common.webopen(ulispot)
+Mixin.setMixin('mainframe', 'OnHelpUlispot', OnHelpUlispot)
 
 
 
@@ -3218,7 +3230,7 @@ def aftersavefile(win, filename):
         and win.languagename == 'python'
         and win.pref.python_classbrowser_refresh_as_save
         and win.init_class_browser):
-        win.outlinebrowser.show()
+        wx.CallAfter(win.outlinebrowser.show)
 Mixin.setPlugin('editor', 'aftersavefile', aftersavefile)
 
 def OnPythonClassBrowserRefresh(win, event):
@@ -6810,21 +6822,23 @@ def OnNTodoWindow(win, event):
 Mixin.setMixin('notebook', 'OnNTodoWindow', OnNTodoWindow)
 
 def aftersavefile(win, filename):
-    todo = win.mainframe.panel.getPage(todo_pagename)
-    if todo:
-        data = read_todos(win)
-        if data:
-            win.mainframe.todowindow.show(win, data)
-            return
-    else:
-        if win.pref.auto_todo and win.todo_show_status:
+    def f():
+        todo = win.mainframe.panel.getPage(todo_pagename)
+        if todo:
             data = read_todos(win)
             if data:
-                win.mainframe.createtodowindow()
-                win.mainframe.panel.showPage(todo_pagename)
                 win.mainframe.todowindow.show(win, data)
                 return
-    win.mainframe.panel.closePage(todo_pagename, savestatus=False)
+        else:
+            if win.pref.auto_todo and win.todo_show_status:
+                data = read_todos(win)
+                if data:
+                    win.mainframe.createtodowindow()
+                    win.mainframe.panel.showPage(todo_pagename)
+                    win.mainframe.todowindow.show(win, data)
+                    return
+        win.mainframe.panel.closePage(todo_pagename, savestatus=False)
+    wx.CallAfter(f)
 Mixin.setPlugin('editor', 'aftersavefile', aftersavefile)
 
 def on_document_enter(win, editor):
@@ -7766,7 +7780,7 @@ Mixin.setMixin('preference', 'preflist', preflist)
 def aftersavefile(win, filename):
     if win.edittype == 'edit' and win.languagename == 'python' and win.pref.auto_py_check:
         import SyntaxCheck
-        SyntaxCheck.Check(win.mainframe, win)
+        wx.CallAfter(SyntaxCheck.Check, win.mainframe, win)
 Mixin.setPlugin('editor', 'aftersavefile', aftersavefile, Mixin.LOW)
 
 def createSyntaxCheckWindow(win):

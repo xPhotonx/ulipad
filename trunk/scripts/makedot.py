@@ -1,7 +1,7 @@
 
 def run(win):
     import wx
-    
+
     if win.document.isModified() or win.document.filename == '':
         d = wx.MessageDialog(win, tr("The file has not been saved, and it would not be run.\nWould you like to save the file?"), tr("Run"), wx.YES_NO | wx.ICON_QUESTION)
         answer = d.ShowModal()
@@ -10,7 +10,7 @@ def run(win):
             win.OnFileSave(None)
         else:
             return
-    
+
     class MOD:pass
 
     mod = MOD()
@@ -38,7 +38,7 @@ def run(win):
             os.system(cmd)
         except:
             error.traceback()
-            common.showerror(win, tr("Cann't execute [%s]") % cmd)
+            common.showerror(win, tr("Can't execute [%s]") % cmd)
             return
         if os.path.exists(values['imagefile']):
             from modules import ImageWin
@@ -46,6 +46,6 @@ def run(win):
                 win = ImageWin.ImageWin(win, values['imagefile'])
                 win.Show()
             except:
-                common.showerror(win, tr("Cann't open image file %s") % values['imagefile'])
+                common.showerror(win, tr("Can't open image file %s") % values['imagefile'])
 
 run(win)
