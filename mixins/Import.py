@@ -8210,7 +8210,7 @@ Mixin.setMixin('pythonfiletype', 'toolbaritems', toolbaritems)
 
 def OnPythonDebug(win, event):
     interpreters = dict(win.pref.python_interpreter)
-    interpreter = interpreters[win.pref.default_interpreter]
+    interpreter = interpreters.get(win.pref.default_interpreter, '')
     if not interpreter:
         common.showerror(win, tr("You didn't setup python interpreter, \nplease setup it first in Preference dialog"))
         return
@@ -8741,7 +8741,6 @@ def check_update(force=False):
         try:
             server = ServerProxy("http://ulipad.appspot.com/XMLRPC", transport=UrllibTransport(proxy))
             version = server.version()
-            print 'version', version
             def _f():
                 if version != Version.version:
                     dlg = UpdateDialog(Globals.mainframe, version)
