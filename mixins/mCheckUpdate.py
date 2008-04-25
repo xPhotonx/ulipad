@@ -54,7 +54,7 @@ class UpdateDialog(wx.Dialog):
         h.add(self.homepage).bind(EVT_HYPERLINK_LEFT, self.OnDownload)
 
         box.add(ui.Check(Globals.pref.check_update, tr("Check update when startup")), name='chkCheck').bind('check', self.OnCheck)
-        
+
         box.add(ui.Button(tr("OK"), id=wx.ID_OK), name='btnOk', flag=wx.ALIGN_CENTER|wx.ALL, border=10)
         self.btnOk.SetDefault()
 
@@ -62,7 +62,7 @@ class UpdateDialog(wx.Dialog):
 
     def OnDownload(self, event):
         common.webopen(self.homepage)
-        
+
     def OnCheck(self, event):
         Globals.pref.check_update = self.chkCheck.GetValue()
 
@@ -76,12 +76,42 @@ Mixin.setPlugin('mainframe', 'add_menu', add_mainframe_menu)
 
 def check_update(force=False):
     from modules import Casing
-    
+    import urllib2
+
     def f():
-        from xmlrpclib import ServerProxy, Error
-        server = ServerProxy("http://ulipad.appspot.com/XMLRPC")
-        
+        from xmlrpclib import ServerProxy, Transport, loads
+
+        class UrllibTransport(Transport):
+            def __init__(self, proxy, verbose=0):
+                self.proxy = proxy
+                self.verbose = verbose
+                self.opener = opener = urllib2.OpenerDirector()
+                if proxy:
+                    opener.add_handler(urllib2.ProxyHandler({'http':self.proxy}))
+                else:
+                    opener.add_handler(urllib2.ProxyHandler())
+                opener.add_handler(urllib2.UnknownHandler())
+                opener.add_handler(urllib2.HTTPHandler())
+                opener.add_handler(urllib2.HTTPDefaultErrorHandler())
+                opener.add_handler(urllib2.HTTPSHandler())
+                opener.add_handler(urllib2.HTTPErrorProcessor())
+
+            def request(self, host, handler, request_body, verbose=1):
+                f = self.opener.open('http://'+host+handler, request_body)
+                u, f = loads(f.read())
+                return u
+
+        pref = Globals.pref
+        if pref.use_proxy:
+            if pref.proxy_user and pref.proxy_password:
+                auth = pref.proxy_user + ':' + pref.proxy_password + '@'
+            else:
+                auth = ''
+            proxy = auth + pref.proxy + ':' + str(pref.proxy_port)
+        else:
+            proxy = None
         try:
+            server = ServerProxy("http://ulipad.appspot.com/XMLRPC", transport=UrllibTransport(proxy))
             version = server.version()
             def _f():
                 if version != Version.version:
@@ -92,12 +122,15 @@ def check_update(force=False):
                     if force:
                         common.showmessage(tr("There is no new version."))
             wx.CallAfter(_f)
-        except Error, e:
-            wx.CallAfter(common.showerror, e)
-    
-    d = Casing.Casing(f)
-    d.start_thread()
-    
+        except Exception, e:
+            if force:
+                wx.CallAfter(common.showerror, e)
+
+    if not force:
+        d = Casing.Casing(f)
+        d.start_thread()
+    else:
+        f()
 def OnHelpCheckUpdate(win, event):
     check_update(True)
 Mixin.setMixin('mainframe', 'OnHelpCheckUpdate', OnHelpCheckUpdate)
