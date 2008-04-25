@@ -1,7 +1,7 @@
 Programmer:	limodou
 E-mail:		limodou@gmail.com
 
-Copyleft 2007 limodou
+Copyleft 2008 limodou
 
 Distributed under the terms of the GPL (GNU Public License)
 UliPad is free software; you can redistribute it and/or modify
