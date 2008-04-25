@@ -6647,6 +6647,7 @@ from modules import Mixin
 def pref_init(pref):
     pref.use_proxy = False
     pref.proxy = ''
+    pref.proxy_port = 8000
     pref.proxy_user = ''
     pref.proxy_password = ''
 Mixin.setPlugin('preference', 'init', pref_init)
@@ -6663,7 +6664,8 @@ def add_pref(preflist):
     box = ui.VGroup(tr('Network'))
     grid = ui.SimpleGrid()
     grid.add('', ui.Check(_get('use_proxy'), tr('Use proxy')), name='use_proxy', span=True)
-    grid.add(tr('Proxy URL:'), ui.Text(_get('proxy')), name='proxy')
+    grid.add(tr('Proxy IP:'), ui.Text(_get('proxy')), name='proxy')
+    grid.add(tr('Proxy Port:'), ui.Int(_get('proxy_port')), name='proxy_port')
     grid.add(tr('Proxy User:'), ui.Text(_get('proxy_user')), name='proxy_user')
     grid.add(tr('Proxy Password:'), ui.Password(_get('proxy_password')), name='proxy_password')
     box.add(grid)
@@ -8702,13 +8704,44 @@ Mixin.setPlugin('mainframe', 'add_menu', add_mainframe_menu)
 
 def check_update(force=False):
     from modules import Casing
+    import urllib2
 
     def f():
-        from xmlrpclib import ServerProxy, Error
-        server = ServerProxy("http://ulipad.appspot.com/XMLRPC")
+        from xmlrpclib import ServerProxy, Transport, loads
 
+        class UrllibTransport(Transport):
+            def __init__(self, proxy, verbose=0):
+                self.proxy = proxy
+                self.verbose = verbose
+                self.opener = opener = urllib2.OpenerDirector()
+                if proxy:
+                    opener.add_handler(urllib2.ProxyHandler({'http':self.proxy}))
+                else:
+                    opener.add_handler(urllib2.ProxyHandler())
+                opener.add_handler(urllib2.UnknownHandler())
+                opener.add_handler(urllib2.HTTPHandler())
+                opener.add_handler(urllib2.HTTPDefaultErrorHandler())
+                opener.add_handler(urllib2.HTTPSHandler())
+                opener.add_handler(urllib2.HTTPErrorProcessor())
+
+            def request(self, host, handler, request_body, verbose=1):
+                f = self.opener.open('http://'+host+handler, request_body)
+                u, f = loads(f.read())
+                return u
+
+        pref = Globals.pref
+        if pref.use_proxy:
+            if pref.proxy_user and pref.proxy_password:
+                auth = pref.proxy_user + ':' + pref.proxy_password + '@'
+            else:
+                auth = ''
+            proxy = auth + pref.proxy + ':' + str(pref.proxy_port)
+        else:
+            proxy = None
         try:
+            server = ServerProxy("http://ulipad.appspot.com/XMLRPC", transport=UrllibTransport(proxy))
             version = server.version()
+            print 'version', version
             def _f():
                 if version != Version.version:
                     dlg = UpdateDialog(Globals.mainframe, version)
@@ -8718,12 +8751,15 @@ def check_update(force=False):
                     if force:
                         common.showmessage(tr("There is no new version."))
             wx.CallAfter(_f)
-        except Error, e:
-            wx.CallAfter(common.showerror, e)
+        except Exception, e:
+            if force:
+                wx.CallAfter(common.showerror, e)
 
-    d = Casing.Casing(f)
-    d.start_thread()
-
+    if not force:
+        d = Casing.Casing(f)
+        d.start_thread()
+    else:
+        f()
 def OnHelpCheckUpdate(win, event):
     check_update(True)
 Mixin.setMixin('mainframe', 'OnHelpCheckUpdate', OnHelpCheckUpdate)

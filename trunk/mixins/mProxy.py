@@ -1,10 +1,10 @@
 #   Programmer:     limodou
 #   E-mail:         limodou@gmail.com
-#  
+#
 #   Copyleft 2006 limodou
-#  
+#
 #   Distributed under the terms of the GPL (GNU Public License)
-#  
+#
 #   UliPad is free software; you can redistribute it and/or modify
 #   it under the terms of the GNU General Public License as published by
 #   the Free Software Foundation; either version 2 of the License, or
@@ -26,23 +26,25 @@ from modules import Mixin
 def pref_init(pref):
     pref.use_proxy = False
     pref.proxy = ''
+    pref.proxy_port = 8000
     pref.proxy_user = ''
     pref.proxy_password = ''
 Mixin.setPlugin('preference', 'init', pref_init)
 
 def add_pref(preflist):
-    
+
     def _get(name):
         def _f(name=name):
             from modules import Globals
             return getattr(Globals.pref, name)
         return _f
-    
+
     from modules import meide as ui
     box = ui.VGroup(tr('Network'))
     grid = ui.SimpleGrid()
     grid.add('', ui.Check(_get('use_proxy'), tr('Use proxy')), name='use_proxy', span=True)
-    grid.add(tr('Proxy URL:'), ui.Text(_get('proxy')), name='proxy')
+    grid.add(tr('Proxy IP:'), ui.Text(_get('proxy')), name='proxy')
+    grid.add(tr('Proxy Port:'), ui.Int(_get('proxy_port')), name='proxy_port')
     grid.add(tr('Proxy User:'), ui.Text(_get('proxy_user')), name='proxy_user')
     grid.add(tr('Proxy Password:'), ui.Password(_get('proxy_password')), name='proxy_password')
     box.add(grid)
