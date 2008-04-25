@@ -48,6 +48,7 @@ New Features and Changes:
 #. Add open snippet tool button, change open dirbrowser and open snippet toolbutton to check toolbutton
 #. Change ``explorer.exe %s`` as ``explorer.exe /e, %s`` in windows platform
 #. Add copy filename to clipboard menu on document area tab context menu
+#. Add wrap text feature, via [Edit]->[Format]->[Wrap Text...]
 
 New Plugins:
 
