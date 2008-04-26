@@ -243,7 +243,7 @@ class Command(object):
         dlg.Destroy()
         if newname:
             def f():
-                client = self.get_lient([])
+                client = self.get_client([])
                 client.move(self.path, os.path.join(dir, newname))
             wrap_run(f, callback)
             
