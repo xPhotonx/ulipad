@@ -114,7 +114,7 @@ def check_update(force=False):
             server = ServerProxy("http://ulipad.appspot.com/XMLRPC", transport=UrllibTransport(proxy))
             version = server.version()
             def _f():
-                if version != Version.version:
+                if version > Version.version:
                     dlg = UpdateDialog(Globals.mainframe, version)
                     dlg.ShowModal()
                     dlg.Destroy()
