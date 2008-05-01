@@ -24,7 +24,9 @@
 import wx
 import sets
 import os
+import time
 import glob
+import __builtin__
 from modules import Mixin
 from modules.Debug import error
 from modules import Globals
@@ -53,6 +55,54 @@ def editor_init(win):
     win.auto_routin = None
     win.snippet = None
     win.modified_line = None
+    win.documented_word = ''
+    win.exiting = False
+    win.complete_list = []
+    win.complete_obj = None
+    win.document_show_obj = None
+
+    # for autocomplete box
+    win.RegisterImage(0, common.getpngimage('images/save.gif'))
+    win.RegisterImage(1, common.getpngimage('images/open.gif'))
+    win.RegisterImage(2, common.getpngimage('images/class1.png'))
+    win.RegisterImage(3, common.getpngimage('images/method2.gif'))
+    win.RegisterImage(4, common.getpngimage('images/file_py.gif'))
+    win.RegisterImage(5, common.getpngimage('images/vars.gif'))
+    win.RegisterImage(6, common.getpngimage('images/strtype.png'))
+    win.RegisterImage(7, common.getpngimage('images/inttype.png'))
+    win.RegisterImage(8, common.getpngimage('images/listtype.png'))
+    win.RegisterImage(9, common.getpngimage('images/tupletype.png'))
+    win.RegisterImage(10, common.getpngimage('images/dicttype.png'))
+    win.RegisterImage(11, common.getpngimage('images/bfmethod1.png'))
+    win.RegisterImage(12, common.getpngimage('images/rmmethod1.png'))
+    win.RegisterImage(13, common.getpngimage('images/filetype.png'))
+    win.RegisterImage(14, common.getpngimage('images/insttype.gif'))
+    win.RegisterImage(15, common.getpngimage('images/etype.gif'))
+    win.RegisterImage(16, common.getpngimage('images/booltype.gif'))
+    win.RegisterImage(17, common.getpngimage('images/unitype.gif'))
+    win.RegisterImage(18, common.getpngimage('images/nonetype.gif'))
+    win.RegisterImage(19, common.getpngimage('images/instmethod.gif'))
+    win.RegisterImage(20, common.getpngimage('images/kwtype.png'))
+    win.RegisterImage(21, common.getpngimage('images/typetype.png'))
+    win.RegisterImage(22, common.getpngimage('images/pyobject.png'))
+    win.RegisterImage(23, common.getpngimage('images/Otypetype.png'))
+    win.RegisterImage(24, common.getpngimage('images/longtype.png'))
+    win.RegisterImage(25, common.getpngimage('images/floattype.png'))
+    win.RegisterImage(26, common.getpngimage('images/argstype.png'))
+    win.RegisterImage(27, common.getpngimage('images/pkgtype.png'))
+    win.RegisterImage(28, common.getpngimage('images/builtinmodule.png'))
+    win.autocomp_popwin = None
+    win.autocomp_listview = None
+
+    self = win
+    self.warning = ''
+    synErrIndc = 0
+    self.IndicatorSetStyle(synErrIndc, wx.stc.STC_INDIC_SQUIGGLE)
+    self.IndicatorSetForeground(synErrIndc, wx.RED)
+##    self.IndicatorSetStyle(0, wx.stc.STC_INDIC_ROUNDBOX)
+##    self.IndicatorSetForeground(0, wx.BLUE)
+
+
 Mixin.setPlugin('editor', 'init', editor_init)
 
 def _replace_text(win, start, end, text):
@@ -113,11 +163,7 @@ def on_key_down(win, event):
         if win.snippet and win.snippet.snip_mode:
             if win.AutoCompActive():
                 win.AutoCompCancel()
-
-            win.calltip_stack.clear()
             del win.function_parameter[:]
-            win.calltip.cancel()
-
             win.snippet.nextField(win.GetCurrentPos())
             return True
     if key == ord('Q') and event.AltDown() and not event.ControlDown() and not event.ShiftDown():
@@ -148,14 +194,44 @@ def pref_init(pref):
     pref.inputass_typing_rate = 400
 Mixin.setPlugin('preference', 'init', pref_init)
 
+def _get(name):
+    def _f(name=name):
+        return getattr(Globals.pref, name)
+    return _f
+
+from modules import meide as ui
+
+mInputAssistant_ia = ui.Check(_get('input_assistant'), tr('Enable input assistant'))
+mInputAssistant_s1 = ui.Check(_get('inputass_calltip'), tr("Enable calltip"))
+mInputAssistant_s2 = ui.Check(_get('inputass_autocomplete'), tr("Enable auto completion"))
+mInputAssistant_s3 = ui.Check(_get('inputass_identifier'), tr("Enable auto prompt identifiers"))
+mInputAssistant_s4 = ui.Check(_get('inputass_full_identifier'), tr("Enable full identifiers search"))
+mInputAssistant_s5 = ui.Check(_get('inputass_func_parameter_autocomplete'), tr("Enable function parameter autocomplete"))
+
+def _toggle(event=None):
+    ss = [mInputAssistant_s1, mInputAssistant_s2, mInputAssistant_s3, mInputAssistant_s4, mInputAssistant_s5]
+    if mInputAssistant_ia.GetValue():
+        for s in ss:
+            s.get_widget().Enable()
+    else:
+        for s in ss:
+            s.get_widget().Disable()
+
+def aftercreate(dlg):
+    _toggle()
+Mixin.setPlugin('prefdialog', 'aftercreate', aftercreate)
+    
 def add_pref(preflist):
+    
+    mInputAssistant_ia.bind('check', _toggle)
+    
     preflist.extend([
-        (tr('Input Assistant'), 100, 'check', 'input_assistant', tr('Enable input assistant'), None),
-        (tr('Input Assistant'), 110, 'check', 'inputass_calltip', tr("Enable calltip"), None),
-        (tr('Input Assistant'), 120, 'check', 'inputass_autocomplete', tr("Enable auto completion"), None),
-        (tr('Input Assistant'), 130, 'check', 'inputass_identifier', tr("Enable auto prompt identifiers"), None),
-        (tr('Input Assistant'), 140, 'check', 'inputass_full_identifier', tr("Enable full identifiers search"), None),
-        (tr('Input Assistant'), 150, 'check', 'inputass_func_parameter_autocomplete', tr("Enable function parameter autocomplete"), None),
+        (tr('Input Assistant'), 100, mInputAssistant_ia, 'input_assistant', '', None),
+        (tr('Input Assistant'), 110, mInputAssistant_s1, 'inputass_calltip', '', None),
+        (tr('Input Assistant'), 120, mInputAssistant_s2, 'inputass_autocomplete', '', None),
+        (tr('Input Assistant'), 130, mInputAssistant_s3, 'inputass_identifier', '', None),
+        (tr('Input Assistant'), 140, mInputAssistant_s4, 'inputass_full_identifier', '', None),
+        (tr('Input Assistant'), 150, mInputAssistant_s5, 'inputass_func_parameter_autocomplete', '', None),
         (tr('Input Assistant'), 160, 'int', 'inputass_typing_rate', tr("Skip Input Assistant when typing rate faster than this milisecond"), None),
     ])
 Mixin.setPlugin('preference', 'add_pref', add_pref)
@@ -253,16 +329,10 @@ Mixin.setMixin('editor', 'OnApplyAcp', OnApplyAcp)
 ###########################################################################
 def on_kill_focus(win, event):
     if win.AutoCompActive():
-        win.AutoCompCancel()
-    if win.calltip and win.calltip.active:
-        if hasattr(event,'FNB'):
-            win.calltip.cancel()
-            return
-        if not win.have_focus:
-            win.have_focus = True
-        else:
-            win.calltip.cancel()
-Mixin.setPlugin('editor', 'on_kill_focus', on_kill_focus)
+        if not win.mainframe.document_show_window.showing:
+            win.AutoCompCancel()
+    event.Skip()
+##Mixin.setPlugin('editor', 'on_kill_focus', on_kill_focus)
 
 def on_key_down(win, event):
     key = event.GetKeyCode()
@@ -270,26 +340,62 @@ def on_key_down(win, event):
     #shift=event.ShiftDown()
     alt=event.AltDown()
     if key == wx.WXK_RETURN and not control and not alt:
-        if not win.AutoCompActive():
-            if win.calltip.active:
-                pos = win.GetCurrentPos()
-                # move calltip windown to next line
-                # must be pos+2 not pos+1,the reason I don't konw.
-                win.calltip.move(pos + 2)
-##                win.calltip.cancel()
-        else:
+        if  win.AutoCompActive():
             event.Skip()
             return True
-    elif key == wx.WXK_ESCAPE:
-        # clear nested calltip state if something is wrong.
-        win.calltip_stack.clear()
-        del win.function_parameter[:]
-        win.calltip.cancel()
-##        statusbar = Globals.mainframe.statusbar
-##        text = "press escape key to set calltip  state to normal, if you find the calltip state is wrong ,doing this can clear wrong state."
-##        statusbar.show_panel('tips: '+text, color='#AAFFAA', font=wx.Font(10, wx.TELETYPE, wx.NORMAL, wx.BOLD, True))
 
 Mixin.setPlugin('editor', 'on_key_down', on_key_down, Mixin.HIGH, 1)
+
+
+
+def on_key_up(win, event):
+    type = None
+    key = ()
+    if  isinstance(event, wx.KeyEvent):
+        type = "key"
+
+        keycode = event.GetKeyCode()
+        ctrl = event.ControlDown()
+        alt = event.AltDown()
+        shift = event.ShiftDown()
+
+        f = 0
+        if ctrl:
+            f |= wx.stc.STC_SCMOD_CTRL
+        elif alt:
+            f |= wx.stc.STC_SCMOD_ALT
+        elif shift:
+            f |= wx.stc.STC_SCMOD_SHIFT
+
+
+        key = (f, keycode)
+        win.mainframe.auto_routin_check_error.put({'win':win, 'key':key})
+    elif  isinstance(event, wx.MouseEvent):
+        type = "mouse"
+
+    win.mainframe.auto_routin_document_show.put({'win':win, 'key':key, 'type':type})
+Mixin.setPlugin('editor', 'on_key_up', on_key_up)
+Mixin.setPlugin('editor', 'on_mouse_up', on_key_up)
+
+
+def on_key_up1(win, event):
+    if win.pref.vim_mode:
+        win.MarkerDeleteAll(win.vim_number)
+        win.MarkerAdd(win.GetCurrentLine(), win.vim_number)
+        
+        
+Mixin.setPlugin('editor', 'on_key_up', on_key_up1)
+Mixin.setPlugin('editor', 'on_mouse_up', on_key_up1)
+    
+
+
+
+
+
+
+
+
+
 
 def leaveopenfile(win, filename):
     if win.pref.input_assistant:
@@ -298,22 +404,252 @@ def leaveopenfile(win, filename):
         win.mainframe.auto_routin_analysis.put(win)
 Mixin.setPlugin('editor', 'leaveopenfile', leaveopenfile)
 
+def auto_add_bookmarker(win, modified_line):
+    line_privious_marker = win.get_marker_previous(modified_line + 1, win.bookmarker_mask, False)
+    line_next_marker = win.get_marker_next(modified_line,win.bookmarker_mask,  False)
+    if line_privious_marker:
+##        print line_privious_marker, line_next_marker, modified_line
+        if line_privious_marker + 20 > modified_line  > line_privious_marker + 10:
+            if line_next_marker and modified_line > line_next_marker - 20:
+                return
+            win.toggle_mark(modified_line, win.bookmark_number)
+            win.toggle_mark(line_privious_marker - 1, win.bookmark_number)
+        elif (modified_line >= line_privious_marker + 20) :
+            if line_next_marker  and modified_line > line_next_marker - 20:
+                return
+            win.toggle_mark(modified_line, win.bookmark_number)
+    else:
+        if line_next_marker:
+            if line_next_marker < modified_line +  20:
+                return
+        win.toggle_mark(modified_line, win.bookmark_number)
+
 def on_modified(win):
     win.mainframe.auto_routin_analysis.put(win)
 Mixin.setPlugin('editor', 'on_modified', on_modified)
+
+def on_modified_text(win, event):
+    type = event.GetModificationType()
+    for flag in (wx.stc.STC_MOD_INSERTTEXT, wx.stc.STC_MOD_DELETETEXT):
+        if flag & type:
+            modified_line = win.LineFromPosition(event.GetPosition())
+            if  win.modified_line is None:
+                win.modified_line = modified_line
+            else:
+                if  win.modified_line != modified_line:# or event.GetLinesAdded() != 0:
+
+                    auto_add_bookmarker(win, modified_line)
+                    win.modified_line = modified_line
+Mixin.setPlugin('editor', 'on_modified_text', on_modified_text)
 
 from modules import AsyncAction
 def on_close(win, event):
     "when app close, keep thread from running do_action"
     AsyncAction.AsyncAction.STOP = True
-Mixin.setPlugin('mainframe','on_close', on_close ,Mixin.HIGH, 1)
-
-def on_close(win, event):
     win.auto_routin_analysis.join()
     win.auto_routin_ac_action.join()
-Mixin.setPlugin('mainframe','on_close', on_close)
+Mixin.setPlugin('mainframe','on_close', on_close ,Mixin.HIGH, 1)
 
+
+import types
+from wx.py import introspect
+import inspect
+
+COMMONTYPES = [getattr(types, t) for t in dir(types) \
+               if not t.startswith('_') \
+               and t not in ('ClassType', 'InstanceType', 'ModuleType')]
+
+DOCTYPES = ('BuiltinFunctionType', 'BuiltinMethodType', 'ClassType',
+            'FunctionType', 'GeneratorType', 'InstanceType',
+            'LambdaType', 'MethodType', 'ModuleType',
+            'UnboundMethodType', 'method-wrapper')
+
+SIMPLETYPES = [getattr(types, t) for t in dir(types) \
+               if not t.startswith('_') and t not in DOCTYPES]
+
+def objGetChildren(obj):
+    """Return dictionary with attributes or contents of object."""
+    if hasattr(obj, 'mro'):
+        otype = obj
+    else:
+        otype = type(obj)
+
+##        if otype is types.DictType \
+##        or str(otype)[17:23] == 'BTrees' and hasattr(obj, 'keys'):
+##            return obj
+    if  str(otype)[17:23] == 'BTrees' and hasattr(obj, 'keys'):
+        return obj
+    d = {}
+    if otype is types.ListType or otype is types.TupleType:
+        for n in range(len(obj)):
+            key = '[' + str(n) + ']'
+            d[key] = obj[n]
+    if otype not in COMMONTYPES:
+        for key in introspect.getAttributeNames(obj):
+            # Believe it or not, some attributes can disappear,
+            # such as the exc_traceback attribute of the sys
+            # module. So this is nested in a try block.
+            try:
+                d[key] = getattr(obj, key)
+            except:
+                pass
+    else:
+        for key in introspect.getAttributeNames(obj):
+            # Believe it or not, some attributes can disappear,
+            # such as the exc_traceback attribute of the sys
+            # module. So this is nested in a try block.
+            try:
+                d[key] = getattr(obj, key)
+            except:
+                pass
+
+    return d
+
+
+
+
+
+def show_listitem_info(editor, name):
+    obj = objGetChildren(editor.complete_obj).get(name, None)
+    if obj is None:
+        return
+    if hasattr(obj, 'mro'):
+        otype = obj
+    else:
+        otype = type(obj)
+    obj_name = name + "\n"
+    text = obj_name + ''
+    text += '\n\nType: ' + str(otype)
+    try:
+        value = str(obj)
+    except:
+        value = ''
+    if otype is types.StringType or otype is types.UnicodeType:
+        value = repr(obj)
+    text += '\n\nValue: ' + value
+    if  editor.complete_obj is __builtin__:
+        try:
+            text += '\n\nDocstring:\n\n"""' + \
+                    inspect.getdoc(obj).strip() + '"""'
+        except:
+            pass
+    else:
+        if otype not in SIMPLETYPES:
+            try:
+                text += '\n\nDocstring:\n\n"""' + \
+                        inspect.getdoc(obj).strip() + '"""'
+            except:
+                pass
+    if otype is types.InstanceType:
+        try:
+            text += '\n\nClass Definition:\n\n' + \
+                    inspect.getsource(obj.__class__)
+        except:
+            pass
+    else:
+        try:
+            text += '\n\nSource Code:\n\n' + \
+                    inspect.getsource(obj)
+        except:
+            pass
+    while editor.mainframe.document_show_window.showing:
+        # maybe another thread was started, used document_show_window. sometime python crashed.
+        time.sleep(0.5)
+    editor.mainframe.document_show_window.show(text)
+    editor.SetFocus()
+    return True
+
+def OnAutoCompItemSelected(win, event):
+    currentItem = event.m_itemIndex
+    text = win.autocomp_listview.GetItem(currentItem, 1).GetText()
+    show_listitem_info(win, text)
+Mixin.setMixin('editor', 'OnAutoCompItemSelected', OnAutoCompItemSelected)
+
+def OnAutoCompDeSelected(win, event):
+    item = event.GetItem()
+Mixin.setMixin('editor', 'OnAutoCompDeSelected', OnAutoCompDeSelected)
+
+
+class DocumentShow(AsyncAction.AsyncAction):
+
+
+    def do_action(self, obj):
+        if not self.empty:
+            return
+        pref = Globals.pref
+        win = obj['win']
+        if win.AutoCompActive():
+            return
+        try:
+            if not win: return
+            page = win.mainframe.panel.rightbook.GetSelection()
+            if page != 0:
+                return
+            i = get_inputassistant_obj(win)
+            #event = obj['event']
+            #Mixin.reload_obj(i)
+            key = obj['key']
+            type = obj['type']
+            win.lock.acquire()
+            i.run2(win, type, key, self)
+            win.lock.release()
+            return True
+        except:
+            #win.input_assistant = None
+            error.traceback()
+
+
+
+
+
+KEYS = [' ','=','/','[']
 class InputAssistantAction(AsyncAction.AsyncAction):
+
+
+    def run1(self):
+        pref = Globals.pref
+        try:
+            while not self.stop:
+                self.last = None
+                self.prev = 1000
+                obj = None
+                while 1:
+                    try:
+                        obj = self.q.get(True, self.do_timeout())
+                        self.last = obj
+                        if obj['on_char_flag']:
+                            tt = obj['event'].time_stamp - self.prev < pref.inputass_typing_rate - pref.inputass_typing_rate/5
+                            self.prev = obj['event'].time_stamp
+                            key = obj['event'].GetKeyCode()
+                            if chr(key) in KEYS and tt:
+                                self.last = obj
+                                break
+                            elif chr(key) in KEYS and (not tt):
+                                try:
+                                    obj1 = self.q.get(True, float(pref.inputass_typing_rate*2)/1000)
+                                    self.last = obj1
+                                    break
+                                except:
+                                    #no key typing,trigger tmplater expand
+                                    self.last = obj
+                                    if self.last:
+                                        break
+                    except:
+                        if self.last:
+                            break
+
+                if self.last:
+                    try:
+                        self.do_action(self.last)
+                        self.last = None
+                    except:
+                        pass
+
+        except:
+            pass
+
+
+
     def do_action(self, obj):
         if not self.empty:
             return
@@ -348,15 +684,111 @@ class Analysis(AsyncAction.AsyncAction):
         try:
             if not obj: return
             i = get_inputassistant_obj(obj)
-            i.call_analysis(self)
+            i.call_analysis(self, Globals.mainframe.document)
             return True
         except:
             win.input_assistant = None
             error.traceback()
+
+
+def markError(self,lineno,offset):
+    if offset is None:
+        offset = len(self.GetLine(lineno - 1))
+    self.StartStyling(self.PositionFromLine(lineno-1), wx.stc.STC_INDICS_MASK)
+    self.SetStyling(offset, wx.stc.STC_INDIC2_MASK)
+    self.Colourise(0, -1)
+Mixin.setMixin('editor', 'markError', markError)
+
+def clearError(self,length):
+    self.StartStyling(0, wx.stc.STC_INDICS_MASK)
+    self.SetStyling(length, 0)
+    self.Colourise(0, -1)
+Mixin.setMixin('editor', 'clearError',clearError )
+
+
+def check_source(self):
+    source = self.GetText()
+    length = len(source)
+    source = source.replace('\r\n', '\n').replace('\r', '\n') + '\n'
+    try:
+        # at 2008:02:24 author ygao note:
+        # PEP: 0263 http://www.python.org/dev/peps/pep-0263/
+        # If a Unicode string with a coding declaration is passed to compile(),
+        # a SyntaxError will be raised
+        # todo: how to fix this
+        tree = compile(str(source), 'c:/t', 'exec')
+        warning = ''
+        e = None
+    except Exception, e:
+        if hasattr(e,'text'):
+            if type(e.text) in types.StringTypes:
+                text= e.text.strip()
+            else:
+                text= ''
+            warning = '%s: %s at line %s, col %s.'%(os.path.basename(self.filename),e.msg,e.lineno,e.offset)
+        else:
+            warning = repr(e)
+    if  warning  != self.warning:
+        if warning:
+            wx.CallAfter(self.mainframe.statusbar.setHint,warning,msgType='Warning')
+            if e and hasattr(e,'lineno') and not (e.lineno is None):
+                def f():
+                    self.clearError(length)
+                    self.MarkerDeleteAll(self.error_number)
+                    self.markError(e.lineno,e.offset)
+                    self.MarkerAdd(e.lineno - 1 ,self.error_number)
+                    if e.msg == 'unexpected indent' or e.msg == 'unindent does not match any outer indentation level' \
+                        or e.msg =='expected an indented block':
+                        self.SetIndentationGuides(True)
+##                        self.GotoPos(self.PositionFromLine(e.lineno - 1) + self.GetLineIndentation(e.lineno -1 ))
+                wx.CallAfter(f)
+        else:
+            wx.CallAfter(self.mainframe.statusbar.setHint,self.mainframe.statusbar.text,msgType='Info')
+            if self.e and hasattr(self.e,'lineno'):
+                def f():
+                    self.clearError(length)
+                    self.MarkerDeleteAll(self.error_number)
+                    self.SetIndentationGuides(False)
+                wx.CallAfter(f)
+        self.warning = warning
+        self.e = e
+Mixin.setMixin('editor', 'check_source',check_source )
+
+
+class CheckError(AsyncAction.AsyncAction):
+
+    def get_timestep(self):
+        return float(Globals.pref.inputass_typing_rate*2)/1000
+
+    def do_action(self, obj):
+        if not self.empty:
+            return
+        pref = Globals.pref
+        win = obj['win']
+        key = obj['key']
+        if win.languagename != 'python':
+            return
+        if win.AutoCompActive() and (not win.warning):
+            return
+        try:
+            if not win: return
+            win.lock.acquire()
+            win.check_source()
+            win.lock.release()
+            return True
+        except:
+            error.traceback()
+
+
 
 def main_init(win):
     win.auto_routin_analysis = Analysis(.2)
     win.auto_routin_analysis.start()
     win.auto_routin_ac_action = InputAssistantAction(float(win.pref.inputass_typing_rate)/1000)
     win.auto_routin_ac_action.start()
+    win.auto_routin_document_show = DocumentShow(.5)
+    win.auto_routin_document_show.start()
+    win.auto_routin_check_error = CheckError(.6)
+    win.auto_routin_check_error.start()
+
 Mixin.setPlugin('mainframe', 'init', main_init)

@@ -144,7 +144,7 @@ def setmessage(*args):
     else:
         win = Globals.mainframe
         message = args[0]
-    wx.CallAfter(win.SetStatusText, message, 0)
+    wx.CallAfter(win.SetStatusText, message, 'status')
 
 def getHomeDir():
     ''' Try to find user's home directory, otherwise return current directory.'''

@@ -1,5 +1,6 @@
 import sys
 import re
+import types
 import inspect
 import wx.py.introspect as intro
 from modules.common import pout
@@ -26,12 +27,35 @@ def get_calltip(win, word, syncvar):
     pout(INDENT, 'ready to output:', flag, object)
     if object:
         if flag == 'obj':
+            win.document_show_obj = object
             signature = getargspec(win,object)
             doc = object.__doc__
-            return filter(None, [signature, doc])
+            source = None
+            sep = None
+            url = None
+            lnum = 0
+            try:
+                s, lnum = inspect.findsource(object)
+            except:
+                pass
+            try:
+                url = "file://" + inspect.getsourcefile(object) + "|" + str(lnum) + '\n'
+            except:
+                pass
+            if  win.pref.inputass_calltip_including_source_code:
+
+                try:
+                    source = inspect.getsource(object)
+                    if  source:
+                        sep = "---------------source code-----------------"
+                except:
+                    pass
+            return filter(None, [url, signature, doc, sep, source])
         else:
-            if object.type == 'function':
-                return '\n'.join([object.info, object.docstring])
+            # flag = 'source'
+            url = "http://editor" + '|' + str(object.lineno) + "\n"
+            if  object.type == 'function':
+                return '\n'.join([url, object.info, object.docstring])
             elif object.type == 'class':
                 s = []
                 s.append(object.docstring)
@@ -47,7 +71,7 @@ def get_calltip(win, word, syncvar):
                     s.append("\n")
                     s.append(_obj1.info)
                     s.append(_obj1.docstring)
-                return '\n'.join(s)
+                return url + '\n'.join(s)
                 
     pout(INDENT, 'return:', None)
     return None
@@ -58,7 +82,7 @@ def getWordObject(win, word=None, whole=None):
     try:
         return evaluate(win, word)
     except:
-#        error.traceback()
+##        error.traceback()
         return None
 
 def getWord(win, whole=None):
@@ -134,6 +158,8 @@ def getargspec(win, func):
         tt = inspect.getargspec(func)
         if  win.pref.inputass_func_parameter_autocomplete:
             win.function_parameter.extend(tt[0])
+            win.function_parameter = [x + '?26' for x in win.function_parameter] 
+            
         return func.func_name + inspect.formatargspec(*tt)
     except:
 #        error.traceback()
@@ -191,7 +217,82 @@ def autoComplete(win, word=None, syncvar=None):
         if not word.startswith('self.'):
             words = getWords(win, word, syncvar)
             return words
-    
+import __builtin__ 
+   
+def detect_type(otype, t, item):
+    if otype is types.BuiltinFunctionType:
+        t.append(item + '?11')
+    elif  otype is types.FunctionType:
+        t.append(item + '?3')
+    elif otype is type(sys.__setattr__):
+        t.append(item + '?12')
+    elif otype is types.ClassType:
+        t.append(item + '?2')
+    elif otype is types.ModuleType:
+        t.append(item + '?4')
+    elif otype is types.StringType:
+        t.append(item + '?6')
+    elif otype is types.IntType:
+        t.append(item + '?7')
+    elif otype is types.FloatType:
+        t.append(item + '?25')
+    elif otype is types.ListType:
+        t.append(item + '?8')
+    elif otype is types.TupleType:
+        t.append(item + '?9')  
+    elif otype is types.DictionaryType:
+        t.append(item + '?10')
+    elif otype is types.BooleanType:
+        t.append(item + '?16')    
+    elif otype is types.LongType:
+        t.append(item + '?24')
+    elif otype is __builtin__.file:
+        t.append(item + '?13')  
+    elif otype is types.UnicodeType:
+        t.append(item + '?17')
+    elif otype is types.NoneType:
+        t.append(item + '?18')
+    elif otype is types.InstanceType:
+        t.append(item + '?14')   
+    elif otype is types.MethodType:
+        t.append(item + '?19')   
+
+    else:
+
+        try:
+            if type(otype) is types.TypeType and otype.mro()[-2] is __builtin__.BaseException:
+                t.append(item + '?15')
+                return
+        except:
+            pass
+        try:
+            if (type(otype) is types.TypeType) and ('<class ' in repr(otype.mro()[-2])):
+                t.append(item + '?2')
+                return
+        except:
+            pass
+        try:
+            if (type(otype) is types.TypeType) and ('type' in repr(otype.mro()[-2])):
+                t.append(item + '?21')
+                return
+        except:
+            pass
+        try:
+            # this is __builtin__.object
+            if otype is __builtin__.object and len(otype.mro()) == 1:
+                t.append(item + '?22')
+                return
+        except:
+            pass
+        try:
+            # __builtin__.type will cause ecception
+            otype.mro()
+        except:
+            t.append(item + '?23')
+            return
+
+        t.append(item)
+   
 def getAutoCompleteList(win, command='', syncvar=None):
 #    if not hasattr(win, 'syntax_info') or not win.syntax_info:
 #        return []
@@ -210,7 +311,23 @@ def getAutoCompleteList(win, command='', syncvar=None):
     pout(INDENT, 'ready to output:', flag, object)
     if object:
         if flag == 'obj':
-            return getattributes(object) + r_idens
+            # handle module
+            mod = []
+            if hasattr(object, '__all__'):
+                mod = object.__all__
+            win.complete_obj = object
+            win.complete_list = getattributes(object)
+            t = []
+                    
+            for item in win.complete_list:
+                T = getattr(object, item)
+                if hasattr(T, 'mro'):
+                    detect_type(T,t, item)
+                else:
+                    otype = type(getattr(object, item))
+                    detect_type(otype, t, item)
+            #return  win.complete_list + r_idens + mod
+            return  t + r_idens
         else:
             if object.type == 'class':
                 return getClassAttributes(win, object, syncvar) + r_idens
@@ -494,7 +611,23 @@ import keyword
 import types
 
 def default_identifier(win):
-    return keyword.kwlist + [x for x in dir(__builtin__) if isinstance(getattr(__builtin__, x), (types.BuiltinFunctionType, type))] + ['None', 'as', 'True', 'False', 'self']
+    win.complete_obj = __builtin__
+    kw = [x + '?20' for x in (keyword.kwlist + ['None', 'as', 'True', 'False', 'self'])]
+    builtin = [x for x in dir(__builtin__) if isinstance(getattr(__builtin__, x), (types.BuiltinFunctionType, type))]
+    t = []
+    for item in builtin:
+        T = getattr(__builtin__, item)
+        if hasattr(T, 'mro'):
+            detect_type(T,t, item)
+        else:
+            otype = type(getattr(__builtin__, item))
+            detect_type(otype, t, item)
+
+
+    return kw + t
+
+builtin = [x for x in dir(__builtin__) if isinstance(getattr(__builtin__, x), (types.BuiltinFunctionType, type))]
+builtin += keyword.kwlist + ['None', 'as', 'True', 'False', 'self']
 
 def _get_filter_list(win, word, words):
     if not win.pref.inputass_full_identifier:
@@ -520,7 +653,8 @@ def _get_filter_list(win, word, words):
                 if '.' in w:
                     w = w.split('.', 1)[0]
                 r.add(w)
-    return list(r)
+    return list(set(r).difference(builtin))
+
 
 def get_locals(win, lineno, word, syncvar):
     root = win.syntax_info

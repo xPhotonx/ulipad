@@ -40,17 +40,19 @@ class FindInFiles(wx.Panel):
         self.starting = 0
 
         self.box = box = ui.VBox()
-        box.add(ui.Label(tr("Multiple directories or extensions should be separated by semicolons ';'")))
+        note = tr("Multiple directories or extensions should be separated by semicolons ';'")
         h = ui.HBox()
         h.add(ui.Label(tr("Search for:")))
-        h.add(ui.ComboBox(Globals.mainframe.document.GetSelectedText(), choices=self.pref.searchinfile_searchlist), name='search')\
-            .bind('enter', self.OnKeyDown)
+        find_box = h.add(ui.ComboBox(Globals.mainframe.document.GetSelectedText(), choices=self.pref.searchinfile_searchlist), name='search')
+        find_box.bind('enter', self.OnKeyDown)
+        h.add(ui.Button(tr("Start Search")), name='btnRun').bind('click', self.OnFindButtonClick)
+        # todo: this not work, 2008:02:01 by  ygao
+##        find_box.bind(wx.EVT_SET_FOCUS, self.OnSetFocus)
+        
         h.add(ui.Label(tr("Directories:")))
         h.add(ui.ComboBox(dirs, choices=self.pref.searchinfile_dirlist), name='sdirs')\
             .bind('enter', self.OnKeyDown)
         h.add(ui.Button('...', size=(22,-1)), name='btnBrow').bind('click', self.OnDirButtonClick)
-        box.add(h, flag=wx.EXPAND)
-        h = ui.HBox()
         h.add(ui.Label(tr("Extensions:")))
         if not self.pref.searchinfile_extlist:
             v = '*.*'
@@ -66,9 +68,8 @@ class FindInFiles(wx.Panel):
         box.add(ui.ListBox, name='results').bind(wx.EVT_LISTBOX_DCLICK, self.OpenFound)
         h = ui.HBox()
         h.add(ui.Label(tr('Status:')))
-        h.add(ui.Text(tr("Ready.")), name='status')
-        h.add(ui.Button(tr("Start Search")), name='btnRun').bind('click', self.OnFindButtonClick)
-        h.add(ui.Button(tr("CopyClipboard"))).bind('click', self.OnCopyButtonClick)
+        
+        h.add(ui.Text(tr("--->>> Ready.   ") + note ), name='status')
         box.add(h, flag=wx.EXPAND)
         
         ui.create(self, box, namebinding='widget')
@@ -111,6 +112,14 @@ class FindInFiles(wx.Panel):
 
     def OnKeyDown(self, event):
         self.OnFindButtonClick(None)
+        event.Skip()
+    
+    def OnSetFocus(self, event):
+        text = self.mainframe.document.GetSelectedText()
+        if  text:
+            self.search.SetValue(Globals.mainframe.document.GetSelectedText())
+        event.Skip()
+    
     
     def OnFindButtonClick(self, e):
         if self.stopping:

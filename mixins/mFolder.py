@@ -24,7 +24,7 @@
 import wx
 import wx.stc
 from modules import Mixin
-
+margin_folder_type = 0
 def pref_init(pref):
     pref.use_folder = True
 Mixin.setPlugin('preference', 'init', pref_init)
@@ -39,16 +39,17 @@ def savepreference(mainframe, pref):
     for document in mainframe.editctrl.getDocuments():
         if document.enablefolder:
             if pref.use_folder:
-                document.SetMarginWidth(2, 16)
+                document.SetMarginWidth(margin_folder_type, 16)
             else:
-                document.SetMarginWidth(2, 0)
+                document.SetMarginWidth(margin_folder_type, 0)
 Mixin.setPlugin('prefdialog', 'savepreference', savepreference)
 
 def editor_init(win):
+    
     win.enablefolder = False
-    win.SetMarginType(2, wx.stc.STC_MARGIN_SYMBOL) #margin 2 for symbols
-    win.SetMarginMask(2, wx.stc.STC_MASK_FOLDERS)  #set up mask for folding symbols
-    win.SetMarginSensitive(2, True)           #this one needs to be mouse-aware
+    win.SetMarginType(margin_folder_type, wx.stc.STC_MARGIN_SYMBOL) #margin 2 for symbols
+    win.SetMarginMask(margin_folder_type, wx.stc.STC_MASK_FOLDERS)  #set up mask for folding symbols
+    win.SetMarginSensitive(margin_folder_type, True)           #this one needs to be mouse-aware
 #       win.SetMarginWidth(2, 16)                 #set margin 2 16 px wide
 
 
@@ -66,15 +67,15 @@ def colourize(win):
     if win.enablefolder:
         if hasattr(win, 'pref'):
             if win.pref.use_folder:
-                win.SetMarginWidth(2, 16)
+                win.SetMarginWidth(margin_folder_type, 16)
                 return
-    win.SetMarginWidth(2, 0)    #used as folder
+    win.SetMarginWidth(margin_folder_type, 0)    #used as folder
 
 Mixin.setPlugin('lexerbase', 'colourize', colourize)
 
 def OnMarginClick(win, event):
     # fold and unfold as needed
-    if event.GetMargin() == 2:
+    if event.GetMargin() == margin_folder_type:
         if event.GetControl() and event.GetShift():
             FoldAll(win)
         else:

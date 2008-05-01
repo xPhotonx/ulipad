@@ -56,7 +56,7 @@ def add_tool_list(toollist, toolbaritems):
 
     #order, IDname, imagefile, short text, long text, func
     toolbaritems.update({
-        'print':(wx.ITEM_NORMAL, 'wx.ID_PRINT', 'images/printer.gif', tr('print'), tr('Prints a document.'), 'OnFilePrint'),
+        'print':(wx.ITEM_NORMAL, 'wx.ID_PRINT', 'images/printer.gif', tr('Print'), tr('Prints a document.'), 'OnFilePrint'),
     })
 Mixin.setPlugin('mainframe', 'add_tool_list', add_tool_list)
 

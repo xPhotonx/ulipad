@@ -252,8 +252,8 @@ def add_tool_list(toollist, toolbaritems):
 
     #order, IDname, imagefile, short text, long text, func
     toolbaritems.update({
-        'run':(wx.ITEM_NORMAL, 'IDM_PYTHON_RUN', 'images/run.gif', tr('run'), tr('Run python program'), 'OnPythonRun'),
-        'setargs':(wx.ITEM_NORMAL, 'IDM_PYTHON_SETARGS', 'images/setargs.gif', tr('set arguments'), tr('Set python program command line arugments'), 'OnPythonSetArgs'),
+        'run':(wx.ITEM_NORMAL, 'IDM_PYTHON_RUN', 'images/run.gif', tr('Run'), tr('Run python program'), 'OnPythonRun'),
+        'setargs':(wx.ITEM_NORMAL, 'IDM_PYTHON_SETARGS', 'images/setargs.gif', tr('Set Arguments'), tr('Set python program command line arugments'), 'OnPythonSetArgs'),
         'stop':(wx.ITEM_NORMAL, 'IDM_PYTHON_END', 'images/stop.gif', tr('Stop Program'), tr('Stop current python program.'), 'OnPythonEnd'),
     })
 Mixin.setPlugin('pythonfiletype', 'add_tool_list', add_tool_list)

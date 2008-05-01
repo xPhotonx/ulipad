@@ -251,11 +251,15 @@ class DirBrowser(wx.Panel, Mixin.Mixin):
         dlg.Destroy()
         if path:
             self.addpath(path)
+            if self.pref.open_project_setting_dlg:
+                wx.CallAfter(self.OnSetProject)
 
     def OnAddPath(self, event):
         eid = event.GetId()
         index = self.dirmenu_ids.index(eid)
         self.addpath(self.pref.recent_dir_paths[index])
+        if self.pref.open_project_setting_dlg:
+            wx.CallAfter(self.OnSetProject)
 
     def OnCleanDirectories(self, event):
         self.pref.recent_dir_paths = []
@@ -800,7 +804,7 @@ class DirBrowser(wx.Panel, Mixin.Mixin):
         path = Globals.userpath
         self.addpath(path)
 
-    def OnSetProject(self, event):
+    def OnSetProject(self, event=None):
         item = self.tree.GetSelection()
         from modules import dict4ini
         filename = self.get_node_filename(item)
@@ -813,7 +817,7 @@ class DirBrowser(wx.Panel, Mixin.Mixin):
                 ('multi', 'project_name', name, tr('Project Names'), self.project_names),
             ]
         from modules.EasyGuider import EasyDialog
-        dlg = EasyDialog.EasyDialog(self, title=tr("Project Setting"), elements=dialog)
+        dlg = EasyDialog.EasyDialog(self.mainframe, title=tr("Project Setting"), elements=dialog)
         values = None
         if dlg.ShowModal() == wx.ID_OK:
             values = dlg.GetValue()
@@ -856,7 +860,7 @@ class DirBrowser(wx.Panel, Mixin.Mixin):
         if not self.is_ok(item): return
         filename = self.get_node_filename(item)
         dir = common.getCurrentDir(filename)
-        wx.Execute(r"explorer.exe %s" % dir)
+        wx.Execute(r"explorer.exe /e, %s" % dir)
 
     def OnSearchDir(self, event):
         item = self.tree.GetSelection()
@@ -986,6 +990,8 @@ class MyFileDropTarget(wx.FileDropTarget):
         for filename in filenames:
             if os.path.isdir(filename):
                 self.dirwin.addpath(filename)
+                if self.pref.open_project_setting_dlg:
+                    wx.CallAfter(self.dirwin.OnSetProject)
             else:
                 Globals.mainframe.editctrl.new(filename)
 

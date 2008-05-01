@@ -27,17 +27,17 @@ from modules import Mixin
 
 def on_document_enter(win, document):
     if document.edittype == 'edit':
-        win.mainframe.SetStatusText(win.document.locale, 4)
+        win.mainframe.SetStatusText(win.document.locale, 'coding')
 Mixin.setPlugin('editctrl', 'on_document_enter', on_document_enter)
 
 def fileopentext(win, stext):
-    win.mainframe.SetStatusText(win.locale, 4)
+    win.mainframe.SetStatusText(win.locale, 'coding')
 Mixin.setPlugin('editor', 'openfiletext', fileopentext)
 
 def savefiletext(win, stext):
-    win.mainframe.SetStatusText(win.locale, 4)
+    win.mainframe.SetStatusText(win.locale, 'coding')
 Mixin.setPlugin('editor', 'savefiletext', savefiletext)
 
 def afteropenfile(win, filename):
-    win.mainframe.SetStatusText(win.locale, 4)
+    win.mainframe.SetStatusText(win.locale, 'coding')
 Mixin.setPlugin('editor', 'afteropenfile', afteropenfile)

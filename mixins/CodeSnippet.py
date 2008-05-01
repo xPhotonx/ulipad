@@ -227,15 +227,18 @@ class CodeSnippetWindow(wx.Panel, Mixin.Mixin):
             (120, 'IDPM_PASTE', tr('Paste')+'\tCtrl+V', wx.ITEM_NORMAL, 'OnCodeSnippetPaste', ''),
             (125, 'IDPM_PASTE_BEFORE', tr('Paste Before')+'\tCtrl+Shift+V', wx.ITEM_NORMAL, 'OnCodeSnippetPasteBefore', ''),
             (130, '', '-', wx.ITEM_SEPARATOR, None, ''),
-            (140, 'IDPM_NEW', tr('New Snippet File'), wx.ITEM_NORMAL, 'OnNewSnippet', ''),
-            (150, 'IDPM_OPEN', tr('Open Snippt File'), wx.ITEM_NORMAL, 'OnOpenSnippet', ''),
-            (160, 'IDPM_RECENT', tr('Recently Snippet Files'), wx.ITEM_NORMAL, '', ''),
+            (132, 'IDPM_EXPANDALL', tr('Expand All'), wx.ITEM_NORMAL, 'OnCodeSnippetExpandAll', ''),
+            (133, 'IDPM_COLLAPSEALL', tr('Collapse All'), wx.ITEM_NORMAL, 'OnCodeSnippetCollapseAll', ''),
+            (137, '', '-', wx.ITEM_SEPARATOR, None, ''),
+            (140, 'IDPM_NEW', tr('New Snippet File...'), wx.ITEM_NORMAL, 'OnNewSnippet', ''),
+            (150, 'IDPM_OPEN', tr('Open Snippet File...'), wx.ITEM_NORMAL, 'OnOpenSnippet', ''),
+            (160, 'IDPM_RECENT', tr('Recent Snippet Files'), wx.ITEM_NORMAL, '', ''),
             (170, 'IDPM_SAVE', tr('Save Snippet File'), wx.ITEM_NORMAL, 'OnSaveSnippet', ''),
-            (175, 'IDPM_SAVE_ALL', tr('Save All Snippets File'), wx.ITEM_NORMAL, 'OnSaveAllSnippet', ''),
+            (175, 'IDPM_SAVE_ALL', tr('Save All Snippet Files'), wx.ITEM_NORMAL, 'OnSaveAllSnippet', ''),
             (180, 'IDPM_SAVEAS', tr('Save Snippet File As...'), wx.ITEM_NORMAL, 'OnSaveAsSnippet', ''),
             (185, 'IDPM_CLOSE', tr('Close Snippet File'), wx.ITEM_NORMAL, 'OnCloseSnippet', ''),
             (190, '', '-', wx.ITEM_SEPARATOR, None, ''),
-            (191, 'IDPM_DELETE_ENTRY', tr('Delete Entry')+'\tDel', wx.ITEM_NORMAL, 'OnDeleteEntry', ''),
+            (191, 'IDPM_DELETE_ENTRY', tr('Delete Folder or Node')+'\tDel', wx.ITEM_NORMAL, 'OnDeleteEntry', ''),
             (192, 'IDPM_EDIT_CAPTION', tr('Edit Caption'), wx.ITEM_NORMAL, 'OnEditCaption', ''),
             (900, '', '-', wx.ITEM_SEPARATOR, None, ''),
             (910, 'IDPM_PREFERENCES', tr('Preferences...'), wx.ITEM_NORMAL, 'OnPreferences', ''),
@@ -258,10 +261,10 @@ class CodeSnippetWindow(wx.Panel, Mixin.Mixin):
         box = self.sizer.add(ui.HBox(padding=2))
         self.btnSave = FlatButtons.FlatBitmapButton(self, -1, 
             common.getpngimage('images/save.gif'))
-        box.add(self.btnSave).bind('click', self.OnSaveSnippet)
+        box.add(self.btnSave).bind('click', self.OnSaveSnippet).tooltip(tr('Save'))
         self.btnSaveAll = FlatButtons.FlatBitmapButton(self, -1, 
             common.getpngimage('images/saveall.gif'))
-        box.add(self.btnSaveAll).bind('click', self.OnSaveAllSnippet)
+        box.add(self.btnSaveAll).bind('click', self.OnSaveAllSnippet).tooltip(tr('Save All'))
         self.code_snippet_imagelist = imagelist = wx.ImageList(16, 16)
 
         #add share image list
@@ -701,6 +704,26 @@ Description:
         else:
             event.Skip()
   
+    def OnSaveAsSnippet(self, event):
+        item = self.tree.GetSelection()
+        if not self.is_ok(item): return
+        dlg = wx.FileDialog(self, tr("Save Snippet File As..."), self.pref.snippet_lastdir, '', 'Snippet File(*.spt)|*.spt|All Files(*.*)|*.*', wx.SAVE|wx.OVERWRITE_PROMPT)
+        dlg.SetFilterIndex(0)
+        filename = None
+        if dlg.ShowModal() == wx.ID_OK:
+            filename = dlg.GetPath()
+            self.pref.snippet_lastdir = os.path.dirname(filename)
+            self.pref.save()
+        dlg.Destroy()
+        files = self.getTopSnippets()
+        filename = common.uni_file(filename)
+        if filename in files:
+            common.showerror(tr('The file %s has been existed, so please rename it.') % filename)
+            return
+        data = self.get_node_data(item)
+        data['filename'] = filename
+        self.save_snippet(item)
+        
     def OnNewSnippet(self, event):
         dlg = wx.FileDialog(self, tr("New Snippet File"), self.pref.snippet_lastdir, '', 'Snippet File(*.spt)|*.spt|All Files(*.*)|*.*', wx.SAVE|wx.OVERWRITE_PROMPT)
         dlg.SetFilterIndex(0)
@@ -752,7 +775,7 @@ Description:
             if self.get_modify(obj):
                 objs.append(obj)
         if objs:
-            flag = wx.MessageBox(tr('Some snippet files have been changed, do you want to save them?'), 
+            flag = wx.MessageBox(tr('Some changes have been made to the Code Snippets Window. Do you want to save them?'), 
                 tr('Saving Confirm'), style=wx.YES|wx.NO|wx.CANCEL)
             if flag == wx.CANCEL:
                 return False
@@ -785,15 +808,18 @@ Description:
             files.append(data['filename'])
         return files
 
+    def deal_recent(self, filename):
+        if filename in self.pref.snippet_recents:
+            self.pref.snippet_recents.remove(filename)
+        self.pref.snippet_recents.insert(0, filename)
+        self.pref.snippet_recents = self.pref.snippet_recents[:30]
+        self.pref.save()
+        
     def addsnippet(self, filename, type='open', expand=True):
         files = self.getTopSnippets()
         filename = common.uni_file(filename)
         if filename not in files:
-            if filename in self.pref.snippet_recents:
-                self.pref.snippet_recents.remove(filename)
-            self.pref.snippet_recents.insert(0, filename)
-            self.pref.snippet_recents = self.pref.snippet_recents[:30]
-            self.pref.save()
+            self.deal_recent(filename)
             
             def f():
                 self.read_snippet_file(filename, type, expand)
@@ -897,7 +923,6 @@ Description:
         
     def get_node_data(self, node):
         try:
-            
             _id = self.tree.GetPyData(node)
             return self.nodes[_id]
         except:
@@ -935,6 +960,7 @@ Description:
         try:
             data['etree'].write(data['filename'], 'utf-8')
             self.set_modify(root, False)
+            self.deal_recent(data['filename'])
         except:
             error.traceback()
             common.showerror(self, tr("There is something wrong as saving the snippet file."))
@@ -955,6 +981,10 @@ Description:
         self.tree.Delete(item)
         self.tree.Thaw()
         self._save_files()
+        snippet = None
+        for pagename, panelname, notebook, page in self.mainframe.panel.getPages():
+            if hasattr(page, 'code_snippet') and page.code_snippet:
+                self.mainframe.panel.closePage(page, savestatus=False)
         
     def is_folder(self, node):
         data = self.get_node_data(node)
@@ -1180,6 +1210,20 @@ Description:
                 self.set_element_text(item, e, 'snippet/properties/version', values['version'])
                 self.set_element_text(item, e, 'snippet/properties/date', values['date'].strftime('%Y-%m-%d'))
                 self.set_element_text(item, e, 'snippet/properties/description', values['description'])
+                
+    def OnCodeSnippetExpandAll(self, event):
+        item = self.tree.GetSelection()
+        if not self.is_ok(item):
+            self.tree.ExpandAll()
+        else:
+            self.tree.ExpandAllChildren(item)
+        
+    def OnCodeSnippetCollapseAll(self, event):
+        item = self.tree.GetSelection()
+        if not self.is_ok(item):
+            self.tree.CollapseAll()
+        else:
+            self.tree.CollapseAllChildren(item)
         
 class PropertyDialog(wx.Dialog):
     def __init__(self, parent, id=-1, title=tr('Property'), size=(400, 300), values=None):

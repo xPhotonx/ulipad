@@ -8,8 +8,8 @@ import operator
 import wx.stc
 from modules import common
 
-MARK_SNIPPET   = 4
-MARK_SNIPPET_COLOR = '#508559'
+##MARK_SNIPPET   = 4
+##MARK_SNIPPET_COLOR = '#508559'
 
 F_START = "${"
 F_END   = "}"
@@ -210,8 +210,10 @@ class SnipMixin(object):
      
             # Add a new line and set a snippet marker in the margin
             line = self.editor.LineFromPosition(end)
-            self.snippet.end_marker = self.editor.MarkerAdd(line, MARK_SNIPPET)
-            self.editor.MarkerSetBackground(MARK_SNIPPET, MARK_SNIPPET_COLOR)
+##            MARK_SNIPPET, snippet_marker = self.editor.marker_define('circle', MARK_SNIPPET_COLOR, MARK_SNIPPET_COLOR, 'snippet')
+            # the marke defined in mMarkerDefine.py
+            self.snippet.end_marker = self.editor.MarkerAdd(line, self.editor.snippet_marker)
+            #self.editor.MarkerSetBackground(MARK_SNIPPET, MARK_SNIPPET_COLOR)
 
             # snippet mode : On
             self.snip_mode = True
@@ -224,12 +226,13 @@ class SnipMixin(object):
         # if something went wrong and the snippet has been
         # 'messed up' (e.g. by undo/redo commands)
         if not tpl_text :
-            # common.warn(tr('Something went wrong with this snippet'))
+##            common.warn(tr('Something went wrong with this snippet'))
             self.cancel()
             # ygao noet: if something wrong, yeild to TAB event.
             event = wx.KeyEvent(wx.wxEVT_KEY_DOWN)
             event.m_keyCode = wx.WXK_TAB
-            self.editor.ProcessEvent(event)
+##            self.editor.ProcessEvent(event)
+            wx.CallAfter(self.editor.ProcessEvent, event)
             return
     
         # 1. Update the mirrors and transforms Fields

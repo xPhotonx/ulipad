@@ -74,7 +74,7 @@ def add_tool_list(toollist, toolbaritems):
 
     #order, IDname, imagefile, short text, long text, func
     toolbaritems.update({
-        'wrap':(wx.ITEM_CHECK, 'IDM_DOCUMENT_WORDWRAP', 'images/wrap.gif', tr('wrap'), tr('Toggles the word wrap feature of the active document'), 'OnDocumentWordWrap'),
+        'wrap':(wx.ITEM_CHECK, 'IDM_DOCUMENT_WORDWRAP', 'images/wrap.gif', tr('Toggle Wrap Mode'), tr('Toggles the word wrap feature of the active document'), 'OnDocumentWordWrap'),
     })
 Mixin.setPlugin('mainframe', 'add_tool_list', add_tool_list)
 

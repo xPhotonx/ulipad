@@ -100,6 +100,7 @@ class MainFrame(wx.Frame, Mixin.Mixin):
 
         self.statusbar = MyStatusBar.MyStatusBar(self)
         self.SetStatusBar(self.statusbar)
+        self.SetStatusText = self.statusbar.SetStatusText
         self.progressbar = self.statusbar.g1
 
         self.callplugin('beforeinit', self)
@@ -108,10 +109,26 @@ class MainFrame(wx.Frame, Mixin.Mixin):
         wx.EVT_IDLE(self, self.OnIdle)
         wx.EVT_CLOSE(self, self.OnClose)
         wx.EVT_ACTIVATE(self, self.OnActive)
-
-#        d = Casing.Casing(self.OnIdle)
-#        d.start_thread()
-#        
+        self.Bind(wx.EVT_MENU_HIGHLIGHT_ALL, self.OnMenuHighlight)
+        self.Bind(wx.EVT_TOOL_ENTER, self.OnToolEnter)
+        
+    def OnToolEnter(self, event):
+        id = event.GetSelection()
+        mid = self.toolbar.FindById(id)
+        if mid:
+            self.statusbar.setHint(self.toolbar.GetToolLongHelp(id))
+        
+    def OnMenuHighlight(self, event):
+        """
+        doing this will fix menuitem help message show
+        
+        @author: ygao   
+        
+        """
+        item = self.menubar.FindItemById(event.GetMenuId())
+        if item:
+            self.statusbar.setHint(item.GetHelp())
+     
     def afterinit(self):
         self.callplugin('afterinit', self)
 

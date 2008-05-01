@@ -75,6 +75,9 @@ class SearchWin(wx.Dialog):
         wx.EVT_CHECKBOX(self.autoclose_check, self.autoclose_check.GetId(), self.OnCheckAutoClose)
         
         self.impact_check.SetValue(Globals.pref.commands_impact)
+        self.autoclose_check.SetValue(Globals.pref.commands_autoclose)
+        
+        Globals.mainframe.command_mode = True
         
         self.SetSizer(sizer)
         self.SetAutoLayout(True)
@@ -105,6 +108,7 @@ class SearchWin(wx.Dialog):
         Globals.pref.save()
         
     def OnClose(self, event):
+        Globals.mainframe.command_mode = False
         self.save_status()
         self.Destroy()
 

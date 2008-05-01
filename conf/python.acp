@@ -3,10 +3,11 @@
 2=epydoc.acp
 
 [autostring]
-
+, = ", "
 [autostring_append]
 
 [autore]
+#for keyword input
 (^\s*)def<space> = "\\1def ${1:}(${2:}):\n\t${0}"
 (^\s*)cdef<space> = "\\1def ${1:}(self, ${2:}):\n\t${0}"
 (^\s*)if<space> = "\\1if ${1:}:\n\t${0}"
@@ -19,8 +20,12 @@
 (^\s*)class<space> = "\\1class ${1:}${2:(${3:object})}:\n\t${0}"
 (^\s*)from<space> = "\\1from ${1:} import${0}"
 (^\s*)while<space> = "\\1while ${1:1}:\n\t${0}"
+#for comment:
+(^.*)todo<space> = "\\1# todo: !^ ${date} by ${author}"
+(^.*)note<space> = "\\1# note: !^ ${date} by ${author}"
 
 [autore_append]
+(^\s*)import(.*)<space> = @acp.python.import.import_this
 from\s+([\w.]+)\s+import(.*)<space> = @acp.python.import.fromimport
 except(.*)<space> = ArithmeticError,AssertionError,AttributeError,DeprecationWarning,EOFError,Ellipsis,EnvironmentError,Exception,FloatingPointError,FutureWarning,IOError,ImportError,IndentationError,IndexError,KeyError,KeyboardInterrupt,LookupError,MemoryError,NameError,NotImplemented,NotImplementedError,OSError,OverflowError,OverflowWarning,PendingDeprecationWarning,ReferenceError,RuntimeError,RuntimeWarning,StandardError,StopIteration,SyntaxError,SyntaxWarning,SystemError,SystemExit,TabError,TypeError,UnboundLocalError,UnicodeDecodeError,UnicodeEncodeError,UnicodeError,UnicodeTranslateError,UserWarning,ValueError,Warning,WindowsError,ZeroDivisionError
 if\s+__name__<space> = == '__main__'

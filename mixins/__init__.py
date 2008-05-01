@@ -153,4 +153,5 @@
 #import mCodeSnippet
 #import mIndentMove
 #import mDocumentShowWindow
+#import mMarkerDefine
 import Import

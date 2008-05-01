@@ -87,7 +87,7 @@ def OnDocumentChangeEncoding(win, event):
         ret = dlg.GetValue()
         dlg.Destroy()
         win.document.locale = ret
-        win.SetStatusText(win.document.locale, 4)
+        win.SetStatusText(win.document.locale, 'coding')
         win.document.modified = True
         wx.CallAfter(win.editctrl.showTitle, win.document)
         wx.CallAfter(win.editctrl.showPageTitle, win.document)

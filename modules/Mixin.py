@@ -36,7 +36,7 @@ MIDDLE = 2
 LOW = 3
 MUST_FUNC = False
 ENABLE = True
-RELOAD_MIXINS = False
+RELOAD_MIXINS = True
 RELOAD_NAME = ['Import']
 
 

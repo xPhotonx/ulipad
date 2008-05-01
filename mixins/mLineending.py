@@ -69,7 +69,7 @@ def setEOLMode(win, mode, convert=True):
     if convert:
         win.ConvertEOLs(win.eols[mode])
     win.SetEOLMode(win.eols[mode])
-    win.mainframe.SetStatusText(win.eolstr[mode], 3)
+    win.mainframe.SetStatusText(win.eolstr[mode], 'eolmode')
 
 def OnDocumentEolConvertWin(win, event):
     setEOLMode(win.document, 1)
@@ -125,7 +125,7 @@ def afteropenfile(win, filename):
         confirm_eol(win)
     else:
         eolmodestr = win.eolstr[win.eolmode]
-        win.mainframe.SetStatusText(eolmodestr, 3)
+        win.mainframe.SetStatusText(eolmodestr, 'eolmode')
         setEOLMode(win, win.eolmode, convert=False)
 Mixin.setPlugin('editor', 'afteropenfile', afteropenfile)
 

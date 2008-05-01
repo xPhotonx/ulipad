@@ -30,7 +30,11 @@ def add_mainframe_menu(menulist):
     menulist.extend([
         ('IDM_TOOL',
         [
-            (125, 'IDM_WINDOW_CODESNIPPET', tr('Code Snippet'), wx.ITEM_NORMAL, 'OnWindowCodeSnippet', tr('Opens code snippet window.'))
+            (125, 'IDM_WINDOW_CODESNIPPET', tr('Code Snippets'), wx.ITEM_NORMAL, 'OnWindowCodeSnippet', tr('Opens code snippet window.'))
+        ]),
+        ('IDM_WINDOW',
+        [
+            (151, 'IDM_WINDOW_CODESNIPPET', tr('Open Code Snippets Window'), wx.ITEM_NORMAL, 'OnWindowCodeSnippet', tr('Opens code snippets window.'))
         ]),
     ])
 Mixin.setPlugin('mainframe', 'add_menu', add_mainframe_menu)
@@ -38,7 +42,7 @@ Mixin.setPlugin('mainframe', 'add_menu', add_mainframe_menu)
 def add_notebook_menu(popmenulist):
     popmenulist.extend([(None,
         [
-            (200, 'IDPM_CODESNIPPETWINDOW', tr('Open Code Snippet Window'), wx.ITEM_NORMAL, 'OnCodeSnippetWindow', tr('Opens code snippet window.')),
+            (200, 'IDPM_CODESNIPPETWINDOW', tr('Open Code Snippets Window'), wx.ITEM_NORMAL, 'OnCodeSnippetWindow', tr('Opens code snippet window.')),
         ]),
     ])
 Mixin.setPlugin('notebook', 'add_menu', add_notebook_menu)
@@ -65,16 +69,16 @@ def add_image(imagelist, imageids, name, image):
         imageids[name+f] = index
 Mixin.setPlugin('codesnippet', 'add_image', add_image)
 
-#toollist = [
-#   (550, 'outline'),
-#]
-#Mixin.setMixin('mainframe', 'toollist', toollist)
-#
-##order, IDname, imagefile, short text, long text, func
-#toolbaritems = {
-#   'dirbrowser':(wx.ITEM_NORMAL, 'IDM_WINDOW_OUTLINE', images.getWizardBitmap(), tr('outline'), tr('Opens outline window.'), 'OnWindowOutline'),
-#}
-#Mixin.setMixin('mainframe', 'toolbaritems', toolbaritems)
+def add_tool_list(toollist, toolbaritems):
+    toollist.extend([
+        (650, 'snippet'),
+    ])
+
+    #order, IDname, imagefile, short text, long text, func
+    toolbaritems.update({
+        'snippet':(wx.ITEM_CHECK, 'IDTM_SNIPPETWINDOW', 'images/snippet.png', tr('Open Snippet Window'), tr('Open code snippet window.'), 'OnToolbarWindowCodeSnippet'),
+    })
+Mixin.setPlugin('mainframe', 'add_tool_list', add_tool_list)
 
 def createCodeSnippetWindow(win):
     from modules import common
@@ -91,6 +95,26 @@ def createCodeSnippetWindow(win):
         win.panel.addPage('left', page, tr('Code Snippet'))
     return page
 Mixin.setMixin('mainframe', 'createCodeSnippetWindow', createCodeSnippetWindow)
+
+def afterinit(win):
+    wx.EVT_UPDATE_UI(win, win.IDTM_SNIPPETWINDOW, win.OnUpdateUI)
+Mixin.setPlugin('mainframe', 'afterinit', afterinit)
+
+def on_mainframe_updateui(win, event):
+    eid = event.GetId()
+    if eid == win.IDTM_SNIPPETWINDOW:
+        page = win.panel.getPage(tr('Code Snippet'))
+        event.Check(bool(page))
+Mixin.setPlugin('mainframe', 'on_update_ui', on_mainframe_updateui)
+
+def OnToolbarWindowCodeSnippet(win, event):
+    page = win.panel.getPage(tr('Code Snippet'))
+    if page:
+        win.panel.closePage(tr('Code Snippet'))
+    else:
+        if win.createCodeSnippetWindow():
+            win.panel.showPage(tr('Code Snippet'))
+Mixin.setMixin('mainframe', 'OnToolbarWindowCodeSnippet', OnToolbarWindowCodeSnippet)
 
 def OnWindowCodeSnippet(win, event):
     if win.createCodeSnippetWindow():
