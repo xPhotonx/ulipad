@@ -1,4 +1,7 @@
 $Rev$
+[2008/05/01]
+mFormat.py          Fix strip tailing spaces bug
+
 -------------------------------------- 4.0 -----------------------------
 [2008/04/24]
 Fix                 Cann't to Can't
