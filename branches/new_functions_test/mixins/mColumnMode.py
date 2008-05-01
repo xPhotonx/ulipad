@@ -3,8 +3,8 @@ from modules import Mixin
 from modules.Debug import error
 
 def editor_init(win):
-    win.MarkerDefine(1, wx.stc.STC_MARK_VLINE, "black", "black")
-    win.marker_columnmode = 1
+    #win.MarkerDefine(1, wx.stc.STC_MARK_VLINE, "black", "black")
+    win.marker_columnmode, win.columnmode_marker = win.marker_define('vline', "blue", "blue")
     win.columnmode_lines = None
     win.column_mode = False
 Mixin.setPlugin('editor', 'init', editor_init)

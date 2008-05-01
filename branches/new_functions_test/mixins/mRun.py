@@ -81,7 +81,7 @@ def RunCommand(win, command, redirect=True, hide=False, input_decorator=None,
         
         win.messagewindow.editpoint = win.messagewindow.GetLength()
         win.messagewindow.writeposition = win.messagewindow.GetLength()
-        win.SetStatusText(tr("Running "), 0)
+        win.SetStatusText(tr("Running "), 'status')
         try:
             win.messagewindow.process = wx.Process(win)
             win.messagewindow.process.Redirect()
@@ -210,7 +210,7 @@ def OnProcessEnded(win, event):
         win.messagewindow.outputstream = None
         win.messagewindow.errorstream = None
         win.messagewindow.pid = -1
-        win.SetStatusText(tr("Finished! "), 0)
+        win.SetStatusText(tr("Finished! "), 'status')
         if win.messagewindow.callback:
             wx.CallAfter(win.messagewindow.callback)
 #        common.note(tr("Finished!"))

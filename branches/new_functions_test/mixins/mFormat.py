@@ -41,7 +41,7 @@ def add_mainframe_menu(menulist):
             (140, 'IDM_EDIT_FORMAT_INDENT', tr('Increase Indent'), wx.ITEM_NORMAL, 'OnEditFormatIndent', tr('Increases the indentation of current line or selected block')),
             (150, 'IDM_EDIT_FORMAT_UNINDENT', tr('Decrease Indent'), wx.ITEM_NORMAL, 'OnEditFormatUnindent', tr('Decreases the indentation of current line or selected block')),
             (160, '', '-', wx.ITEM_SEPARATOR, None, ''),
-            (170, 'IDM_EDIT_FORMAT_COMMENT', tr('Line Comment...') + '\tE=Ctrl+/', wx.ITEM_NORMAL, 'OnEditFormatComment', tr('Inserts comment sign at the beginning of line')),
+            (170, 'IDM_EDIT_FORMAT_COMMENT', tr('Line Comment...') + '\tE=Alt+D', wx.ITEM_NORMAL, 'OnEditFormatComment', tr('Inserts comment sign at the beginning of line')),
             (180, 'IDM_EDIT_FORMAT_UNCOMMENT', tr('Line Uncomment...') + '\tE=Ctrl+\\', wx.ITEM_NORMAL, 'OnEditFormatUncomment', tr('Removes comment sign at the beginning of line')),
             (190, '', '-', wx.ITEM_SEPARATOR, None, ''),
             (200, 'IDM_EDIT_FORMAT_QUOTE', tr('Text Quote...') + '\tE=Ctrl+\'', wx.ITEM_NORMAL, 'OnEditFormatQuote', tr('Quote selected text')),
@@ -65,7 +65,7 @@ def add_editor_menu(popmenulist):
             (140, 'IDPM_FORMAT_INDENT', tr('Increase Indent'), wx.ITEM_NORMAL, 'OnFormatIndent', tr('Increases the indentation of current line or selected block')),
             (150, 'IDPM_FORMAT_UNINDENT', tr('Decrease Indent'), wx.ITEM_NORMAL, 'OnFormatUnindent', tr('Decreases the indentation of current line or selected block')),
             (160, '', '-', wx.ITEM_SEPARATOR, None, ''),
-            (170, 'IDPM_FORMAT_COMMENT', tr('Line Comment...') + '\tCtrl+/', wx.ITEM_NORMAL, 'OnFormatComment', tr('Inserts comment sign at the beginning of line')),
+            (170, 'IDPM_FORMAT_COMMENT', tr('Line Comment...') + '\tAlt+D', wx.ITEM_NORMAL, 'OnFormatComment', tr('Inserts comment sign at the beginning of line')),
             (180, 'IDPM_FORMAT_UNCOMMENT', tr('Line Uncomment...') + '\tCtrl+\\', wx.ITEM_NORMAL, 'OnFormatUncomment', tr('Removes comment sign at the beginning of line')),
             (190, '', '-', wx.ITEM_SEPARATOR, None, ''),
             (200, 'IDPM_FORMAT_QUOTE', tr('Text Quote...') + '\tCtrl+\'', wx.ITEM_NORMAL, 'OnFormatQuote', tr('Quote selected text')),
@@ -197,27 +197,72 @@ def get_document_comment_chars(editor):
     return cchar
 Mixin.setMixin('editor', 'get_document_comment_chars', get_document_comment_chars)
 
-def OnEditFormatComment(win, event):
-    if win.pref.show_comment_chars_dialog:
-        from modules import Entry
+import re
+# note: re_space is in use, bug in mixins import.py
+re_space1 = re.compile('(^\s*)')
 
-        dlg = Entry.MyTextEntry(win, tr("Comment..."), tr("Comment Char:"), get_document_comment_chars(win.document))
-        answer = dlg.ShowModal()
-        if answer == wx.ID_OK:
-            commentchar = dlg.GetValue()
-            if len(commentchar) == 0:
+def OnEditFormatComment(win, event):
+    if win.document.languagename != 'python':
+        if win.pref.show_comment_chars_dialog:
+            from modules import Entry
+
+            dlg = Entry.MyTextEntry(win, tr("Comment..."), tr("Comment Char:"), get_document_comment_chars(win.document))
+            answer = dlg.ShowModal()
+            if answer == wx.ID_OK:
+                commentchar = dlg.GetValue()
+                if len(commentchar) == 0:
+                    return
+            else:
                 return
         else:
-            return
+            commentchar = get_document_comment_chars(win.document)
+        win.pref.last_comment_chars = commentchar
+        win.pref.save()
+        win.document.BeginUndoAction()
+        for i in win.document.getSelectionLines():
+            text = win.document.getLineText(i)
+            win.document.replaceLineText(i, commentchar + text)
+        win.document.EndUndoAction()
     else:
-        commentchar = get_document_comment_chars(win.document)
-    win.pref.last_comment_chars = commentchar
-    win.pref.save()
-    win.document.BeginUndoAction()
-    for i in win.document.getSelectionLines():
-        start = win.document.PositionFromLine(i)
-        win.document.InsertText(start, commentchar)
-    win.document.EndUndoAction()
+        sel = win.document.GetSelection()
+        start = win.document.LineFromPosition(sel[0])
+        end = win.document.LineFromPosition(sel[1])
+        if start!=end:
+            if end > start and win.document.GetColumn(sel[1]) == 0:
+                end = end - 1
+            win.document.BeginUndoAction()
+            for lineNumber in range(start, end + 1):
+                firstChar = win.document.PositionFromLine(lineNumber)
+                if chr(win.document.GetCharAt(firstChar)) == '#':
+                    if chr(win.document.GetCharAt(firstChar + 1)) == '#':
+                        # line starts with ##
+                        win.document.SetCurrentPos(firstChar + 2)
+                    else:
+                        # line starts with #
+                        win.document.SetCurrentPos(firstChar + 1)
+                    win.document.DelLineLeft()
+                else:
+                    win.document.InsertText(firstChar, '#')
+            win.document.SetCurrentPos(win.document.PositionFromLine(start))
+            win.document.SetAnchor(win.document.GetLineEndPosition(end))
+            win.document.EndUndoAction()
+        else:
+            #UNcomment and comment reverse 
+            line_num = win.document.GetCurrentLine()
+            cur_text,cur_line_pos = win.document.GetCurLine()
+            leading_space = re_space1.match(cur_text).group(0)
+            firstChar = win.document.PositionFromLine(line_num)
+            if chr(win.document.GetCharAt(firstChar)) == '#':
+                if chr(win.document.GetCharAt(firstChar+1)) == '#':
+                    win.document.SetCurrentPos(firstChar + 2)
+                    win.document.DelLineLeft()
+                win.document.GotoLine(line_num+1)
+            else:
+                first_in_line = win.document.PositionFromLine(line_num)+len(leading_space)
+                if not chr(win.document.GetCharAt(first_in_line)) == '#' and cur_text.strip():
+                    win.document.InsertText(firstChar, '##')
+                win.document.GotoLine(line_num+1)
+        
 Mixin.setMixin('mainframe', 'OnEditFormatComment', OnEditFormatComment)
 
 def OnFormatComment(win, event):

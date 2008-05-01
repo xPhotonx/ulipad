@@ -26,6 +26,7 @@ import re
 from modules import common
 from modules import Globals
 from modules import meide as ui
+from modules import Mixin
 
 def getRawText(string):
     if wx.USE_UNICODE:
@@ -44,6 +45,7 @@ class Finder:
         self.inselection = False
         self.direction = 0
         self.replacetext = ''
+        self.current_search_marker = None
 
     def getFlags(self):
         flags = 0
@@ -74,7 +76,11 @@ class Finder:
             return None
         if self.regular:
             return self.findReNext()
-        start = self.win.GetCurrentPos()
+        if self.current_search_marker is not None:
+            start = self.win.PositionFromLine(self.win.MarkerLineFromHandle(self.current_search_marker) + 1)
+        else:
+            start = self.win.GetCurrentPos() 
+            
         end = self.win.GetLength()
         pos = self.win.FindText(start, end, self.findtext, self.getFlags())
         if pos == -1:   #not found
@@ -90,7 +96,11 @@ class Finder:
         length = len(getRawText(self.findtext))
         if length == 0:
             return None
-        start = self.win.GetCurrentPos()
+        if self.current_search_marker is not None:
+            start = self.win.PositionFromLine(self.win.MarkerLineFromHandle(self.current_search_marker))
+        else:
+            start = self.win.GetCurrentPos()
+
         text = self.win.GetSelectedText()
         if self.matchcase:
             if text == self.findtext:
@@ -114,10 +124,11 @@ class Finder:
         length = len(getRawText(self.findtext))
         if length == 0:
             return None
-
-        start = self.win.GetCurrentPos()
+        if self.current_search_marker is not None:
+            start = self.win.PositionFromLine(self.win.MarkerLineFromHandle(self.current_search_marker))
+        else:
+            start = self.win.GetCurrentPos()
         end = self.win.GetLength()
-
         result = self.regularSearch(start, end)
         if result == None:
             if self.rewind:
@@ -133,7 +144,10 @@ class Finder:
         self.win.SetSelectionStart(start)
         self.win.SetSelectionEnd(end)
         self.win.EnsureCaretVisible()
-
+        line = self.win.LineFromPosition(start)
+        self.win.MarkerDeleteAll(self.win.search_marker_number2)
+        self.current_search_marker = self.win.MarkerAdd(self.win.LineFromPosition(start), self.win.search_marker_number2)
+        
     def regularSearch(self, start, end):
         case = 0
         if not self.matchcase:
@@ -203,6 +217,9 @@ class Finder:
             diff = len(rt) - (e-b)
             end += diff
             start = b + len(rt)
+            self.win.SetTargetStart(b)
+            self.win.SetTargetEnd(e)
+
             if self.regular:
                 r = self.regularSearch(start, end)
                 if r:
@@ -221,14 +238,14 @@ class Finder:
     def regularReplace(self, text):
         return re.sub(self.findtext, self.replacetext, text)
     
-    def count(self, section):
+    def markAll(self, win, section):
+        self.findtext = win.findtext.GetValue()
         length = len(getRawText(self.findtext))
         if section == 0:    #whole document
             start = 0
             end = self.win.GetLength()
         else:
             start, end = self.win.GetSelection()
-        
         if self.regular:
             r = self.regularSearch(start, end)
             if r:
@@ -238,12 +255,15 @@ class Finder:
         else:
             b = self.win.FindText(start, end, self.findtext, self.getFlags())
         count = 0
-        while b != -1 and start<end:
+        while b != -1:
             count += 1
             if not self.regular:
-                start = b + length
-            else:
-                start = e
+                e = b + length
+            self.win.StartStyling(b, wx.stc.STC_INDICS_MASK)
+            self.win.SetStyling(length, wx.stc.STC_INDICS_MASK)
+##            self.win.Colourise(0, -1)
+            self.win.MarkerAdd(self.win.LineFromPosition(b), self.win.search_marker_number)
+            start = e
             if self.regular:
                 r = self.regularSearch(start, end)
                 if r:
@@ -252,7 +272,11 @@ class Finder:
                     b = -1
             else:
                 b = self.win.FindText(start, end, self.findtext, self.getFlags())
-        return count
+
+        if count == 0:
+            common.note(tr("Cann't find the text !"))
+        else:
+            common.note(tr("Total find %d places!") % count)
 
 class FindPanel(wx.Panel):
     def __init__(self, parent, name, replace=False, *args, **kwargs):
@@ -284,8 +308,11 @@ class FindPanel(wx.Panel):
         box2.add(box)
         
         #add find widgets
-        box.add(ui.ComboBox, name='findtext').bind('enter', self.OnNext1)\
-            .bind(wx.EVT_KEY_DOWN, self.OnKeyDown)
+        find_box =self.find_box= box.add(ui.ComboBox, name='findtext')
+        find_box.bind('enter', self.OnNext1)
+        find_box.bind(wx.EVT_KEY_DOWN, self.OnKeyDown)
+        find_box.bind(wx.EVT_SET_FOCUS, self.OnSetFocus)
+        
         btn = FlatButtons.FlatBitmapButton(self, -1, common.getpngimage('images/next.gif'))
         btn.SetToolTip(wx.ToolTip(tr("Next")))
         box.add(btn).bind('click', self.OnNext)
@@ -378,7 +405,17 @@ class FindPanel(wx.Panel):
             self.OnClose(None)
         else:
             event.Skip()
-       
+    
+    def OnSetFocus(self, event):
+        text = Globals.mainframe.document.GetSelectedText()
+        if  text:
+            self.addFindString(text)
+            Globals.mainframe.document.MarkerDeleteAll(Globals.mainframe.document.search_marker_number)
+            Globals.mainframe.document.MarkerDeleteAll(Globals.mainframe.document.search_marker_number2)
+            Globals.mainframe.document.clearError(Globals.mainframe.document.GetLength())
+            self.finder.markAll(self, 0)
+        event.Skip()
+            
     def _find(self, flag):
         self.getValue()
         if not self.finder.findtext:

@@ -28,16 +28,21 @@ def add_pref(preflist):
 Mixin.setPlugin('preference', 'add_pref', add_pref)
 
 document_show_pagename = tr('Document_Show')
-
+html_show_pagename = tr('Html_Show')
 def create_document_show_window(win):
     if not win.panel.getPage(document_show_pagename):
         from DocumentShowWindow import DocumentShowWindow
-
+        from DocumentShowWindow import HtmlShowWindow
         page = DocumentShowWindow(win.panel.createNotebook('right'), win)
+        html_page = HtmlShowWindow(win.panel.createNotebook('right'), win)
         win.panel.addPage('right', page, document_show_pagename)
+        win.panel.addPage('right', html_page, html_show_pagename)
     win.document_show_window = win.panel.getPage(document_show_pagename)
+    win.html_page = win.panel.getPage(html_show_pagename)
     win.panel.showPage(document_show_pagename)
+    win.panel.showPage(html_show_pagename)
     win.panel.showWindow("right", True)
+    win.panel.rightbook.SetSelection(0)
 
 Mixin.setMixin('mainframe', 'create_document_show_window', create_document_show_window)
 Mixin.setPlugin('mainframe', 'afterinit', create_document_show_window)
@@ -54,6 +59,6 @@ def OnNDocu_showWindow(win, event):
     win.mainframe.document_show_window.Show()
 Mixin.setMixin('notebook', 'OnNDocu_showWindow', OnNDocu_showWindow)
 
-def on_document_enter1(win, editor):
-    win.mainframe.document_show_window.show("document will show here!")
-Mixin.setPlugin('editctrl', 'on_document_enter', on_document_enter1)
+#def on_document_enter1(win, editor):
+#    win.mainframe.document_show_window.show("document will show here!")
+#Mixin.setPlugin('editctrl', 'on_document_enter', on_document_enter1)

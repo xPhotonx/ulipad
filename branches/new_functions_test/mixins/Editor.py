@@ -169,6 +169,7 @@ class TextEditor(wx.stc.StyledTextCtrl, Mixin.Mixin, DocumentBase.DocumentBase):
 
         #set drop target
 #        self.SetDropTarget(EditorDropTarget(self))
+        self.margin_number_type = 1
 
         self.callplugin('init', self)
 
@@ -256,6 +257,7 @@ class TextEditor(wx.stc.StyledTextCtrl, Mixin.Mixin, DocumentBase.DocumentBase):
 
             oldfilename = self.filename
             self.setFilename(filename)
+
             #call plugin to process text
             stext = [self.GetText()]
 
@@ -436,20 +438,21 @@ class TextEditor(wx.stc.StyledTextCtrl, Mixin.Mixin, DocumentBase.DocumentBase):
 #        self.ProcessEvent(event)
 #
     def OnChar(self, event):
-        # for calltip
-        self.have_focus = True
+    
         if self.execplugin('on_first_char', self, event):
             return
 
         if not self.execplugin('on_char', self, event):
             event.Skip()
-
+        
         eve = self.clone_key_event(event)
 #        wx.CallAfter(self.process_onchar_chain, eve)
 #        self.process_onchar_chain(eve)
+        prev_time = event.GetTimestamp()
+        eve.time_stamp = prev_time    
         self.execplugin('after_char', self, eve)
-        self.have_focus = False
-
+      
+        
 #    def process_onkeydown_chain(self, event):
 #        self.execplugin('after_keydown', self, event)
 #
@@ -696,10 +699,11 @@ class TextEditor(wx.stc.StyledTextCtrl, Mixin.Mixin, DocumentBase.DocumentBase):
         if wx.TheClipboard.Open():
             success = wx.TheClipboard.GetData(do)
             wx.TheClipboard.Close()
-
+        
         if success:
             if not self.execplugin('on_paste', self, do.GetText()):
                 wx.stc.StyledTextCtrl.Paste(self)
+        
 
     def Copy(self):
         if self.SelectionIsRectangle():
@@ -732,18 +736,18 @@ class TextEditor(wx.stc.StyledTextCtrl, Mixin.Mixin, DocumentBase.DocumentBase):
         """filename, pos, bookmarks"""
         bookmarks = []
         start = 0
-        line = self.MarkerNext(start, 1)
+        line = self.MarkerNext(start, self.bookmarker_mask)
         while line > -1:
             bookmarks.append(line)
             start = line + 1
-            line = self.MarkerNext(start, 1)
+            line = self.MarkerNext(start, self.bookmarker_mask)
         return self.filename, self.save_state(), bookmarks
-
+        
     def OnUserListSelection(self, event):
         t = event.GetListType()
         text = event.GetText()
         self.callplugin('on_user_list_selction', self, t, text)
-
+        
     def OnAutoCompletion(self, event):
         text = event.GetText()
         self.callplugin('on_auto_completion', self, self.GetCurrentPos(), text)
@@ -757,11 +761,57 @@ class TextEditor(wx.stc.StyledTextCtrl, Mixin.Mixin, DocumentBase.DocumentBase):
             if self.mwidth < mwidth:
                 self.mwidth = mwidth
                 width = self.TextWidth(wx.stc.STC_STYLE_LINENUMBER, 'O'*(self.mwidth+1))
-                self.SetMarginType(1, wx.stc.STC_MARGIN_NUMBER )
-                self.SetMarginWidth(1, width)
+                self.SetMarginType(self.margin_number_type, wx.stc.STC_MARGIN_NUMBER )
+                self.SetMarginWidth(self.margin_number_type, width)
         else:
-            self.SetMarginWidth(1, 0)
-
-    def OnClose(self, note, **kwargs):
-        Globals.mainframe.editctrl.switch(Globals.mainframe.editctrl.getCurDoc())
-    
+            self.SetMarginWidth(self.margin_number_type, 0)
+            
+                
+    def AutoCompShow(self, *args, **kwargs):
+        """
+        AutoCompShow(self, int lenEntered, String itemList)
+        
+        Display a auto-completion list.
+        The lenEntered parameter indicates how many characters before
+        the caret should be used to provide context.
+        """
+        # note: 2008:02:15 by ygao
+        # this hack is ugly. but maybe useful.
+        wx.stc.StyledTextCtrl.AutoCompShow(self, *args, **kwargs)
+        for child in self.GetChildren():
+            for ch in child.GetChildren():
+                if hasattr(ch, 'GetItem'):
+                    # this is the wx.ListView instance.
+                    ch.SetTextColour(wx.WHITE)
+                    ch.SetBackgroundColour(wx.BLACK)
+                    self.autocomp_popwin = child
+                    self.autocomp_listview = ch
+                    ch.Bind(wx.EVT_LIST_ITEM_SELECTED, child.GetParent().OnAutoCompItemSelected, ch)
+                    ch.Bind(wx.EVT_LIST_ITEM_DESELECTED, child.GetParent().OnAutoCompDeSelected, ch)
+                    # note at 2008:02:20 by ygao:  big bug: don't use self.AutoCompGetCurrent() can crash python
+                    ch.Select(ch.GetFirstSelected())
+                    for i in range(ch.GetItemCount()):
+                        if ch.GetItem(i).GetImage() == 0:
+                            # clear default image to fix stc bug 
+                            ch.SetItemImage(i,50)
+                            
+    def UserListShow(self, *args, **kwargs):
+        wx.stc.StyledTextCtrl.UserListShow(self, *args, **kwargs)
+        for child in self.GetChildren():
+            for ch in child.GetChildren():
+                if hasattr(ch, 'GetItem'):
+                    # this is the wx.ListView instance.
+                    ch.SetTextColour(wx.WHITE)
+                    ch.SetBackgroundColour(wx.BLACK)
+                    self.autocomp_popwin = child
+                    self.autocomp_listview = ch
+                    ch.Bind(wx.EVT_LIST_ITEM_SELECTED, child.GetParent().OnAutoCompItemSelected, ch)
+                    ch.Bind(wx.EVT_LIST_ITEM_DESELECTED, child.GetParent().OnAutoCompDeSelected, ch)
+                    ch.Select(ch.GetFirstSelected())
+                    for i in range(ch.GetItemCount()):
+                        if ch.GetItem(i).GetImage() == 0:
+                            # clear default image to fix stc bug 
+                            ch.SetItemImage(i,50)
+        
+        
+           

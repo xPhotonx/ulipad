@@ -25,11 +25,13 @@ import wx
 from modules import Mixin
 
 def editor_init(win):
-    win.SetMarginWidth(0, 20)
-    win.SetMarginType(0, wx.stc.STC_MARGIN_SYMBOL)
-
-    win.SetMarginMask(0, ~wx.stc.STC_MASK_FOLDERS)
-    win.MarkerDefine(0, wx.stc.STC_MARK_SHORTARROW, "blue", "blue")
+    win.margin_bookmark_type = 2
+    win.SetMarginWidth(win.margin_bookmark_type, 20)
+    win.SetMarginType(win.margin_bookmark_type, wx.stc.STC_MARGIN_SYMBOL)
+    win.SetMarginSensitive(win.margin_bookmark_type, True)
+    win.SetMarginMask(win.margin_bookmark_type, ~wx.stc.STC_MASK_FOLDERS)
+    # the marker defined  in the mMarkerDefine.py by ygao
+    
 Mixin.setPlugin('editor', 'init', editor_init)
 
 def add_mainframe_menu(menulist):
@@ -44,43 +46,45 @@ def add_mainframe_menu(menulist):
     ])
 Mixin.setPlugin('mainframe', 'add_menu', add_mainframe_menu)
 
+
 def OnSearchBookmarkToggle(win, event):
     line = win.document.GetCurrentLine()
-    marker = win.document.MarkerGet(line)
-    if marker & 1:
-        win.document.MarkerDelete(line, 0)
-    else:
-        win.document.MarkerAdd(line, 0)
+    win.document.toggle_mark(line, win.document.bookmark_number)
 Mixin.setMixin('mainframe', 'OnSearchBookmarkToggle', OnSearchBookmarkToggle)
 
+
 def OnSearchBookmarkClearAll(win, event):
-    win.document.MarkerDeleteAll(0)
+    win.document.MarkerDeleteAll(win.document.bookmark_number)
 Mixin.setMixin('mainframe', 'OnSearchBookmarkClearAll', OnSearchBookmarkClearAll)
+
 
 def OnSearchBookmarkNext(win, event):
     line = win.document.GetCurrentLine()
-    marker = win.document.MarkerGet(line)
-    if marker & 1:
-        line += 1
-    f = win.document.MarkerNext(line, 1)
-    if f > -1:
-        win.document.goto(f + 1)
-    else:
-        f = win.document.MarkerNext(0, 1)
-        if f > -1:
-            win.document.goto(f + 1)
+    win.document.GotoBookmarkNext(line)
 Mixin.setMixin('mainframe', 'OnSearchBookmarkNext', OnSearchBookmarkNext)
 
+def GotoBookmarkNext(win, line):
+    line = win.get_marker_next(line, win.bookmarker_mask)
+    if line:
+        win.goto(line)
+        win.ScrollToLine(line - 20)
+Mixin.setMixin('editor', 'GotoBookmarkNext',GotoBookmarkNext )
+    
 def OnSearchBookmarkPrevious(win, event):
     line = win.document.GetCurrentLine()
-    marker = win.document.MarkerGet(line)
-    if marker & 1:
-        line -= 1
-    f = win.document.MarkerPrevious(line, 1)
-    if f > -1:
-        win.document.goto(f + 1)
-    else:
-        f = win.document.MarkerPrevious(win.document.GetLineCount()-1, 1)
-        if f > -1:
-            win.document.goto(f + 1)
+    win.document.GotoBookmarPrevious(line)
 Mixin.setMixin('mainframe', 'OnSearchBookmarkPrevious', OnSearchBookmarkPrevious)
+
+def GotoBookmarPrevious(win, line):
+    line = win.get_marker_previous(line, win.bookmarker_mask)
+    if line:
+        win.goto(line)
+        win.ScrollToLine(line - 20)
+Mixin.setMixin('editor', 'GotoBookmarPrevious',GotoBookmarPrevious)
+
+
+def OnMarginClick(self, event):
+    if event.GetMargin() == self.margin_bookmark_type:
+            line_clicked = self.LineFromPosition(event.GetPosition())
+            self.toggle_mark(line_clicked, self.bookmark_number)
+Mixin.setPlugin('editor', 'on_margin_click', OnMarginClick)

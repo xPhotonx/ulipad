@@ -24,6 +24,11 @@
 import asynchat
 import asyncore
 import socket
+try:
+    import win32gui, win32con, win32api
+except:
+    print 'error: Import win32 error'
+
 from modules import common
 
 HOST = '127.0.0.1'
@@ -58,7 +63,16 @@ class Receiver(asynchat.async_chat):
         
         import wx
         import Globals
+        def f():
+            try:
+                win32gui.ShowWindow(Globals.mainframe.GetHandle(),win32con.SW_SHOWNOACTIVATE)
+                win32gui.SetForegroundWindow(Globals.mainframe.GetHandle())
+            except :
+                pass
+            
         wx.CallAfter(Globals.app.frame.openfiles, unicode(files, 'utf-8').splitlines())
+        wx.CallAfter(f)
+
         
     def handle_close (self):
         if self.server.clients.count(self) > 0:

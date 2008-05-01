@@ -32,16 +32,16 @@ menulist = [('IDM_PYTHON', #parent menu id
 ]
 Mixin.setMixin('pythonfiletype', 'menulist', menulist)
 
-toollist = [
+def add_tool_list(toollist, toolbaritems):
+    toollist.extend([
         (2140, 'check'),
-]
-Mixin.setMixin('pythonfiletype', 'toollist', toollist)
+    ])
 
-#order, IDname, imagefile, short text, long text, func
-toolbaritems = {
-        'check':(wx.ITEM_NORMAL, 'IDM_PYTHON_CHECK', 'images/spellcheck.gif', tr('check'), tr('Check python source code syntax.'), 'OnPythonCheck'),
-}
-Mixin.setMixin('pythonfiletype', 'toolbaritems', toolbaritems)
+    #order, IDname, imagefile, short text, long text, func
+    toolbaritems.update({
+        'check':(wx.ITEM_NORMAL, 'IDM_PYTHON_CHECK', 'images/spellcheck.gif', tr('Check Syntax'), tr('Check python source code syntax.'), 'OnPythonCheck'),
+    })
+Mixin.setPlugin('mainframe', 'add_tool_list', add_tool_list)
 
 def OnPythonCheck(win, event):
     import SyntaxCheck

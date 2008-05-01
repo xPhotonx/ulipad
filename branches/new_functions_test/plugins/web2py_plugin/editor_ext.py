@@ -106,7 +106,7 @@ def get_controller_from_view(win):
 def dynamic_menu(win, flag = ''):
     view = get_view_from_controller(win)
     if flag == 'web':
-        return tr('&Visit %s in web') % controller_function
+        return tr('&Visit %s') % controller_function
     if view:
         if os.path.exists(view):
             return tr('&Goto %s view ') % get_controller(win)
@@ -179,8 +179,7 @@ def OnWeb2pyProjectControllersView(win):
             doc.EnsureCaretVisible()
             
 def OnWeb2pyProjectControllersWeb(win):
-    
     global controller_function
     if controller_function:
-        common.webopen("http://127.0.0.1:8000/%s" % controller_function)
+        win.mainframe.html_page.html.ie.LoadUrl("http://127.0.0.1:8000/%s" % controller_function)
     controllers_path = ''

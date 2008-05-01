@@ -86,9 +86,12 @@ def _check(win):
                                 answer = dlg.ShowModal()
                             if answer == wx.ID_YES or not win.pref.auto_check_confirm:
                                 state = document.save_state()
+                                bookmarks = document.get_marks(document.bookmark_number)
                                 document.openfile(document.filename)
                                 document.editctrl.switch(document)
                                 document.restore_state(state)
+                                for line in bookmarks:
+                                    document.toggle_mark(line, document.bookmark_number)
                         wx.CallAfter(fn)
                         win.editctrl.filetimes[document.filename] = getModifyTime(document.filename)
                         return

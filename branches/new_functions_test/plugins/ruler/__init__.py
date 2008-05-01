@@ -125,7 +125,7 @@ def OnViewRuler(win, event):
         win.document.ruler_show = not win.document.ruler_show
         if hasattr(win.document, 'lexer'):
             win.document.ruler.setfont(win.document.lexer.font)
-            a = win.document.lexer.syntaxitems['linenumber']
+            a = win.document.lexer.getSyntaxItems()['linenumber']
             win.document.ruler.setbgcolor(a.style.back)
         win.document.ruler.show(win.document.ruler_show)
         win.document.ruler.position(cal_column(win.document))

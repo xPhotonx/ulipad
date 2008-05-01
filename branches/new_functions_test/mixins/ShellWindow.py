@@ -23,15 +23,31 @@
 #   $Id: ShellWindow.py 1500 2006-09-01 13:47:51Z limodou $
 
 import os
+import sys
 import types
 import locale
 import wx.py
 from wx.py.interpreter import Interpreter
+from wx.py import introspect
 from wx.py import dispatcher
 from modules import Mixin
 from modules import common
 from modules import makemenu
 
+import __main__
+import inspect
+
+COMMONTYPES = [getattr(types, t) for t in dir(types) \
+               if not t.startswith('_') \
+               and t not in ('ClassType', 'InstanceType', 'ModuleType')]
+
+DOCTYPES = ('BuiltinFunctionType', 'BuiltinMethodType', 'ClassType',
+            'FunctionType', 'GeneratorType', 'InstanceType',
+            'LambdaType', 'MethodType', 'ModuleType',
+            'UnboundMethodType', 'method-wrapper')
+
+SIMPLETYPES = [getattr(types, t) for t in dir(types) \
+               if not t.startswith('_') and t not in DOCTYPES]
 
 class ShellWindow(wx.py.shell.Shell, Mixin.Mixin):
     __mixinname__ = 'shellwindow'
@@ -59,9 +75,19 @@ class ShellWindow(wx.py.shell.Shell, Mixin.Mixin):
         'IDPM_PASTE':'images/paste.gif',
     }
     
-    def __init__(self, parent, mainframe):
+    def __init__(self, parent, mainframe, commandtxt=None, shelltxt=None):
         self.initmixin()
-
+        #-----------------------------------------------------------------------
+        self.InsertMode = None
+        self.EditorMode = None
+        self.AppendMode = True
+        self.insertcurrpos = None
+        #in shell mode when it Enter keep the pos
+        self.lastSubmitPos = None
+        self.undo_command = []
+        
+        
+        
         #add default font settings in config.ini
         x = common.get_config_file_obj()
         font = wx.SystemSettings_GetFont(wx.SYS_DEFAULT_GUI_FONT)
@@ -94,6 +120,37 @@ class ShellWindow(wx.py.shell.Shell, Mixin.Mixin):
         self.popmenu = makemenu.makepopmenu(self, ShellWindow.popmenulist, ShellWindow.imagelist)
         
         wx.EVT_RIGHT_DOWN(self, self.OnPopUp)
+        #-----------------------------------------------------------------------
+##        self.SetViewEOL(True)
+##        self.SetViewWhiteSpace(1)
+##        self.SetIndentationGuides(True)
+        
+        self.shelltxt = shelltxt
+        self.commandtxt = commandtxt
+        if self.shelltxt is None:
+            self.shelltxt = os.path.join(self.mainframe.workpath, "shell.txt")
+        if self.commandtxt is None:
+            self.commandtxt = os.path.join(self.mainframe.workpath, "commad.txt")
+        self.read_shell(self.shelltxt)
+        linesum = self.GetLineCount()
+        self.GotoLine(linesum)
+        self.setDisplayLineNumbers(True)
+        self.AutoCompSetAutoHide(True)
+        self.AutoCompSetCancelAtStart(False)
+        text , pos = self.GetCurLine()
+##        self.eolstring = {'\n':wx.stc.STC_EOL_LF, '\r\n':wx.stc.STC_EOL_CRLF, '\r':wx.stc.STC_EOL_CR}
+##        self.ConvertEOLs(self.eolstring.get(os.linesep))
+
+        if text.strip() == '>>>':
+            self.LineDelete()
+        self.prompt()
+        wx.CallAfter(self.ScrollToLine, linesum - 5)
+        self.Bind(wx.EVT_KEY_UP,self.on_key_up)
+        
+        
+        
+        
+        #-----------------------------------------------------------------------
         
         wx.EVT_UPDATE_UI(self, self.IDPM_UNDO, self._OnUpdateUI)
         wx.EVT_UPDATE_UI(self, self.IDPM_REDO, self._OnUpdateUI)
@@ -102,7 +159,306 @@ class ShellWindow(wx.py.shell.Shell, Mixin.Mixin):
         wx.EVT_UPDATE_UI(self, self.IDPM_COPY_CLEAR, self._OnUpdateUI)
         wx.EVT_UPDATE_UI(self, self.IDPM_PASTE, self._OnUpdateUI)
         wx.EVT_UPDATE_UI(self, self.IDPM_PASTE_RUN, self._OnUpdateUI)
+    #---ygao--------------------------------------------------------------------
+    def clearCommand(self):
+        """Delete the current, unexecuted command."""
+        startpos = self.promptPosEnd
+        #must handle the insertmode or clear all till end
+        thepos = self.GetCurrentPos()        
+        if self.InsertMode == True:
+            endpos = thepos
+        else:
+            endpos = self.GetTextLength()
+        self.SetSelection(startpos, endpos)
+        self.ReplaceSelection('')
+        self.more = False
+        
+    def processLine(self):
+        """Process the line of text at which the user hit Enter."""
+    
+        # The user hit ENTER and we need to decide what to do. They
+        # could be sitting on any line in the shell.
+        
+        thepos = self.GetCurrentPos()
+        startpos = self.promptPosEnd
+        if self.InsertMode == True:
+            endpos = thepos
+        elif self.AppendMode == True:
+            endpos = self.lastSubmitPos
+        else:
+              
+            endpos = self.GetTextLength()
+        ps2 = str(sys.ps2)
+        # If they hit RETURN inside the current command, execute the
+        # command.
+        if self.CanEdit():
+            self.SetCurrentPos(endpos)
+            self.interp.more = False
+            command = self.GetTextRange(startpos, endpos)
+            lines = command.split(os.linesep + ps2)
+            lines = [line.rstrip() for line in lines]
+            command = '\n'.join(lines)
+            if self.reader.isreading:
+                if not command:
+                    # Match the behavior of the standard Python shell
+                    # when the user hits return without entering a
+                    # value.
+                    command = '\n'
+                self.reader.input = command
+                self.write(os.linesep)
+            else:
+                self.push(command)
+                wx.FutureCall(1, self.EnsureCaretVisible)
+        # Or replace the current command with the other command.
+        else:
+            # If the line contains a command (even an invalid one).
+            if self.getCommand(rstrip=False):
+                command = self.getMultilineCommand()
+                self.clearCommand()
+                self.write(command)
+            # Otherwise, put the cursor back where we started.
+            else:
+                self.SetCurrentPos(thepos)
+                self.SetAnchor(thepos)
+    
+    def prompt(self):
+        """Display proper prompt for the context: ps1, ps2 or ps3.
+    
+        If this is a continuation line, autoindent as necessary."""
+        isreading = self.reader.isreading
+        skip = False
+        if isreading:
+            prompt = str(sys.ps3)
+        elif self.more:
+            prompt = str(sys.ps2)
+        else:
+            prompt = str(sys.ps1)
+        pos = self.GetCurLine()[1]
+        if pos > 0:
+            if isreading:
+                skip = True
+            else:
+                self.write(os.linesep)
+        if not self.more:
+            self.promptPosStart = self.GetCurrentPos()
+        if not skip:
+            self.write(prompt)
+        if not self.more:
+            self.promptPosEnd = self.GetCurrentPos()
+            # Keep the undo feature from undoing previous responses.
+            self.EmptyUndoBuffer()
+        # XXX Add some autoindent magic here if more.
+        if self.more:
+            #self.write(' '*4)  # Temporary hack indentation.
+            pass
+        if self.InsertMode == True:
+            self.insertcurrpos = self.promptPosEnd
+        elif self.AppendMode == True:
+                if self.lastSubmitPos == None:
+                    self.lastSubmitPos = self.promptPosEnd
+        self.EnsureCaretVisible()
+        self.ScrollToColumn(0)
+        #glo.err_interp = False
+        
+    def write(self, text):
+        """Display text in the shell.
+    
+        Replace line endings with OS-specific endings."""
+        text = self.fixLineEndings(text)
+        self.AddText(text)
+        #self.Refresh() don't need
+        #self.Update()
+        self.EnsureCaretVisible()
+    
+    def run(self, command, prompt=True, verbose=True):
+        """Execute command as if it was typed in directly.
+        >>> shell.run('print "this"')
+        >>> print "this"
+        this
+        >>>
+        """
+        # Go to the very bottom of the text.
+        endpos = self.GetTextLength()
+        self.SetCurrentPos(endpos)
+        command = command.rstrip()
+        if prompt: self.prompt()
+        if verbose: self.write(command)
+        if self.AppendMode:
+            cupos = self.GetCurrentPos()
+            if cupos < self.promptPosEnd:
+                self.lastSubmitPos = None
+            else:
+                #we are waiting at the command prompt.
+                #self.lastSubmitPos = cupos #bug  if submitpos is between typing line
+                self.lastSubmitPos = self.GetLineEndPosition(self.GetCurrentLine())
+                self.undo_command.insert(0,self.promptPosEnd)
+                self.undo_command.insert(0,self.promptPosStart)
+                self.undo_command.insert(0,self.lastSubmitPos)            
+        self.push(command)
+    
+    def objGetChildren(self, obj):
+        """Return dictionary with attributes or contents of object."""
+##        busy = wx.BusyCursor()
+        otype = type(obj)
+##        if otype is types.DictType \
+##        or str(otype)[17:23] == 'BTrees' and hasattr(obj, 'keys'):
+##            return obj
+        if  str(otype)[17:23] == 'BTrees' and hasattr(obj, 'keys'):
+            return obj
+        d = {}
+        if otype is types.ListType or otype is types.TupleType:
+            for n in range(len(obj)):
+                key = '[' + str(n) + ']'
+                d[key] = obj[n]
+        if otype not in COMMONTYPES:
+            for key in introspect.getAttributeNames(obj):
+                # Believe it or not, some attributes can disappear,
+                # such as the exc_traceback attribute of the sys
+                # module. So this is nested in a try block.
+                try:
+                    d[key] = getattr(obj, key)
+                except:
+                    pass
+        else:
+            for key in introspect.getAttributeNames(obj):
+                # Believe it or not, some attributes can disappear,
+                # such as the exc_traceback attribute of the sys
+                # module. So this is nested in a try block.
+                try:
+                    d[key] = getattr(obj, key)
+                except:
+                    pass
+            
+        return d
+    
+    def on_key_up(self,event):
+        if self.AutoCompActive():
+            if self.AutoCompGetCurrent() == -1:
+                self.AutoCompCancel()
+            else:
+                root = introspect.getRoot(self.command, terminator='.')
+                try:
+                    object = eval(root, __main__.__dict__)
+                except:
+                    object = eval(root)
+                name = self.list[self.AutoCompGetCurrent()]
+                obj = self.objGetChildren(object).get(name, None)
+                if obj is None:
+                    return
+                otype = type(obj)
+                obj_name = self.command + name + "\n"
+                text = obj_name + ''
+                text += '\n\nType: ' + str(otype)
+                try:
+                    value = str(obj)
+                except:
+                    value = ''
+                if otype is types.StringType or otype is types.UnicodeType:
+                    value = repr(obj)
+                text += '\n\nValue: ' + value
+                if otype not in SIMPLETYPES:
+                    try:
+                        text += '\n\nDocstring:\n\n"""' + \
+                                inspect.getdoc(obj).strip() + '"""'
+                    except:
+                        pass
+                if otype is types.InstanceType:
+                    try:
+                        text += '\n\nClass Definition:\n\n' + \
+                                inspect.getsource(obj.__class__)
+                    except:
+                        pass
+                else:
+                    try:
+                        text += '\n\nSource Code:\n\n' + \
+                                inspect.getsource(obj)
+                    except:
+                        pass
+                self.mainframe.document_show_window.show(text)
+                self.SetFocus()
+                
+        key = event.GetKeyCode()
+        controlDown = event.ControlDown()
+        altDown = event.AltDown()
+        shiftDown = event.ShiftDown()
+        cpos = self.GetCurrentPos()
+        if key == wx.WXK_BACK:
+            if not self.AutoCompActive():
+                self.OnCallTipAutoCompleteManually(False)
+        
+    def autoCompleteShow(self, command, offset = 0):
+        """Display auto-completion popup list."""
+        self.command = command
+        self.AutoCompSetAutoHide(self.autoCompleteAutoHide)
+        self.AutoCompSetIgnoreCase(self.autoCompleteCaseInsensitive)
+        self.list = self.interp.getAutoCompleteList(command,
+                    includeMagic=self.autoCompleteIncludeMagic,
+                    includeSingle=self.autoCompleteIncludeSingle,
+                    includeDouble=self.autoCompleteIncludeDouble)
+        if self.list:
+            options = ' '.join(self.list)
+            #offset = 0
+            self.AutoCompShow(offset, options)
 
+              
+    
+    def save_command(self,filepath):
+        """save the history to history.ini"""        
+      
+        x = DictIni(filepath)
+        x.common.list = self.history[:]
+        x.save()
+     
+    
+    def read_command(self,filepath):        
+        """read history from history.ini"""      
+        x = DictIni(filepath)
+        x.read()        
+        if not x.common.list:
+            self.history = []
+        else:
+            self.history = x.common.list
+            
+    def read_shell(self,filepath):
+        shelltxt_fp = open(filepath,'a+')
+        try:
+            shelltxt=shelltxt_fp.read().decode('utf8')
+        finally:
+            shelltxt_fp.close()
+        self.SetText(shelltxt)
+        
+    def read_shell_temp(self,filepath):
+        shelltxt_fp = open(filepath,'w+')
+        try:
+            shelltxt=shelltxt_fp.read()
+        finally:
+            shelltxt_fp.close()
+        self.SetText(shelltxt)
+    
+    def save_shell(self,filepath):
+        shelltxt_fp = open(filepath,'w')
+        try:
+            shelltxt_fp.write(self.GetText().encode('utf8'))
+        finally:
+            shelltxt_fp.close()
+            
+    def OnClose(self, event):
+        """Event handler for closing."""
+        self.save_shell(self.shelltxt)
+        #self.save_command(self.commandtxt)
+        #self.Destroy()
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    #---ygao--------------------------------------------------------------------
+    
+    
     def OnPopUp(self, event):
         other_menus = []
         if self.popmenu:
@@ -155,32 +511,35 @@ class ShellWindow(wx.py.shell.Shell, Mixin.Mixin):
         self.prompt()
     
     def OnKillFocus(self, event):
-        if self.AutoCompActive():
-            self.AutoCompCancel()
-        if self.CallTipActive():
-            self.CallTipCancel()
+        if  not self.mainframe.document_show_window.showing:
+            if self.AutoCompActive():
+                self.AutoCompCancel()
+            if self.CallTipActive():
+                self.CallTipCancel()
+        event.Skip()
+        event.Skip()
 
     def canClose(self):
-        return True
+        return False
 
-    def write(self, text):
-        """Display text in the shell.
-
-        Replace line endings with OS-specific endings."""
-        if not isinstance(text, unicode):
-            try:
-                text = unicode(text, common.defaultencoding)
-            except UnicodeDecodeError:
-                def f(x):
-                    if ord(x) > 127:
-                        return '\\x%x' % ord(x)
-                    else:
-                        return x
-                text = ''.join(map(f, text))
-        text = self.fixLineEndings(text)
-        self.AddText(text)
-        self.EnsureCaretVisible()
-        
+#    def write(self, text):
+#        """Display text in the shell.
+#
+#        Replace line endings with OS-specific endings."""
+#        if not isinstance(text, unicode):
+#            try:
+#                text = unicode(text, common.defaultencoding)
+#            except UnicodeDecodeError:
+#                def f(x):
+#                    if ord(x) > 127:
+#                        return '\\x%x' % ord(x)
+#                    else:
+#                        return x
+#                text = ''.join(map(f, text))
+#        text = self.fixLineEndings(text)
+#        self.AddText(text)
+#        self.EnsureCaretVisible()
+#        
     def Copy(self):
         self.CopyWithPrompts()
         
@@ -207,8 +566,51 @@ class ShellWindow(wx.py.shell.Shell, Mixin.Mixin):
                 self.processLine()
             else:
                 self.insertLineBreak()
-        else:
-            super(ShellWindow, self).OnKeyDown(event)
+        if not controlDown and not altDown and not shiftDown and key in [wx.WXK_RETURN, wx.WXK_NUMPAD_ENTER]:
+            if self.AppendMode == True:
+                #if cuspos sits on exist command last line meaning you just typed command.
+                cupos = self.GetCurrentPos()
+                if cupos < self.promptPosEnd:
+                    self.lastSubmitPos = None
+                else:
+                    #we are waiting at the command prompt.
+                    #self.lastSubmitPos = cupos #bug  if submitpos is between typing line
+                    self.lastSubmitPos = self.GetLineEndPosition(self.GetCurrentLine())
+                    self.undo_command.insert(0,self.promptPosEnd)
+                    self.undo_command.insert(0,self.promptPosStart)
+                    self.undo_command.insert(0,self.lastSubmitPos)
+        
+        if controlDown and key == wx.WXK_BACK and not altDown and not shiftDown and self.AppendMode == True:
+            cupos = self.GetCurrentPos()
+            if self.undo_command != []:
+                if cupos>self.undo_command[2]:
+                    self.lastSubmitPos = self.undo_command.pop(0)
+                    self.promptPosStart = self.undo_command.pop(0) #last .saveed PromptPosStart
+                    self.promptPosEnd = self.undo_command.pop(0)#last saveed PromptPosEnd
+                    self.SetSelection(self.lastSubmitPos,cupos)#lasted SubmitPos
+                    self.ReplaceSelection('')
+                    return
+        if altDown and key == wx.WXK_BACK and not controlDown and not shiftDown and self.AppendMode == True:
+            if self.undo_command != []:
+                self.SetSelection(self.undo_command[-1],self.GetTextLength())
+                self.ReplaceSelection('')
+                self.promptPosStart = self.undo_command[-2]#restore to the correct pos in prompt
+                self.promptPosEnd = self.undo_command[-1]
+                del self.undo_command[:]#delete  all object in list to empty list
+        if shiftDown and key == wx.WXK_BACK and not controlDown and not altDown and self.AppendMode == True:
+            cupos = self.GetCurrentPos()
+            if self.undo_command != []:
+                self.lastSubmitPos = self.undo_command.pop(0)
+                self.promptPosStart = self.undo_command.pop(0) #last saved PromptPosStart
+                self.promptPosEnd = self.undo_command.pop(0)#last saved PromptPosEnd
+                self.SetSelection(self.promptPosEnd,cupos)#lasted SubmitPos
+                self.ReplaceSelection('')
+        if self.InsertMode == True:
+            if key in NAVKEYS:
+                return
+            else:                
+                self.insertcurrpos = self.GetCurrentPos()
+        super(ShellWindow, self).OnKeyDown(event)
 
 class NEInterpreter(Interpreter):
     def push(self, command):
@@ -228,7 +630,7 @@ class NEInterpreter(Interpreter):
             except IndexError: pass
         if not self.more: self.commandBuffer.append([])
         self.commandBuffer[-1].append(command)
-        source = os.linesep.join(self.commandBuffer[-1])
+        source = "#coding:%s" % common.defaultencoding + '\n' + '\n'.join(self.commandBuffer[-1])
         more = self.more = self.runsource(source)
         dispatcher.send(signal='Interpreter.push', sender=self,
                         command=command, more=more, source=source)

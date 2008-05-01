@@ -33,6 +33,14 @@ import os.path
 import common
 import Globals
 import datetime
+import wx
+import __main__
+import time
+last_print_time = time.time()
+try:
+    import win32gui, win32con, win32api
+except:
+    print 'error: Import win32 error'
 
 class Debug:
     def __init__(self, filename=os.path.abspath('debug.txt'), flag=None):
@@ -65,10 +73,14 @@ class Debug:
         else:
             message = traceback.format_exception(*sys.exc_info())
         self.output('[Traceback]', ''.join(message))
+        
+        
+        
         if debug and debug.is_debug() and Globals.mainframe and Globals.mainframe.IsShown():
             common.warn("There is some thing wrong as running the program")
 
     def output(self, *args):
+        global last_print_time
         if self.is_debug():
             #encoding = locale.getdefaultlocale()[1]
             encoding = 'utf-8'
@@ -82,6 +94,21 @@ class Debug:
                     out.write(s.encode(encoding))
                 else:
                     out.write(s)
+            print s
+            thistime = time.time()
+            if (thistime- last_print_time) % 1000 > 30:
+                last_print_time = thistime
+                if wx.Platform == '__WXMSW__':
+                    def f():
+                        try:
+    ##                        text = win32api.GetConsoleTitle()
+                            hand = win32gui.FindWindow(None, __main__.ulipad_title)
+                            win32gui.SetForegroundWindow(hand)
+                            win32gui.ShowWindow(hand,win32con.SW_SHOWMAXIMIZED)
+                        except:
+                            pass
+                    wx.CallAfter(f)
+            
             out.write("\n")
             out.close()
 

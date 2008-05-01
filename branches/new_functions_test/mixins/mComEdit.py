@@ -48,8 +48,8 @@ def add_editor_menu(popmenulist):
             (500, 'IDPM_SELECTION_SELECT_ENLARGE', tr('Enlarge Selection') + '\tCtrl+Alt+E', wx.ITEM_NORMAL, 'OnSelectionEnlarge', tr('Enlarges selection')),
             (600, 'IDPM_SELECTION_SELECT_LINE', tr('Select Line') + '\tCtrl+R', wx.ITEM_NORMAL, 'OnSelectionLine', tr('Select current phrase')),
             (700, 'IDPM_SELECTION_SELECTALL', tr('Select All') + '\tCtrl+A', wx.ITEM_NORMAL, 'OnPopupEdit', tr('Selects the entire document')),
-            (800, 'IDPM_SELECTION_BEGIN', tr('Select Begin'), wx.ITEM_NORMAL, 'OnSelectionBegin', tr('Set selection begin')),
-            (900, 'IDPM_SELECTION_END', tr('Select End'), wx.ITEM_NORMAL, 'OnSelectionEnd', tr('Set selection end')),
+            (800, 'IDPM_SELECTION_BEGIN', tr('Set Start of Selection'), wx.ITEM_NORMAL, 'OnSelectionBegin', tr('Set selection begin')),
+            (900, 'IDPM_SELECTION_END', tr('Set End of Selection'), wx.ITEM_NORMAL, 'OnSelectionEnd', tr('Set selection end')),
         ]),
     ])
 Mixin.setPlugin('editor', 'add_menu', add_editor_menu)
@@ -193,11 +193,39 @@ def OnSelectionWord(win, event):
 Mixin.setMixin('editor', 'OnSelectionWord', OnSelectionWord)
 
 def OnEditSelectionWord(win, event):
-    pos = win.document.GetCurrentPos()
-    start = win.document.WordStartPosition(pos, True)
-    end = win.document.WordEndPosition(pos, True)
-    win.document.SetSelection(start, end)
+    win.document.SelectionWord()
 Mixin.setMixin('mainframe', 'OnEditSelectionWord', OnEditSelectionWord)
+
+def SelectionWord(self):
+    sel = self.GetSelection() 
+    if sel[0] == sel[1]:
+        pos = self.GetCurrentPos()
+        start = self.WordStartPosition(pos, True)
+        end = self.WordEndPosition(pos, True)
+        self.SetSelection(start, end)
+    else:
+        pos = self.GetCurrentPos()
+        start = self.WordStartPosition(pos, True)
+        end = self.WordEndPosition(pos, True)
+        if end > start:
+            i = start - 1
+            while i >= 0:
+                if self.getChar(i) in self.mainframe.getWordChars() + '.':
+                    start -= 1
+                    i -= 1
+                else:
+                    break
+            i = end
+            length = self.GetLength()
+            while i < length:
+                if self.getChar(i) in self.mainframe.getWordChars()+ '.':
+                    end += 1
+                    i += 1
+                else:
+                    break
+        self.SetSelection(start, end)
+        
+Mixin.setMixin('editor', 'SelectionWord',SelectionWord )
 
 def OnSelectionWordExtend(win, event):
     win.mainframe.OnEditSelectionWordExtend(event)
@@ -230,6 +258,23 @@ def OnEditSelectionLine(win, event):
     win.document.SetSelection(*win.document.getLinePositionTuple())
 Mixin.setMixin('mainframe', 'OnEditSelectionLine', OnEditSelectionLine)
 
+
+def SelectionLine(self):
+    line = self.GetCurrentLine()
+    _start = self.PositionFromLine(line)
+    _end = self.GetLineEndPosition(line)
+    sel = self.GetSelection()
+    if  sel[0] != sel[1]:
+        self.CmdKeyExecute(wx.stc.STC_CMD_LINEDOWNEXTEND)
+        self.CmdKeyExecute(wx.stc.STC_CMD_LINEENDEXTEND)
+        self.ScrollToColumn(0)
+    else:
+        self.SetSelBackground(1, "blue violet")
+        self.SetSelForeground(1, "white")
+        self.SetSelection(_start, _end)
+        self.ScrollToColumn(0)
+Mixin.setMixin('editor', 'SelectionLine', SelectionLine) 
+
 def OnSelectionLine(win, event):
     win.mainframe.OnEditSelectionLine(event)
 Mixin.setMixin('editor', 'OnSelectionLine', OnSelectionLine)
@@ -252,17 +297,22 @@ def OnSelectionMatchLeft(win, event):
 Mixin.setMixin('editor', 'OnSelectionMatchLeft', OnSelectionMatchLeft)
 
 def OnEditSelectionMatchRight(win, event):
-    pos = win.document.GetCurrentPos()
-    text = win.document.getRawText()
+    win.document.SelectionMatch()
+Mixin.setMixin('mainframe', 'OnEditSelectionMatchRight', OnEditSelectionMatchRight)
+
+
+def SelectionMatch(self):
+    pos = self.GetCurrentPos()
+    text = self.getRawText()
 
     token = [('\'', '\''), ('"', '"'), ('(', ')'), ('[', ']'), ('{', '}'), ('<', '>')]
     end, match = findRight(text, pos, token)
     if end > -1:
         start, match = findLeft(text, pos, token, match)
         if start > -1:
-            win.document.SetSelection(end, start)
-Mixin.setMixin('mainframe', 'OnEditSelectionMatchRight', OnEditSelectionMatchRight)
-
+            self.SetSelection(end, start)    
+Mixin.setMixin('editor', 'SelectionMatch', SelectionMatch)
+    
 def OnSelectionMatchRight(win, event):
     win.mainframe.OnEditSelectionMatchRight(event)
 Mixin.setMixin('editor', 'OnSelectionMatchRight', OnSelectionMatchRight)
@@ -347,8 +397,8 @@ def OnSelectionEnlarge(win, event):
 Mixin.setMixin('editor', 'OnSelectionEnlarge', OnSelectionEnlarge)
 
 def editor_init(win):
-    win.MarkerDefine(2, wx.stc.STC_MARK_SMALLRECT, "red", "red")
-    win.selection_mark = 2
+    #win.MarkerDefine(2, wx.stc.STC_MARK_SMALLRECT, "red", "red")
+    win.selection_mark, win.selection_marker = win.marker_define("smallrect", "red", "red")
     win.select_anchor = -1
 Mixin.setPlugin('editor', 'init', editor_init)
 

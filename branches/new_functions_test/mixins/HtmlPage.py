@@ -201,7 +201,7 @@ class HtmlPage(wx.Panel, DocumentBase.DocumentBase, Mixin.Mixin):
             event.Enable(self.html.CanForward())
 
     def OnStatusTextChange(self, event):
-        self.mainframe.SetStatusText(event.Text, 0)
+        self.mainframe.SetStatusText(event.Text, 'status')
 
     def LoadContent(self, content):
         fd, self.filename = tempfile.mkstemp('.html')

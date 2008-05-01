@@ -1,6 +1,11 @@
 import sys
 import re
+from modules.Debug import error
+
 from modules import PyParse
+
+
+        
 
 re_as = re.compile('\s+as(\s+|$)')
 re_match = re.compile('import\s*$|,\s*$')
@@ -24,6 +29,27 @@ def fromimport(win, matchobj):
 #        error.error('Execute code error: import ' + matchobj.groups()[0])
 #        error.traceback()
         return 'blank', ''
+    
+NAMES = []
+import import_names
+def import_this(win, matchobj):
+    global NAMES
+    try:
+        if re_as.search(matchobj.group()):
+            return 'blank', ''
+        if  not re_match.search(matchobj.group()):
+            return 'blank', ''
+        if NAMES:
+            return 'append', NAMES
+        NAMES.extend([x + '?28' for x in list(sys.builtin_module_names)])
+        lib, sites = import_names.get_std_lib()
+        NAMES.extend(import_names.get_names_from_lib(lib, True))
+        #NAMES = [x + "?4" for x in set(NAMES)]
+        return 'append', NAMES
+    except :
+        error.traceback()
+        return 'blank', ''
+    
 
 import import_utils
 def calltip(win, word, syncvar):
