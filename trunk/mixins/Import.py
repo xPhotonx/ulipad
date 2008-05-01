@@ -1595,7 +1595,7 @@ def strip_lineending(document):
         for i in range(document.GetLineCount()):
             start = document.PositionFromLine(i)
             end = document.GetLineEndPosition(i)
-            text = document.GetTextRange(start, end)
+            text = document.GetTextRange(start, end).encode('utf-8')
             b = r_lineending.search(text)
             if b:
                 document.SetTargetStart(start+b.start())
