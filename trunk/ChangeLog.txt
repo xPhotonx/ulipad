@@ -1,4 +1,7 @@
 $Rev$
+[2008/05/05]
+mEditorCtrl.py      Fix Cancel Save file will prompt save as dialog again bug
+
 [2008/05/01]
 mFormat.py          Fix strip tailing spaces bug
 

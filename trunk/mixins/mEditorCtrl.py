@@ -239,7 +239,7 @@ def SaveFile(win, ctrl, issaveas=False):
                         tr("Save As..."), wx.OK|wx.ICON_INFORMATION).ShowModal()
                     return False
         else:
-            return False
+            return True
     else:
         filename = ctrl.filename
 
