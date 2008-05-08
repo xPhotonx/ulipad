@@ -124,7 +124,7 @@ class MainFrame(wx.Frame, Mixin.Mixin):
             self.callplugin('on_update_ui', self, event)
 
     def OnIdle(self, event):
-        if Globals.app.wxApp.Active:
+        if hasattr(Globals.app.wxApp, 'Active') and Globals.app.wxApp.Active:
             self.callplugin('on_idle', self)
 #        try:
 #            while not self.closeflag:
