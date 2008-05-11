@@ -57,18 +57,18 @@ ${account()}
     syl_cdatatag = STYLE_CUSTOM + 11
     
     syntaxitems = [
-        ('Default',              STYLE_DEFAULT,         STE_STYLE_TEXT),
-        ('Keyword',              STYLE_KEYWORD,         STE_STYLE_KEYWORD1),
+        ('Default',              STYLE_DEFAULT,         CustomLexer.STE_STYLE_TEXT),
+        ('Keyword',              STYLE_KEYWORD,         CustomLexer.STE_STYLE_KEYWORD1),
         ('Tag',                  syl_tag,               'bold'),
         ('Attribute Name',       syl_attrname,          'bold,fore:red'),
         ('Attribute Value',      syl_attrvalue,         'bold,fore:#008080'),
-        ('Comment',              STYLE_COMMENT,         STE_STYLE_COMMENT),
+        ('Comment',              STYLE_COMMENT,         CustomLexer.STE_STYLE_COMMENT),
         ('Variable',             syl_variable,          'bold,italic,back:#FFDCFF'),
         ('Symbol',               syl_symbol,            'fore:#5c8f59,bold'),
         ('Tag Text',             syl_tagtext,           'back:#FFEBCD'),
         ('Mako Tag',             syl_makotag,           'fore:#228B22,bold'),
-        ('Script Text',          syl_script_text,       STE_STYLE_COMMENT),
-        ('Style Text',           syl_style_text,        STE_STYLE_COMMENT),
+        ('Script Text',          syl_script_text,       CustomLexer.STE_STYLE_COMMENT),
+        ('Style Text',           syl_style_text,        CustomLexer.STE_STYLE_COMMENT),
         ('CDATA Tag',            syl_cdatatag,          'fore:#FF833F'),
     ]
         

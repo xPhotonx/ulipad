@@ -397,8 +397,6 @@ has no shortcuts defined, its key-name list is empty (<tt class="docutils litera
 Window, you can change them:</p>
 <pre class="literal-block">
 [default]
-editor_font = &quot;fontname&quot;
-editor_fontsize = 10
 message_font = &quot;fontname&quot;
 message_fontsize = 10
 shell_font = &quot;fontname&quot;
@@ -411,6 +409,41 @@ message_caretlineback = #FF0000
 </pre>
 <p>Here the color is represented using hexidecimal <tt class="docutils literal"><span class="pre">#XXXXXX</span></tt>. I think you can also
 use <tt class="docutils literal"><span class="pre">red</span></tt>, <tt class="docutils literal"><span class="pre">green</span></tt>, etc.</p>
+<p>You can also set default color theme by defined default_style session, for
+example you can define a blue theme with:</p>
+<pre class="literal-block">
+[default_style]
+STE_STYLE_TEXT = u&quot;fore:#8DB0D3&quot;
+STE_STYLE_NUMBER = u&quot;fore:#FF00FF&quot;
+STE_STYLE_STRING = u&quot;fore:#00FF80&quot;
+STE_STYLE_COMMENT = u&quot;italic,fore:#008040&quot;
+STE_STYLE_KEYWORD1 = u&quot;fore:#FFFF00&quot;
+STE_STYLE_IDENTIFIER = u&quot;fore:#8DB0D3&quot;
+STE_STYLE_OPERATOR = u&quot;fore:#F0804F&quot;
+STE_STYLE_CHARACTER = u&quot;fore:#E19618&quot;
+STE_STYLE_REGEX = u&quot;fore:#FFFF80&quot;
+STC_STYLE_DEFAULT = u&quot;fore:#FFFFFF,back:#112435,face:YaHei Consolas Hybrid,size:12&quot;
+STC_STYLE_LINENUMBER = u&quot;fore:#FFFFFF,back:#1F4661,size:10&quot;
+STC_STYLE_CONTROLCHAR = u&quot;fore:#FFFFFF&quot;
+STC_STYLE_BRACELIGHT = u&quot;bold,fore:#FF0000&quot;
+STC_STYLE_BRACEBAD = u&quot;bold,fore:#0000FF&quot;
+STC_STYLE_CARET_FORE = u&quot;fore:#FF0000&quot;
+STC_STYLE_CARETLINE_BACK = u&quot;back:#050349&quot;
+STC_STYLE_SELECTION_BACK = u&quot;back:#8080FF&quot;
+STC_STYLE_FOLDER = u&quot;back:#3476A3&quot;
+STC_STYLE_MARKER = u&quot;fore:#F0804F,back:#FFFFFF&quot;
+</pre>
+<p>And this will change all language syntax coloe theme. Because almost all syntax
+theme reference these color, but not all of them. Some of them are special:</p>
+<pre class="literal-block">
+STC_STYLE_DEFAULT           #default style
+STC_STYLE_LINENUMBER        #line number margin
+STC_STYLE_CARET_FORE        #caret foreground
+STC_STYLE_CARETLINE_BACK    #caret line background
+STC_STYLE_SELECTION_BACK    #selected text background
+STC_STYLE_FOLDER            #folder margin background
+STC_STYLE_MARKER            #folder marker foreground and background
+</pre>
 </div>
 <div class="section">
 <h1><a id="directory-browser-file-icons" name="directory-browser-file-icons">Directory-browser File Icons</a></h1>

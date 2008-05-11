@@ -69,9 +69,9 @@ from the ``docs`` directory of the `Docutils distribution`_.
 #        win.SetProperty("tab.timmy.whinge.level", "1")
 
     def initSyntaxItems(self):
-        self.addSyntaxItem('r_default',         'Default',              STYLE_DEFAULT,           STE_STYLE_TEXT)
-        self.addSyntaxItem('keyword',           'Keyword',              STYLE_KEYWORD,           STE_STYLE_KEYWORD1)
-        self.addSyntaxItem('inlineliteral',     'Inline Literal',       3,           'back:#CCCCCC')
+        self.addSyntaxItem('r_default',         'Default',              STYLE_DEFAULT,           self.STE_STYLE_TEXT)
+        self.addSyntaxItem('keyword',           'Keyword',              STYLE_KEYWORD,           self.STE_STYLE_KEYWORD1)
+        self.addSyntaxItem('inlineliteral',     'Inline Literal',       3,           'fore:#DD860F')
         self.addSyntaxItem('directurl',         'DirectUrl',            4,           'fore:#0000FF,underline')
         self.addSyntaxItem('interpretedtext',   'Interpreted Text',     5,           'fore:#339933')
         self.addSyntaxItem('bold',              'Bold',                 6,           'bold')

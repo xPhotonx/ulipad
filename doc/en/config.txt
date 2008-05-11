@@ -94,8 +94,6 @@ If you don't like the default fonts of the Editor, Message Window, or Shell
 Window, you can change them::
 
     [default]
-    editor_font = "fontname"
-    editor_fontsize = 10
     message_font = "fontname"
     message_fontsize = 10
     shell_font = "fontname"
@@ -108,6 +106,41 @@ And you can also change the caret-line background color::
 
 Here the color is represented using hexidecimal ``#XXXXXX``. I think you can also
 use ``red``, ``green``, etc.
+
+You can also set default color theme by defined default_style session, for 
+example you can define a blue theme with::
+
+    [default_style]
+    STE_STYLE_TEXT = u"fore:#8DB0D3"
+    STE_STYLE_NUMBER = u"fore:#FF00FF"
+    STE_STYLE_STRING = u"fore:#00FF80"
+    STE_STYLE_COMMENT = u"italic,fore:#008040"
+    STE_STYLE_KEYWORD1 = u"fore:#FFFF00"
+    STE_STYLE_IDENTIFIER = u"fore:#8DB0D3"
+    STE_STYLE_OPERATOR = u"fore:#F0804F"
+    STE_STYLE_CHARACTER = u"fore:#E19618"
+    STE_STYLE_REGEX = u"fore:#FFFF80"
+    STC_STYLE_DEFAULT = u"fore:#FFFFFF,back:#112435,face:YaHei Consolas Hybrid,size:12"
+    STC_STYLE_LINENUMBER = u"fore:#FFFFFF,back:#1F4661,size:10"
+    STC_STYLE_CONTROLCHAR = u"fore:#FFFFFF"
+    STC_STYLE_BRACELIGHT = u"bold,fore:#FF0000"
+    STC_STYLE_BRACEBAD = u"bold,fore:#0000FF"
+    STC_STYLE_CARET_FORE = u"fore:#FF0000"
+    STC_STYLE_CARETLINE_BACK = u"back:#050349"
+    STC_STYLE_SELECTION_BACK = u"back:#8080FF"
+    STC_STYLE_FOLDER = u"back:#3476A3"
+    STC_STYLE_MARKER = u"fore:#F0804F,back:#FFFFFF"
+
+And this will change all language syntax coloe theme. Because almost all syntax
+theme reference these color, but not all of them. Some of them are special::
+
+    STC_STYLE_DEFAULT           #default style
+    STC_STYLE_LINENUMBER        #line number margin
+    STC_STYLE_CARET_FORE        #caret foreground
+    STC_STYLE_CARETLINE_BACK    #caret line background
+    STC_STYLE_SELECTION_BACK    #selected text background
+    STC_STYLE_FOLDER            #folder margin background
+    STC_STYLE_MARKER            #folder marker foreground and background
 
 Directory-browser File Icons
 -------------------------------
