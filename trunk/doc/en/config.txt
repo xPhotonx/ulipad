@@ -131,7 +131,7 @@ example you can define a blue theme with::
     STC_STYLE_FOLDER = u"back:#3476A3"
     STC_STYLE_MARKER = u"fore:#F0804F,back:#FFFFFF"
 
-And this will change all language syntax coloe theme. Because almost all syntax
+And this will effect all language syntax color theme. Because almost all syntax
 theme reference these color, but not all of them. Some of them are special::
 
     STC_STYLE_DEFAULT           #default style
@@ -141,6 +141,10 @@ theme reference these color, but not all of them. Some of them are special::
     STC_STYLE_SELECTION_BACK    #selected text background
     STC_STYLE_FOLDER            #folder margin background
     STC_STYLE_MARKER            #folder marker foreground and background
+
+For Chinese user, there is a YaHei font from Microsoft, see this article 
+http://www.x-force.cn/article.asp?id=396, so above STC_STYLE_DEFAULT is just 
+use this font, and if you want other font, please change it or just omit it.
 
 Directory-browser File Icons
 -------------------------------
