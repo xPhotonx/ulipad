@@ -110,11 +110,11 @@ class CustomLexer(LexerBase):
             self.backstyles = self.initbackstyle()
     
     def initSyntaxItems(self):
-        self.addSyntaxItem('r_default', 'Default',  STYLE_DEFAULT,  STE_STYLE_TEXT)
-        self.addSyntaxItem('keyword',   'Keyword',  STYLE_KEYWORD,  STE_STYLE_KEYWORD1)
-        self.addSyntaxItem('comment',   'Comment',  STYLE_COMMENT,  STE_STYLE_COMMENT)
-        self.addSyntaxItem('integer',   'Integer',  STYLE_INTEGER,  STE_STYLE_NUMBER)
-        self.addSyntaxItem('string',    'String',   STYLE_STRING,   STE_STYLE_STRING)
+        self.addSyntaxItem('r_default', 'Default',  STYLE_DEFAULT,  self.STE_STYLE_TEXT)
+        self.addSyntaxItem('keyword',   'Keyword',  STYLE_KEYWORD,  self.STE_STYLE_KEYWORD1)
+        self.addSyntaxItem('comment',   'Comment',  STYLE_COMMENT,  self.STE_STYLE_COMMENT)
+        self.addSyntaxItem('integer',   'Integer',  STYLE_INTEGER,  self.STE_STYLE_NUMBER)
+        self.addSyntaxItem('string',    'String',   STYLE_STRING,   self.STE_STYLE_STRING)
                                                                     
     def is_keyword(self, group=0, style=STYLE_KEYWORD, keywords=None, casesensitive=None):
         if keywords is None:
@@ -189,32 +189,33 @@ class CustomLexer(LexerBase):
             else:
                 a = s(win, begin, end, text, matchobj)
                 self.set_comp_style(win, begin, end, a)
-            
+          
         i = 0
-        last_begin = 0
+        last_begin = -1
         while begin + i < end:
             flag = False
             for p, s in tokens:
                 r = p.match(text, i)
                 if r:
-                    if last_begin:
+                    if last_begin > -1:
                         self.set_comp_style(win, last_begin, begin + i, STYLE_DEFAULT)
-                        last_begin = 0
+                        last_begin = -1
                         
                     flag = True
                     step = r.end() - r.start()
                     _process_result(s, win, begin+r.start(), begin+r.end(), 
                         r.group(), r)
+                    last_begin = begin+r.end()
                     break
                     
             if not flag:
-                if not last_begin:
+                if last_begin == -1:
                     last_begin = begin + i
                 step = 1
             
             i += step
         
-        if last_begin:
+        if last_begin > -1:
             self.set_comp_style(win, last_begin, end, STYLE_DEFAULT)
             
     def set_style(self, win, start, end, style):

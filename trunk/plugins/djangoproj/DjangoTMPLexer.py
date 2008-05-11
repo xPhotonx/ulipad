@@ -73,19 +73,19 @@ class DjangoTmpLexer(CustomLexer):
 #            'slugify', 'first']
     
     def initSyntaxItems(self):
-        self.addSyntaxItem('r_default',         'Default',              STYLE_DEFAULT,              STE_STYLE_TEXT)
-        self.addSyntaxItem('keyword',           'Keyword',              STYLE_KEYWORD,              STE_STYLE_KEYWORD1)
+        self.addSyntaxItem('r_default',         'Default',              STYLE_DEFAULT,              self.STE_STYLE_TEXT)
+        self.addSyntaxItem('keyword',           'Keyword',              STYLE_KEYWORD,              self.STE_STYLE_KEYWORD1)
         self.addSyntaxItem('tag',               'Tag',                  self.syl_tag,               'bold')
         self.addSyntaxItem('attribute',         'Attribute Name',       self.syl_attrname,          'bold,fore:red')
         self.addSyntaxItem('attrvalue',         'Attribute Value',      self.syl_attrvalue,         'bold,fore:#008080')
-        self.addSyntaxItem('comment',           'Comment',              STYLE_COMMENT,              STE_STYLE_COMMENT)
+        self.addSyntaxItem('comment',           'Comment',              STYLE_COMMENT,              self.STE_STYLE_COMMENT)
         self.addSyntaxItem('variable',          'Variable',             self.syl_variable,          'bold,italic,back:#FFDCFF')
         self.addSyntaxItem('symbol',            'Symbol',               self.syl_symbol,            'fore:#5c8f59,bold')
         self.addSyntaxItem('filter',            'Filter',               self.syl_filter,            'fore:#7f7047,bold')
         self.addSyntaxItem('tagtext',           'Tag Text',             self.syl_tagtext,           'back:#FFEBCD')
         self.addSyntaxItem('djangotag',         'Django Tag',           self.syl_djangotag,         'fore:#228B22,bold')
-        self.addSyntaxItem('script_text',       'Script Text',          self.syl_script_text,       STE_STYLE_COMMENT)
-        self.addSyntaxItem('style_text',        'Style Text',           self.syl_style_text,        STE_STYLE_COMMENT)
+        self.addSyntaxItem('script_text',       'Script Text',          self.syl_script_text,       self.STE_STYLE_COMMENT)
+        self.addSyntaxItem('style_text',        'Style Text',           self.syl_style_text,        self.STE_STYLE_COMMENT)
         self.addSyntaxItem('cdatatag',          'CDATA Tag',            self.syl_cdatatag,          'fore:#FF833F')
         
     def loadToken(self):
