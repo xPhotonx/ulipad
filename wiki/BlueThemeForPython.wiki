@@ -1,4 +1,7 @@
 #labels Featured
+Screen
+http://haokanbu.s3.amazonaws.com/picture/external/f4723aeec060435daa47a2adee93fb3c.jpeg
+
 {{{
 [styleitems]
 controlchar = u"fore:#FFFFFF"
