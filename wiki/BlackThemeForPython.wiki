@@ -1,5 +1,7 @@
-#summary One-sentence summary of this page.
 #labels Featured
+Screenshot
+
+http://haokanbu.s3.amazonaws.com/picture/external/e529cf9cb6d54563944c9b125b7b04f1.jpeg
 
 You can change the supported language syntax highlight color settings, here is a example for python,, it's black theme.
 
