@@ -127,6 +127,8 @@ class LexerBase(Mixin.Mixin):
         self.addSyntaxItem('-caretfore',    tr('Caret fore colour'),        0,  "fore:#FF0000")
         self.addSyntaxItem('-caretback',    tr('CaretLine back colour'),    0,  "back:#EEEEEE")
         self.addSyntaxItem('-selback',      tr('Selection back colour'),    0,  "back:#000080")
+        self.addSyntaxItem('-foldercolor',  tr('Folder margin colour'),     0,  "back:#FFFFFF")
+        self.addSyntaxItem('-markercolor',  tr('Marker colour'),            0,  "fore:#FFFFFF,back:#000000")
         self.addSyntaxItem('linenumber',    tr('Line numbers'),             wx.stc.STC_STYLE_LINENUMBER,    STC_STYLE_LINENUMBER % common.faces)
         self.addSyntaxItem('controlchar',   tr('Control characters'),       wx.stc.STC_STYLE_CONTROLCHAR,   STC_STYLE_CONTROLCHAR)
         self.addSyntaxItem('bracelight',    tr('Matched braces'),           wx.stc.STC_STYLE_BRACELIGHT,    STC_STYLE_BRACELIGHT)
@@ -192,8 +194,16 @@ class LexerBase(Mixin.Mixin):
             if hasattr(win, 'pref') and win.pref:
                 win.SetCaretLineVisible(win.pref.caret_line_visible)
             win.SetSelBackground(1, self._syntaxitems['-selback'].style.back)
-
-        #
+            win.SetFoldMarginHiColour(True, self._syntaxitems['-foldercolor'].style.back)
+            
+            markers = [wx.stc.STC_MARKNUM_FOLDEREND, wx.stc.STC_MARKNUM_FOLDEROPENMID,
+                wx.stc.STC_MARKNUM_FOLDERMIDTAIL, wx.stc.STC_MARKNUM_FOLDERTAIL,
+                wx.stc.STC_MARKNUM_FOLDERSUB, wx.stc.STC_MARKNUM_FOLDER,
+                wx.stc.STC_MARKNUM_FOLDEROPEN]
+            for i in markers:
+                win.MarkerSetForeground(i, self._syntaxitems['-markercolor'].style.fore)
+                win.MarkerSetBackground(i, self._syntaxitems['-markercolor'].style.back)
+                
         self.callplugin('colourize', win)
         
 
