@@ -88,6 +88,7 @@ class RegexWindow(wx.Panel):
         for i, v in enumerate(groups):
             ctrl_name, label, flag, strflag = v
             obj = wx.CheckBox(self, -1, label)
+            wx.EVT_CHECKBOX(obj, obj.GetId(), self.OnChange)
             self.checks[ctrl_name] = obj, flag, strflag
             grid1.Add(obj, k, wx.ALL, 2)
             if i % 2 == 0:
@@ -141,7 +142,14 @@ class RegexWindow(wx.Panel):
     def OnChange(self, event):
         text = self.text.GetValue()
         try:
-            r = re.compile(r"%s" % text, self.getflags())
+            c = self.checks['unicode'][0]
+            if c.GetValue(): #unicode
+                def u_chr(m):
+                    return unichr(int(m.group(1), 16))
+                text = re.sub(r'\u(.{4})', u_chr, text)
+                r = re.compile(text, self.getflags())
+            else:
+                r = re.compile(r"%s" % text, self.getflags())
         except Exception, e:
             errmsg = 'Error:' + str(e)
             self.set_error(errmsg)
@@ -203,5 +211,9 @@ class RegexWindow(wx.Panel):
             return ''
     
     def OnCreateExpression(self, event=None):
-        e = 're.compile(r"%s"%s)' % (self.text.GetValue(), self.getstringflags())
+        c = self.checks['unicode'][0]
+        if c.GetValue(): #unicode
+            e = 're.compile(u"%s"%s)' % (self.text.GetValue(), self.getstringflags())
+        else:
+            e = 're.compile(r"%s"%s)' % (self.text.GetValue(), self.getstringflags())
         self.set_result(e)
