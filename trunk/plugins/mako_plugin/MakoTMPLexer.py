@@ -56,21 +56,21 @@ ${account()}
     syl_style_text = STYLE_CUSTOM + 10
     syl_cdatatag = STYLE_CUSTOM + 11
     
-    syntaxitems = [
-        ('Default',              STYLE_DEFAULT,         CustomLexer.STE_STYLE_TEXT),
-        ('Keyword',              STYLE_KEYWORD,         CustomLexer.STE_STYLE_KEYWORD1),
-        ('Tag',                  syl_tag,               'bold'),
-        ('Attribute Name',       syl_attrname,          'bold,fore:red'),
-        ('Attribute Value',      syl_attrvalue,         'bold,fore:#008080'),
-        ('Comment',              STYLE_COMMENT,         CustomLexer.STE_STYLE_COMMENT),
-        ('Variable',             syl_variable,          'bold,italic,back:#FFDCFF'),
-        ('Symbol',               syl_symbol,            'fore:#5c8f59,bold'),
-        ('Tag Text',             syl_tagtext,           'back:#FFEBCD'),
-        ('Mako Tag',             syl_makotag,           'fore:#228B22,bold'),
-        ('Script Text',          syl_script_text,       CustomLexer.STE_STYLE_COMMENT),
-        ('Style Text',           syl_style_text,        CustomLexer.STE_STYLE_COMMENT),
-        ('CDATA Tag',            syl_cdatatag,          'fore:#FF833F'),
-    ]
+    def initSyntaxItems(self):
+        self.addSyntaxItem('m_default',         'Default',              STYLE_DEFAULT,              self.STC_STYLE_TEXT)
+        self.addSyntaxItem('keyword',           'Keyword',              STYLE_KEYWORD,              self.STC_STYLE_KEYWORD1)
+        self.addSyntaxItem('tag',               'Tag',                  self.syl_tag,               self.STC_STYLE_TAG)
+        self.addSyntaxItem('attribute',         'Attribute Name',       self.syl_attrname,          self.STC_STYLE_ATTRNAME)
+        self.addSyntaxItem('attrvalue',         'Attribute Value',      self.syl_attrvalue,         self.STC_STYLE_ATTRVALUE)
+        self.addSyntaxItem('comment',           'Comment',              STYLE_COMMENT,              self.STC_STYLE_COMMENT)
+        self.addSyntaxItem('variable',          'Variable',             self.syl_variable,          'italic,fore:#FFDCFF')
+        self.addSyntaxItem('symbol',            'Symbol',               self.syl_symbol,            self.STC_STYLE_TAG1)
+        self.addSyntaxItem('tagtext',           'Tag Text',             self.syl_tagtext,           self.STC_STYLE_TEXT)
+        self.addSyntaxItem('makotag',           'Mako Tag',             self.syl_makotag,           self.STC_STYLE_KEYWORD2)
+        self.addSyntaxItem('script_text',       'Script Text',          self.syl_script_text,       self.STC_STYLE_COMMENT)
+        self.addSyntaxItem('style_text',        'Style Text',           self.syl_style_text,        self.STC_STYLE_COMMENT)
+        self.addSyntaxItem('cdatatag',          'CDATA Tag',            self.syl_cdatatag,          'fore:#FF833F')
+    
         
     def loadToken(self):
         token_tag = TokenList([

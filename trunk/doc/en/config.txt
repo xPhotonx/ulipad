@@ -94,6 +94,8 @@ If you don't like the default fonts of the Editor, Message Window, or Shell
 Window, you can change them::
 
     [default]
+    editor_font = "fontname"
+    editor_fontsize = 10
     message_font = "fontname"
     message_fontsize = 10
     shell_font = "fontname"

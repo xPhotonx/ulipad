@@ -39,54 +39,88 @@ class LexerBase(Mixin.Mixin):
     keywords = []
     syntaxitems = []
 
-    STE_STYLE_TEXT = "fore:#000000"
-    STE_STYLE_KEYWORD1 = "fore:#0000FF,bold"
-    STE_STYLE_KEYWORD2 = "fore:#AA0000"
-    STE_STYLE_KEYWORD3 = "fore:#6F4242"
-    STE_STYLE_KEYWORD4 = "fore:#AAAA00"
-    STE_STYLE_KEYWORD5 = "fore:#2F2F2F"
-    STE_STYLE_KEYWORD6 = "fore:#808080"
-    STE_STYLE_COMMENT = "fore:#238E23,back:#E8FFE8"
-    STE_STYLE_COMMENTDOC = "fore:#238E23,back:#E8FFE8"
-    STE_STYLE_COMMENTLINE = "fore:#238E23,back:#E8FFE8"
-    STE_STYLE_COMMENTOTHER = "fore:#238E23,back:#E8FFE8"
-    STE_STYLE_CHARACTER = "fore:#9F9F9F"
-    STE_STYLE_CHARACTEREOL = "fore:#9F9F9F"
-    STE_STYLE_STRING = "fore:#2A2AA5"
-    STE_STYLE_STRINGEOL = "fore:#000000,back:#E0C0E0,eol" #"fore:#2A2AA5,eol"
-    STE_STYLE_DELIMITER = "fore:#3232CC"
-    STE_STYLE_PUNCTUATION = "fore:#3232CC"
-    STE_STYLE_OPERATOR = "fore:#000000"
-    STE_STYLE_BRACE = "fore:#4F2F4F"
-    STE_STYLE_COMMAND = "fore:#FF0000"
-    STE_STYLE_IDENTIFIER = "fore:#000000"
-    STE_STYLE_LABEL = "fore:#4F2F4F"
-    STE_STYLE_NUMBER = "fore:#6B238E"
-    STE_STYLE_PARAMETER = "fore:#4F2F4F"
-    STE_STYLE_REGEX = "fore:#DB70DB"
-    STE_STYLE_UUID = "fore:#DB70DB"
-    STE_STYLE_VALUE = "fore:#DB70DB"
-    STE_STYLE_PREPROCESSOR = "fore:#808080"
-    STE_STYLE_SCRIPT = "fore:#2F2F2F"
-    STE_STYLE_ERROR = "fore:#0000FF"
-    STE_STYLE_UNDEFINED = "fore:#3232CC"
-    STE_STYLE_UNUSED = "fore:#000000"
-    STC_STYLE_DEFAULT = "face:%(mono)s,size:%(size)d"
-    STC_STYLE_LINENUMBER = "back:#AAFFAA,size:%(lnsize)d" #back:#C0C0C0
-    STC_STYLE_BRACELIGHT = "fore:#FF0000,bold" #fore:#0000FF,back:#AAFFAA,bold
-    STC_STYLE_BRACEBAD = "fore:#0000FF,bold"   #fore:#FF0000,back:#FFFF00,bold
-    STC_STYLE_CONTROLCHAR = "fore:#000000"
-    STC_STYLE_INDENTGUIDE = "fore:#808080"
-    STE_STYLE_SELECTION_COLOUR = "fore:#FFFFFF,back:#C0C0C0"
-    STE_STYLE_WHITESPACE_COLOUR = "fore:#000000"
-    STE_STYLE_EDGE_COLOUR = "fore:#C0C0C0"
-    STE_STYLE_CARET_COLOUR = "fore:#000000,back:#F9F9F9"
-    STE_STYLE_FOLD_COLOUR = "fore:#E0E0E0"
-    STC_STYLE_CARET_FORE = "fore:#FF0000"
-    STC_STYLE_CARETLINE_BACK = "back:#EEEEEE"
-    STC_STYLE_SELECTION_BACK = "back:#000080"
-    STC_STYLE_FOLDER = "back:#FFFFFF"
-    STC_STYLE_MARKER = "fore:#FFFFFF,back:#000000"
+    #blue theme
+    STC_STYLE_TEXT = u"fore:#8DB0D3"
+    STC_STYLE_NUMBER = u"fore:#FF00FF"
+    STC_STYLE_STRING = u"fore:#00FF80"
+    STC_STYLE_COMMENT = u"italic,fore:#008040"
+    STC_STYLE_KEYWORD1 = u"fore:#FFFF00"
+    STC_STYLE_KEYWORD2 = u"fore:#AFFFEE"
+    STC_STYLE_IDENTIFIER = u"fore:#8DB0D3"
+    STC_STYLE_OPERATOR = u"fore:#F0804F"
+    STC_STYLE_CHARACTER = u"fore:#E19618"
+    STC_STYLE_REGEX = u"fore:#FFFF80"
+    STC_STYLE_DEFAULT = u"fore:#FFFFFF,back:#112435,face:%(mono)s,size:%(size)d"
+    STC_STYLE_LINENUMBER = u"fore:#FFFFFF,back:#1F4661,face:%(mono)s,size:%(lnsize)d"
+    STC_STYLE_CONTROLCHAR = u"fore:#FFFFFF"
+    STC_STYLE_BRACELIGHT = u"bold,fore:#FF0000"
+    STC_STYLE_BRACEBAD = u"bold,fore:#0000FF"
+    STC_STYLE_CARET_FORE = u"fore:#FF0000"
+    STC_STYLE_CARETLINE_BACK = u"back:#5F0054"
+    STC_STYLE_SELECTION_BACK = u"back:#000080"
+    STC_STYLE_FOLDER = u"back:#3476A3"
+    STC_STYLE_MARKER = u"fore:#F0804F,back:#FFFFFF"
+    STC_STYLE_TAG = u"fore:#15852B"
+    STC_STYLE_TAG1 = u"fore:#2CEF50"
+    STC_STYLE_TAGKEY = u"fore:#FFFF00"
+    STC_STYLE_ATTRNAME = u"fore:#F0804F"
+    STC_STYLE_ATTRVALUE = u"fore:#156EB2"
+    STC_STYLE_CLASSNAME = u"fore:#BBFF4F"
+    STC_STYLE_DEFNAME = u"fore:#4179C5"
+    STC_STYLE_LINK = u"fore:#FEFF8F,underline"
+    STC_STYLE_STRINGEOL = u"fore:#FF6F82,back:#E0C0E0,eol"
+
+    #white theme
+#    STC_STYLE_TEXT = "fore:#000000"
+#    STC_STYLE_NUMBER = "fore:#6B238E"
+#    STC_STYLE_STRING = "fore:#2A2AA5"
+#    STC_STYLE_COMMENT = "italic,fore:#238E23,back:#E8FFE8"
+#    STC_STYLE_KEYWORD1 = "bold,fore:#0000FF"
+#    STC_STYLE_KEYWORD2 = "bold,fore:#2F032A"
+#    STC_STYLE_IDENTIFIER = "fore:#000000"
+#    STC_STYLE_OPERATOR = "fore:#000000"
+#    STC_STYLE_CHARACTER = "fore:#9F9F9F"
+#    STC_STYLE_REGEX = "fore:#DB70DB"
+#    STC_STYLE_DEFAULT = "face:%(mono)s,size:%(size)d"
+#    STC_STYLE_LINENUMBER = "back:#AAFFAA,size:%(lnsize)d" #back:#C0C0C0
+#    STC_STYLE_CONTROLCHAR = "fore:#000000" #xxxxxxx
+#    STC_STYLE_BRACELIGHT = "fore:#FF0000,bold" #fore:#0000FF,back:#AAFFAA,bold
+#    STC_STYLE_BRACEBAD = "fore:#0000FF,bold"   #fore:#FF0000,back:#FFFF00,bold
+#    STC_STYLE_CARET_FORE = "fore:#FF0000"
+#    STC_STYLE_CARETLINE_BACK = "back:#EEEEEE"
+#    STC_STYLE_SELECTION_BACK = "back:#000080"
+#    STC_STYLE_FOLDER = "back:#FFFFFF"
+#    STC_STYLE_MARKER = "fore:#FFFFFF,back:#000000"
+#    STC_STYLE_TAG = 'fore:#15852B'
+#    STC_STYLE_TAG1 = 'fore:#2CEF50'
+#    STC_STYLE_TAGKEY = 'bold,fore:#0000FF'
+#    STC_STYLE_ATTRNAME = 'bold,fore:#F0804F'
+#    STC_STYLE_ATTRVALUE = 'fore:#156EB2'
+#    STC_STYLE_CLASSNAME = "bold,fore:#FF0000"
+#    STC_STYLE_DEFNAME = "bold,fore:#007F7F"
+#    STC_STYLE_LINK = "fore:#0000FF,underline"
+#    STC_STYLE_STRINGEOL = "fore:#000000,back:#E0C0E0,eol" #"fore:#2A2AA5,eol"
+    
+    #undefined
+    STC_STYLE_KEYWORD3 = "fore:#6F4242"
+    STC_STYLE_KEYWORD4 = "fore:#AAAA00"
+    STC_STYLE_KEYWORD5 = "fore:#2F2F2F"
+    STC_STYLE_KEYWORD6 = "fore:#808080"
+    STC_STYLE_COMMENTDOC = "fore:#238E23,back:#E8FFE8"
+    STC_STYLE_COMMENTLINE = "fore:#238E23,back:#E8FFE8"
+    STC_STYLE_COMMENTOTHER = "fore:#238E23,back:#E8FFE8"
+    STC_STYLE_CHARACTEREOL = "fore:#9F9F9F"
+    STC_STYLE_DELIMITER = "fore:#3232CC"
+    STC_STYLE_PUNCTUATION = "fore:#3232CC"
+    STC_STYLE_BRACE = "fore:#4F2F4F"
+    STC_STYLE_LABEL = "fore:#4F2F4F"
+    STC_STYLE_PARAMETER = "fore:#4F2F4F"
+    STC_STYLE_UUID = "fore:#DB70DB"
+    STC_STYLE_VALUE = "fore:#DB70DB"
+    STC_STYLE_PREPROCESSOR = "fore:#808080"
+    STC_STYLE_SCRIPT = "fore:#2F2F2F"
+    STC_STYLE_ERROR = "fore:#0000FF"
+    STC_STYLE_UNDEFINED = "fore:#3232CC"
     
     def __init__(self, name, filewildchar, syntaxtype, stxfile=''):
         self.initmixin()
@@ -126,12 +160,12 @@ class LexerBase(Mixin.Mixin):
             'lnsize':linesize,
         })
         
+        #get default style
+        self.get_default_style(x)
+        
         self.__class__.STC_STYLE_DEFAULT = self.STC_STYLE_DEFAULT % common.faces
         self.__class__.STC_STYLE_LINENUMBER = self.STC_STYLE_LINENUMBER % common.faces
         
-        #get default style
-        self.get_default_style(x)
-
         self.font = wx.Font(fontsize, wx.TELETYPE, wx.NORMAL, wx.NORMAL, face=fontname)
         
         self.addSyntaxItem('default',       tr('Style default'),            wx.stc.STC_STYLE_DEFAULT,       self.STC_STYLE_DEFAULT)
@@ -337,17 +371,18 @@ class LexerBase(Mixin.Mixin):
                     
     def get_default_style(self, ini):
         styles = [
-            'STE_STYLE_TEXT', 
-            'STE_STYLE_NUMBER',
-            'STE_STYLE_STRING',
-            'STE_STYLE_COMMENT',
-            'STE_STYLE_COMMENTLINE',
-            'STE_STYLE_COMMENTDOC',
-            'STE_STYLE_KEYWORD1',
-            'STE_STYLE_IDENTIFIER',
-            'STE_STYLE_OPERATOR',
-            'STE_STYLE_CHARACTER',
-            'STE_STYLE_REGEX',
+            'STC_STYLE_TEXT', 
+            'STC_STYLE_NUMBER',
+            'STC_STYLE_STRING',
+            'STC_STYLE_COMMENT',
+            'STC_STYLE_COMMENTLINE',
+            'STC_STYLE_COMMENTDOC',
+            'STC_STYLE_KEYWORD1',
+            'STC_STYLE_KEYWORD2',
+            'STC_STYLE_IDENTIFIER',
+            'STC_STYLE_OPERATOR',
+            'STC_STYLE_CHARACTER',
+            'STC_STYLE_REGEX',
             'STC_STYLE_DEFAULT',
             'STC_STYLE_LINENUMBER',
             'STC_STYLE_CONTROLCHAR',
@@ -358,6 +393,15 @@ class LexerBase(Mixin.Mixin):
             'STC_STYLE_SELECTION_BACK',
             'STC_STYLE_FOLDER',
             'STC_STYLE_MARKER',
+            'STC_STYLE_TAG',
+            'STC_STYLE_TAG1',
+            'STC_STYLE_TAGKEY',
+            'STC_STYLE_ATTRNAME',
+            'STC_STYLE_ATTRVALUE',
+            'STC_STYLE_CLASSNAME',
+            'STC_STYLE_DEFNAME',
+            'STC_STYLE_LINK',
+            'STC_STYLE_STRINGEOL',
             ]
         for i in styles:
             s = ini.default_style.get(i, None)
