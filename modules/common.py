@@ -411,7 +411,7 @@ if wx.Platform == '__WXMSW__':
               'mono' : 'Courier New',
               'helv' : 'Arial',
               'other': 'Comic Sans MS',
-              'size' : 11,
+              'size' : 12,
               'lnsize' : 10,
              }
 elif wx.Platform == '__WXGTK__':

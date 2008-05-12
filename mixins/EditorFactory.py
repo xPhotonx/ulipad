@@ -199,7 +199,7 @@ class EditorFactory(FNB.FlatNotebook, Mixin.Mixin):
                     doc = self.newPage(filename, encoding, delay=delay, defaulttext=defaulttext, language=language, documenttype=documenttype)
         else:
             doc = self.newPage(filename, encoding, delay=delay, defaulttext=defaulttext, language=language, documenttype=documenttype)
-
+            
         self.callplugin('afternewfile', self, doc)
         return doc
     
@@ -231,6 +231,7 @@ class EditorFactory(FNB.FlatNotebook, Mixin.Mixin):
             return None
 
         self.AddPage(panel, document.getShortFilename(), select=False)
+        
         imageindex = self.imageindex.get(document.pageimagename, -1)
         if imageindex > -1:
             self.SetPageImage(self.GetPageCount() - 1, imageindex)

@@ -110,11 +110,11 @@ class CustomLexer(LexerBase):
             self.backstyles = self.initbackstyle()
     
     def initSyntaxItems(self):
-        self.addSyntaxItem('r_default', 'Default',  STYLE_DEFAULT,  self.STE_STYLE_TEXT)
-        self.addSyntaxItem('keyword',   'Keyword',  STYLE_KEYWORD,  self.STE_STYLE_KEYWORD1)
-        self.addSyntaxItem('comment',   'Comment',  STYLE_COMMENT,  self.STE_STYLE_COMMENT)
-        self.addSyntaxItem('integer',   'Integer',  STYLE_INTEGER,  self.STE_STYLE_NUMBER)
-        self.addSyntaxItem('string',    'String',   STYLE_STRING,   self.STE_STYLE_STRING)
+        self.addSyntaxItem('r_default', 'Default',  STYLE_DEFAULT,  self.STC_STYLE_TEXT)
+        self.addSyntaxItem('keyword',   'Keyword',  STYLE_KEYWORD,  self.STC_STYLE_KEYWORD1)
+        self.addSyntaxItem('comment',   'Comment',  STYLE_COMMENT,  self.STC_STYLE_COMMENT)
+        self.addSyntaxItem('integer',   'Integer',  STYLE_INTEGER,  self.STC_STYLE_NUMBER)
+        self.addSyntaxItem('string',    'String',   STYLE_STRING,   self.STC_STYLE_STRING)
                                                                     
     def is_keyword(self, group=0, style=STYLE_KEYWORD, keywords=None, casesensitive=None):
         if keywords is None:
