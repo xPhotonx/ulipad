@@ -397,6 +397,9 @@ has no shortcuts defined, its key-name list is empty (<tt class="docutils litera
 Window, you can change them:</p>
 <pre class="literal-block">
 [default]
+editor_font = &quot;fontname&quot;
+editor_fontsize = 12
+editor_linesize = 10
 message_font = &quot;fontname&quot;
 message_fontsize = 10
 shell_font = &quot;fontname&quot;
@@ -413,25 +416,35 @@ use <tt class="docutils literal"><span class="pre">red</span></tt>, <tt class="d
 example you can define a blue theme with:</p>
 <pre class="literal-block">
 [default_style]
-STE_STYLE_TEXT = u&quot;fore:#8DB0D3&quot;
-STE_STYLE_NUMBER = u&quot;fore:#FF00FF&quot;
-STE_STYLE_STRING = u&quot;fore:#00FF80&quot;
-STE_STYLE_COMMENT = u&quot;italic,fore:#008040&quot;
-STE_STYLE_KEYWORD1 = u&quot;fore:#FFFF00&quot;
-STE_STYLE_IDENTIFIER = u&quot;fore:#8DB0D3&quot;
-STE_STYLE_OPERATOR = u&quot;fore:#F0804F&quot;
-STE_STYLE_CHARACTER = u&quot;fore:#E19618&quot;
-STE_STYLE_REGEX = u&quot;fore:#FFFF80&quot;
-STC_STYLE_DEFAULT = u&quot;fore:#FFFFFF,back:#112435,face:YaHei Consolas Hybrid,size:12&quot;
-STC_STYLE_LINENUMBER = u&quot;fore:#FFFFFF,back:#1F4661,size:10&quot;
+STC_STYLE_TEXT = u&quot;fore:#8DB0D3&quot;
+STC_STYLE_NUMBER = u&quot;fore:#FF00FF&quot;
+STC_STYLE_STRING = u&quot;fore:#00FF80&quot;
+STC_STYLE_COMMENT = u&quot;italic,fore:#008040&quot;
+STC_STYLE_KEYWORD1 = u&quot;fore:#FFFF00&quot;
+STC_STYLE_KEYWORD2 = u&quot;fore:#AFFFEE&quot;
+STC_STYLE_IDENTIFIER = u&quot;fore:#8DB0D3&quot;
+STC_STYLE_OPERATOR = u&quot;fore:#F0804F&quot;
+STC_STYLE_CHARACTER = u&quot;fore:#E19618&quot;
+STC_STYLE_REGEX = u&quot;fore:#FFFF80&quot;
+STC_STYLE_DEFAULT = u&quot;fore:#FFFFFF,back:#112435,face:%(mono)s,size:%(size)d&quot;
+STC_STYLE_LINENUMBER = u&quot;fore:#FFFFFF,back:#1F4661,face:%(mono)s,size:%(lnsize)d&quot;
 STC_STYLE_CONTROLCHAR = u&quot;fore:#FFFFFF&quot;
 STC_STYLE_BRACELIGHT = u&quot;bold,fore:#FF0000&quot;
 STC_STYLE_BRACEBAD = u&quot;bold,fore:#0000FF&quot;
 STC_STYLE_CARET_FORE = u&quot;fore:#FF0000&quot;
-STC_STYLE_CARETLINE_BACK = u&quot;back:#050349&quot;
-STC_STYLE_SELECTION_BACK = u&quot;back:#8080FF&quot;
+STC_STYLE_CARETLINE_BACK = u&quot;back:#5F0054&quot;
+STC_STYLE_SELECTION_BACK = u&quot;back:#000080&quot;
 STC_STYLE_FOLDER = u&quot;back:#3476A3&quot;
 STC_STYLE_MARKER = u&quot;fore:#F0804F,back:#FFFFFF&quot;
+STC_STYLE_TAG = u&quot;fore:#15852B&quot;
+STC_STYLE_TAG1 = u&quot;fore:#2CEF50&quot;
+STC_STYLE_TAGKEY = u&quot;fore:#FFFF00&quot;
+STC_STYLE_ATTRNAME = u&quot;fore:#F0804F&quot;
+STC_STYLE_ATTRVALUE = u&quot;fore:#156EB2&quot;
+STC_STYLE_CLASSNAME = u&quot;fore:#BBFF4F&quot;
+STC_STYLE_DEFNAME = u&quot;fore:#4179C5&quot;
+STC_STYLE_LINK = u&quot;fore:#FEFF8F,underline&quot;
+STC_STYLE_STRINGEOL = u&quot;fore:#FF6F82,back:#E0C0E0,eol&quot;
 </pre>
 <p>And this will effect all language syntax color theme. Because almost all syntax
 theme reference these color, but not all of them. Some of them are special:</p>
