@@ -95,7 +95,8 @@ Window, you can change them::
 
     [default]
     editor_font = "fontname"
-    editor_fontsize = 10
+    editor_fontsize = 12
+    editor_linesize = 10
     message_font = "fontname"
     message_fontsize = 10
     shell_font = "fontname"
@@ -113,25 +114,35 @@ You can also set default color theme by defined default_style session, for
 example you can define a blue theme with::
 
     [default_style]
-    STE_STYLE_TEXT = u"fore:#8DB0D3"
-    STE_STYLE_NUMBER = u"fore:#FF00FF"
-    STE_STYLE_STRING = u"fore:#00FF80"
-    STE_STYLE_COMMENT = u"italic,fore:#008040"
-    STE_STYLE_KEYWORD1 = u"fore:#FFFF00"
-    STE_STYLE_IDENTIFIER = u"fore:#8DB0D3"
-    STE_STYLE_OPERATOR = u"fore:#F0804F"
-    STE_STYLE_CHARACTER = u"fore:#E19618"
-    STE_STYLE_REGEX = u"fore:#FFFF80"
-    STC_STYLE_DEFAULT = u"fore:#FFFFFF,back:#112435,face:YaHei Consolas Hybrid,size:12"
-    STC_STYLE_LINENUMBER = u"fore:#FFFFFF,back:#1F4661,size:10"
+    STC_STYLE_TEXT = u"fore:#8DB0D3"
+    STC_STYLE_NUMBER = u"fore:#FF00FF"
+    STC_STYLE_STRING = u"fore:#00FF80"
+    STC_STYLE_COMMENT = u"italic,fore:#008040"
+    STC_STYLE_KEYWORD1 = u"fore:#FFFF00"
+    STC_STYLE_KEYWORD2 = u"fore:#AFFFEE"
+    STC_STYLE_IDENTIFIER = u"fore:#8DB0D3"
+    STC_STYLE_OPERATOR = u"fore:#F0804F"
+    STC_STYLE_CHARACTER = u"fore:#E19618"
+    STC_STYLE_REGEX = u"fore:#FFFF80"
+    STC_STYLE_DEFAULT = u"fore:#FFFFFF,back:#112435,face:%(mono)s,size:%(size)d"
+    STC_STYLE_LINENUMBER = u"fore:#FFFFFF,back:#1F4661,face:%(mono)s,size:%(lnsize)d"
     STC_STYLE_CONTROLCHAR = u"fore:#FFFFFF"
     STC_STYLE_BRACELIGHT = u"bold,fore:#FF0000"
     STC_STYLE_BRACEBAD = u"bold,fore:#0000FF"
     STC_STYLE_CARET_FORE = u"fore:#FF0000"
-    STC_STYLE_CARETLINE_BACK = u"back:#050349"
-    STC_STYLE_SELECTION_BACK = u"back:#8080FF"
+    STC_STYLE_CARETLINE_BACK = u"back:#5F0054"
+    STC_STYLE_SELECTION_BACK = u"back:#000080"
     STC_STYLE_FOLDER = u"back:#3476A3"
     STC_STYLE_MARKER = u"fore:#F0804F,back:#FFFFFF"
+    STC_STYLE_TAG = u"fore:#15852B"
+    STC_STYLE_TAG1 = u"fore:#2CEF50"
+    STC_STYLE_TAGKEY = u"fore:#FFFF00"
+    STC_STYLE_ATTRNAME = u"fore:#F0804F"
+    STC_STYLE_ATTRVALUE = u"fore:#156EB2"
+    STC_STYLE_CLASSNAME = u"fore:#BBFF4F"
+    STC_STYLE_DEFNAME = u"fore:#4179C5"
+    STC_STYLE_LINK = u"fore:#FEFF8F,underline"
+    STC_STYLE_STRINGEOL = u"fore:#FF6F82,back:#E0C0E0,eol"
 
 And this will effect all language syntax color theme. Because almost all syntax
 theme reference these color, but not all of them. Some of them are special::
