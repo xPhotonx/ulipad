@@ -25,6 +25,9 @@ import sys
 from modules import Mixin
 from modules.Debug import error
 from modules import common
+import wx
+import os
+from modules import Globals
 
 def add_project(project_names):
     project_names.extend(['python'])
@@ -43,3 +46,39 @@ def project_end(dirwin, project_names, path):
             error.traceback()
 Mixin.setPlugin('dirbrowser', 'project_end', project_end)
 
+def other_popup_menu(dirwin, projectname, menus):
+    item = dirwin.tree.GetSelection()
+    if not item.IsOk(): return
+    if 'python' in projectname:
+        menus.extend([ (None,
+            [
+                (145, 'IDPM_PYTHON_CREATE_PACKAGE', tr('Create Python Package'), wx.ITEM_NORMAL, 'OnCreatePythonPackage', ''),
+            ]),
+        ])
+Mixin.setPlugin('dirbrowser', 'other_popup_menu', other_popup_menu)
+
+def OnCreatePythonPackage(dirwin, event):
+    item = dirwin.tree.GetSelection()
+    if not item.IsOk(): return
+    dir = common.getCurrentDir(dirwin.get_node_filename(item))
+    
+    from modules import Entry
+    dlg = Entry.MyTextEntry(Globals.mainframe, tr('Input Directory Name'),
+        tr('Input Directory Name'))
+    path = ''
+    if dlg.ShowModal() == wx.ID_OK:
+        path = dlg.GetValue()
+    dlg.Destroy()
+    
+    path = os.path.join(dir, path)
+    if not os.path.exists(path):
+        try:
+            os.makedirs(path)
+        except Exception, e:
+            common.showerror(str(e))
+    init_file = os.path.join(path, '__init__.py')
+    if not os.path.exists(init_file):
+        f = file(init_file, 'wb')
+        f.close()
+    dirwin.OnRefresh()
+Mixin.setMixin('dirbrowser', 'OnCreatePythonPackage', OnCreatePythonPackage)

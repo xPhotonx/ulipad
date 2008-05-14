@@ -57,7 +57,7 @@ class LexerBase(Mixin.Mixin):
     STC_STYLE_BRACEBAD = u"bold,fore:#0000FF"
     STC_STYLE_CARET_FORE = u"fore:#FF0000"
     STC_STYLE_CARETLINE_BACK = u"back:#5F0054"
-    STC_STYLE_SELECTION_BACK = u"back:#000080"
+    STC_STYLE_SELECTION_BACK = u"back:#2E9F27"
     STC_STYLE_FOLDER = u"back:#3476A3"
     STC_STYLE_MARKER = u"fore:#F0804F,back:#FFFFFF"
     STC_STYLE_TAG = u"fore:#15852B"
