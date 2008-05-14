@@ -1,4 +1,7 @@
 $Rev$
+[2008/05/14]
+mPythonProject.py   Add Create Python Package in context menu of Directory Browser Window
+
 [2008/05/12]
 RegexWindow.py      Improve regex window, and when you set Unicode flag, it'll 
                     automatically convert \uXXXX to unichr
