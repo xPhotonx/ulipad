@@ -191,6 +191,7 @@ def pref_init(pref):
     pref.inputass_identifier = True
     pref.inputass_full_identifier = True
     pref.inputass_func_parameter_autocomplete = True
+    pref.inputass_calltip_including_source_code = False
     pref.inputass_typing_rate = 400
 Mixin.setPlugin('preference', 'init', pref_init)
 
@@ -232,7 +233,8 @@ def add_pref(preflist):
         (tr('Input Assistant'), 130, mInputAssistant_s3, 'inputass_identifier', '', None),
         (tr('Input Assistant'), 140, mInputAssistant_s4, 'inputass_full_identifier', '', None),
         (tr('Input Assistant'), 150, mInputAssistant_s5, 'inputass_func_parameter_autocomplete', '', None),
-        (tr('Input Assistant'), 160, 'int', 'inputass_typing_rate', tr("Skip Input Assistant when typing rate faster than this milisecond"), None),
+        (tr('Input Assistant'), 160, 'check', 'inputass_calltip_including_source_code', tr("Enable calltip content including source code"), None),
+        (tr('Input Assistant'), 170, 'int', 'inputass_typing_rate', tr("Skip Input Assistant when typing rate faster than this milisecond"), None),
     ])
 Mixin.setPlugin('preference', 'add_pref', add_pref)
 
