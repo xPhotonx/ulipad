@@ -270,7 +270,8 @@ class LexerBase(Mixin.Mixin):
 
             for name, item in self._syntaxitems.items():
                 stylestring = ini.styleitems.get(name, '')
-                item.style.setStyleString(stylestring)
+                if stylestring:
+                    item.style.setStyleString(stylestring)
 
         if not self.keywords:
             self.keywords = self.loadDefaultKeywords()
