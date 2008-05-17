@@ -34,6 +34,5 @@ class Web2pyShell(ShellWindow):
         if reload:
             for k, v in locals.items():
                 if isinstance(v, types.ModuleType):
-                    print 'reload', k
                     reload(v)
         self.interp.locals = locals
