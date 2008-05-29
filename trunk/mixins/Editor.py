@@ -754,7 +754,7 @@ class TextEditor(wx.stc.StyledTextCtrl, Mixin.Mixin, DocumentBase.DocumentBase):
         if flag:
             lines = self.GetLineCount() #get # of lines, ensure text is loaded first!
             mwidth = len(str(lines))
-            if self.mwidth < mwidth:
+            if self.mwidth < mwidth or self.GetMarginWidth(1)==0:
                 self.mwidth = mwidth
                 width = self.TextWidth(wx.stc.STC_STYLE_LINENUMBER, 'O'*(self.mwidth+1))
                 self.SetMarginType(1, wx.stc.STC_MARGIN_NUMBER )
