@@ -30,6 +30,142 @@ from modules import common
 from modules import Mixin
 from modules.Debug import error
 
+color_theme = {
+    'Blue': {
+        'STC_STYLE_TEXT' : "fore:#8DB0D3",
+        'STC_STYLE_NUMBER' : "fore:#FF00FF",
+        'STC_STYLE_STRING' : "fore:#00FF80",
+        'STC_STYLE_COMMENT' : "italic,fore:#008040",
+        'STC_STYLE_COMMENTBLOCK' : "italic,fore:#008040",
+        'STC_STYLE_KEYWORD1' : "fore:#FFFF00",
+        'STC_STYLE_KEYWORD2' : "fore:#AFFFEE",
+        'STC_STYLE_IDENTIFIER' : "fore:#8DB0D3",
+        'STC_STYLE_OPERATOR' : "fore:#F0804F",
+        'STC_STYLE_CHARACTER' : "fore:#E19618",
+        'STC_STYLE_REGEX' : "fore:#FFFF80",
+        'STC_STYLE_DEFAULT' : "fore:#FFFFFF,back:#112435,face:%(mono)s,size:%(size)d",
+        'STC_STYLE_LINENUMBER' : "fore:#FFFFFF,back:#1F4661,face:%(mono)s,size:%(lnsize)d",
+        'STC_STYLE_CONTROLCHAR' : "fore:#FFFFFF",
+        'STC_STYLE_BRACELIGHT' : "bold,fore:#FF0000",
+        'STC_STYLE_BRACEBAD' : "bold,fore:#0000FF",
+        'STC_STYLE_CARET_FORE' : "fore:#FF0000",
+        'STC_STYLE_CARETLINE_BACK' : "back:#5F0054",
+        'STC_STYLE_SELECTION_BACK' : "back:#2E9F27",
+        'STC_STYLE_FOLDER' : "back:#3476A3",
+        'STC_STYLE_MARKER' : "fore:#F0804F,back:#FFFFFF",
+        'STC_STYLE_TAG' : "fore:#15852B",
+        'STC_STYLE_TAG1' : "fore:#2CEF50",
+        'STC_STYLE_TAGKEY' : "fore:#FFFF00",
+        'STC_STYLE_ATTRNAME' : "fore:#F0804F",
+        'STC_STYLE_ATTRVALUE' : "fore:#156EB2",
+        'STC_STYLE_CLASSNAME' : "fore:#BBFF4F",
+        'STC_STYLE_DEFNAME' : "fore:#4179C5",
+        'STC_STYLE_LINK' : "fore:#FEFF8F,underline",
+        'STC_STYLE_STRINGEOL' : "fore:#FF6F82,back:#E0C0E0,eol",
+        'STC_STYLE_TRIPLE' : "fore:#00FF80",
+    },
+    'Black': {
+        'STC_STYLE_TEXT' : "fore:#CCCCCC",
+        'STC_STYLE_NUMBER' : "fore:#6B238E",
+        'STC_STYLE_STRING' : "fore:#E19618",
+        'STC_STYLE_COMMENT' : "italic,fore:#626262",
+        'STC_STYLE_COMMENTBLOCK' : "italic,fore:#626262",
+        'STC_STYLE_KEYWORD1' : "fore:#6AB825",
+        'STC_STYLE_KEYWORD2' : "fore:#4179C5",
+        'STC_STYLE_IDENTIFIER' : "fore:#CCCCCC",
+        'STC_STYLE_OPERATOR' : "fore:#BBBBBB",
+        'STC_STYLE_CHARACTER' : "fore:#E19618",
+        'STC_STYLE_REGEX' : "fore:#FFFF80",
+        'STC_STYLE_DEFAULT' : "fore:#8000FF,back:#000000,face:%(mono)s,size:%(size)d",
+        'STC_STYLE_LINENUMBER' : "fore:#000000,back:#AAFFAA,face:%(mono)s,size:%(lnsize)d",
+        'STC_STYLE_CONTROLCHAR' : "fore:#FFFFFF",
+        'STC_STYLE_BRACELIGHT' : "bold,fore:#FF0000",
+        'STC_STYLE_BRACEBAD' : "bold,fore:#0000FF",
+        'STC_STYLE_CARET_FORE' : "fore:#FF0000",
+        'STC_STYLE_CARETLINE_BACK' : "back:#050349",
+        'STC_STYLE_SELECTION_BACK' : "back:#8080FF",
+        'STC_STYLE_FOLDER' : "back:#3476A3",
+        'STC_STYLE_MARKER' : "fore:#F0804F,back:#FFFFFF",
+        'STC_STYLE_TAG' : "fore:#15852B",
+        'STC_STYLE_TAG1' : "fore:#2CEF50",
+        'STC_STYLE_TAGKEY' : "fore:#FFFF00",
+        'STC_STYLE_ATTRNAME' : "fore:#F0804F",
+        'STC_STYLE_ATTRVALUE' : "fore:#156EB2",
+        'STC_STYLE_CLASSNAME' : "fore:#FF0000",
+        'STC_STYLE_DEFNAME' : "fore:#4179C5",
+        'STC_STYLE_LINK' : "fore:#FEFF8F,underline",
+        'STC_STYLE_STRINGEOL' : "fore:#408080,back:#E0C0E0,eol",
+        'STC_STYLE_TRIPLE' : "fore:#EABF71",
+    },
+    'White': {
+        'STC_STYLE_TEXT' : "fore:#000000",
+        'STC_STYLE_NUMBER' : "fore:#6B238E",
+        'STC_STYLE_STRING' : "fore:#2A2AA5",
+        'STC_STYLE_COMMENT' : "italic,fore:#238E23,back:#E8FFE8",
+        'STC_STYLE_COMMENTBLOCK' : "italic,fore:#238E23,back:#E8FFE8",
+        'STC_STYLE_KEYWORD1' : "fore:#FF7700",
+        'STC_STYLE_KEYWORD2' : "bold,fore:#2F032A",
+        'STC_STYLE_IDENTIFIER' : "fore:#000000",
+        'STC_STYLE_OPERATOR' : "fore:#000000",
+        'STC_STYLE_CHARACTER' : "fore:#9F9F9F",
+        'STC_STYLE_REGEX' : "fore:#DB70DB",
+        'STC_STYLE_DEFAULT' : "face:%(mono)s,size:%(size)d",
+        'STC_STYLE_LINENUMBER' : "back:#AAFFAA,size:%(lnsize)d",
+        'STC_STYLE_CONTROLCHAR' : "fore:#000000",
+        'STC_STYLE_BRACELIGHT' : "fore:#FF0000,bold",
+        'STC_STYLE_BRACEBAD' : "fore:#0000FF,bold",
+        'STC_STYLE_CARET_FORE' : "fore:#FF0000",
+        'STC_STYLE_CARETLINE_BACK' : "back:#EEEEEE",
+        'STC_STYLE_SELECTION_BACK' : "back:#000080",
+        'STC_STYLE_FOLDER' : "back:#FFFFFF",
+        'STC_STYLE_MARKER' : "fore:#FFFFFF,back:#000000",
+        'STC_STYLE_TAG' : "fore:#15852B",
+        'STC_STYLE_TAG1' : "fore:#2CEF50",
+        'STC_STYLE_TAGKEY' : "bold,fore:#0000FF",
+        'STC_STYLE_ATTRNAME' : "bold,fore:#F0804F",
+        'STC_STYLE_ATTRVALUE' : "fore:#156EB2",
+        'STC_STYLE_CLASSNAME' : "bold,fore:#FF0000",
+        'STC_STYLE_DEFNAME' : "bold,fore:#007F7F",
+        'STC_STYLE_LINK' : "fore:#0000FF,underline",
+        'STC_STYLE_STRINGEOL' : "fore:#000000,back:#E0C0E0,eol",
+        'STC_STYLE_TRIPLE' : "fore:#2A2AA5",
+    },
+    'Idle': {
+        'STC_STYLE_TEXT' : "fore:#000000",
+        'STC_STYLE_NUMBER' : "fore:#000000",
+        'STC_STYLE_STRING' : "fore:#00AA00",
+        'STC_STYLE_COMMENT' : "fore:#DD0000",
+        'STC_STYLE_COMMENTBLOCK' : "fore:#DD0000",
+        'STC_STYLE_KEYWORD1' : "fore:#ff7700",
+        'STC_STYLE_KEYWORD2' : "fore:#ff7700",
+        'STC_STYLE_IDENTIFIER' : "fore:#000000",
+        'STC_STYLE_OPERATOR' : "fore:#000000",
+        'STC_STYLE_CHARACTER' : "fore:#00AA00",
+        'STC_STYLE_REGEX' : "fore:#DB70DB",
+        'STC_STYLE_DEFAULT' : "face:%(mono)s,size:%(size)d",
+        'STC_STYLE_LINENUMBER' : "back:#AAFFAA,size:%(lnsize)d",
+        'STC_STYLE_CONTROLCHAR' : "fore:#FF00FF",
+        'STC_STYLE_BRACELIGHT' : "bold,fore:#FF0000",
+        'STC_STYLE_BRACEBAD' : "bold,fore:#0000FF",
+        'STC_STYLE_CARET_FORE' : "fore:#FF0000",
+        'STC_STYLE_CARETLINE_BACK' : "back:#EEEEEE",
+        'STC_STYLE_SELECTION_BACK' : "back:#000080",
+        'STC_STYLE_FOLDER' : "back:#FFFFFF",
+        'STC_STYLE_MARKER' : "fore:#FFFFFF,back:#000000",
+        'STC_STYLE_TAG' : "fore:#15852B",
+        'STC_STYLE_TAG1' : "fore:#2CEF50",
+        'STC_STYLE_TAGKEY' : "bold,fore:#0000FF",
+        'STC_STYLE_ATTRNAME' : "bold,fore:#F0804F",
+        'STC_STYLE_ATTRVALUE' : "fore:#156EB2",
+        'STC_STYLE_CLASSNAME' : "fore:#0000FF",
+        'STC_STYLE_DEFNAME' : "fore:#0000FF",
+        'STC_STYLE_LINK' : "fore:#0000FF,underline",
+        'STC_STYLE_STRINGEOL' : "fore:#000000,back:#E0C0E0,eol",
+        'STC_STYLE_TRIPLE' : "fore:#00AA00",
+    },
+    
+}
+
 class LexerBase(Mixin.Mixin):
     __mixinname__ = 'lexerbase'
 
@@ -44,6 +180,7 @@ class LexerBase(Mixin.Mixin):
     STC_STYLE_NUMBER = u"fore:#FF00FF"
     STC_STYLE_STRING = u"fore:#00FF80"
     STC_STYLE_COMMENT = u"italic,fore:#008040"
+    STC_STYLE_COMMENTBLOCK = u"italic,fore:#008040"
     STC_STYLE_KEYWORD1 = u"fore:#FFFF00"
     STC_STYLE_KEYWORD2 = u"fore:#AFFFEE"
     STC_STYLE_IDENTIFIER = u"fore:#8DB0D3"
@@ -69,44 +206,13 @@ class LexerBase(Mixin.Mixin):
     STC_STYLE_DEFNAME = u"fore:#4179C5"
     STC_STYLE_LINK = u"fore:#FEFF8F,underline"
     STC_STYLE_STRINGEOL = u"fore:#FF6F82,back:#E0C0E0,eol"
+    STC_STYLE_TRIPLE = "fore:#00FF80"
 
-    #white theme
-#    STC_STYLE_TEXT = "fore:#000000"
-#    STC_STYLE_NUMBER = "fore:#6B238E"
-#    STC_STYLE_STRING = "fore:#2A2AA5"
-#    STC_STYLE_COMMENT = "italic,fore:#238E23,back:#E8FFE8"
-#    STC_STYLE_KEYWORD1 = "bold,fore:#0000FF"
-#    STC_STYLE_KEYWORD2 = "bold,fore:#2F032A"
-#    STC_STYLE_IDENTIFIER = "fore:#000000"
-#    STC_STYLE_OPERATOR = "fore:#000000"
-#    STC_STYLE_CHARACTER = "fore:#9F9F9F"
-#    STC_STYLE_REGEX = "fore:#DB70DB"
-#    STC_STYLE_DEFAULT = "face:%(mono)s,size:%(size)d"
-#    STC_STYLE_LINENUMBER = "back:#AAFFAA,size:%(lnsize)d" #back:#C0C0C0
-#    STC_STYLE_CONTROLCHAR = "fore:#000000" #xxxxxxx
-#    STC_STYLE_BRACELIGHT = "fore:#FF0000,bold" #fore:#0000FF,back:#AAFFAA,bold
-#    STC_STYLE_BRACEBAD = "fore:#0000FF,bold"   #fore:#FF0000,back:#FFFF00,bold
-#    STC_STYLE_CARET_FORE = "fore:#FF0000"
-#    STC_STYLE_CARETLINE_BACK = "back:#EEEEEE"
-#    STC_STYLE_SELECTION_BACK = "back:#000080"
-#    STC_STYLE_FOLDER = "back:#FFFFFF"
-#    STC_STYLE_MARKER = "fore:#FFFFFF,back:#000000"
-#    STC_STYLE_TAG = 'fore:#15852B'
-#    STC_STYLE_TAG1 = 'fore:#2CEF50'
-#    STC_STYLE_TAGKEY = 'bold,fore:#0000FF'
-#    STC_STYLE_ATTRNAME = 'bold,fore:#F0804F'
-#    STC_STYLE_ATTRVALUE = 'fore:#156EB2'
-#    STC_STYLE_CLASSNAME = "bold,fore:#FF0000"
-#    STC_STYLE_DEFNAME = "bold,fore:#007F7F"
-#    STC_STYLE_LINK = "fore:#0000FF,underline"
-#    STC_STYLE_STRINGEOL = "fore:#000000,back:#E0C0E0,eol" #"fore:#2A2AA5,eol"
-    
     #undefined
     STC_STYLE_KEYWORD3 = "fore:#6F4242"
     STC_STYLE_KEYWORD4 = "fore:#AAAA00"
     STC_STYLE_KEYWORD5 = "fore:#2F2F2F"
     STC_STYLE_KEYWORD6 = "fore:#808080"
-    STC_STYLE_COMMENTDOC = "fore:#238E23,back:#E8FFE8"
     STC_STYLE_COMMENTLINE = "fore:#238E23,back:#E8FFE8"
     STC_STYLE_COMMENTOTHER = "fore:#238E23,back:#E8FFE8"
     STC_STYLE_CHARACTEREOL = "fore:#9F9F9F"
@@ -140,9 +246,15 @@ class LexerBase(Mixin.Mixin):
                 os.makedirs(path)
             self.stxfile = os.path.join(path, stxfile)
         self.syntaxtype = syntaxtype
+        
+        self.init()
+
+    def init(self):
         self._syntaxitems = {}
         self._syntaxnames = []
 
+        self.callplugin('set_default_style', self)
+        
         #add default font settings in config.ini
         x = common.get_config_file_obj()
 #        font = wx.SystemSettings_GetFont(wx.SYS_DEFAULT_GUI_FONT)
@@ -369,15 +481,21 @@ class LexerBase(Mixin.Mixin):
                         error.error(tr('The name [%s] is already existed in lexer [%s]') % (name, self.name))
                     
                     i += 1
-                    
+              
+    def set_color_theme(self, name):
+        if name not in color_theme:
+            name = 'Blue'
+        theme = color_theme[name]
+        for k, v in theme.iteritems():
+            setattr(self.__class__, k, v)
+            
     def get_default_style(self, ini):
         styles = [
             'STC_STYLE_TEXT', 
             'STC_STYLE_NUMBER',
             'STC_STYLE_STRING',
             'STC_STYLE_COMMENT',
-            'STC_STYLE_COMMENTLINE',
-            'STC_STYLE_COMMENTDOC',
+            'STC_STYLE_COMMENTBLOCK',
             'STC_STYLE_KEYWORD1',
             'STC_STYLE_KEYWORD2',
             'STC_STYLE_IDENTIFIER',
@@ -403,6 +521,7 @@ class LexerBase(Mixin.Mixin):
             'STC_STYLE_DEFNAME',
             'STC_STYLE_LINK',
             'STC_STYLE_STRINGEOL',
+            'STC_STYLE_TRIPLE',
             ]
         for i in styles:
             s = ini.default_style.get(i, None)

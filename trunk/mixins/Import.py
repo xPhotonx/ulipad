@@ -8904,3 +8904,39 @@ Mixin.setPlugin('editor', 'on_update_ui', on_editor_updateui)
 
 
 
+#-----------------------  mLexerBase.py ------------------
+
+from modules import Mixin
+import LexerBase
+from modules import Globals
+
+def add_pref(preflist):
+    names = LexerBase.color_theme.keys()
+    names.sort()
+    preflist.extend([
+        (tr('General'), 131, 'choice', 'default_color_theme', tr('Default color theme'), names),
+    ])
+Mixin.setPlugin('preference', 'add_pref', add_pref)
+
+def pref_init(pref):
+    pref.default_color_theme = 'Blue'
+Mixin.setPlugin('preference', 'init', pref_init)
+
+def set_default_style(lexer):
+    lexer.set_color_theme(Globals.pref.default_color_theme)
+Mixin.setPlugin('lexerbase', 'set_default_style', set_default_style)
+
+def savepreferencevalues(values):
+    mainframe = Globals.mainframe
+    pref = Globals.pref
+    if values['default_color_theme'] != pref.default_color_theme:
+        mainframe.lexers.reset()
+        for document in mainframe.editctrl.getDocuments():
+            for lexer in mainframe.lexers.items():
+                if document.languagename == lexer.name:
+                    lexer.colourize(document, force=True)
+                    break
+Mixin.setPlugin('prefdialog', 'savepreferencevalues', savepreferencevalues)
+
+
+

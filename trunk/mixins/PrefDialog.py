@@ -310,9 +310,11 @@ class PrefDialog(wx.Dialog, Mixin.Mixin):
             self.ini[section][key] = v
         self.ini.save()
         
+        #you can use self.values to get the old value, use pref to get the latest values
+        self.callplugin('savepreferencevalues', self.values)
+        self.callplugin('savepreference', self.parent, self.parent.pref)
         self.values = values
         #self.parent = mainframe
-        self.callplugin('savepreference', self.parent, self.parent.pref)
 
     def OnUpdateApply(self, event):
         values = self.get_values()

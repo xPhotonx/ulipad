@@ -248,8 +248,8 @@ Hello World!
         self.addSyntaxItem('hpa_string',                'ASP Python - string',                  wx.stc.STC_HPA_STRING,                  self.STC_STYLE_STRING),
         self.addSyntaxItem('hpa_character',             'ASP Python - character',               wx.stc.STC_HPA_CHARACTER,               self.STC_STYLE_NUMBER),
         self.addSyntaxItem('hpa_word',                  'ASP Python - word',                    wx.stc.STC_HPA_WORD,                    self.STC_STYLE_KEYWORD1),
-        self.addSyntaxItem('hpa_triple',                'ASP Python - triple',                  wx.stc.STC_HPA_TRIPLE,                  self.STC_STYLE_STRING),
-        self.addSyntaxItem('hpa_tripledouble',          'ASP Python - triple double',           wx.stc.STC_HPA_TRIPLEDOUBLE,            self.STC_STYLE_STRING),
+        self.addSyntaxItem('hpa_triple',                'ASP Python - triple',                  wx.stc.STC_HPA_TRIPLE,                  self.STC_STYLE_TRIPLE),
+        self.addSyntaxItem('hpa_tripledouble',          'ASP Python - triple double',           wx.stc.STC_HPA_TRIPLEDOUBLE,            self.STC_STYLE_TRIPLE),
         self.addSyntaxItem('hpa_classname',             'ASP Python - classname',               wx.stc.STC_HPA_CLASSNAME,               self.STC_STYLE_LABEL),
         self.addSyntaxItem('hpa_defname',               'ASP Python - defname',                 wx.stc.STC_HPA_DEFNAME,                 self.STC_STYLE_LABEL),
         self.addSyntaxItem('hpa_operator',              'ASP Python - operator',                wx.stc.STC_HPA_OPERATOR,                self.STC_STYLE_OPERATOR),
@@ -363,11 +363,11 @@ class MyClass(MyParent):
         self.addSyntaxItem('string',            'String',               wx.stc.STC_P_STRING,            self.STC_STYLE_STRING)
         self.addSyntaxItem('character',         'Character',            wx.stc.STC_P_CHARACTER,         self.STC_STYLE_CHARACTER)
         self.addSyntaxItem('keyword',           'Keyword',              wx.stc.STC_P_WORD,              self.STC_STYLE_KEYWORD1)
-        self.addSyntaxItem('triple',            'Triple quotes',        wx.stc.STC_P_TRIPLE,            self.STC_STYLE_CHARACTER)
-        self.addSyntaxItem('tripledouble',      'Triple double quotes', wx.stc.STC_P_TRIPLEDOUBLE,      self.STC_STYLE_CHARACTER)
+        self.addSyntaxItem('triple',            'Triple quotes',        wx.stc.STC_P_TRIPLE,            self.STC_STYLE_TRIPLE)
+        self.addSyntaxItem('tripledouble',      'Triple double quotes', wx.stc.STC_P_TRIPLEDOUBLE,      self.STC_STYLE_TRIPLE)
         self.addSyntaxItem('classname',         'Class definition',     wx.stc.STC_P_CLASSNAME,         self.STC_STYLE_CLASSNAME)
         self.addSyntaxItem('defname',           'Function or method',   wx.stc.STC_P_DEFNAME,           self.STC_STYLE_DEFNAME)
         self.addSyntaxItem('operator',          'Operators',            wx.stc.STC_P_OPERATOR,          self.STC_STYLE_OPERATOR)
         self.addSyntaxItem('identifier',        'Identifiers',          wx.stc.STC_P_IDENTIFIER,        self.STC_STYLE_IDENTIFIER)
-        self.addSyntaxItem('commentblock',      'Comment blocks',       wx.stc.STC_P_COMMENTBLOCK,      self.STC_STYLE_COMMENT)
+        self.addSyntaxItem('commentblock',      'Comment blocks',       wx.stc.STC_P_COMMENTBLOCK,      self.STC_STYLE_COMMENTBLOCK)
         self.addSyntaxItem('stringeol',         'EOL unclosed string',  wx.stc.STC_P_STRINGEOL,         self.STC_STYLE_STRINGEOL)
