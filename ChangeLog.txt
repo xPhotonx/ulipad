@@ -1,4 +1,8 @@
 $Rev$
+[2008/06/02]
+mEncoding.py EncodingDialog.py
+                    Migirate EncodingDialog from xrc to meide
+                    
 [2008/05/14]
 mPythonProject.py   Add Create Python Package in context menu of Directory Browser Window
 

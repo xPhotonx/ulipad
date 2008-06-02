@@ -322,10 +322,10 @@ def SaveFile(win, ctrl, issaveas=False):
             filename = dlg.GetPath()
             dlg.Destroy()
 
-            #check if the filename has been openned, if openned then fail
+            #check if the filename has been opened, if opened then fail
             for document in win.editctrl.getDocuments():
                 if (not ctrl is document ) and (filename == document.filename):
-                    wx.MessageDialog(win, tr("Ths file %s has been openned!\nCan't save new file to it.") % document.getFilename(),
+                    wx.MessageDialog(win, tr("Ths file %s has been opened!\nCan't save new file to it.") % document.getFilename(),
                         tr("Save As..."), wx.OK|wx.ICON_INFORMATION).ShowModal()
                     return False
         else:
@@ -1483,7 +1483,7 @@ def add_mainframe_menu(menulist):
             (100, 'IDM_EDIT_FORMAT_CHOP', tr('Trim Trailing Spaces'), wx.ITEM_NORMAL, 'OnEditFormatChop', tr('Trims trailing white spaces')),
             (110, 'IDM_EDIT_FORMAT_SPACETOTAB', tr('Leading Spaces to Tabs'), wx.ITEM_NORMAL, 'OnEditFormatSpaceToTab', tr('Converts leading spaces to tabs')),
             (120, 'IDM_EDIT_FORMAT_TABTOSPACE', tr('Leading Tabs To Spaces'), wx.ITEM_NORMAL, 'OnEditFormatTabToSpace', tr('Converts leading tabs to spaces')),
-            (125, 'IDM_EDIT_FORMAT_ALLTABTOSPACE', tr('ALL Tabs To Spaces'), wx.ITEM_NORMAL, 'OnEditFormatAllTabToSpace', tr('Converts all tabs to spaces')),
+            (125, 'IDM_EDIT_FORMAT_ALLTABTOSPACE', tr('All Tabs To Spaces'), wx.ITEM_NORMAL, 'OnEditFormatAllTabToSpace', tr('Converts all tabs to spaces')),
             (130, '', '-', wx.ITEM_SEPARATOR, None, ''),
             (140, 'IDM_EDIT_FORMAT_INDENT', tr('Increase Indent'), wx.ITEM_NORMAL, 'OnEditFormatIndent', tr('Increases the indentation of current line or selected block')),
             (150, 'IDM_EDIT_FORMAT_UNINDENT', tr('Decrease Indent'), wx.ITEM_NORMAL, 'OnEditFormatUnindent', tr('Decreases the indentation of current line or selected block')),
@@ -1507,7 +1507,7 @@ def add_editor_menu(popmenulist):
             (100, 'IDPM_FORMAT_CHOP', tr('Trim Trailing Spaces'), wx.ITEM_NORMAL, 'OnFormatChop', tr('Trims trailing white spaces')),
             (110, 'IDPM_FORMAT_SPACETOTAB', tr('Convert Leading Spaces To Tabs'), wx.ITEM_NORMAL, 'OnFormatSpaceToTab', tr('Converts leading spaces to tabs')),
             (120, 'IDPM_FORMAT_TABTOSPACE', tr('Convert Leading Tabs To Spaces'), wx.ITEM_NORMAL, 'OnFormatTabToSpace', tr('Converts leading tabs to spaces')),
-            (125, 'IDPM_FORMAT_ALLTABTOSPACE', tr('Convert ALL Tabs To Spaces'), wx.ITEM_NORMAL, 'OnFormatAllTabToSpace', tr('Converts all tabs to spaces')),
+            (125, 'IDPM_FORMAT_ALLTABTOSPACE', tr('Convert All Tabs To Spaces'), wx.ITEM_NORMAL, 'OnFormatAllTabToSpace', tr('Converts all tabs to spaces')),
             (130, '', '-', wx.ITEM_SEPARATOR, None, ''),
             (140, 'IDPM_FORMAT_INDENT', tr('Increase Indent'), wx.ITEM_NORMAL, 'OnFormatIndent', tr('Increases the indentation of current line or selected block')),
             (150, 'IDPM_FORMAT_UNINDENT', tr('Decrease Indent'), wx.ITEM_NORMAL, 'OnFormatUnindent', tr('Decreases the indentation of current line or selected block')),
@@ -2161,14 +2161,14 @@ def openfileencoding(win, filename, stext, encoding):
     begin = 0
     if text.startswith('\xEF\xBB\xBF'):
         begin = 3
-        encoding = 'utf-8'
+        encoding = 'UTF-8'
     elif text.startswith('\xFF\xFE'):
         begin = 2
-        encoding = 'utf-16'
+        encoding = 'UTF-16'
     if not encoding:
         if filename:
             if win.mainframe.pref.auto_detect_utf8:
-                encoding = 'utf-8'
+                encoding = 'UTF-8'
             else:
                 encoding = win.defaultlocale
         else:
@@ -2183,17 +2183,17 @@ def openfileencoding(win, filename, stext, encoding):
         s = unicode(text[begin:], encoding)
         win.locale = encoding
     except:
-        if win.mainframe.pref.auto_detect_utf8 and encoding == 'utf-8':
+        if win.mainframe.pref.auto_detect_utf8 and encoding == 'UTF-8':
             encoding = win.defaultlocale
             try:
                 s = unicode(text[begin:], encoding, 'replace')
                 win.locale = encoding
             except:
                 error.traceback()
-                raise MyUnicodeException(win, tr("Can't convert file encoding [%s] to unicode!\nThe file cann't be openned!") % encoding, tr("Unicode Error"))
+                raise MyUnicodeException(win, tr("Can't convert file encoding [%s] to unicode!\nThe file can't be opened!") % encoding, tr("Unicode Error"))
         else:
             error.traceback()
-            raise MyUnicodeException(win, tr("Can't convert file encoding [%s] to unicode!\nThe file cann't be openned!") % encoding, tr("Unicode Error"))
+            raise MyUnicodeException(win, tr("Can't convert file encoding [%s] to unicode!\nThe file can't be opened!") % encoding, tr("Unicode Error"))
     stext[0] = s
 Mixin.setPlugin('editor', 'openfileencoding', openfileencoding)
 
@@ -2233,7 +2233,7 @@ def savefileencoding(win, stext, encoding):
             try:
                 s = text.encode(encoding, 'replace')
             except:
-                raise MyUnicodeException(win, tr("Can't convert file to [%s] encoding!\nThe file cann't be saved!") % encoding,
+                raise MyUnicodeException(win, tr("Can't convert file to [%s] encoding!\nThe file can't be saved!") % encoding,
                     tr("Unicode Error"))
     else:
         s = text
@@ -4454,18 +4454,11 @@ Mixin.setMixin('mainframe', 'OnShellItems', OnShellItems)
 
 import wx
 from modules import Mixin
-from modules import i18n
-from modules import Resource
-import EncodingDialog
 from modules import common
 
 def pref_init(pref):
     pref.select_encoding = False
 Mixin.setPlugin('preference', 'init', pref_init)
-
-encodings = [common.defaultencoding]
-if 'utf-8' not in encodings:
-    encodings.append('utf-8')
 
 def add_pref(preflist):
     preflist.extend([
@@ -4473,17 +4466,20 @@ def add_pref(preflist):
     ])
 Mixin.setPlugin('preference', 'add_pref', add_pref)
 
+def _getencoding():
+    ret = None
+    from EncodingDialog import EncodingDialog
+    dlg = EncodingDialog()
+    answer = dlg.ShowModal()
+    if answer == wx.ID_OK:
+        ret = dlg.GetValue()
+    dlg.Destroy()
+    return ret
 
 def getencoding(win, mainframe):
     ret = None
     if win.pref.select_encoding:
-        encoding_resfile = common.uni_work_file('resources/encodingdialog.xrc')
-        filename = i18n.makefilename(encoding_resfile, mainframe.app.i18n.lang)
-        dlg = Resource.loadfromresfile(filename, win, EncodingDialog.EncodingDialog, 'EncodingDialog', mainframe)
-        answer = dlg.ShowModal()
-        if answer == wx.ID_OK:
-            ret = dlg.GetValue()
-            dlg.Destroy()
+        ret = _getencoding()
     return ret
 Mixin.setPlugin('mainframe', 'getencoding', getencoding)
 
@@ -4505,14 +4501,8 @@ def add_editor_menu(popmenulist):
 Mixin.setPlugin('editor', 'add_menu', add_editor_menu)
 
 def OnDocumentChangeEncoding(win, event):
-    ret = ''
-    encoding_resfile = common.uni_work_file('resources/encodingdialog.xrc')
-    filename = i18n.makefilename(encoding_resfile, win.app.i18n.lang)
-    dlg = Resource.loadfromresfile(filename, win, EncodingDialog.EncodingDialog, 'EncodingDialog', win)
-    answer = dlg.ShowModal()
-    if answer == wx.ID_OK:
-        ret = dlg.GetValue()
-        dlg.Destroy()
+    ret = _getencoding()
+    if ret:
         win.document.locale = ret
         win.SetStatusText(win.document.locale, 4)
         win.document.modified = True

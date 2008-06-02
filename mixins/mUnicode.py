@@ -49,14 +49,14 @@ def openfileencoding(win, filename, stext, encoding):
     begin = 0
     if text.startswith('\xEF\xBB\xBF'):
         begin = 3
-        encoding = 'utf-8'
+        encoding = 'UTF-8'
     elif text.startswith('\xFF\xFE'):
         begin = 2
-        encoding = 'utf-16'
+        encoding = 'UTF-16'
     if not encoding:
         if filename:
             if win.mainframe.pref.auto_detect_utf8:
-                encoding = 'utf-8'
+                encoding = 'UTF-8'
             else:
                 encoding = win.defaultlocale
         else:
@@ -71,17 +71,17 @@ def openfileencoding(win, filename, stext, encoding):
         s = unicode(text[begin:], encoding)
         win.locale = encoding
     except:
-        if win.mainframe.pref.auto_detect_utf8 and encoding == 'utf-8':
+        if win.mainframe.pref.auto_detect_utf8 and encoding == 'UTF-8':
             encoding = win.defaultlocale
             try:
                 s = unicode(text[begin:], encoding, 'replace')
                 win.locale = encoding
             except:
                 error.traceback()
-                raise MyUnicodeException(win, tr("Can't convert file encoding [%s] to unicode!\nThe file cann't be openned!") % encoding, tr("Unicode Error"))
+                raise MyUnicodeException(win, tr("Can't convert file encoding [%s] to unicode!\nThe file can't be opened!") % encoding, tr("Unicode Error"))
         else:
             error.traceback()
-            raise MyUnicodeException(win, tr("Can't convert file encoding [%s] to unicode!\nThe file cann't be openned!") % encoding, tr("Unicode Error"))
+            raise MyUnicodeException(win, tr("Can't convert file encoding [%s] to unicode!\nThe file can't be opened!") % encoding, tr("Unicode Error"))
     stext[0] = s
 Mixin.setPlugin('editor', 'openfileencoding', openfileencoding)
 
@@ -121,7 +121,7 @@ def savefileencoding(win, stext, encoding):
             try:
                 s = text.encode(encoding, 'replace')
             except:
-                raise MyUnicodeException(win, tr("Can't convert file to [%s] encoding!\nThe file cann't be saved!") % encoding,
+                raise MyUnicodeException(win, tr("Can't convert file to [%s] encoding!\nThe file can't be saved!") % encoding,
                     tr("Unicode Error"))
     else:
         s = text

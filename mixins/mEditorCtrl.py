@@ -232,10 +232,10 @@ def SaveFile(win, ctrl, issaveas=False):
             filename = dlg.GetPath()
             dlg.Destroy()
 
-            #check if the filename has been openned, if openned then fail
+            #check if the filename has been opened, if opened then fail
             for document in win.editctrl.getDocuments():
                 if (not ctrl is document ) and (filename == document.filename):
-                    wx.MessageDialog(win, tr("Ths file %s has been openned!\nCan't save new file to it.") % document.getFilename(),
+                    wx.MessageDialog(win, tr("Ths file %s has been opened!\nCan't save new file to it.") % document.getFilename(),
                         tr("Save As..."), wx.OK|wx.ICON_INFORMATION).ShowModal()
                     return False
         else:
