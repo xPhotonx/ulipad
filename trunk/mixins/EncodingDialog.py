@@ -1,10 +1,10 @@
-#       Programmer:     limodou
-#       E-mail:         limodou@gmail.com
-#
-#       Copyleft 2006 limodou
-#
-#       Distributed under the terms of the GPL (GNU Public License)
-#
+#   Programmer:     limodou
+#   E-mail:         limodou@gmail.com
+#  
+#   Copyleft 2008 limodou
+#  
+#   Distributed under the terms of the GPL (GNU Public License)
+#  
 #   UliPad is free software; you can redistribute it and/or modify
 #   it under the terms of the GNU General Public License as published by
 #   the Free Software Foundation; either version 2 of the License, or
@@ -19,75 +19,54 @@
 #   along with this program; if not, write to the Free Software
 #   Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 #
-#       $Id: EncodingDialog.py 1457 2006-08-23 02:12:12Z limodou $
+#   $Id: EncodingDialog.py 1457 2006-08-23 02:12:12Z limodou $
 
 __doc__ = 'Encoding selection dialog'
 
 import wx
+from modules import meide as ui
+from modules import Globals
 
 class EncodingDialog(wx.Dialog):
     EncodingList = [
             (tr('Default'),''),
-            ('UTF-8','utf-8'),
-            ('Base64','base64'),
-            ('Ascii','ascii'),
-            ('ISO_8859_1','latin_1'),
-            ('JIS','jis_7'),
-            ('KOI','kio8_r'),
-            ('GBK','cp936'),
+            ('UTF-8','UTF-8'),
+            ('Base64','Base64'),
+            ('ASCII','ASCII'),
+            ('ISO 8859-1','ISO 8859-1'),
+            ('GBK','GBK'),
     ]
 
-    def __init__(self, *args, **kwargs):
-        wx.Dialog.__init__(self, *args, **kwargs)
-
-    def init(self, mainframe):
-        self.mainframe = mainframe
-        self.pref = mainframe.pref
-
-        self.obj_ID_OK.SetId(wx.ID_OK)
-        self.obj_ID_CANCEL.SetId(wx.ID_CANCEL)
-
-        self.setValue()
-
-        wx.EVT_RADIOBUTTON(self.obj_ID_R_ENCODING, self.ID_R_ENCODING, self.OnRadio)
-        wx.EVT_RADIOBUTTON(self.obj_ID_R_CUSTOM, self.ID_R_CUSTOM, self.OnRadio)
-        wx.EVT_BUTTON(self.obj_ID_OK, wx.ID_OK, self.OnOk)
-        wx.EVT_BUTTON(self.obj_ID_CANCEL, wx.ID_CANCEL, self.OnCancel)
-        wx.EVT_CLOSE(self, self.OnClose)
-
-    def setValue(self):
-        self.encodings = {}
-        for key, encoding in self.EncodingList:
-            self.obj_ID_ENCODING.Append(key)
-            self.encodings[key] = encoding
-
-        self.obj_ID_ENCODING.SetSelection(0)
-
-        self.obj_ID_ENCODING.Enable(True)
-        self.obj_ID_CUSTOM.Enable(False)
+    def __init__(self, title=tr('Select Encoding'), style = wx.DEFAULT_DIALOG_STYLE):
+        wx.Dialog.__init__(self, Globals.mainframe, -1, title=title, style = style)
+        
+        self.sizer = box = ui.VBox(namebinding='widget').create(self).auto_layout()
+        grid = box.add(ui.Grid)
+        grid.add((0, 0), ui.Radio(label=tr('Encoding:')), name='rdo_encoding').bind(wx.EVT_RADIOBUTTON, self.OnRadio)
+        grid.add((0, 1), ui.SingleChoice(None, self.EncodingList), name='encoding')
+        grid.add((1, 0), ui.Radio(label=tr('Custom Encoding:')), name='rdo_cus_encoding').bind(wx.EVT_RADIOBUTTON, self.OnRadio)
+        grid.add((1, 1), ui.Text, name='cus_encoding')
+        
+        self.encoding.Enable(True)
+        self.cus_encoding.Enable(False)
+        
+        box.add(ui.simple_buttons(), flag=wx.ALIGN_CENTER|wx.BOTTOM)
+        self.btnOk.SetDefault()
+        
+        box.auto_fit(2)
 
     def OnRadio(self, event):
-        eid = event.GetId()
-        if eid == self.ID_R_ENCODING:
-            self.obj_ID_ENCODING.Enable(True)
-            self.obj_ID_CUSTOM.Enable(False)
-        elif eid == self.ID_R_CUSTOM:
-            self.obj_ID_ENCODING.Enable(False)
-            self.obj_ID_CUSTOM.Enable(True)
+        obj = event.GetEventObject()
+        if obj == self.rdo_encoding:
+            self.encoding.Enable(True)
+            self.cus_encoding.Enable(False)
+        elif obj == self.rdo_cus_encoding:
+            self.encoding.Enable(False)
+            self.cus_encoding.Enable(True)
 
     def GetValue(self):
-        if self.obj_ID_R_ENCODING.GetValue():
-            return self.encodings[self.obj_ID_ENCODING.GetValue()]
+        if self.rdo_encoding.GetValue():
+            return self.encoding.GetValue()
         else:
-            return self.obj_ID_CUSTOM.GetValue()
-
-    def OnClose(self, event):
-        self.Destroy()
-
-    def OnOk(self, event):
-        event.Skip()
-        self.Destroy()
-
-    def OnCancel(self, event):
-        event.Skip()
-        self.Destroy()
+            return self.cus_encoding.GetValue()
+        

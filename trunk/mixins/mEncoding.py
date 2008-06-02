@@ -23,9 +23,6 @@
 
 import wx
 from modules import Mixin
-from modules import i18n
-from modules import Resource
-import EncodingDialog
 from modules import common
 
 def pref_init(pref):
@@ -34,10 +31,10 @@ def pref_init(pref):
 #    pref.custom_encoding = ''
 Mixin.setPlugin('preference', 'init', pref_init)
 
-encodings = [common.defaultencoding]
-if 'utf-8' not in encodings:
-    encodings.append('utf-8')
-
+#encodings = [common.defaultencoding]
+#if 'utf-8' not in encodings:
+#    encodings.append('utf-8')
+#
 def add_pref(preflist):
     preflist.extend([
         (tr('General'), 120, 'check', 'select_encoding', tr('Show encoding selection dialog when opening or saving file'), None),
@@ -46,17 +43,20 @@ def add_pref(preflist):
     ])
 Mixin.setPlugin('preference', 'add_pref', add_pref)
 
+def _getencoding():
+    ret = None
+    from EncodingDialog import EncodingDialog
+    dlg = EncodingDialog()
+    answer = dlg.ShowModal()
+    if answer == wx.ID_OK:
+        ret = dlg.GetValue()
+    dlg.Destroy()
+    return ret
 
 def getencoding(win, mainframe):
     ret = None
     if win.pref.select_encoding:
-        encoding_resfile = common.uni_work_file('resources/encodingdialog.xrc')
-        filename = i18n.makefilename(encoding_resfile, mainframe.app.i18n.lang)
-        dlg = Resource.loadfromresfile(filename, win, EncodingDialog.EncodingDialog, 'EncodingDialog', mainframe)
-        answer = dlg.ShowModal()
-        if answer == wx.ID_OK:
-            ret = dlg.GetValue()
-            dlg.Destroy()
+        ret = _getencoding()
     return ret
 Mixin.setPlugin('mainframe', 'getencoding', getencoding)
 
@@ -78,14 +78,8 @@ def add_editor_menu(popmenulist):
 Mixin.setPlugin('editor', 'add_menu', add_editor_menu)
 
 def OnDocumentChangeEncoding(win, event):
-    ret = ''
-    encoding_resfile = common.uni_work_file('resources/encodingdialog.xrc')
-    filename = i18n.makefilename(encoding_resfile, win.app.i18n.lang)
-    dlg = Resource.loadfromresfile(filename, win, EncodingDialog.EncodingDialog, 'EncodingDialog', win)
-    answer = dlg.ShowModal()
-    if answer == wx.ID_OK:
-        ret = dlg.GetValue()
-        dlg.Destroy()
+    ret = _getencoding()
+    if ret:
         win.document.locale = ret
         win.SetStatusText(win.document.locale, 4)
         win.document.modified = True
