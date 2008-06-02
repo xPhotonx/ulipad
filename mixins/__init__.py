@@ -154,4 +154,7 @@
 #import mCheckUpdate
 #import mWrapText
 
+## 4.0
+#import mLexerBase
+
 import Import

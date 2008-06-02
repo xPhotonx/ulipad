@@ -48,6 +48,10 @@ class LexerFactory(Mixin.Mixin):
             LexerFactory.lexnames.append(name)
             self.mainframe.filewildchar.append(lexobj.getFilewildchar())
 
+    def reset(self):
+        for obj in self.lexobjs:
+            obj.init()
+            
     def items(self):
         return self.lexobjs
 
