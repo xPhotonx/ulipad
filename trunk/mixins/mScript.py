@@ -40,7 +40,7 @@ def add_mainframe_menu(menulist):
         [
             (100, 'IDM_SCRIPT_MANAGE', tr('Script Manager...'), wx.ITEM_NORMAL, 'OnScriptManage', tr('Script manager')),
             (110, '', '-', wx.ITEM_SEPARATOR, None, ''),
-            (120, 'IDM_SCRIPT_ITEMS', tr('(empty)'), wx.ITEM_NORMAL, 'OnScriptItems', tr('Execute an script')),
+            (120, 'IDM_SCRIPT_ITEMS', tr('(Empty)'), wx.ITEM_NORMAL, 'OnScriptItems', tr('Execute an script')),
         ]),
     ])
 Mixin.setPlugin('mainframe', 'add_menu', add_mainframe_menu)
@@ -69,7 +69,7 @@ def makescriptmenu(win, pref):
     win.scriptmenu_ids = []
     if len(win.pref.scripts) == 0:
         id = win.IDM_SCRIPT_ITEMS
-        menu.Append(id, tr('(empty)'))
+        menu.Append(id, tr('(Empty)'))
         menu.Enable(id, False)
         win.scriptmenu_ids=[id]
     else:

@@ -66,19 +66,19 @@ Mixin.setPlugin('lexerfactory', 'add_lexer', add_lexer)
 
 def add_new_files(new_files):
     new_files.extend([
-        ('Text', LexerClass.TextLexer.metaname),
+        ('Plain Text', LexerClass.TextLexer.metaname),
         ('C/C++', LexerClass.CLexer.metaname),
-        ('Html', LexerClass.HtmlLexer.metaname),
-        ('Xml', LexerClass.XMLLexer.metaname),
+        ('HTML', LexerClass.HtmlLexer.metaname),
+        ('XML', LexerClass.XMLLexer.metaname),
         ('Python', LexerClass.PythonLexer.metaname),
         ('Java', LexerClass1.JavaLexer.metaname),
         ('Ruby', LexerClass1.RubyLexer.metaname),
         ('Perl', LexerClass1.PerlLexer.metaname),
-        ('Cascade Style Sheet', LexerClass1.CSSLexer.metaname),
+        ('Cascade Style Sheets', LexerClass1.CSSLexer.metaname),
         ('JavaScript', LexerClass1.JSLexer.metaname),
         ('PHP', LexerClass1.PHPLexer.metaname),
         ('Active Server Pages', LexerClass1.ASPLexer.metaname),
-        ('ReStructured Text', LexerRst.RstLexer.metaname),
+        ('reStructuredText', LexerRst.RstLexer.metaname),
         ('Lua', LexerClass1.LuaLexer.metaname),
         ('Slice', LexerClass1.SliceLexer.metaname),
     ])

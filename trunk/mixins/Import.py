@@ -144,7 +144,7 @@ def add_editctrl_menu(popmenulist):
             (140, 'IDPM_SAVEAS', tr('Save As'), wx.ITEM_NORMAL, 'OnPopUpMenu', 'tr(Saves an opened document to a specified filename)'),
             (150, 'IDPM_FILE_SAVE_ALL', tr('Save All'), wx.ITEM_NORMAL, 'OnPopUpMenu', tr('Saves all documents')),
             (155, '', '-', wx.ITEM_SEPARATOR, None, ''),
-            (156, 'IDPM_FILE_COPY_FILENAME', tr('Copy Filename to Clipboard'), wx.ITEM_NORMAL, 'OnCopyFilenameToClipboard', tr('Copy current document filename to clipboard.')),
+            (156, 'IDPM_FILE_COPY_FILENAME', tr('Copy Filename To Clipboard'), wx.ITEM_NORMAL, 'OnCopyFilenameToClipboard', tr('Copy current document filename to clipboard.')),
             (160, '', '-', wx.ITEM_SEPARATOR, None, ''),
             (170, 'IDPM_OPEN_CMD_WINDOW', tr('Open Command Window Here'), wx.ITEM_NORMAL, 'OnOpenCmdWindow', ''),
             (180, 'IDPM_OPEN_CMD_EXPLORER', tr('Open Explorer Window Here'), wx.ITEM_NORMAL, 'OnOpenCmdExplorerWindow', ''),
@@ -974,13 +974,13 @@ def add_mainframe_menu(menulist):
         ('IDM_SEARCH', #parent menu id
         [
             (100, 'wx.ID_FIND', tr('Find...') + '\tE=Ctrl+F', wx.ITEM_NORMAL, 'OnSearchFind', tr('Find text')),
-            (110, 'IDM_SEARCH_DIRECTFIND', tr('Direct Find') + '\tE=F4', wx.ITEM_NORMAL, 'OnSearchDirectFind', tr('Direct find selected text')),
-            (120, 'wx.ID_REPLACE', tr('Find and Replace...') + '\tE=Ctrl+H', wx.ITEM_NORMAL, 'OnSearchReplace', tr('Find and replace text')),
-            (130, 'wx.ID_FORWARD', tr('Find Next') + '\tE=F3', wx.ITEM_NORMAL, 'OnSearchFindNext', tr('Find next occurance of text')),
-            (140, 'wx.ID_BACKWARD', tr('Find Previous') + '\tE=Shift+F3', wx.ITEM_NORMAL, 'OnSearchFindPrev', tr('Find previous occurance of text')),
+            (110, 'IDM_SEARCH_DIRECTFIND', tr('Directly Find') + '\tE=F4', wx.ITEM_NORMAL, 'OnSearchDirectFind', tr('Find selected text directly.')),
+            (120, 'wx.ID_REPLACE', tr('Find And Replace...') + '\tE=Ctrl+H', wx.ITEM_NORMAL, 'OnSearchReplace', tr('Find and replace text.')),
+            (130, 'wx.ID_BACKWARD', tr('Find Previous') + '\tE=Shift+F3', wx.ITEM_NORMAL, 'OnSearchFindPrev', tr('Find previous occurance of text.')),
+            (140, 'wx.ID_FORWARD', tr('Find Next') + '\tE=F3', wx.ITEM_NORMAL, 'OnSearchFindNext', tr('Find next occurance of text.')),
             (150, '', '-', wx.ITEM_SEPARATOR, None, ''),
-            (160, 'IDM_SEARCH_GOTO_LINE', tr('Go to Line...') + '\tE=Ctrl+G', wx.ITEM_NORMAL, 'OnSearchGotoLine', tr('Goes to specified line in the active document')),
-            (170, 'IDM_SEARCH_LAST_MODIFY', tr('Go to Last Modify') + '\tCtrl+B', wx.ITEM_NORMAL, 'OnSearchLastModify', tr('Goes to the last modify position')),
+            (160, 'IDM_SEARCH_GOTO_LINE', tr('Go To Line...') + '\tE=Ctrl+G', wx.ITEM_NORMAL, 'OnSearchGotoLine', tr('Goes to specified line in the active document.')),
+            (170, 'IDM_SEARCH_LAST_MODIFY', tr('Go To Last Modify') + '\tCtrl+B', wx.ITEM_NORMAL, 'OnSearchLastModify', tr('Goes to the last modify position.')),
 
         ]),
     ])
@@ -1003,7 +1003,7 @@ def add_tool_list(toollist, toolbaritems):
 
     toolbaritems.update({
         'find':(wx.ITEM_NORMAL, 'wx.ID_FIND', 'images/find.gif', tr('Find'), tr('Find Text'), 'OnSearchFind'),
-        'replace':(wx.ITEM_NORMAL, 'wx.ID_REPLACE', 'images/replace.gif', tr('Find and Replace'), tr('Find and replace text'), 'OnSearchReplace'),
+        'replace':(wx.ITEM_NORMAL, 'wx.ID_REPLACE', 'images/replace.gif', tr('Find And Replace'), tr('Find and replace text'), 'OnSearchReplace'),
     })
 Mixin.setPlugin('mainframe', 'add_tool_list', add_tool_list)
 
@@ -1078,7 +1078,7 @@ def OnSearchGotoLine(win, event):
     document = win.document
 
     line = document.GetCurrentLine() + 1
-    dlg = Entry.MyTextEntry(win, tr("Go to Line..."), tr("Enter the Line Number:"), str(line))
+    dlg = Entry.MyTextEntry(win, tr("Go To Line..."), tr("Enter the Line Number:"), str(line))
     answer = dlg.ShowModal()
     if answer == wx.ID_OK:
         try:
@@ -1141,6 +1141,7 @@ Mixin.setPlugin('editctrl', 'on_document_enter', on_document_enter)
 
 import wx
 from modules import Mixin
+from modules import common
 
 eolmess = [tr(r"Unix Mode ('\n')"), tr(r"DOS/Windows Mode ('\r\n')"), tr(r"Mac Mode ('\r')")]
 
@@ -1148,7 +1149,7 @@ def beforeinit(win):
     win.lineendingsaremixed = False
     win.eolmode = win.pref.default_eol_mode
     win.eols = {0:wx.stc.STC_EOL_LF, 1:wx.stc.STC_EOL_CRLF, 2:wx.stc.STC_EOL_CR}
-    win.eolstr = {0:'Unix', 1:'Win', 2:'Mac'}
+    win.eolstr = {0:r'\n', 1:r'\r\n', 2:r'\r'}
     win.eolstring = {0:'\n', 1:'\r\n', 2:'\r'}
     win.eolmess = eolmess
     win.SetEOLMode(win.eols[win.eolmode])
@@ -1174,9 +1175,9 @@ def add_mainframe_menu(menulist):
         ]),
         ('IDM_DOCUMENT_EOL_CONVERT',
         [
-            (100, 'IDM_DOCUMENT_EOL_CONVERT_PC', tr('Convert to Windows Format'), wx.ITEM_NORMAL, 'OnDocumentEolConvertWin', tr('Convert line ending to windows format')),
-            (200, 'IDM_DOCUMENT_EOL_CONVERT_UNIX', tr('Convert to Unix Format'), wx.ITEM_NORMAL, 'OnDocumentEolConvertUnix', tr('Convert line ending to unix format')),
-            (300, 'IDM_DOCUMENT_EOL_CONVERT_MAX', tr('Convert to Mac Format'), wx.ITEM_NORMAL, 'OnDocumentEolConvertMac', tr('Convert line ending to mac format')),
+            (100, 'IDM_DOCUMENT_EOL_CONVERT_PC', tr('Convert To Windows Format'), wx.ITEM_NORMAL, 'OnDocumentEolConvertWin', tr('Convert line ending to windows format')),
+            (200, 'IDM_DOCUMENT_EOL_CONVERT_UNIX', tr('Convert To Unix Format'), wx.ITEM_NORMAL, 'OnDocumentEolConvertUnix', tr('Convert line ending to unix format')),
+            (300, 'IDM_DOCUMENT_EOL_CONVERT_MAX', tr('Convert To Mac Format'), wx.ITEM_NORMAL, 'OnDocumentEolConvertMac', tr('Convert line ending to mac format')),
         ]),
     ])
 Mixin.setPlugin('mainframe', 'add_menu', add_mainframe_menu)
@@ -1187,7 +1188,7 @@ def setEOLMode(win, mode, convert=True):
     if convert:
         win.ConvertEOLs(win.eols[mode])
     win.SetEOLMode(win.eols[mode])
-    win.mainframe.SetStatusText(win.eolstr[mode], 3)
+    common.set_line_ending(win.eolstr[mode])
 
 def OnDocumentEolConvertWin(win, event):
     setEOLMode(win.document, 1)
@@ -1243,7 +1244,7 @@ def afteropenfile(win, filename):
         confirm_eol(win)
     else:
         eolmodestr = win.eolstr[win.eolmode]
-        win.mainframe.SetStatusText(eolmodestr, 3)
+        common.set_line_ending(eolmodestr)
         setEOLMode(win, win.eolmode, convert=False)
 Mixin.setPlugin('editor', 'afteropenfile', afteropenfile)
 
@@ -1261,7 +1262,7 @@ def on_document_enter(win, document):
             eolmodestr = "MIX"
         else:
             eolmodestr = document.eolstr[document.eolmode]
-        win.mainframe.SetStatusText(eolmodestr, 3)
+        common.set_line_ending(eolmodestr)
 Mixin.setPlugin('editctrl', 'on_document_enter', on_document_enter)
 
 def getEndOfLineCharacter(character):
@@ -1308,9 +1309,9 @@ def add_mainframe_menu(menulist):
         [
             (100, 'IDM_VIEW_TAB', tr('Tabs And Spaces'), wx.ITEM_CHECK, 'OnViewTab', tr('Shows or hides space and tab marks')),
             (110, 'IDM_VIEW_INDENTATION_GUIDES', tr('Indentation Guides'), wx.ITEM_CHECK, 'OnViewIndentationGuides', tr('Shows or hides indentation guides')),
-            (120, 'IDM_VIEW_RIGHT_EDGE', tr('Right edge indicator'), wx.ITEM_CHECK, 'OnViewRightEdge', tr('Shows or hides right edge indicator')),
-            (130, 'IDM_VIEW_LINE_NUMBER', tr('Line number'), wx.ITEM_CHECK, 'OnViewLineNumber', tr('Shows or hides line number')),
-            (131, 'IDM_VIEW_ENDOFLINE_MARK', tr('End-of-line marker'), wx.ITEM_CHECK, 'OnViewEndOfLineMark', tr('Shows or hides end-of-line marker')),
+            (120, 'IDM_VIEW_RIGHT_EDGE', tr('Right Edge Indicator'), wx.ITEM_CHECK, 'OnViewRightEdge', tr('Shows or hides right edge indicator')),
+            (130, 'IDM_VIEW_LINE_NUMBER', tr('Line Number'), wx.ITEM_CHECK, 'OnViewLineNumber', tr('Shows or hides line number')),
+            (131, 'IDM_VIEW_ENDOFLINE_MARK', tr('End-of-line Marker'), wx.ITEM_CHECK, 'OnViewEndOfLineMark', tr('Shows or hides end-of-line marker')),
         ]),
     ])
 Mixin.setPlugin('mainframe', 'add_menu', add_mainframe_menu)
@@ -1973,9 +1974,9 @@ def add_mainframe_menu(menulist):
         ]),
         ('IDM_DOCUMENT', #parent menu id
         [
-            (100, 'IDM_DOCUMENT_WORDWRAP', tr('Word-wrap'), wx.ITEM_NORMAL, 'OnDocumentWordWrap', tr('Toggles the word wrap feature of the active document')),
-            (110, 'IDM_DOCUMENT_AUTOINDENT', tr('Auto Indent'), wx.ITEM_CHECK, 'OnDocumentAutoIndent', tr('Toggles the auto-indent feature of the active document')),
-            (115, 'IDM_DOCUMENT_TABINDENT', tr('Switch to Space Indent'), wx.ITEM_NORMAL, 'OnDocumentTabIndent', tr('Uses tab as indent char or uses space as indent char.')),
+            (100, 'IDM_DOCUMENT_WORDWRAP', tr('Word Wrap'), wx.ITEM_NORMAL, 'OnDocumentWordWrap', tr('Toggles the word wrap feature of the active document.')),
+            (110, 'IDM_DOCUMENT_AUTOINDENT', tr('Auto Indent'), wx.ITEM_CHECK, 'OnDocumentAutoIndent', tr('Toggles the auto-indent feature of the active document.')),
+            (115, 'IDM_DOCUMENT_TABINDENT', tr('Switch To Space Indent'), wx.ITEM_NORMAL, 'OnDocumentTabIndent', tr('Uses tab as indent char or uses space as indent char.')),
         ]),
     ])
 Mixin.setPlugin('mainframe', 'add_menu', add_mainframe_menu)
@@ -2095,9 +2096,9 @@ def on_mainframe_updateui(win, event):
                 from modules import makemenu
                 menu = makemenu.findmenu(win.menuitems, 'IDM_DOCUMENT_TABINDENT')
                 if win.document.usetab:
-                    menu.SetText(tr('Switch to Space Indent'))
+                    menu.SetText(tr('Switch To Space Indent'))
                 else:
-                    menu.SetText(tr('Switch to Tab Indent'))
+                    menu.SetText(tr('Switch To Tab Indent'))
             else:
                 event.Enable(False)
 Mixin.setPlugin('mainframe', 'on_update_ui', on_mainframe_updateui)
@@ -2259,10 +2260,10 @@ def add_mainframe_menu(menulist):
     menulist.extend([ ('IDM_SEARCH',
         [
             (180, '', '-', wx.ITEM_SEPARATOR, None, ''),
-            (190, 'IDM_SEARCH_BOOKMARK_TOGGLE', tr('Toggle Marker') + '\tE=F9', wx.ITEM_NORMAL, 'OnSearchBookmarkToggle', tr('Set and clear marker at current line')),
-            (200, 'IDM_SEARCH_BOOKMARK_CLEARALL', tr('Clear All Marker') + '\tE=Ctrl+Shift+F9', wx.ITEM_NORMAL, 'OnSearchBookmarkClearAll', tr('Clears all marker from the active document')),
-            (210, 'IDM_SEARCH_BOOKMARK_NEXT', tr('Next Marker') + '\tE=F8', wx.ITEM_NORMAL, 'OnSearchBookmarkNext', tr('Goes to next marker position')),
-            (220, 'IDM_SEARCH_BOOKMARK_PREVIOUS', tr('Previous Marker') + '\tE=Shift+F8', wx.ITEM_NORMAL, 'OnSearchBookmarkPrevious', tr('Goes to previous marker position')),
+            (190, 'IDM_SEARCH_BOOKMARK_TOGGLE', tr('Toggle Marker') + '\tE=F9', wx.ITEM_NORMAL, 'OnSearchBookmarkToggle', tr('Set and clear marker at current line.')),
+            (200, 'IDM_SEARCH_BOOKMARK_CLEARALL', tr('Clear All Markers') + '\tE=Ctrl+Shift+F9', wx.ITEM_NORMAL, 'OnSearchBookmarkClearAll', tr('Clears all markers from the active document.')),
+            (210, 'IDM_SEARCH_BOOKMARK_PREVIOUS', tr('Previous Marker') + '\tE=Shift+F8', wx.ITEM_NORMAL, 'OnSearchBookmarkPrevious', tr('Goes to previous marker position.')),
+            (220, 'IDM_SEARCH_BOOKMARK_NEXT', tr('Next Marker') + '\tE=F8', wx.ITEM_NORMAL, 'OnSearchBookmarkNext', tr('Goes to next marker position.')),
         ]),
     ])
 Mixin.setPlugin('mainframe', 'add_menu', add_mainframe_menu)
@@ -2610,7 +2611,7 @@ def add_mainframe_menu(menulist):
         ]),
         ('IDM_FILE_SESSION_RECENT',
         [
-            (100, 'IDM_FILE_SESSION_RECENT_ITEMS', tr('(empty)'), wx.ITEM_NORMAL, '', tr('There is no recent session.')),
+            (100, 'IDM_FILE_SESSION_RECENT_ITEMS', tr('(Empty)'), wx.ITEM_NORMAL, '', tr('There is no recent session.')),
         ]),
 
     ])
@@ -2672,7 +2673,7 @@ def create_recent_session_menu(win):
     win.recentsession_ids = []
     if len(win.pref.recent_sessions) == 0:
         id = win.IDM_FILE_SESSION_RECENT_ITEMS
-        menu.Append(id, tr('(empty)'))
+        menu.Append(id, tr('(Empty)'))
         menu.Enable(id, False)
         win.recentsession_ids = [id]
     else:
@@ -3135,7 +3136,7 @@ def add_mainframe_menu(menulist):
             (100, 'wx.ID_HELP', tr('UliPad Help Document') + '\tF1', wx.ITEM_NORMAL, 'OnHelpIndex', tr('UliPad help document')),
             (200, '-', '', wx.ITEM_SEPARATOR, '', ''),
             (210, 'wx.ID_HOME', tr('Visit Project Homepage'), wx.ITEM_NORMAL, 'OnHelpProject', tr('Visit Project Homepage: %s') % homepage),
-            (220, 'IDM_HELP_MAILLIST', tr('Visit maillist'), wx.ITEM_NORMAL, 'OnHelpMaillist', tr('Visit Project Maillist: %s') % maillist),
+            (220, 'IDM_HELP_MAILLIST', tr('Visit Mail List'), wx.ITEM_NORMAL, 'OnHelpMaillist', tr('Visit Project Mail List: %s') % maillist),
             (230, 'IDM_HELP_MYBLOG', tr('Visit My Blog'), wx.ITEM_NORMAL, 'OnHelpMyBlog', tr('Visit My blog: %s') % blog),
             (240, 'IDM_HELP_ULISPOT', tr('Visit UliPad Snippets Site'), wx.ITEM_NORMAL, 'OnHelpUlispot', tr('Visit UliPad snippets site: %s') % ulispot),
             (250, 'IDM_HELP_EMAIL', tr('Contact Me'), wx.ITEM_NORMAL, 'OnHelpEmail', tr('Send email to me mailto:%s') % email),
@@ -3695,7 +3696,7 @@ def add_mainframe_menu(menulist):
         [
             (100, 'IDM_SCRIPT_MANAGE', tr('Script Manager...'), wx.ITEM_NORMAL, 'OnScriptManage', tr('Script manager')),
             (110, '', '-', wx.ITEM_SEPARATOR, None, ''),
-            (120, 'IDM_SCRIPT_ITEMS', tr('(empty)'), wx.ITEM_NORMAL, 'OnScriptItems', tr('Execute an script')),
+            (120, 'IDM_SCRIPT_ITEMS', tr('(Empty)'), wx.ITEM_NORMAL, 'OnScriptItems', tr('Execute an script')),
         ]),
     ])
 Mixin.setPlugin('mainframe', 'add_menu', add_mainframe_menu)
@@ -3724,7 +3725,7 @@ def makescriptmenu(win, pref):
     win.scriptmenu_ids = []
     if len(win.pref.scripts) == 0:
         id = win.IDM_SCRIPT_ITEMS
-        menu.Append(id, tr('(empty)'))
+        menu.Append(id, tr('(Empty)'))
         menu.Enable(id, False)
         win.scriptmenu_ids=[id]
     else:
@@ -3894,19 +3895,19 @@ Mixin.setPlugin('lexerfactory', 'add_lexer', add_lexer)
 
 def add_new_files(new_files):
     new_files.extend([
-        ('Text', LexerClass.TextLexer.metaname),
+        ('Plain Text', LexerClass.TextLexer.metaname),
         ('C/C++', LexerClass.CLexer.metaname),
-        ('Html', LexerClass.HtmlLexer.metaname),
-        ('Xml', LexerClass.XMLLexer.metaname),
+        ('HTML', LexerClass.HtmlLexer.metaname),
+        ('XML', LexerClass.XMLLexer.metaname),
         ('Python', LexerClass.PythonLexer.metaname),
         ('Java', LexerClass1.JavaLexer.metaname),
         ('Ruby', LexerClass1.RubyLexer.metaname),
         ('Perl', LexerClass1.PerlLexer.metaname),
-        ('Cascade Style Sheet', LexerClass1.CSSLexer.metaname),
+        ('Cascade Style Sheets', LexerClass1.CSSLexer.metaname),
         ('JavaScript', LexerClass1.JSLexer.metaname),
         ('PHP', LexerClass1.PHPLexer.metaname),
         ('Active Server Pages', LexerClass1.ASPLexer.metaname),
-        ('ReStructured Text', LexerRst.RstLexer.metaname),
+        ('reStructuredText', LexerRst.RstLexer.metaname),
         ('Lua', LexerClass1.LuaLexer.metaname),
         ('Slice', LexerClass1.SliceLexer.metaname),
     ])
@@ -4399,7 +4400,7 @@ def add_mainframe_menu(menulist):
         [
             (100, 'IDM_SHELL_MANAGE', tr('External Tools Manager...'), wx.ITEM_NORMAL, 'OnShellManage', tr('Shell command manager')),
             (110, '', '-', wx.ITEM_SEPARATOR, None, ''),
-            (120, 'IDM_SHELL_ITEMS', tr('(empty)'), wx.ITEM_NORMAL, 'OnShellItems', tr('Execute an shell command')),
+            (120, 'IDM_SHELL_ITEMS', tr('(Empty)'), wx.ITEM_NORMAL, 'OnShellItems', tr('Execute an shell command')),
         ]),
     ])
 Mixin.setPlugin('mainframe', 'add_menu', add_mainframe_menu)
@@ -4427,7 +4428,7 @@ def makeshellmenu(win, pref):
     win.shellmenu_ids = []
     if len(win.pref.shells) == 0:
         id = win.IDM_SHELL_ITEMS
-        menu.Append(id, tr('(empty)'))
+        menu.Append(id, tr('(Empty)'))
         menu.Enable(id, False)
         win.shellmenu_ids=[id]
     else:
@@ -4504,7 +4505,7 @@ def OnDocumentChangeEncoding(win, event):
     ret = _getencoding()
     if ret:
         win.document.locale = ret
-        win.SetStatusText(win.document.locale, 4)
+        common.set_encoding(win.document.locale)
         win.document.modified = True
         wx.CallAfter(win.editctrl.showTitle, win.document)
         wx.CallAfter(win.editctrl.showPageTitle, win.document)
@@ -4521,22 +4522,23 @@ Mixin.setMixin('editor', 'OnEditorDocumentChangeEncoding', OnEditorDocumentChang
 __doc__ = 'show document locale in statusbar'
 
 from modules import Mixin
+from modules import common
 
 def on_document_enter(win, document):
     if document.edittype == 'edit':
-        win.mainframe.SetStatusText(win.document.locale, 4)
+        common.set_encoding(win.document.locale)
 Mixin.setPlugin('editctrl', 'on_document_enter', on_document_enter)
 
 def fileopentext(win, stext):
-    win.mainframe.SetStatusText(win.locale, 4)
+    common.set_encoding(win.locale)
 Mixin.setPlugin('editor', 'openfiletext', fileopentext)
 
 def savefiletext(win, stext):
-    win.mainframe.SetStatusText(win.locale, 4)
+    common.set_encoding(win.locale)
 Mixin.setPlugin('editor', 'savefiletext', savefiletext)
 
 def afteropenfile(win, filename):
-    win.mainframe.SetStatusText(win.locale, 4)
+    common.set_encoding(win.locale)
 Mixin.setPlugin('editor', 'afteropenfile', afteropenfile)
 
 
@@ -4641,7 +4643,7 @@ Mixin.setPlugin('mainframe', 'add_menu', add_mainframe_menu)
 
 def OnDocumentSyntaxHighlight(win, event):
     items = [lexer.name for lexer in win.lexers.lexobjs]
-    dlg = wx.SingleChoiceDialog(win, tr('Select a syntax highlight'), tr('Syntax Highlight'), items, wx.CHOICEDLG_STYLE)
+    dlg = wx.SingleChoiceDialog(win, tr('Select a syntax highlight:'), tr('Syntax Highlight'), items, wx.CHOICEDLG_STYLE)
     if dlg.ShowModal() == wx.ID_OK:
         lexer = win.lexers.lexobjs[dlg.GetSelection()]
         lexer.colourize(win.document)
@@ -4751,13 +4753,13 @@ def add_mainframe_menu(menulist):
             (100, 'wx.ID_PRINT_SETUP', tr('Page Setup...'), wx.ITEM_NORMAL, 'OnFilePageSetup', tr('Set page layout and options.')),
             (105, 'IDM_FILE_PRINT_LINENUMBER', tr('Print Line Number'), wx.ITEM_CHECK, 'OnFilePrintLineNumber', tr('Print line number.')),
             (120, 'wx.ID_PREVIEW', tr('Print Preview...'), wx.ITEM_NORMAL, 'OnFilePrintPreview', tr('Displays the document on the screen as it would appear printed.')),
-            (130, 'wx.ID_PRINT', tr('Print...'), wx.ITEM_NORMAL, 'OnFilePrint', tr('Prints a document.')),
-            (140, 'IDM_FILE_HTML', tr('Html File'), wx.ITEM_NORMAL, '', None),
+            (130, 'wx.ID_PRINT', tr('Print'), wx.ITEM_NORMAL, 'OnFilePrint', tr('Prints a document.')),
+            (140, 'IDM_FILE_HTML', tr('HTML File'), wx.ITEM_NORMAL, '', None),
         ]),
         ('IDM_FILE_HTML',
         [
-            (100, 'IDM_FILE_HTML_PRINT_PREVIEW', tr('Html File Preview...'), wx.ITEM_NORMAL, 'OnFileHtmlPreview', tr('Displays the html document on the screen as it would appear printed.')),
-            (110, 'IDM_FILE_HTML_PRINT', tr('Html File Print...'), wx.ITEM_NORMAL, 'OnFileHtmlPrint', tr('Prints a html document.')),
+            (100, 'IDM_FILE_HTML_PRINT_PREVIEW', tr('HTML File Preview...'), wx.ITEM_NORMAL, 'OnFileHtmlPreview', tr('Displays the HTML document on the screen as it would appear printed.')),
+            (110, 'IDM_FILE_HTML_PRINT', tr('HTML File Print'), wx.ITEM_NORMAL, 'OnFileHtmlPrint', tr('Prints a HTML document.')),
         ]),
     ])
 Mixin.setPlugin('mainframe', 'add_menu', add_mainframe_menu)
@@ -5400,14 +5402,14 @@ def add_mainframe_menu(menulist):
         ]),
         ('IDM_EDIT_CONVERT',
         [
-            (100, 'IDM_EDIT_CONVERT_OUTPUTHTMLWINDOW', tr('Output In Html Window'), wx.ITEM_RADIO, 'OnConvertOutput', tr('Outputs converted text in html window.')),
+            (100, 'IDM_EDIT_CONVERT_OUTPUTHTMLWINDOW', tr('Output In HTML Window'), wx.ITEM_RADIO, 'OnConvertOutput', tr('Outputs converted text in HTML window.')),
             (110, 'IDM_EDIT_CONVERT_OUTPUTMESSAGEWINDOW', tr('Output In Message Window'), wx.ITEM_RADIO, 'OnConvertOutput', tr('Outputs converted text in message window.')),
             (120, 'IDM_EDIT_CONVERT_REPLACEHERE', tr('Replace Selected Text'), wx.ITEM_RADIO, 'OnConvertOutput', tr('Replaces selected text with converted text.')),
             (130, '', '-', wx.ITEM_SEPARATOR, '', ''),
-            (140, 'IDM_EDIT_CONVERT_DIRECT', tr('Output Directly In Html Window'), wx.ITEM_NORMAL, 'OnConvertOutputDirectly', tr('Outputs directly the text in html window.')),
-            (150, 'IDM_EDIT_CONVERT_REST2HTML', tr('reSt to Html'), wx.ITEM_NORMAL, 'OnConvertRest2Html', tr('Converts reStructuredText source to Html.')),
-            (160, 'IDM_EDIT_CONVERT_PY2HTML', tr('Py to Html'), wx.ITEM_NORMAL, 'OnConvertPy2Html', tr('Converts python source to Html.')),
-            (170, 'IDM_EDIT_CONVERT_TEXTILE2HTML', tr('Textile to Html'), wx.ITEM_NORMAL, 'OnConvertTextile2Html', tr('Converts textile source to Html.')),
+            (140, 'IDM_EDIT_CONVERT_DIRECT', tr('Output Directly In HTML Window'), wx.ITEM_NORMAL, 'OnConvertOutputDirectly', tr('Outputs directly the text in HTML window.')),
+            (150, 'IDM_EDIT_CONVERT_REST2HTML', tr('reSt To HTML'), wx.ITEM_NORMAL, 'OnConvertRest2Html', tr('Converts reStructuredText source to HTML.')),
+            (160, 'IDM_EDIT_CONVERT_PY2HTML', tr('Py To HTML'), wx.ITEM_NORMAL, 'OnConvertPy2Html', tr('Converts python source to HTML.')),
+            (170, 'IDM_EDIT_CONVERT_TEXTILE2HTML', tr('Textile To HTML'), wx.ITEM_NORMAL, 'OnConvertTextile2Html', tr('Converts textile source to HTML.')),
         ]),
     ])
 Mixin.setPlugin('mainframe', 'add_menu', add_mainframe_menu)
@@ -5419,14 +5421,14 @@ def add_editor_menu(popmenulist):
         ]),
         ('IDPM_EDIT_CONVERT',
         [
-            (100, 'IDPM_EDIT_CONVERT_OUTPUTHTMLWINDOW', tr('Output In Html Window'), wx.ITEM_RADIO, 'OnConvertOutput', tr('Outputs converted text in html window.')),
+            (100, 'IDPM_EDIT_CONVERT_OUTPUTHTMLWINDOW', tr('Output In HTML Window'), wx.ITEM_RADIO, 'OnConvertOutput', tr('Outputs converted text in HTML window.')),
             (110, 'IDPM_EDIT_CONVERT_OUTPUTMESSAGEWINDOW', tr('Output In Message Window'), wx.ITEM_RADIO, 'OnConvertOutput', tr('Outputs converted text in message window.')),
             (120, 'IDPM_EDIT_CONVERT_REPLACEHERE', tr('Replace Selected Text'), wx.ITEM_RADIO, 'OnConvertOutput', tr('Replaces selected text with converted text.')),
             (130, '', '-', wx.ITEM_SEPARATOR, '', ''),
-            (140, 'IDPM_EDIT_CONVERT_DIRECT', tr('Output Directly In Html Window'), wx.ITEM_NORMAL, 'OnOutputDirectly', tr('Outputs directly the text in html window.')),
-            (150, 'IDPM_EDIT_CONVERT_REST2HTML', tr('reSt to Html'), wx.ITEM_NORMAL, 'OnRest2Html', tr('Converts reStructuredText source to Html.')),
-            (160, 'IDPM_EDIT_CONVERT_PY2HTML', tr('Py to Html'), wx.ITEM_NORMAL, 'OnPy2Html', tr('Converts python source to Html.')),
-            (170, 'IDPM_EDIT_CONVERT_TEXTILE2HTML', tr('Textile to Html'), wx.ITEM_NORMAL, 'OnTextile2Html', tr('Converts textile source to Html.')),
+            (140, 'IDPM_EDIT_CONVERT_DIRECT', tr('Output Directly In HTML Window'), wx.ITEM_NORMAL, 'OnOutputDirectly', tr('Outputs directly the text in HTML window.')),
+            (150, 'IDPM_EDIT_CONVERT_REST2HTML', tr('reSt To HTML'), wx.ITEM_NORMAL, 'OnRest2Html', tr('Converts reStructuredText source to HTML.')),
+            (160, 'IDPM_EDIT_CONVERT_PY2HTML', tr('Py To HTML'), wx.ITEM_NORMAL, 'OnPy2Html', tr('Converts python source to HTML.')),
+            (170, 'IDPM_EDIT_CONVERT_TEXTILE2HTML', tr('Textile To HTML'), wx.ITEM_NORMAL, 'OnTextile2Html', tr('Converts textile source to HTML.')),
         ]),
     ])
 Mixin.setPlugin('editor', 'add_menu', add_editor_menu)
@@ -5644,7 +5646,7 @@ class HtmlFiletype(FiletypeBase.FiletypeBase):
     __mixinname__ = 'htmlfiletype'
     menulist = [ (None,
         [
-            (890, 'IDM_HTML', 'Html', wx.ITEM_NORMAL, None, ''),
+            (890, 'IDM_HTML', 'HTML', wx.ITEM_NORMAL, None, ''),
         ]),
     ]
     toollist = []               #your should not use supperclass's var
@@ -5657,8 +5659,8 @@ Mixin.setPlugin('changefiletype', 'add_filetypes', add_filetypes)
 def add_html_menu(menulist):
     menulist.extend([('IDM_HTML', #parent menu id
             [
-                (100, 'IDM_HTML_BROWSER_LEFT', tr('View Html Content in Left Pane'), wx.ITEM_NORMAL, 'OnHtmlBrowserInLeft', tr('Views html content in left pane.')),
-                (110, 'IDM_HTML_BROWSER_BOTTOM', tr('View Html Content in Bottom Pane'), wx.ITEM_NORMAL, 'OnHtmlBrowserInBottom', tr('Views html content in bottom pane.')),
+                (100, 'IDM_HTML_BROWSER_LEFT', tr('View HTML Content In Left Pane'), wx.ITEM_NORMAL, 'OnHtmlBrowserInLeft', tr('Views html content in left pane.')),
+                (110, 'IDM_HTML_BROWSER_BOTTOM', tr('View HTML Content In Bottom Pane'), wx.ITEM_NORMAL, 'OnHtmlBrowserInBottom', tr('Views html content in bottom pane.')),
             ]),
     ])
 Mixin.setPlugin('htmlfiletype', 'add_menu', add_html_menu)
@@ -6318,7 +6320,7 @@ def add_mainframe_menu(menulist):
     menulist.extend([
         ('IDM_DOCUMENT', #parent menu id
         [
-            (127, 'IDM_DOCUMENT_APPLYACP', tr('Apply Auto-complete Files'), wx.ITEM_NORMAL, 'OnDocumentApplyAcp', tr('Apply auto-complete files to current document.')),
+            (127, 'IDM_DOCUMENT_APPLYACP', tr('Apply Auto Completed Files'), wx.ITEM_NORMAL, 'OnDocumentApplyAcp', tr('Apply auto-complete files to current document.')),
         ]),
         (None,
         [
@@ -6341,7 +6343,7 @@ def add_editor_menu(popmenulist):
     popmenulist.extend([
         (None,
         [
-            (270, 'IDPM_APPLYACP', tr('Apply Auto-complete Files'), wx.ITEM_NORMAL, 'OnApplyAcp', tr('Apply auto-complete files to current document.')),
+            (270, 'IDPM_APPLYACP', tr('Apply Auto Completed Files'), wx.ITEM_NORMAL, 'OnApplyAcp', tr('Apply auto completed files to current document.')),
         ]),
     ])
 Mixin.setPlugin('editor', 'add_menu', add_editor_menu)
@@ -6521,7 +6523,7 @@ Mixin.setMixin('mainframe', 'OnFileNews', OnFileNews)
 def add_mainframe_menu(menulist):
     menulist.extend([ ('IDM_FILE_NEWMORE',
         [
-           (100, 'IDM_FILE_NEWMORE_NULL', tr('(empty)'), wx.ITEM_NORMAL, '', ''),
+           (100, 'IDM_FILE_NEWMORE_NULL', tr('(Empty)'), wx.ITEM_NORMAL, '', ''),
         ]),
     ])
 Mixin.setPlugin('mainframe', 'add_menu', add_mainframe_menu)
@@ -7397,8 +7399,8 @@ def other_popup_menu(editctrl, document, menus):
         menus.extend([ (None,
             [
                 (600, '', '-', wx.ITEM_SEPARATOR, None, ''),
-                (700, 'IDPM_MULTIVIEW_LEFT', tr('Open View in Left Pane'), wx.ITEM_NORMAL, 'OnOpenViewLeft', tr('Opens view of current document in left pane.')),
-                (800, 'IDPM_MULTIVIEW_BOTTOM', tr('Open View in Bottom Pane'), wx.ITEM_NORMAL, 'OnOpenViewBottom', tr('Opens view of current document in bottom pane.')),
+                (700, 'IDPM_MULTIVIEW_LEFT', tr('Open View In Left Pane'), wx.ITEM_NORMAL, 'OnOpenViewLeft', tr('Opens view of current document in left pane.')),
+                (800, 'IDPM_MULTIVIEW_BOTTOM', tr('Open View In Bottom Pane'), wx.ITEM_NORMAL, 'OnOpenViewBottom', tr('Opens view of current document in bottom pane.')),
             ]),
         ])
 Mixin.setPlugin('editctrl', 'other_popup_menu', other_popup_menu)
@@ -7468,8 +7470,8 @@ Mixin.setPlugin('changefiletype', 'add_filetypes', add_filetypes)
 def add_rest_menu(menulist):
     menulist.extend([('IDM_REST', #parent menu id
             [
-                (100, 'IDM_REST_VIEW_IN_LEFT', tr('View Html Result in Left Pane'), wx.ITEM_NORMAL, 'OnRestViewHtmlInLeft', tr('Views html result in left pane.')),
-                (110, 'IDM_REST_VIEW_IN_BOTTOM', tr('View Html Result in Bottom Pane'), wx.ITEM_NORMAL, 'OnRestViewHtmlInBottom', tr('Views html result in bottom pane.')),
+                (100, 'IDM_REST_VIEW_IN_LEFT', tr('View HTML Result In Left Pane'), wx.ITEM_NORMAL, 'OnRestViewHtmlInLeft', tr('Views HTML result in left pane.')),
+                (110, 'IDM_REST_VIEW_IN_BOTTOM', tr('View HTML Result In Bottom Pane'), wx.ITEM_NORMAL, 'OnRestViewHtmlInBottom', tr('Views HTML result in bottom pane.')),
             ]),
     ])
 Mixin.setPlugin('restfiletype', 'add_menu', add_rest_menu)
@@ -7652,7 +7654,7 @@ from modules.Debug import error
 def add_mainframe_menu(menulist):
     menulist.extend([ ('IDM_SEARCH',
         [
-            (175, 'IDM_SEARCH_GOTO_DEF', tr('Jump to the definition')+'\tE=Ctrl+I', wx.ITEM_NORMAL, 'OnSearchJumpDef', tr('Jumps to definition.')),
+            (175, 'IDM_SEARCH_GOTO_DEF', tr('Jump To The Definition')+'\tE=Ctrl+I', wx.ITEM_NORMAL, 'OnSearchJumpDef', tr('Jumps to definition.')),
         ]),
     ])
 Mixin.setPlugin('mainframe', 'add_menu', add_mainframe_menu)
@@ -7660,7 +7662,7 @@ Mixin.setPlugin('mainframe', 'add_menu', add_mainframe_menu)
 def add_editor_menu(popmenulist):
     popmenulist.extend([ (None, #parent menu id
         [
-            (10, 'IDPM_GOTO_DEF', tr('Jump to the definition')+'\tCtrl+I', wx.ITEM_NORMAL, 'OnJumpDef', tr('Jumps to definition.')),
+            (10, 'IDPM_GOTO_DEF', tr('Jump To The Definition')+'\tCtrl+I', wx.ITEM_NORMAL, 'OnJumpDef', tr('Jumps to definition.')),
         ]),
     ])
 Mixin.setPlugin('editor', 'add_menu', add_editor_menu)
@@ -7975,9 +7977,9 @@ def add_mainframe_menu(menulist):
         ]),
         ('IDM_SEARCH_SMART_NAV',
             [
-                (100, 'IDM_SEARCH_NAV_PREV', tr('Goto Previous File'), wx.ITEM_NORMAL, 'OnSmartNavPrev', tr('Goto previous file.')),
-                (110, 'IDM_SEARCH_NAV_NEXT', tr('Goto Next File'), wx.ITEM_NORMAL, 'OnSmartNavNext', tr('Goto next file.')),
-                (120, 'IDM_SEARCH_NAV_CLEAR', tr('Clear files'), wx.ITEM_NORMAL, 'OnSmartNavClear', tr('Clear buffered files.')),
+                (100, 'IDM_SEARCH_NAV_PREV', tr('Go To Previous File'), wx.ITEM_NORMAL, 'OnSmartNavPrev', tr('Goto previous file.')),
+                (110, 'IDM_SEARCH_NAV_NEXT', tr('Go To Next File'), wx.ITEM_NORMAL, 'OnSmartNavNext', tr('Goto next file.')),
+                (120, 'IDM_SEARCH_NAV_CLEAR', tr('Clear Files'), wx.ITEM_NORMAL, 'OnSmartNavClear', tr('Clear buffered files.')),
             ]),
 
     ])
@@ -8132,12 +8134,12 @@ import ReloadMixins
 def add_mainframe_menu(menulist):
     menulist.extend([('IDM_TOOL', #parent menu id
         [
-            (138, 'IDM_TOOL_AUTO_LOAD_MIXINS', tr('Auto reload Mixins'), wx.ITEM_NORMAL, '', ''),
+            (138, 'IDM_TOOL_AUTO_LOAD_MIXINS', tr('Auto Reload Mixins'), wx.ITEM_NORMAL, '', ''),
         ]),
         ('IDM_TOOL_AUTO_LOAD_MIXINS',
         [
-            (110, 'IDM_TOOL_MIXINS_NAME', tr('Select Mixins name to reload') +'\tCtrl+M', wx.ITEM_NORMAL, 'OnToolReloadName', tr('Select Mixin names to reload.')),
-            (120, 'IDM_TOOL_ENABLE_RELOAD_MIXINS', tr('Enable reload Mixins') +'\tCtrl+Shift+M', wx.ITEM_CHECK, 'OnToolreload_mixins', tr('Switches to Mixins reload mode.')),
+            (110, 'IDM_TOOL_MIXINS_NAME', tr('Select Mixins Name To Reload') +'\tCtrl+M', wx.ITEM_NORMAL, 'OnToolReloadName', tr('Select Mixin names to reload.')),
+            (120, 'IDM_TOOL_ENABLE_RELOAD_MIXINS', tr('Enable Reload Mixins') +'\tCtrl+Shift+M', wx.ITEM_CHECK, 'OnToolreload_mixins', tr('Switches to Mixins reload mode.')),
         ]),
     ])
 Mixin.setPlugin('mainframe', 'add_menu', add_mainframe_menu)
@@ -8327,7 +8329,7 @@ def add_mainframe_menu(menulist):
     menulist.extend([
         ('IDM_EDIT',
         [
-            (285, 'IDM_EDIT_COPY_RUN', tr('&Run in Shell') + '\tCtrl+F5', wx.ITEM_NORMAL, 'OnEditCopyRun', tr('Copy code to shell window and run it.')),
+            (285, 'IDM_EDIT_COPY_RUN', tr('&Run In Shell') + '\tCtrl+F5', wx.ITEM_NORMAL, 'OnEditCopyRun', tr('Copy code to shell window and run it.')),
         ]),
     ])
 Mixin.setPlugin('mainframe', 'add_menu', add_mainframe_menu)

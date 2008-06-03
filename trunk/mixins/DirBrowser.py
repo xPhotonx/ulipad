@@ -66,13 +66,13 @@ class DirBrowser(wx.Panel, Mixin.Mixin):
         ]),
         ('IDPM_ADD',
         [
-            (100, 'IDPM_ADD_NEWDIR', tr('Open new directory'), wx.ITEM_NORMAL, 'OnAddNewPath', ''),
+            (100, 'IDPM_ADD_NEWDIR', tr('Open New Directory'), wx.ITEM_NORMAL, 'OnAddNewPath', ''),
             (110, 'IDPM_ADD_ULIPADWORK', tr('Open UliPad Work Path'), wx.ITEM_NORMAL, 'OnAddUliPadWorkPath', ''),
             (120, 'IDPM_ADD_ULIPADUSER', tr('Open UliPad User Path'), wx.ITEM_NORMAL, 'OnAddUliPadUserPath', ''),
             (130, '', '-', wx.ITEM_SEPARATOR, None, ''),
             (140, 'IDPM_ADD_CLEAN', tr('Clean Recently Directoris'), wx.ITEM_NORMAL, 'OnCleanDirectories', ''),
             (150, '', '-', wx.ITEM_SEPARATOR, None, ''),
-            (160, 'IDPM_ADD_DIRS', tr('(empty)'), wx.ITEM_NORMAL, '', ''),
+            (160, 'IDPM_ADD_DIRS', tr('(Empty)'), wx.ITEM_NORMAL, '', ''),
         ]),
     ]
     if wx.Platform == '__WXMSW__':
@@ -231,7 +231,7 @@ class DirBrowser(wx.Panel, Mixin.Mixin):
         self.dirmenu_ids = []
         if len(self.pref.recent_dir_paths) == 0:
             id = self.IDPM_ADD_DIRS
-            menu.Append(id, tr('(empty)'))
+            menu.Append(id, tr('(Empty)'))
             menu.Enable(id, False)
             self.dirmenu_ids = [id]
         else:

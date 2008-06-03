@@ -45,8 +45,8 @@ Mixin.setPlugin('changefiletype', 'add_filetypes', add_filetypes)
 def add_rest_menu(menulist):
     menulist.extend([('IDM_REST', #parent menu id
             [
-                (100, 'IDM_REST_VIEW_IN_LEFT', tr('View Html Result in Left Pane'), wx.ITEM_NORMAL, 'OnRestViewHtmlInLeft', tr('Views html result in left pane.')),
-                (110, 'IDM_REST_VIEW_IN_BOTTOM', tr('View Html Result in Bottom Pane'), wx.ITEM_NORMAL, 'OnRestViewHtmlInBottom', tr('Views html result in bottom pane.')),
+                (100, 'IDM_REST_VIEW_IN_LEFT', tr('View HTML Result In Left Pane'), wx.ITEM_NORMAL, 'OnRestViewHtmlInLeft', tr('Views HTML result in left pane.')),
+                (110, 'IDM_REST_VIEW_IN_BOTTOM', tr('View HTML Result In Bottom Pane'), wx.ITEM_NORMAL, 'OnRestViewHtmlInBottom', tr('Views HTML result in bottom pane.')),
             ]),
     ])
 Mixin.setPlugin('restfiletype', 'add_menu', add_rest_menu)

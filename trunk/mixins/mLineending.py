@@ -23,6 +23,7 @@
 
 import wx
 from modules import Mixin
+from modules import common
 
 eolmess = [tr(r"Unix Mode ('\n')"), tr(r"DOS/Windows Mode ('\r\n')"), tr(r"Mac Mode ('\r')")]
 
@@ -30,7 +31,8 @@ def beforeinit(win):
     win.lineendingsaremixed = False
     win.eolmode = win.pref.default_eol_mode
     win.eols = {0:wx.stc.STC_EOL_LF, 1:wx.stc.STC_EOL_CRLF, 2:wx.stc.STC_EOL_CR}
-    win.eolstr = {0:'Unix', 1:'Win', 2:'Mac'}
+#    win.eolstr = {0:'Unix', 1:'Win', 2:'Mac'}
+    win.eolstr = {0:r'\n', 1:r'\r\n', 2:r'\r'}
     win.eolstring = {0:'\n', 1:'\r\n', 2:'\r'}
     win.eolmess = eolmess
     win.SetEOLMode(win.eols[win.eolmode])
@@ -56,9 +58,9 @@ def add_mainframe_menu(menulist):
         ]),
         ('IDM_DOCUMENT_EOL_CONVERT',
         [
-            (100, 'IDM_DOCUMENT_EOL_CONVERT_PC', tr('Convert to Windows Format'), wx.ITEM_NORMAL, 'OnDocumentEolConvertWin', tr('Convert line ending to windows format')),
-            (200, 'IDM_DOCUMENT_EOL_CONVERT_UNIX', tr('Convert to Unix Format'), wx.ITEM_NORMAL, 'OnDocumentEolConvertUnix', tr('Convert line ending to unix format')),
-            (300, 'IDM_DOCUMENT_EOL_CONVERT_MAX', tr('Convert to Mac Format'), wx.ITEM_NORMAL, 'OnDocumentEolConvertMac', tr('Convert line ending to mac format')),
+            (100, 'IDM_DOCUMENT_EOL_CONVERT_PC', tr('Convert To Windows Format'), wx.ITEM_NORMAL, 'OnDocumentEolConvertWin', tr('Convert line ending to windows format')),
+            (200, 'IDM_DOCUMENT_EOL_CONVERT_UNIX', tr('Convert To Unix Format'), wx.ITEM_NORMAL, 'OnDocumentEolConvertUnix', tr('Convert line ending to unix format')),
+            (300, 'IDM_DOCUMENT_EOL_CONVERT_MAX', tr('Convert To Mac Format'), wx.ITEM_NORMAL, 'OnDocumentEolConvertMac', tr('Convert line ending to mac format')),
         ]),
     ])
 Mixin.setPlugin('mainframe', 'add_menu', add_mainframe_menu)
@@ -69,7 +71,7 @@ def setEOLMode(win, mode, convert=True):
     if convert:
         win.ConvertEOLs(win.eols[mode])
     win.SetEOLMode(win.eols[mode])
-    win.mainframe.SetStatusText(win.eolstr[mode], 3)
+    common.set_line_ending(win.eolstr[mode])
 
 def OnDocumentEolConvertWin(win, event):
     setEOLMode(win.document, 1)
@@ -125,7 +127,7 @@ def afteropenfile(win, filename):
         confirm_eol(win)
     else:
         eolmodestr = win.eolstr[win.eolmode]
-        win.mainframe.SetStatusText(eolmodestr, 3)
+        common.set_line_ending(eolmodestr)
         setEOLMode(win, win.eolmode, convert=False)
 Mixin.setPlugin('editor', 'afteropenfile', afteropenfile)
 
@@ -149,7 +151,7 @@ def on_document_enter(win, document):
             eolmodestr = "MIX"
         else:
             eolmodestr = document.eolstr[document.eolmode]
-        win.mainframe.SetStatusText(eolmodestr, 3)
+        common.set_line_ending(eolmodestr)
 Mixin.setPlugin('editctrl', 'on_document_enter', on_document_enter)
 
 def getEndOfLineCharacter(character):

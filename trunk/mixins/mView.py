@@ -33,9 +33,9 @@ def add_mainframe_menu(menulist):
         [
             (100, 'IDM_VIEW_TAB', tr('Tabs And Spaces'), wx.ITEM_CHECK, 'OnViewTab', tr('Shows or hides space and tab marks')),
             (110, 'IDM_VIEW_INDENTATION_GUIDES', tr('Indentation Guides'), wx.ITEM_CHECK, 'OnViewIndentationGuides', tr('Shows or hides indentation guides')),
-            (120, 'IDM_VIEW_RIGHT_EDGE', tr('Right edge indicator'), wx.ITEM_CHECK, 'OnViewRightEdge', tr('Shows or hides right edge indicator')),
-            (130, 'IDM_VIEW_LINE_NUMBER', tr('Line number'), wx.ITEM_CHECK, 'OnViewLineNumber', tr('Shows or hides line number')),
-            (131, 'IDM_VIEW_ENDOFLINE_MARK', tr('End-of-line marker'), wx.ITEM_CHECK, 'OnViewEndOfLineMark', tr('Shows or hides end-of-line marker')),
+            (120, 'IDM_VIEW_RIGHT_EDGE', tr('Right Edge Indicator'), wx.ITEM_CHECK, 'OnViewRightEdge', tr('Shows or hides right edge indicator')),
+            (130, 'IDM_VIEW_LINE_NUMBER', tr('Line Number'), wx.ITEM_CHECK, 'OnViewLineNumber', tr('Shows or hides line number')),
+            (131, 'IDM_VIEW_ENDOFLINE_MARK', tr('End-of-line Marker'), wx.ITEM_CHECK, 'OnViewEndOfLineMark', tr('Shows or hides end-of-line marker')),
         ]),
     ])
 Mixin.setPlugin('mainframe', 'add_menu', add_mainframe_menu)

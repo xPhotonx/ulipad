@@ -34,13 +34,13 @@ def add_mainframe_menu(menulist):
         ('IDM_SEARCH', #parent menu id
         [
             (100, 'wx.ID_FIND', tr('Find...') + '\tE=Ctrl+F', wx.ITEM_NORMAL, 'OnSearchFind', tr('Find text')),
-            (110, 'IDM_SEARCH_DIRECTFIND', tr('Direct Find') + '\tE=F4', wx.ITEM_NORMAL, 'OnSearchDirectFind', tr('Direct find selected text')),
-            (120, 'wx.ID_REPLACE', tr('Find and Replace...') + '\tE=Ctrl+H', wx.ITEM_NORMAL, 'OnSearchReplace', tr('Find and replace text')),
-            (130, 'wx.ID_FORWARD', tr('Find Next') + '\tE=F3', wx.ITEM_NORMAL, 'OnSearchFindNext', tr('Find next occurance of text')),
-            (140, 'wx.ID_BACKWARD', tr('Find Previous') + '\tE=Shift+F3', wx.ITEM_NORMAL, 'OnSearchFindPrev', tr('Find previous occurance of text')),
+            (110, 'IDM_SEARCH_DIRECTFIND', tr('Directly Find') + '\tE=F4', wx.ITEM_NORMAL, 'OnSearchDirectFind', tr('Find selected text directly.')),
+            (120, 'wx.ID_REPLACE', tr('Find And Replace...') + '\tE=Ctrl+H', wx.ITEM_NORMAL, 'OnSearchReplace', tr('Find and replace text.')),
+            (130, 'wx.ID_BACKWARD', tr('Find Previous') + '\tE=Shift+F3', wx.ITEM_NORMAL, 'OnSearchFindPrev', tr('Find previous occurance of text.')),
+            (140, 'wx.ID_FORWARD', tr('Find Next') + '\tE=F3', wx.ITEM_NORMAL, 'OnSearchFindNext', tr('Find next occurance of text.')),
             (150, '', '-', wx.ITEM_SEPARATOR, None, ''),
-            (160, 'IDM_SEARCH_GOTO_LINE', tr('Go to Line...') + '\tE=Ctrl+G', wx.ITEM_NORMAL, 'OnSearchGotoLine', tr('Goes to specified line in the active document')),
-            (170, 'IDM_SEARCH_LAST_MODIFY', tr('Go to Last Modify') + '\tCtrl+B', wx.ITEM_NORMAL, 'OnSearchLastModify', tr('Goes to the last modify position')),
+            (160, 'IDM_SEARCH_GOTO_LINE', tr('Go To Line...') + '\tE=Ctrl+G', wx.ITEM_NORMAL, 'OnSearchGotoLine', tr('Goes to specified line in the active document.')),
+            (170, 'IDM_SEARCH_LAST_MODIFY', tr('Go To Last Modify') + '\tCtrl+B', wx.ITEM_NORMAL, 'OnSearchLastModify', tr('Goes to the last modify position.')),
 
         ]),
     ])
@@ -63,7 +63,7 @@ def add_tool_list(toollist, toolbaritems):
 
     toolbaritems.update({
         'find':(wx.ITEM_NORMAL, 'wx.ID_FIND', 'images/find.gif', tr('Find'), tr('Find Text'), 'OnSearchFind'),
-        'replace':(wx.ITEM_NORMAL, 'wx.ID_REPLACE', 'images/replace.gif', tr('Find and Replace'), tr('Find and replace text'), 'OnSearchReplace'),
+        'replace':(wx.ITEM_NORMAL, 'wx.ID_REPLACE', 'images/replace.gif', tr('Find And Replace'), tr('Find and replace text'), 'OnSearchReplace'),
     })
 Mixin.setPlugin('mainframe', 'add_tool_list', add_tool_list)
 
@@ -143,7 +143,7 @@ def OnSearchGotoLine(win, event):
     document = win.document
 
     line = document.GetCurrentLine() + 1
-    dlg = Entry.MyTextEntry(win, tr("Go to Line..."), tr("Enter the Line Number:"), str(line))
+    dlg = Entry.MyTextEntry(win, tr("Go To Line..."), tr("Enter the Line Number:"), str(line))
     answer = dlg.ShowModal()
     if answer == wx.ID_OK:
         try:

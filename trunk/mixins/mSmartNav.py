@@ -36,9 +36,9 @@ def add_mainframe_menu(menulist):
         ]),
         ('IDM_SEARCH_SMART_NAV',
             [
-                (100, 'IDM_SEARCH_NAV_PREV', tr('Goto Previous File'), wx.ITEM_NORMAL, 'OnSmartNavPrev', tr('Goto previous file.')),
-                (110, 'IDM_SEARCH_NAV_NEXT', tr('Goto Next File'), wx.ITEM_NORMAL, 'OnSmartNavNext', tr('Goto next file.')),
-                (120, 'IDM_SEARCH_NAV_CLEAR', tr('Clear files'), wx.ITEM_NORMAL, 'OnSmartNavClear', tr('Clear buffered files.')),
+                (100, 'IDM_SEARCH_NAV_PREV', tr('Go To Previous File'), wx.ITEM_NORMAL, 'OnSmartNavPrev', tr('Goto previous file.')),
+                (110, 'IDM_SEARCH_NAV_NEXT', tr('Go To Next File'), wx.ITEM_NORMAL, 'OnSmartNavNext', tr('Goto next file.')),
+                (120, 'IDM_SEARCH_NAV_CLEAR', tr('Clear Files'), wx.ITEM_NORMAL, 'OnSmartNavClear', tr('Clear buffered files.')),
             ]),
         
     ])

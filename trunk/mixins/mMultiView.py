@@ -96,8 +96,8 @@ def other_popup_menu(editctrl, document, menus):
         menus.extend([ (None,
             [
                 (600, '', '-', wx.ITEM_SEPARATOR, None, ''),
-                (700, 'IDPM_MULTIVIEW_LEFT', tr('Open View in Left Pane'), wx.ITEM_NORMAL, 'OnOpenViewLeft', tr('Opens view of current document in left pane.')),
-                (800, 'IDPM_MULTIVIEW_BOTTOM', tr('Open View in Bottom Pane'), wx.ITEM_NORMAL, 'OnOpenViewBottom', tr('Opens view of current document in bottom pane.')),
+                (700, 'IDPM_MULTIVIEW_LEFT', tr('Open View In Left Pane'), wx.ITEM_NORMAL, 'OnOpenViewLeft', tr('Opens view of current document in left pane.')),
+                (800, 'IDPM_MULTIVIEW_BOTTOM', tr('Open View In Bottom Pane'), wx.ITEM_NORMAL, 'OnOpenViewBottom', tr('Opens view of current document in bottom pane.')),
             ]),
         ])
 Mixin.setPlugin('editctrl', 'other_popup_menu', other_popup_menu)

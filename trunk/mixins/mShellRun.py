@@ -41,7 +41,7 @@ def add_mainframe_menu(menulist):
         [
             (100, 'IDM_SHELL_MANAGE', tr('External Tools Manager...'), wx.ITEM_NORMAL, 'OnShellManage', tr('Shell command manager')),
             (110, '', '-', wx.ITEM_SEPARATOR, None, ''),
-            (120, 'IDM_SHELL_ITEMS', tr('(empty)'), wx.ITEM_NORMAL, 'OnShellItems', tr('Execute an shell command')),
+            (120, 'IDM_SHELL_ITEMS', tr('(Empty)'), wx.ITEM_NORMAL, 'OnShellItems', tr('Execute an shell command')),
         ]),
     ])
 Mixin.setPlugin('mainframe', 'add_menu', add_mainframe_menu)
@@ -69,7 +69,7 @@ def makeshellmenu(win, pref):
     win.shellmenu_ids = []
     if len(win.pref.shells) == 0:
         id = win.IDM_SHELL_ITEMS
-        menu.Append(id, tr('(empty)'))
+        menu.Append(id, tr('(Empty)'))
         menu.Enable(id, False)
         win.shellmenu_ids=[id]
     else:

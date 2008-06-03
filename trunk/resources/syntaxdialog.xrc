@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resource>
   <object class="wxDialog" name="SyntaxDialog">
-    <title>Syntax Preference Setting</title>
+    <title>Syntax Preference Settings</title>
     <object class="wxStaticText">
-      <label>Syntax Selection:</label>
+      <label>Syntax selection:</label>
       <pos>5,2</pos>
     </object>
     <object class="wxComboBox" name="ID_LANGUAGE">
@@ -21,7 +21,7 @@
       <size>220, -1</size>
     </object>
     <object class="wxStaticText">
-      <label>Syntax Items:</label>
+      <label>Syntax items:</label>
       <pos>5,47</pos>
     </object>
     <object class="wxListBox" name="ID_ITEMS">
@@ -35,7 +35,7 @@
       <pos>175, 70</pos>
     </object>
     <object class="wxStaticText">
-      <label>Font Name:</label>
+      <label>Font name:</label>
       <pos>190,70</pos>
     </object>
     <object class="wxComboBox" name="ID_FACE">
@@ -48,7 +48,7 @@
       <pos>175, 96</pos>
     </object>
     <object class="wxStaticText">
-      <label>Font Size:</label>
+      <label>Font size:</label>
       <pos>190,96</pos>
     </object>
     <object class="wxComboBox" name="ID_SIZE">

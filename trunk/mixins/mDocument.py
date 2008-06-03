@@ -32,9 +32,9 @@ def add_mainframe_menu(menulist):
         ]),
         ('IDM_DOCUMENT', #parent menu id
         [
-            (100, 'IDM_DOCUMENT_WORDWRAP', tr('Word-wrap'), wx.ITEM_NORMAL, 'OnDocumentWordWrap', tr('Toggles the word wrap feature of the active document')),
-            (110, 'IDM_DOCUMENT_AUTOINDENT', tr('Auto Indent'), wx.ITEM_CHECK, 'OnDocumentAutoIndent', tr('Toggles the auto-indent feature of the active document')),
-            (115, 'IDM_DOCUMENT_TABINDENT', tr('Switch to Space Indent'), wx.ITEM_NORMAL, 'OnDocumentTabIndent', tr('Uses tab as indent char or uses space as indent char.')),
+            (100, 'IDM_DOCUMENT_WORDWRAP', tr('Word Wrap'), wx.ITEM_NORMAL, 'OnDocumentWordWrap', tr('Toggles the word wrap feature of the active document.')),
+            (110, 'IDM_DOCUMENT_AUTOINDENT', tr('Auto Indent'), wx.ITEM_CHECK, 'OnDocumentAutoIndent', tr('Toggles the auto-indent feature of the active document.')),
+            (115, 'IDM_DOCUMENT_TABINDENT', tr('Switch To Space Indent'), wx.ITEM_NORMAL, 'OnDocumentTabIndent', tr('Uses tab as indent char or uses space as indent char.')),
         ]),
     ])
 Mixin.setPlugin('mainframe', 'add_menu', add_mainframe_menu)
@@ -154,9 +154,9 @@ def on_mainframe_updateui(win, event):
                 from modules import makemenu
                 menu = makemenu.findmenu(win.menuitems, 'IDM_DOCUMENT_TABINDENT')
                 if win.document.usetab:
-                    menu.SetText(tr('Switch to Space Indent'))
+                    menu.SetText(tr('Switch To Space Indent'))
                 else:
-                    menu.SetText(tr('Switch to Tab Indent'))
+                    menu.SetText(tr('Switch To Tab Indent'))
             else:
                 event.Enable(False)
 Mixin.setPlugin('mainframe', 'on_update_ui', on_mainframe_updateui)

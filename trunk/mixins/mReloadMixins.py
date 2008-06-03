@@ -13,12 +13,12 @@ import ReloadMixins
 def add_mainframe_menu(menulist):
     menulist.extend([('IDM_TOOL', #parent menu id
         [
-            (138, 'IDM_TOOL_AUTO_LOAD_MIXINS', tr('Auto reload Mixins'), wx.ITEM_NORMAL, '', ''),
+            (138, 'IDM_TOOL_AUTO_LOAD_MIXINS', tr('Auto Reload Mixins'), wx.ITEM_NORMAL, '', ''),
         ]),
         ('IDM_TOOL_AUTO_LOAD_MIXINS',
         [
-            (110, 'IDM_TOOL_MIXINS_NAME', tr('Select Mixins name to reload') +'\tCtrl+M', wx.ITEM_NORMAL, 'OnToolReloadName', tr('Select Mixin names to reload.')),
-            (120, 'IDM_TOOL_ENABLE_RELOAD_MIXINS', tr('Enable reload Mixins') +'\tCtrl+Shift+M', wx.ITEM_CHECK, 'OnToolreload_mixins', tr('Switches to Mixins reload mode.')),
+            (110, 'IDM_TOOL_MIXINS_NAME', tr('Select Mixins Name To Reload') +'\tCtrl+M', wx.ITEM_NORMAL, 'OnToolReloadName', tr('Select Mixin names to reload.')),
+            (120, 'IDM_TOOL_ENABLE_RELOAD_MIXINS', tr('Enable Reload Mixins') +'\tCtrl+Shift+M', wx.ITEM_CHECK, 'OnToolreload_mixins', tr('Switches to Mixins reload mode.')),
         ]),
     ])
 Mixin.setPlugin('mainframe', 'add_menu', add_mainframe_menu)

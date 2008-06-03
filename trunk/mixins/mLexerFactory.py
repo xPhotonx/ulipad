@@ -90,7 +90,7 @@ Mixin.setPlugin('mainframe', 'add_menu', add_mainframe_menu)
 
 def OnDocumentSyntaxHighlight(win, event):
     items = [lexer.name for lexer in win.lexers.lexobjs]
-    dlg = wx.SingleChoiceDialog(win, tr('Select a syntax highlight'), tr('Syntax Highlight'), items, wx.CHOICEDLG_STYLE)
+    dlg = wx.SingleChoiceDialog(win, tr('Select a syntax highlight:'), tr('Syntax Highlight'), items, wx.CHOICEDLG_STYLE)
     if dlg.ShowModal() == wx.ID_OK:
         lexer = win.lexers.lexobjs[dlg.GetSelection()]
         lexer.colourize(win.document)
