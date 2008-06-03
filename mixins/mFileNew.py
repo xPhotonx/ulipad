@@ -67,7 +67,7 @@ Mixin.setMixin('mainframe', 'OnFileNews', OnFileNews)
 def add_mainframe_menu(menulist):
     menulist.extend([ ('IDM_FILE_NEWMORE',
         [
-           (100, 'IDM_FILE_NEWMORE_NULL', tr('(empty)'), wx.ITEM_NORMAL, '', ''),
+           (100, 'IDM_FILE_NEWMORE_NULL', tr('(Empty)'), wx.ITEM_NORMAL, '', ''),
         ]),
     ])
 Mixin.setPlugin('mainframe', 'add_menu', add_mainframe_menu)

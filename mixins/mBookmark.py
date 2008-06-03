@@ -36,10 +36,10 @@ def add_mainframe_menu(menulist):
     menulist.extend([ ('IDM_SEARCH',
         [
             (180, '', '-', wx.ITEM_SEPARATOR, None, ''),
-            (190, 'IDM_SEARCH_BOOKMARK_TOGGLE', tr('Toggle Marker') + '\tE=F9', wx.ITEM_NORMAL, 'OnSearchBookmarkToggle', tr('Set and clear marker at current line')),
-            (200, 'IDM_SEARCH_BOOKMARK_CLEARALL', tr('Clear All Marker') + '\tE=Ctrl+Shift+F9', wx.ITEM_NORMAL, 'OnSearchBookmarkClearAll', tr('Clears all marker from the active document')),
-            (210, 'IDM_SEARCH_BOOKMARK_NEXT', tr('Next Marker') + '\tE=F8', wx.ITEM_NORMAL, 'OnSearchBookmarkNext', tr('Goes to next marker position')),
-            (220, 'IDM_SEARCH_BOOKMARK_PREVIOUS', tr('Previous Marker') + '\tE=Shift+F8', wx.ITEM_NORMAL, 'OnSearchBookmarkPrevious', tr('Goes to previous marker position')),
+            (190, 'IDM_SEARCH_BOOKMARK_TOGGLE', tr('Toggle Marker') + '\tE=F9', wx.ITEM_NORMAL, 'OnSearchBookmarkToggle', tr('Set and clear marker at current line.')),
+            (200, 'IDM_SEARCH_BOOKMARK_CLEARALL', tr('Clear All Markers') + '\tE=Ctrl+Shift+F9', wx.ITEM_NORMAL, 'OnSearchBookmarkClearAll', tr('Clears all markers from the active document.')),
+            (210, 'IDM_SEARCH_BOOKMARK_PREVIOUS', tr('Previous Marker') + '\tE=Shift+F8', wx.ITEM_NORMAL, 'OnSearchBookmarkPrevious', tr('Goes to previous marker position.')),
+            (220, 'IDM_SEARCH_BOOKMARK_NEXT', tr('Next Marker') + '\tE=F8', wx.ITEM_NORMAL, 'OnSearchBookmarkNext', tr('Goes to next marker position.')),
         ]),
     ])
 Mixin.setPlugin('mainframe', 'add_menu', add_mainframe_menu)

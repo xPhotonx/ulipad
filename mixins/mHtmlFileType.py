@@ -33,7 +33,7 @@ class HtmlFiletype(FiletypeBase.FiletypeBase):
     __mixinname__ = 'htmlfiletype'
     menulist = [ (None,
         [
-            (890, 'IDM_HTML', 'Html', wx.ITEM_NORMAL, None, ''),
+            (890, 'IDM_HTML', 'HTML', wx.ITEM_NORMAL, None, ''),
         ]),
     ]
     toollist = []               #your should not use supperclass's var
@@ -46,8 +46,8 @@ Mixin.setPlugin('changefiletype', 'add_filetypes', add_filetypes)
 def add_html_menu(menulist):
     menulist.extend([('IDM_HTML', #parent menu id
             [
-                (100, 'IDM_HTML_BROWSER_LEFT', tr('View Html Content in Left Pane'), wx.ITEM_NORMAL, 'OnHtmlBrowserInLeft', tr('Views html content in left pane.')),
-                (110, 'IDM_HTML_BROWSER_BOTTOM', tr('View Html Content in Bottom Pane'), wx.ITEM_NORMAL, 'OnHtmlBrowserInBottom', tr('Views html content in bottom pane.')),
+                (100, 'IDM_HTML_BROWSER_LEFT', tr('View HTML Content In Left Pane'), wx.ITEM_NORMAL, 'OnHtmlBrowserInLeft', tr('Views html content in left pane.')),
+                (110, 'IDM_HTML_BROWSER_BOTTOM', tr('View HTML Content In Bottom Pane'), wx.ITEM_NORMAL, 'OnHtmlBrowserInBottom', tr('Views html content in bottom pane.')),
             ]),
     ])
 Mixin.setPlugin('htmlfiletype', 'add_menu', add_html_menu)

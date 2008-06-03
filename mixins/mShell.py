@@ -79,7 +79,7 @@ def add_mainframe_menu(menulist):
     menulist.extend([
         ('IDM_EDIT',
         [
-            (285, 'IDM_EDIT_COPY_RUN', tr('&Run in Shell') + '\tCtrl+F5', wx.ITEM_NORMAL, 'OnEditCopyRun', tr('Copy code to shell window and run it.')),
+            (285, 'IDM_EDIT_COPY_RUN', tr('&Run In Shell') + '\tCtrl+F5', wx.ITEM_NORMAL, 'OnEditCopyRun', tr('Copy code to shell window and run it.')),
         ]),
     ])
 Mixin.setPlugin('mainframe', 'add_menu', add_mainframe_menu)

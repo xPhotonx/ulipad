@@ -111,7 +111,7 @@ def add_mainframe_menu(menulist):
         ]),
         ('IDM_FILE_SESSION_RECENT',
         [
-            (100, 'IDM_FILE_SESSION_RECENT_ITEMS', tr('(empty)'), wx.ITEM_NORMAL, '', tr('There is no recent session.')),
+            (100, 'IDM_FILE_SESSION_RECENT_ITEMS', tr('(Empty)'), wx.ITEM_NORMAL, '', tr('There is no recent session.')),
         ]),
         
     ])
@@ -173,7 +173,7 @@ def create_recent_session_menu(win):
     win.recentsession_ids = []
     if len(win.pref.recent_sessions) == 0:
         id = win.IDM_FILE_SESSION_RECENT_ITEMS
-        menu.Append(id, tr('(empty)'))
+        menu.Append(id, tr('(Empty)'))
         menu.Enable(id, False)
         win.recentsession_ids = [id]
     else:

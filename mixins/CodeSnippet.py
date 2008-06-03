@@ -245,7 +245,7 @@ class CodeSnippetWindow(wx.Panel, Mixin.Mixin):
         ]),
         ('IDPM_RECENT',
         [
-            (160, 'IDPM_snippet_recents', tr('(empty)'), wx.ITEM_NORMAL, '', ''),
+            (160, 'IDPM_snippet_recents', tr('(Empty)'), wx.ITEM_NORMAL, '', ''),
         ]),
     ]
 
@@ -799,7 +799,7 @@ Description:
             self.recentmenu_ids = []
         if len(self.pref.snippet_recents) == 0:
             id = self.IDPM_snippet_recents
-            menu.Append(id, tr('(empty)'))
+            menu.Append(id, tr('(Empty)'))
             menu.Enable(id, False)
             self.recentmenu_ids = [id]
         else:

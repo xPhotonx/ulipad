@@ -31,7 +31,7 @@ menulist = [ ('IDM_DOCUMENT', #parent menu id
         (160, '', '-', wx.ITEM_SEPARATOR, '', ''),
         (170, 'IDM_DOCUMENT_STARTREAD', tr('Start Read Document'), wx.ITEM_NORMAL, 'OnDocumentStartRead', tr('Start read current document.')),
         (180, 'IDM_DOCUMENT_STOPREAD', tr('Stop Read Document'), wx.ITEM_NORMAL, 'OnDocumentStopRead', tr('Stop read current document.')),
-        (180, 'IDM_DOCUMENT_VOICECONFIG', tr('Text to Speech Setting'), wx.ITEM_NORMAL, 'OnDocumentVoiceConfig', tr('Text to Speech setting.')),
+        (180, 'IDM_DOCUMENT_VOICECONFIG', tr('Text To Speech Setting'), wx.ITEM_NORMAL, 'OnDocumentVoiceConfig', tr('Text to Speech setting.')),
     ]),
 ]
 Mixin.setMixin('mainframe', 'menulist', menulist)

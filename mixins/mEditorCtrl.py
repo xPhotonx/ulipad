@@ -54,7 +54,7 @@ def add_editctrl_menu(popmenulist):
             (140, 'IDPM_SAVEAS', tr('Save As'), wx.ITEM_NORMAL, 'OnPopUpMenu', 'tr(Saves an opened document to a specified filename)'),
             (150, 'IDPM_FILE_SAVE_ALL', tr('Save All'), wx.ITEM_NORMAL, 'OnPopUpMenu', tr('Saves all documents')),
             (155, '', '-', wx.ITEM_SEPARATOR, None, ''),
-            (156, 'IDPM_FILE_COPY_FILENAME', tr('Copy Filename to Clipboard'), wx.ITEM_NORMAL, 'OnCopyFilenameToClipboard', tr('Copy current document filename to clipboard.')),
+            (156, 'IDPM_FILE_COPY_FILENAME', tr('Copy Filename To Clipboard'), wx.ITEM_NORMAL, 'OnCopyFilenameToClipboard', tr('Copy current document filename to clipboard.')),
             (160, '', '-', wx.ITEM_SEPARATOR, None, ''),
             (170, 'IDPM_OPEN_CMD_WINDOW', tr('Open Command Window Here'), wx.ITEM_NORMAL, 'OnOpenCmdWindow', ''),
             (180, 'IDPM_OPEN_CMD_EXPLORER', tr('Open Explorer Window Here'), wx.ITEM_NORMAL, 'OnOpenCmdExplorerWindow', ''),

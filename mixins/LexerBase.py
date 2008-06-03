@@ -143,7 +143,7 @@ color_theme = {
         'STC_STYLE_CHARACTER' : "fore:#00AA00",
         'STC_STYLE_REGEX' : "fore:#DB70DB",
         'STC_STYLE_DEFAULT' : "face:%(mono)s,size:%(size)d",
-        'STC_STYLE_LINENUMBER' : "back:#FFFFFF,size:%(lnsize)d",
+        'STC_STYLE_LINENUMBER' : "back:#CCCCCC,size:%(lnsize)d",
         'STC_STYLE_CONTROLCHAR' : "fore:#FF00FF",
         'STC_STYLE_BRACELIGHT' : "bold,fore:#FF0000",
         'STC_STYLE_BRACEBAD' : "bold,fore:#0000FF",
