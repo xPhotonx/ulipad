@@ -7,7 +7,7 @@ def run(mainframe, x):
         if values['db_port'] == 0:
             values['db_port'] = ''
 
-        from meteor import TemplateScript
+        from modules.meteor import TemplateScript
 #        from StringIO import StringIO
 #        buf = StringIO()
 #        template = Template()
