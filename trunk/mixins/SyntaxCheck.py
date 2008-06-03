@@ -22,7 +22,6 @@
 #   $Id$
 
 import sys
-import types
 import compiler
 import wx
 from modules.pyflakes import checker
@@ -37,7 +36,7 @@ def check(codeString, filename):
         tree = compiler.parse(codeString)
     except (SyntaxError, IndentationError):
         value = sys.exc_info()[1]
-        if isinstance(value, types.InstanceType):
+        if isinstance(value, Exception):
             lineno = value.lineno
             offset = value.offset
             line = value.text
