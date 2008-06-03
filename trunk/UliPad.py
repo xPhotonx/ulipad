@@ -36,7 +36,7 @@ from modules import Globals
 
 DEBUG = True
 
-workpath = os.path.dirname(os.path.abspath(sys.argv[0]))
+workpath = os.path.dirname(os.path.realpath(sys.argv[0]))
 confpath = os.path.join(workpath, 'conf')
 sys.path.insert(0, workpath)
 sys.path.insert(0, os.path.join(workpath, 'modules'))
