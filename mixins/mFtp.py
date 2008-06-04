@@ -31,7 +31,7 @@ from modules import common
 def add_mainframe_menu(menulist):
     menulist.extend([ ('IDM_WINDOW',
         [
-            (160, 'IDM_WINDOW_FTP', tr('Open Ftp Window'), wx.ITEM_NORMAL, 'OnWindowFtp', tr('Opens ftp window.')),
+            (160, 'IDM_WINDOW_FTP', tr('Open FTP Window'), wx.ITEM_NORMAL, 'OnWindowFtp', tr('Opens FTP window.')),
         ]),
     ])
 Mixin.setPlugin('mainframe', 'add_menu', add_mainframe_menu)
@@ -49,29 +49,29 @@ Mixin.setPlugin('mainframe', 'afterinit', afterinit)
 def add_editor_menu(popmenulist):
     popmenulist.extend([ (None,
         [
-            (150, 'IDPM_FTPWINDOW', tr('Open Ftp Window'), wx.ITEM_NORMAL, 'OnFtpWindow', tr('Opens ftp window.')),
+            (150, 'IDPM_FTPWINDOW', tr('Open FTP Window'), wx.ITEM_NORMAL, 'OnFtpWindow', tr('Opens FTP window.')),
         ]),
     ])
 Mixin.setPlugin('notebook', 'add_menu', add_editor_menu)
 
 def createFtpWindow(win, side='bottom'):
-    page = win.panel.getPage('Ftp')
+    page = win.panel.getPage('FTP')
     if not page:
         from FtpClass import Ftp
 
         page = Ftp(win.panel.createNotebook(side), win)
-        win.panel.addPage(side, page, 'Ftp')
+        win.panel.addPage(side, page, 'FTP')
     win.ftp = page
 Mixin.setMixin('mainframe', 'createFtpWindow', createFtpWindow)
 
 def OnWindowFtp(win, event):
     win.createFtpWindow()
-    win.panel.showPage('Ftp')
+    win.panel.showPage('FTP')
 Mixin.setMixin('mainframe', 'OnWindowFtp', OnWindowFtp)
 
 def OnFtpWindow(win, event):
     win.mainframe.createFtpWindow(win.side)
-    win.panel.showPage('Ftp')
+    win.panel.showPage('FTP')
 Mixin.setMixin('notebook', 'OnFtpWindow', OnFtpWindow)
 
 def pref_init(pref):
@@ -173,7 +173,7 @@ def add_tool_list(toollist, toolbaritems):
 
     #order, IDname, imagefile, short text, long text, func
     toolbaritems.update({
-        'ftp':(wx.ITEM_NORMAL, 'IDM_FILE_FTP', 'images/ftp.gif', tr('Open Ftp Window'), tr('Opens ftp window.'), 'OnWindowFtp'),
+        'ftp':(wx.ITEM_NORMAL, 'IDM_FILE_FTP', 'images/ftp.gif', tr('Open FTP Window'), tr('Opens FTP window.'), 'OnWindowFtp'),
     })
 Mixin.setPlugin('mainframe', 'add_tool_list', add_tool_list)
 

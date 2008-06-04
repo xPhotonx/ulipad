@@ -1975,7 +1975,7 @@ def add_mainframe_menu(menulist):
         ('IDM_DOCUMENT', #parent menu id
         [
             (100, 'IDM_DOCUMENT_WORDWRAP', tr('Word Wrap'), wx.ITEM_NORMAL, 'OnDocumentWordWrap', tr('Toggles the word wrap feature of the active document.')),
-            (110, 'IDM_DOCUMENT_AUTOINDENT', tr('Auto Indent'), wx.ITEM_CHECK, 'OnDocumentAutoIndent', tr('Toggles the auto-indent feature of the active document.')),
+            (110, 'IDM_DOCUMENT_AUTOINDENT', tr('Autoindent'), wx.ITEM_CHECK, 'OnDocumentAutoIndent', tr('Toggles the auto-indent feature of the active document.')),
             (115, 'IDM_DOCUMENT_TABINDENT', tr('Switch To Space Indent'), wx.ITEM_NORMAL, 'OnDocumentTabIndent', tr('Uses tab as indent char or uses space as indent char.')),
         ]),
     ])
@@ -1995,9 +1995,9 @@ Mixin.setPlugin('preference', 'init', pref_init)
 
 def add_pref(preflist):
     preflist.extend([
-        (tr('Document')+'/'+tr('Edit'), 100, 'check', 'autoindent', tr('Auto indent'), None),
+        (tr('Document')+'/'+tr('Edit'), 100, 'check', 'autoindent', tr('Autoindent'), None),
         (tr('Document')+'/'+tr('Edit'), 110, 'check', 'usetabs', tr('Use Tabs'), None),
-        (tr('Document')+'/'+tr('Edit'), 120, 'check', 'wordwrap', tr('Auto word-wrap'), None),
+        (tr('Document')+'/'+tr('Edit'), 120, 'check', 'wordwrap', tr('Automatically word wrap'), None),
     ])
 Mixin.setPlugin('preference', 'add_pref', add_pref)
 
@@ -2539,7 +2539,7 @@ Mixin.setPlugin('preference', 'init', pref_init)
 
 def add_pref(preflist):
     preflist.extend([
-        (tr('General'), 100, 'check', 'load_session', tr('Auto load the files of last session'), None),
+        (tr('General'), 100, 'check', 'load_session', tr('Autoload the files of last session'), None),
     ])
 Mixin.setPlugin('preference', 'add_pref', add_pref)
 
@@ -3690,11 +3690,11 @@ Mixin.setPlugin('preference', 'init', pref_init)
 def add_mainframe_menu(menulist):
     menulist.extend([('IDM_TOOL',
         [
-            (50, 'IDM_SCRIPT', tr('Script'), wx.ITEM_NORMAL, None, ''),
+            (50, 'IDM_SCRIPT', tr('Scripts'), wx.ITEM_NORMAL, None, ''),
         ]),
         ('IDM_SCRIPT', #parent menu id
         [
-            (100, 'IDM_SCRIPT_MANAGE', tr('Script Manager...'), wx.ITEM_NORMAL, 'OnScriptManage', tr('Script manager')),
+            (100, 'IDM_SCRIPT_MANAGE', tr('Scripts Manager...'), wx.ITEM_NORMAL, 'OnScriptManage', tr('Script manager')),
             (110, '', '-', wx.ITEM_SEPARATOR, None, ''),
             (120, 'IDM_SCRIPT_ITEMS', tr('(Empty)'), wx.ITEM_NORMAL, 'OnScriptItems', tr('Execute an script')),
         ]),
@@ -3860,35 +3860,35 @@ import LexerRst
 
 def add_lexer(lexer):
     lexer.extend([
-        (LexerClass.TextLexer.metaname, 'Text|*.txt;*.bak;*.log;*.lst;*.diz;*.nfo',
+        (LexerClass.TextLexer.metaname, 'Plain Text(*.txt, *.bak, *.log, *.lst, *.diz, *.nfo)|*.txt;*.bak;*.log;*.lst;*.diz;*.nfo',
             wx.stc.STC_LEX_NULL, 'text.stx', LexerClass.TextLexer),
-        (LexerClass.CLexer.metaname, tr('C/C++|*.c;*.cc;*.cpp;*.cxx;*.cs;*.h;*.hh;*.hpp;*.hxx'),
+        (LexerClass.CLexer.metaname, tr('C/C++(*.c, *.cc, *.cpp, *.cxx, *.cs, *.h, *.hh, *.hpp, *.hxx)|*.c;*.cc;*.cpp;*.cxx;*.cs;*.h;*.hh;*.hpp;*.hxx'),
             wx.stc.STC_LEX_CPP, 'c.stx', LexerClass.CLexer),
-        (LexerClass.HtmlLexer.metaname, tr('Html|*.htm;*.html;*.shtml'),
+        (LexerClass.HtmlLexer.metaname, tr('HTML(*.htm, *.html, *.shtml)|*.htm;*.html;*.shtml'),
             wx.stc.STC_LEX_HTML, 'html.stx', LexerClass.HtmlLexer),
-        (LexerClass.XMLLexer.metaname, tr('Xml|*.xml;*.xslt'),
+        (LexerClass.XMLLexer.metaname, tr('XML(*.xml, *.xslt)|*.xml;*.xslt'),
             wx.stc.STC_LEX_CONTAINER, 'xml.stx', LexerClass.XMLLexer),
-        (LexerClass.PythonLexer.metaname, tr('Python|*.py;*.pyw'),
+        (LexerClass.PythonLexer.metaname, tr('Python(*.py, *.pyw)|*.py;*.pyw'),
             wx.stc.STC_LEX_PYTHON, 'python.stx', LexerClass.PythonLexer),
-        (LexerClass1.JavaLexer.metaname, tr('Java|*.java'),
+        (LexerClass1.JavaLexer.metaname, tr('Java(*.java)|*.java'),
             wx.stc.STC_LEX_CPP, 'java.stx', LexerClass1.JavaLexer),
-        (LexerClass1.RubyLexer.metaname, tr('Ruby|*.rb'),
+        (LexerClass1.RubyLexer.metaname, tr('Ruby(*.rb)|*.rb'),
             wx.stc.STC_LEX_RUBY, 'ruby.stx', LexerClass1.RubyLexer),
-        (LexerClass1.PerlLexer.metaname, tr('Perl|*.pl'),
+        (LexerClass1.PerlLexer.metaname, tr('Perl(*.pl)|*.pl'),
             wx.stc.STC_LEX_PERL, 'perl.stx', LexerClass1.PerlLexer),
-        (LexerClass1.CSSLexer.metaname, tr('Cascade Style Sheet|*.css'),
+        (LexerClass1.CSSLexer.metaname, tr('Cascaded Style Sheet(*.css)|*.css'),
             wx.stc.STC_LEX_CSS, 'css.stx', LexerClass1.CSSLexer),
-        (LexerClass1.JSLexer.metaname, tr('JavaScript|*.js'),
+        (LexerClass1.JSLexer.metaname, tr('JavaScript(*.js)|*.js'),
             wx.stc.STC_LEX_CPP, 'js.stx', LexerClass1.JSLexer),
-        (LexerClass1.PHPLexer.metaname, tr('Php|*.php3;*.phtml;*.php'),
+        (LexerClass1.PHPLexer.metaname, tr('Php(*.php3, *.phtml, *.php)|*.php3;*.phtml;*.php'),
             wx.stc.STC_LEX_HTML, 'php.stx', LexerClass1.PHPLexer),
-        (LexerClass1.ASPLexer.metaname, tr('Active Server Pages|*.asp'),
+        (LexerClass1.ASPLexer.metaname, tr('Active Server Pages(*.asp)|*.asp'),
             wx.stc.STC_LEX_HTML, 'asp.stx', LexerClass1.ASPLexer),
-        (LexerRst.RstLexer.metaname, tr('ReStructured Text|*.rst'),
+        (LexerRst.RstLexer.metaname, tr('reStructuredText(*.rst)|*.rst'),
             wx.stc.STC_LEX_CONTAINER, 'rst.stx', LexerRst.RstLexer),
-        (LexerClass1.LuaLexer.metaname, tr('Lua|*.lua'),
+        (LexerClass1.LuaLexer.metaname, tr('Lua(*.lua)|*.lua'),
             wx.stc.STC_LEX_LUA, 'lur.stx', LexerClass1.LuaLexer),
-        (LexerClass1.SliceLexer.metaname, tr('Slice|*.ice'),
+        (LexerClass1.SliceLexer.metaname, tr('Slice(*.ice)|*.ice'),
             wx.stc.STC_LEX_CPP, 'c.stx', LexerClass1.SliceLexer),
     ])
 Mixin.setPlugin('lexerfactory', 'add_lexer', add_lexer)
@@ -3903,7 +3903,7 @@ def add_new_files(new_files):
         ('Java', LexerClass1.JavaLexer.metaname),
         ('Ruby', LexerClass1.RubyLexer.metaname),
         ('Perl', LexerClass1.PerlLexer.metaname),
-        ('Cascade Style Sheets', LexerClass1.CSSLexer.metaname),
+        ('Cascaded Style Sheets', LexerClass1.CSSLexer.metaname),
         ('JavaScript', LexerClass1.JSLexer.metaname),
         ('PHP', LexerClass1.PHPLexer.metaname),
         ('Active Server Pages', LexerClass1.ASPLexer.metaname),
@@ -4090,7 +4090,7 @@ __doc__ = 'Tool menu'
 def add_menu(menulist):
     menulist.extend([(None,
         [
-            (550, 'IDM_TOOL', tr('Tool'), wx.ITEM_NORMAL, None, ''),
+            (550, 'IDM_TOOL', tr('Tools'), wx.ITEM_NORMAL, None, ''),
         ]),
     ])
 Mixin.setPlugin('mainframe', 'add_menu', add_menu)
@@ -5047,7 +5047,7 @@ from modules import common
 def add_mainframe_menu(menulist):
     menulist.extend([ ('IDM_WINDOW',
         [
-            (160, 'IDM_WINDOW_FTP', tr('Open Ftp Window'), wx.ITEM_NORMAL, 'OnWindowFtp', tr('Opens ftp window.')),
+            (160, 'IDM_WINDOW_FTP', tr('Open FTP Window'), wx.ITEM_NORMAL, 'OnWindowFtp', tr('Opens FTP window.')),
         ]),
     ])
 Mixin.setPlugin('mainframe', 'add_menu', add_mainframe_menu)
@@ -5065,29 +5065,29 @@ Mixin.setPlugin('mainframe', 'afterinit', afterinit)
 def add_editor_menu(popmenulist):
     popmenulist.extend([ (None,
         [
-            (150, 'IDPM_FTPWINDOW', tr('Open Ftp Window'), wx.ITEM_NORMAL, 'OnFtpWindow', tr('Opens ftp window.')),
+            (150, 'IDPM_FTPWINDOW', tr('Open FTP Window'), wx.ITEM_NORMAL, 'OnFtpWindow', tr('Opens FTP window.')),
         ]),
     ])
 Mixin.setPlugin('notebook', 'add_menu', add_editor_menu)
 
 def createFtpWindow(win, side='bottom'):
-    page = win.panel.getPage('Ftp')
+    page = win.panel.getPage('FTP')
     if not page:
         from FtpClass import Ftp
 
         page = Ftp(win.panel.createNotebook(side), win)
-        win.panel.addPage(side, page, 'Ftp')
+        win.panel.addPage(side, page, 'FTP')
     win.ftp = page
 Mixin.setMixin('mainframe', 'createFtpWindow', createFtpWindow)
 
 def OnWindowFtp(win, event):
     win.createFtpWindow()
-    win.panel.showPage('Ftp')
+    win.panel.showPage('FTP')
 Mixin.setMixin('mainframe', 'OnWindowFtp', OnWindowFtp)
 
 def OnFtpWindow(win, event):
     win.mainframe.createFtpWindow(win.side)
-    win.panel.showPage('Ftp')
+    win.panel.showPage('FTP')
 Mixin.setMixin('notebook', 'OnFtpWindow', OnFtpWindow)
 
 def pref_init(pref):
@@ -5188,7 +5188,7 @@ def add_tool_list(toollist, toolbaritems):
 
     #order, IDname, imagefile, short text, long text, func
     toolbaritems.update({
-        'ftp':(wx.ITEM_NORMAL, 'IDM_FILE_FTP', 'images/ftp.gif', tr('Open Ftp Window'), tr('Opens ftp window.'), 'OnWindowFtp'),
+        'ftp':(wx.ITEM_NORMAL, 'IDM_FILE_FTP', 'images/ftp.gif', tr('Open FTP Window'), tr('Opens FTP window.'), 'OnWindowFtp'),
     })
 Mixin.setPlugin('mainframe', 'add_tool_list', add_tool_list)
 
@@ -5402,11 +5402,11 @@ def add_mainframe_menu(menulist):
         ]),
         ('IDM_EDIT_CONVERT',
         [
-            (100, 'IDM_EDIT_CONVERT_OUTPUTHTMLWINDOW', tr('Output In HTML Window'), wx.ITEM_RADIO, 'OnConvertOutput', tr('Outputs converted text in HTML window.')),
-            (110, 'IDM_EDIT_CONVERT_OUTPUTMESSAGEWINDOW', tr('Output In Message Window'), wx.ITEM_RADIO, 'OnConvertOutput', tr('Outputs converted text in message window.')),
+            (100, 'IDM_EDIT_CONVERT_OUTPUTHTMLWINDOW', tr('Output To HTML Window'), wx.ITEM_RADIO, 'OnConvertOutput', tr('Outputs converted text in HTML window.')),
+            (110, 'IDM_EDIT_CONVERT_OUTPUTMESSAGEWINDOW', tr('Output To Message Window'), wx.ITEM_RADIO, 'OnConvertOutput', tr('Outputs converted text in message window.')),
             (120, 'IDM_EDIT_CONVERT_REPLACEHERE', tr('Replace Selected Text'), wx.ITEM_RADIO, 'OnConvertOutput', tr('Replaces selected text with converted text.')),
             (130, '', '-', wx.ITEM_SEPARATOR, '', ''),
-            (140, 'IDM_EDIT_CONVERT_DIRECT', tr('Output Directly In HTML Window'), wx.ITEM_NORMAL, 'OnConvertOutputDirectly', tr('Outputs directly the text in HTML window.')),
+            (140, 'IDM_EDIT_CONVERT_DIRECT', tr('Output Directly To HTML Window'), wx.ITEM_NORMAL, 'OnConvertOutputDirectly', tr('Outputs directly the text in HTML window.')),
             (150, 'IDM_EDIT_CONVERT_REST2HTML', tr('reSt To HTML'), wx.ITEM_NORMAL, 'OnConvertRest2Html', tr('Converts reStructuredText source to HTML.')),
             (160, 'IDM_EDIT_CONVERT_PY2HTML', tr('Py To HTML'), wx.ITEM_NORMAL, 'OnConvertPy2Html', tr('Converts python source to HTML.')),
             (170, 'IDM_EDIT_CONVERT_TEXTILE2HTML', tr('Textile To HTML'), wx.ITEM_NORMAL, 'OnConvertTextile2Html', tr('Converts textile source to HTML.')),
@@ -5421,11 +5421,11 @@ def add_editor_menu(popmenulist):
         ]),
         ('IDPM_EDIT_CONVERT',
         [
-            (100, 'IDPM_EDIT_CONVERT_OUTPUTHTMLWINDOW', tr('Output In HTML Window'), wx.ITEM_RADIO, 'OnConvertOutput', tr('Outputs converted text in HTML window.')),
-            (110, 'IDPM_EDIT_CONVERT_OUTPUTMESSAGEWINDOW', tr('Output In Message Window'), wx.ITEM_RADIO, 'OnConvertOutput', tr('Outputs converted text in message window.')),
+            (100, 'IDPM_EDIT_CONVERT_OUTPUTHTMLWINDOW', tr('Output To HTML Window'), wx.ITEM_RADIO, 'OnConvertOutput', tr('Outputs converted text in HTML window.')),
+            (110, 'IDPM_EDIT_CONVERT_OUTPUTMESSAGEWINDOW', tr('Output To Message Window'), wx.ITEM_RADIO, 'OnConvertOutput', tr('Outputs converted text in message window.')),
             (120, 'IDPM_EDIT_CONVERT_REPLACEHERE', tr('Replace Selected Text'), wx.ITEM_RADIO, 'OnConvertOutput', tr('Replaces selected text with converted text.')),
             (130, '', '-', wx.ITEM_SEPARATOR, '', ''),
-            (140, 'IDPM_EDIT_CONVERT_DIRECT', tr('Output Directly In HTML Window'), wx.ITEM_NORMAL, 'OnOutputDirectly', tr('Outputs directly the text in HTML window.')),
+            (140, 'IDPM_EDIT_CONVERT_DIRECT', tr('Output Directly To HTML Window'), wx.ITEM_NORMAL, 'OnOutputDirectly', tr('Outputs directly the text in HTML window.')),
             (150, 'IDPM_EDIT_CONVERT_REST2HTML', tr('reSt To HTML'), wx.ITEM_NORMAL, 'OnRest2Html', tr('Converts reStructuredText source to HTML.')),
             (160, 'IDPM_EDIT_CONVERT_PY2HTML', tr('Py To HTML'), wx.ITEM_NORMAL, 'OnPy2Html', tr('Converts python source to HTML.')),
             (170, 'IDPM_EDIT_CONVERT_TEXTILE2HTML', tr('Textile To HTML'), wx.ITEM_NORMAL, 'OnTextile2Html', tr('Converts textile source to HTML.')),
@@ -6062,7 +6062,7 @@ Mixin.setPlugin('preference', 'init', pref_init)
 def add_pref(preflist):
     preflist.extend([
         (tr('General'), 150, 'check', 'open_last_dir_as_startup', tr('Open last directory browser upon startup'), None),
-        (tr('General'), 151, 'check', 'open_project_setting_dlg', tr('Auto open Project Setting Dialog when adding directory to Directory Browser Window'), None),
+        (tr('General'), 151, 'check', 'open_project_setting_dlg', tr('Automatically open Project Settings Dialog when adding directory to Directory Browser Window'), None),
         (tr('General'), 160, 'openfile', 'command_line', tr('Command line of Open Command Window Here'), {'span':True}),
     ])
 Mixin.setPlugin('preference', 'add_pref', add_pref)
@@ -6320,7 +6320,7 @@ def add_mainframe_menu(menulist):
     menulist.extend([
         ('IDM_DOCUMENT', #parent menu id
         [
-            (127, 'IDM_DOCUMENT_APPLYACP', tr('Apply Auto Completed Files'), wx.ITEM_NORMAL, 'OnDocumentApplyAcp', tr('Apply auto-complete files to current document.')),
+            (127, 'IDM_DOCUMENT_APPLYACP', tr('Apply Autocompleted Files'), wx.ITEM_NORMAL, 'OnDocumentApplyAcp', tr('Apply auto-complete files to current document.')),
         ]),
         (None,
         [
@@ -6343,7 +6343,7 @@ def add_editor_menu(popmenulist):
     popmenulist.extend([
         (None,
         [
-            (270, 'IDPM_APPLYACP', tr('Apply Auto Completed Files'), wx.ITEM_NORMAL, 'OnApplyAcp', tr('Apply auto completed files to current document.')),
+            (270, 'IDPM_APPLYACP', tr('Apply Autocompleted Files'), wx.ITEM_NORMAL, 'OnApplyAcp', tr('Apply auto completed files to current document.')),
         ]),
     ])
 Mixin.setPlugin('editor', 'add_menu', add_editor_menu)
@@ -7331,7 +7331,7 @@ from modules import Globals
 def add_editor_menu(popmenulist):
     popmenulist.extend([ (None,
         [
-            (200, 'IDPM_MULTIVIEWWINDOW', tr('Open Multi View Window'), wx.ITEM_NORMAL, 'OnMultiViewWindow', tr('Opens multi view window.')),
+            (200, 'IDPM_MULTIVIEWWINDOW', tr('Open Multiview Window'), wx.ITEM_NORMAL, 'OnMultiViewWindow', tr('Opens multiview window.')),
         ]),
     ])
 Mixin.setPlugin('notebook', 'add_menu', add_editor_menu)
@@ -8134,7 +8134,7 @@ import ReloadMixins
 def add_mainframe_menu(menulist):
     menulist.extend([('IDM_TOOL', #parent menu id
         [
-            (138, 'IDM_TOOL_AUTO_LOAD_MIXINS', tr('Auto Reload Mixins'), wx.ITEM_NORMAL, '', ''),
+            (138, 'IDM_TOOL_AUTO_LOAD_MIXINS', tr('Autoreload Mixins'), wx.ITEM_NORMAL, '', ''),
         ]),
         ('IDM_TOOL_AUTO_LOAD_MIXINS',
         [
@@ -8694,7 +8694,7 @@ Mixin.setPlugin('preference', 'init', pref_init)
 
 def add_pref(preflist):
     preflist.extend([
-        (tr('Update'), 100, 'check', 'check_update', tr('Check update when startup'), None),
+        (tr('Update'), 100, 'check', 'check_update', tr('Check for updates when startup'), None),
     ])
 Mixin.setPlugin('preference', 'add_pref', add_pref)
 
@@ -8712,7 +8712,7 @@ class UpdateDialog(wx.Dialog):
         self.homepage = HyperLinkCtrl(self, self.ID_HOMEPAGE, tr("Goto Download page"), URL=self.homepage)
         h.add(self.homepage).bind(EVT_HYPERLINK_LEFT, self.OnDownload)
 
-        box.add(ui.Check(Globals.pref.check_update, tr("Check update when startup")), name='chkCheck').bind('check', self.OnCheck)
+        box.add(ui.Check(Globals.pref.check_update, tr("Check for updates when startup")), name='chkCheck').bind('check', self.OnCheck)
 
         box.add(ui.Button(tr("OK"), id=wx.ID_OK), name='btnOk', flag=wx.ALIGN_CENTER|wx.ALL, border=10)
         self.btnOk.SetDefault()
@@ -8728,7 +8728,7 @@ class UpdateDialog(wx.Dialog):
 def add_mainframe_menu(menulist):
     menulist.extend([ ('IDM_HELP', #parent menu id
         [
-            (800, 'IDM_HELP_UPDATE', tr('Check Update'), wx.ITEM_NORMAL, 'OnHelpCheckUpdate', tr('Check if where is new version of UliPad.')),
+            (800, 'IDM_HELP_UPDATE', tr('Check For Updates'), wx.ITEM_NORMAL, 'OnHelpCheckUpdate', tr('Check if where is new version of UliPad.')),
         ]),
     ])
 Mixin.setPlugin('mainframe', 'add_menu', add_mainframe_menu)

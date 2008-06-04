@@ -28,7 +28,7 @@ import FortranLexer
 
 def add_lexer(lexer):
     lexer.extend([
-        (FortranLexer.FortranLexer.metaname, tr('Fortran|*.f90,*f77,*.for,*.ftn,*.f'),
+        (FortranLexer.FortranLexer.metaname, tr('Fortran(*.f90, *f77, *.for, *.ftn, *.f)|*.f90;*f77;*.for;*.ftn;*.f'),
             wx.stc.STC_LEX_CONTAINER, 'fortran.stx', FortranLexer.FortranLexer),
     ])
 Mixin.setPlugin('lexerfactory', 'add_lexer', add_lexer)

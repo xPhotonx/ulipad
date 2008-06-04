@@ -26,3 +26,5 @@ mikem <mjmaher@iol.ie>                          Commit pylint_plugin
 Hawker                                          Linux memory display patch
 shmakes <shmakes@gmail.com>                     Good advices and code patch
 LP <liupengf12@gmail.com>                       Report bugs and commit Patch
+Kelie Feng                                      Create a great video about UliPad and put in ShowMeDo site, and other helps
+Chester Dunn <wxPythoner@gmail.com>             Report bugs and advices

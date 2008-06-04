@@ -231,7 +231,7 @@ class AddShellDialog(wx.Dialog):
     def OnBrowser(self, event):
         filename = ''
         dlg = wx.FileDialog(self, tr("Select Tool File"), "", 
-            "", tr("All files (*.*)|*.*"), wx.OPEN)
+            "", tr("All Files (*.*)|*.*"), wx.OPEN)
         try:
             if dlg.ShowModal() == wx.ID_OK:
                 filename = dlg.GetPath()

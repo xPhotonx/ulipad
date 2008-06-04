@@ -38,7 +38,7 @@ Mixin.setPlugin('preference', 'init', pref_init)
 
 def add_pref(preflist):
     preflist.extend([
-        (tr('General'), 100, 'check', 'load_session', tr('Auto load the files of last session'), None),
+        (tr('General'), 100, 'check', 'load_session', tr('Autoload the files of last session'), None),
     ])
 Mixin.setPlugin('preference', 'add_pref', add_pref)
 

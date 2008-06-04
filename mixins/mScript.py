@@ -34,11 +34,11 @@ Mixin.setPlugin('preference', 'init', pref_init)
 def add_mainframe_menu(menulist):
     menulist.extend([('IDM_TOOL',
         [
-            (50, 'IDM_SCRIPT', tr('Script'), wx.ITEM_NORMAL, None, ''),
+            (50, 'IDM_SCRIPT', tr('Scripts'), wx.ITEM_NORMAL, None, ''),
         ]),
         ('IDM_SCRIPT', #parent menu id
         [
-            (100, 'IDM_SCRIPT_MANAGE', tr('Script Manager...'), wx.ITEM_NORMAL, 'OnScriptManage', tr('Script manager')),
+            (100, 'IDM_SCRIPT_MANAGE', tr('Scripts Manager...'), wx.ITEM_NORMAL, 'OnScriptManage', tr('Script manager')),
             (110, '', '-', wx.ITEM_SEPARATOR, None, ''),
             (120, 'IDM_SCRIPT_ITEMS', tr('(Empty)'), wx.ITEM_NORMAL, 'OnScriptItems', tr('Execute an script')),
         ]),
