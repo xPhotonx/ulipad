@@ -430,7 +430,8 @@ class LexerBase(Mixin.Mixin):
         return self._syntaxnames
 
     def getFilewildchar(self):
-        return "%s (%s)|%s" % (self.wildcharprompt, self.wildchar, self.wildchar)
+        s = ', '.join(self.wildchar.split(';'))
+        return "%s (%s)|%s" % (self.wildcharprompt, s, self.wildchar)
 
     def loadDefaultKeywords(self):
         return ''

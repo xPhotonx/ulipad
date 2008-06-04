@@ -28,7 +28,7 @@ import MakoTMPLexer
 
 def add_lexer(lexer):
     lexer.extend([
-        (MakoTMPLexer.MakoTmpLexer.metaname, tr('Mako Template(*.mko)|*.mko'),
+        (MakoTMPLexer.MakoTmpLexer.metaname, 'Mako Template|*.mko',
             wx.stc.STC_LEX_CONTAINER, 'makotmp.stx', MakoTMPLexer.MakoTmpLexer),
     ])
 Mixin.setPlugin('lexerfactory', 'add_lexer', add_lexer)

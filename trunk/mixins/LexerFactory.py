@@ -42,11 +42,14 @@ class LexerFactory(Mixin.Mixin):
         self.callplugin_once('add_lexer', LexerFactory.lexers)
 
         self.lexers.sort()
+        s = []
         for name, filewildchar, syntaxtype, stxfile, lexerclass in self.lexers:
             lexobj = lexerclass(name, filewildchar, syntaxtype, stxfile)
             self.lexobjs.append(lexobj)
             LexerFactory.lexnames.append(name)
-            self.mainframe.filewildchar.append(lexobj.getFilewildchar())
+            s.append(lexobj.getFilewildchar())
+        s.sort(lambda x, y: cmp(x.lower(), y.lower()))
+        self.mainframe.filewildchar.extend(s)
 
     def reset(self):
         for obj in self.lexobjs:
