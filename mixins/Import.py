@@ -6420,19 +6420,21 @@ class InputAssistantAction(AsyncAction.AsyncAction):
         action = obj['type']
         win = obj['win']
         try:
-            if not win: return
-            i = get_inputassistant_obj(win)
             win.lock.acquire()
-            if action == 'default':
-                i.run_default(win, self)
-            else:
-                event, on_char_flag = obj['event'], obj['on_char_flag']
-                i.run(win, event, on_char_flag, self)
+            try:
+                if not win: return
+                i = get_inputassistant_obj(win)
+                if action == 'default':
+                    i.run_default(win, self)
+                else:
+                    event, on_char_flag = obj['event'], obj['on_char_flag']
+                    i.run(win, event, on_char_flag, self)
+                return True
+            except:
+                Globals.mainframe.input_assistant = None
+                error.traceback()
+        finally:
             win.lock.release()
-            return True
-        except:
-            Globals.mainframe.input_assistant = None
-            error.traceback()
 
     def get_timestep(self):
         return float(Globals.pref.inputass_typing_rate)/1000
