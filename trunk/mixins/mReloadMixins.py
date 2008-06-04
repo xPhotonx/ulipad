@@ -13,7 +13,7 @@ import ReloadMixins
 def add_mainframe_menu(menulist):
     menulist.extend([('IDM_TOOL', #parent menu id
         [
-            (138, 'IDM_TOOL_AUTO_LOAD_MIXINS', tr('Auto Reload Mixins'), wx.ITEM_NORMAL, '', ''),
+            (138, 'IDM_TOOL_AUTO_LOAD_MIXINS', tr('Autoreload Mixins'), wx.ITEM_NORMAL, '', ''),
         ]),
         ('IDM_TOOL_AUTO_LOAD_MIXINS',
         [

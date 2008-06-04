@@ -50,7 +50,7 @@ class MainFrame(wx.Frame, Mixin.Mixin):
     default_editoraccellist = {}
     imagelist = {}
     filewildchar = [
-        tr('All files (*.*)|*'),
+        tr('All Files (*.*)|*'),
     ]
     toollist = []
     toolbaritems = {}

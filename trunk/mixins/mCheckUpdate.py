@@ -35,7 +35,7 @@ Mixin.setPlugin('preference', 'init', pref_init)
 
 def add_pref(preflist):
     preflist.extend([
-        (tr('Update'), 100, 'check', 'check_update', tr('Check update when startup'), None),
+        (tr('Update'), 100, 'check', 'check_update', tr('Check for updates when startup'), None),
     ])
 Mixin.setPlugin('preference', 'add_pref', add_pref)
 
@@ -53,7 +53,7 @@ class UpdateDialog(wx.Dialog):
         self.homepage = HyperLinkCtrl(self, self.ID_HOMEPAGE, tr("Goto Download page"), URL=self.homepage)
         h.add(self.homepage).bind(EVT_HYPERLINK_LEFT, self.OnDownload)
 
-        box.add(ui.Check(Globals.pref.check_update, tr("Check update when startup")), name='chkCheck').bind('check', self.OnCheck)
+        box.add(ui.Check(Globals.pref.check_update, tr("Check for updates when startup")), name='chkCheck').bind('check', self.OnCheck)
 
         box.add(ui.Button(tr("OK"), id=wx.ID_OK), name='btnOk', flag=wx.ALIGN_CENTER|wx.ALL, border=10)
         self.btnOk.SetDefault()
@@ -69,7 +69,7 @@ class UpdateDialog(wx.Dialog):
 def add_mainframe_menu(menulist):
     menulist.extend([ ('IDM_HELP', #parent menu id
         [
-            (800, 'IDM_HELP_UPDATE', tr('Check Update'), wx.ITEM_NORMAL, 'OnHelpCheckUpdate', tr('Check if where is new version of UliPad.')),
+            (800, 'IDM_HELP_UPDATE', tr('Check For Updates'), wx.ITEM_NORMAL, 'OnHelpCheckUpdate', tr('Check if where is new version of UliPad.')),
         ]),
     ])
 Mixin.setPlugin('mainframe', 'add_menu', add_mainframe_menu)

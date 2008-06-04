@@ -115,7 +115,7 @@ class TreeBookPanel(wx.Panel):
 class PrefDialog(wx.Dialog, Mixin.Mixin):
     __mixinname__ = 'prefdialog'
 
-    def __init__(self, parent, size=(700, 500), style=wx.DEFAULT_DIALOG_STYLE|wx.RESIZE_BORDER):
+    def __init__(self, parent, size=(750, 500), style=wx.DEFAULT_DIALOG_STYLE|wx.RESIZE_BORDER):
         self.initmixin()
 
         #config.ini

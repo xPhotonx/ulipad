@@ -29,7 +29,7 @@ __doc__ = 'Tool menu'
 def add_menu(menulist):
     menulist.extend([(None,
         [
-            (550, 'IDM_TOOL', tr('Tool'), wx.ITEM_NORMAL, None, ''),
+            (550, 'IDM_TOOL', tr('Tools'), wx.ITEM_NORMAL, None, ''),
         ]),
     ])
 Mixin.setPlugin('mainframe', 'add_menu', add_menu)

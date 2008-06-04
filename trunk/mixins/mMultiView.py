@@ -28,7 +28,7 @@ from modules import Globals
 def add_editor_menu(popmenulist):
     popmenulist.extend([ (None,
         [
-            (200, 'IDPM_MULTIVIEWWINDOW', tr('Open Multi View Window'), wx.ITEM_NORMAL, 'OnMultiViewWindow', tr('Opens multi view window.')),
+            (200, 'IDPM_MULTIVIEWWINDOW', tr('Open Multiview Window'), wx.ITEM_NORMAL, 'OnMultiViewWindow', tr('Opens multiview window.')),
         ]),
     ])
 Mixin.setPlugin('notebook', 'add_menu', add_editor_menu)

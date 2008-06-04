@@ -257,7 +257,7 @@ def add_mainframe_menu(menulist):
     menulist.extend([
         ('IDM_DOCUMENT', #parent menu id
         [
-            (127, 'IDM_DOCUMENT_APPLYACP', tr('Apply Auto Completed Files'), wx.ITEM_NORMAL, 'OnDocumentApplyAcp', tr('Apply auto-complete files to current document.')),
+            (127, 'IDM_DOCUMENT_APPLYACP', tr('Apply Autocompleted Files'), wx.ITEM_NORMAL, 'OnDocumentApplyAcp', tr('Apply auto-complete files to current document.')),
         ]),
         (None, 
         [
@@ -280,7 +280,7 @@ def add_editor_menu(popmenulist):
     popmenulist.extend([
         (None,
         [
-            (270, 'IDPM_APPLYACP', tr('Apply Auto Completed Files'), wx.ITEM_NORMAL, 'OnApplyAcp', tr('Apply auto completed files to current document.')),
+            (270, 'IDPM_APPLYACP', tr('Apply Autocompleted Files'), wx.ITEM_NORMAL, 'OnApplyAcp', tr('Apply auto completed files to current document.')),
         ]),
     ])
 Mixin.setPlugin('editor', 'add_menu', add_editor_menu)
