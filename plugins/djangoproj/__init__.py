@@ -29,7 +29,7 @@ import DjangoTMPLexer
 
 def add_lexer(lexer):
     lexer.extend([
-        (DjangoTMPLexer.DjangoTmpLexer.metaname, tr('Django Template(*.dmp)|*.dmp'),
+        (DjangoTMPLexer.DjangoTmpLexer.metaname, 'Django Template|*.dmp',
             wx.stc.STC_LEX_CONTAINER, 'djangotmp.stx', DjangoTMPLexer.DjangoTmpLexer),
     ])
 Mixin.setPlugin('lexerfactory', 'add_lexer', add_lexer)
