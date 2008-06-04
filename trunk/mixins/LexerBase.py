@@ -268,7 +268,7 @@ class LexerBase(Mixin.Mixin):
             fontname = unicode(fontname, 'utf-8')
             
         #test is the fontname is ok
-        if not wx.FontEnumerator.IsValidFacename(fontname):
+        if hasattr(wx.FontEnumerator, 'IsValidFacename') and not wx.FontEnumerator.IsValidFacename(fontname):
             font = wx.Font(fontsize, wx.TELETYPE, wx.NORMAL, wx.NORMAL, True)
             fontname = font.FaceName
             
