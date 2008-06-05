@@ -186,7 +186,7 @@ def add_pref(preflist):
     from modules import meide as ui
     box = ui.HBox()
     box.add(ui.Label(tr("Skip input assistance when typing rate faster than ")))
-    box.add(ui.Int(_get('inputass_typing_rate')), name='inputass_typing_rate')
+    box.add(ui.Int(_get('inputass_typing_rate'), size=(40, -1)), name='inputass_typing_rate')
     box.add(ui.Label(tr(" milliseconds")))
     
     preflist.extend([
