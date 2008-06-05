@@ -27,7 +27,7 @@ from modules import Mixin
 def add_editor_menu(popmenulist):
     popmenulist.extend([ (None, #parent menu id
         [
-            (5, 'IDPM_COPY_RUN', tr('&Run in Shell') + '\tCtrl+F5', wx.ITEM_NORMAL, 'OnEditorCopyRun', ''),
+            (5, 'IDPM_COPY_RUN', tr('Run in Shell') + '\tCtrl+F5', wx.ITEM_NORMAL, 'OnEditorCopyRun', ''),
         ]),
     ])
 Mixin.setPlugin('editor', 'add_menu', add_editor_menu)
@@ -79,7 +79,7 @@ def add_mainframe_menu(menulist):
     menulist.extend([
         ('IDM_EDIT',
         [
-            (285, 'IDM_EDIT_COPY_RUN', tr('&Run In Shell') + '\tCtrl+F5', wx.ITEM_NORMAL, 'OnEditCopyRun', tr('Copy code to shell window and run it.')),
+            (285, 'IDM_EDIT_COPY_RUN', tr('Run In Shell') + '\tCtrl+F5', wx.ITEM_NORMAL, 'OnEditCopyRun', tr('Copy code to shell window and run it.')),
         ]),
     ])
 Mixin.setPlugin('mainframe', 'add_menu', add_mainframe_menu)

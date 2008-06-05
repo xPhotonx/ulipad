@@ -35,7 +35,7 @@ Mixin.setPlugin('preference', 'init', pref_init)
 
 def add_pref(preflist):
     preflist.extend([
-        (tr('Update'), 100, 'check', 'check_update', tr('Check for updates when startup'), None),
+        (tr('Update'), 100, 'check', 'check_update', tr('Check for updates at startup'), None),
     ])
 Mixin.setPlugin('preference', 'add_pref', add_pref)
 

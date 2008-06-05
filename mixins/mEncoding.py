@@ -39,8 +39,8 @@ def add_pref(preflist):
     from EncodingDialog import EncodingDialog
     preflist.extend([
         (tr('General'), 120, 'check', 'select_encoding', tr('Show encoding selection dialog when opening or saving file'), None),
-        (tr('General'), 121, 'choice', 'default_encoding', tr('Default document encoding:'), encodings),
-        (tr('General'), 122, 'text', 'custom_encoding', tr("Custom default encoding(if set, it'll be the default):"), None),
+        (tr('Document'), 190, 'choice', 'default_encoding', tr('Default document encoding:'), encodings),
+        (tr('Document'), 191, 'text', 'custom_encoding', tr("Custom default encoding(if set, it'll be the default):"), None),
     ])
 Mixin.setPlugin('preference', 'add_pref', add_pref)
 

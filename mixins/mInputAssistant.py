@@ -156,9 +156,9 @@ def _get(name):
 from modules import meide as ui
 
 mInputAssistant_ia = ui.Check(_get('input_assistant'), tr('Enable input assistant'))
-mInputAssistant_s1 = ui.Check(_get('inputass_calltip'), tr("Enable calltip"))
-mInputAssistant_s2 = ui.Check(_get('inputass_autocomplete'), tr("Enable auto completion"))
-mInputAssistant_s3 = ui.Check(_get('inputass_identifier'), tr("Enable auto prompt identifiers"))
+mInputAssistant_s1 = ui.Check(_get('inputass_calltip'), tr("Enable calltips"))
+mInputAssistant_s2 = ui.Check(_get('inputass_autocomplete'), tr("Enable autocompletion"))
+mInputAssistant_s3 = ui.Check(_get('inputass_identifier'), tr("Enable autoprompt identifiers"))
 mInputAssistant_s4 = ui.Check(_get('inputass_full_identifier'), tr("Enable full identifiers search"))
 mInputAssistant_s5 = ui.Check(_get('inputass_func_parameter_autocomplete'), tr("Enable function parameter autocomplete"))
 
@@ -176,8 +176,18 @@ def aftercreate(dlg):
 Mixin.setPlugin('prefdialog', 'aftercreate', aftercreate)
     
 def add_pref(preflist):
+    def _get(name):
+        def _f(name=name):
+            from modules import Globals
+            return getattr(Globals.pref, name)
+        return _f
     
     mInputAssistant_ia.bind('check', _toggle)
+    from modules import meide as ui
+    box = ui.HBox()
+    box.add(ui.Label(tr("Skip input assistance when typing rate faster than ")))
+    box.add(ui.Int(_get('inputass_typing_rate')), name='inputass_typing_rate')
+    box.add(ui.Label(tr(" milliseconds")))
     
     preflist.extend([
         (tr('Input Assistant'), 100, mInputAssistant_ia, 'input_assistant', '', None),
@@ -186,7 +196,7 @@ def add_pref(preflist):
         (tr('Input Assistant'), 130, mInputAssistant_s3, 'inputass_identifier', '', None),
         (tr('Input Assistant'), 140, mInputAssistant_s4, 'inputass_full_identifier', '', None),
         (tr('Input Assistant'), 150, mInputAssistant_s5, 'inputass_func_parameter_autocomplete', '', None),
-        (tr('Input Assistant'), 160, 'int', 'inputass_typing_rate', tr("Skip Input Assistant when typing rate faster than this milisecond"), None),
+        (tr('Input Assistant'), 160, box, '', '', {'span':True}),
     ])
 Mixin.setPlugin('preference', 'add_pref', add_pref)
 
@@ -280,7 +290,7 @@ def add_editor_menu(popmenulist):
     popmenulist.extend([
         (None,
         [
-            (270, 'IDPM_APPLYACP', tr('Apply Autocompleted Files'), wx.ITEM_NORMAL, 'OnApplyAcp', tr('Apply auto completed files to current document.')),
+            (270, 'IDPM_APPLYACP', tr('Apply Autocompleted Files'), wx.ITEM_NORMAL, 'OnApplyAcp', tr('Apply autocompleted files to current document.')),
         ]),
     ])
 Mixin.setPlugin('editor', 'add_menu', add_editor_menu)
