@@ -54,7 +54,7 @@ Mixin.setPlugin('preference', 'init', pref_init)
 def add_pref(preflist):
     preflist.extend([
         (tr('Document')+'/'+tr('Edit'), 100, 'check', 'autoindent', tr('Autoindent'), None),
-        (tr('Document')+'/'+tr('Edit'), 110, 'check', 'usetabs', tr('Use Tabs'), None),
+        (tr('Document')+'/'+tr('Edit'), 110, 'check', 'usetabs', tr('Use tabs'), None),
         (tr('Document')+'/'+tr('Edit'), 120, 'check', 'wordwrap', tr('Automatically word wrap'), None),
     ])
 Mixin.setPlugin('preference', 'add_pref', add_pref)

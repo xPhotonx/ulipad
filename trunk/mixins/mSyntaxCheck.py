@@ -57,8 +57,8 @@ def init(pref):
 Mixin.setPlugin('preference', 'init', init)
 
 preflist = [
-        (tr('Python'), 160, 'check', 'auto_py_check', tr('Auto check syntax when saving'), None),
-        (tr('Python'), 170, 'check', 'auto_py_pep8_check', tr('Auto PEP8 style check with syntax check'), None),
+        (tr('Python'), 160, 'check', 'auto_py_check', tr('Autocheck syntax when saving'), None),
+        (tr('Python'), 170, 'check', 'auto_py_pep8_check', tr('Auto-PEP8-style check with syntax check'), None),
 ]
 Mixin.setMixin('preference', 'preflist', preflist)
 

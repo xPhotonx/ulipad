@@ -358,7 +358,7 @@ Mixin.setPlugin('preference', 'init', pref_init)
 
 def add_pref(preflist):
     preflist.extend([
-        (tr('Document'), 170, 'choice', 'notebook_direction', tr('Document tabs direction'), [tr('Top'), tr('Bottom')])
+        (tr('Document'), 170, 'choice', 'notebook_direction', tr('Document tabs direction:'), [tr('Top'), tr('Bottom')])
     ])
 Mixin.setPlugin('preference', 'add_pref', add_pref)
 
@@ -1996,7 +1996,7 @@ Mixin.setPlugin('preference', 'init', pref_init)
 def add_pref(preflist):
     preflist.extend([
         (tr('Document')+'/'+tr('Edit'), 100, 'check', 'autoindent', tr('Autoindent'), None),
-        (tr('Document')+'/'+tr('Edit'), 110, 'check', 'usetabs', tr('Use Tabs'), None),
+        (tr('Document')+'/'+tr('Edit'), 110, 'check', 'usetabs', tr('Use tabs'), None),
         (tr('Document')+'/'+tr('Edit'), 120, 'check', 'wordwrap', tr('Automatically word wrap'), None),
     ])
 Mixin.setPlugin('preference', 'add_pref', add_pref)
@@ -2149,7 +2149,7 @@ Mixin.setPlugin('preference', 'init', pref_init)
 
 def add_pref(preflist):
     preflist.extend([
-        (tr('Document')+'/'+tr('Edit'), 130, 'check', 'auto_detect_utf8', tr('Auto detect UTF-8 encoding'), None),
+        (tr('Document')+'/'+tr('Edit'), 130, 'check', 'auto_detect_utf8', tr('Autodetect UTF-8 encoding'), None),
     ])
 Mixin.setPlugin('preference', 'add_pref', add_pref)
 
@@ -3968,7 +3968,7 @@ from modules import common
 
 def add_pref(preflist):
     preflist.extend([
-        (tr('Document')+'/'+tr('Backend'), 100, 'check', 'auto_make_bak', tr('Auto make backup of file at opening of file'), None)
+        (tr('Document')+'/'+tr('Back-end'), 100, 'check', 'auto_make_bak', tr('Automake backup of file at opening of file'), None)
     ])
 Mixin.setPlugin('preference', 'add_pref', add_pref)
 
@@ -4000,8 +4000,8 @@ from modules import Globals
 
 def add_pref(preflist):
     preflist.extend([
-        (tr('Document')+'/'+tr('Backend'), 110, 'check', 'auto_check', tr('Auto check if some opened files were modified by others'), None),
-        (tr('Document')+'/'+tr('Backend'), 120, 'check', 'auto_check_confirm', tr('Require confirmation before a file is auto-reloaded'), None)
+        (tr('Document')+'/'+tr('Back-end'), 110, 'check', 'auto_check', tr('Autocheck if some opened files were modified by others'), None),
+        (tr('Document')+'/'+tr('Back-end'), 120, 'check', 'auto_check_confirm', tr('Require confirmation before a file is autoreloaded'), None)
     ])
 Mixin.setPlugin('preference', 'add_pref', add_pref)
 
@@ -4471,8 +4471,8 @@ def add_pref(preflist):
     from EncodingDialog import EncodingDialog
     preflist.extend([
         (tr('General'), 120, 'check', 'select_encoding', tr('Show encoding selection dialog when opening or saving file'), None),
-        (tr('General'), 121, 'choice', 'default_encoding', tr('Default document encoding:'), encodings),
-        (tr('General'), 122, 'text', 'custom_encoding', tr("Custom default encoding(if set, it'll be the default):"), None),
+        (tr('Document'), 190, 'choice', 'default_encoding', tr('Default document encoding:'), encodings),
+        (tr('Document'), 191, 'text', 'custom_encoding', tr("Custom default encoding(if set, it'll be the default):"), None),
     ])
 Mixin.setPlugin('preference', 'add_pref', add_pref)
 
@@ -4953,7 +4953,7 @@ Mixin.setPlugin('preference', 'init', pref_init)
 
 def add_pref(preflist):
     preflist.extend([
-        (tr('Document')+'/'+tr('Edit'), 150, 'check', 'paste_auto_indent', tr('Auto indent when pasting text block'), None)
+        (tr('Document')+'/'+tr('Edit'), 150, 'check', 'paste_auto_indent', tr('Autoindent when pasting text block'), None)
     ])
 Mixin.setPlugin('preference', 'add_pref', add_pref)
 
@@ -5608,7 +5608,7 @@ Mixin.setPlugin('preference', 'init', pref_init)
 
 def add_pref(preflist):
     preflist.extend([
-        (tr('Document'), 150, 'choice', 'converted_output', tr('Choose where converted text is to be output:'), [tr('In html window'), tr('In message window'), tr('Replace selected text')]),
+        (tr('Document'), 150, 'choice', 'converted_output', tr('Choose where converted text is to be outputted:'), [tr('To HTML window'), tr('To message window'), tr('Replace selected text')]),
     ])
 Mixin.setPlugin('preference', 'add_pref', add_pref)
 
@@ -6070,7 +6070,7 @@ Mixin.setPlugin('preference', 'init', pref_init)
 
 def add_pref(preflist):
     preflist.extend([
-        (tr('General'), 150, 'check', 'open_last_dir_as_startup', tr('Open last directory browser upon startup'), None),
+        (tr('General'), 150, 'check', 'open_last_dir_as_startup', tr('Open last directory upon startup'), None),
         (tr('General'), 151, 'check', 'open_project_setting_dlg', tr('Automatically open Project Settings Dialog when adding directory to Directory Browser Window'), None),
         (tr('General'), 160, 'openfile', 'command_line', tr('Command line of Open Command Window Here'), {'span':True}),
     ])
@@ -6228,9 +6228,9 @@ def _get(name):
 from modules import meide as ui
 
 mInputAssistant_ia = ui.Check(_get('input_assistant'), tr('Enable input assistant'))
-mInputAssistant_s1 = ui.Check(_get('inputass_calltip'), tr("Enable calltip"))
-mInputAssistant_s2 = ui.Check(_get('inputass_autocomplete'), tr("Enable auto completion"))
-mInputAssistant_s3 = ui.Check(_get('inputass_identifier'), tr("Enable auto prompt identifiers"))
+mInputAssistant_s1 = ui.Check(_get('inputass_calltip'), tr("Enable calltips"))
+mInputAssistant_s2 = ui.Check(_get('inputass_autocomplete'), tr("Enable autocompletion"))
+mInputAssistant_s3 = ui.Check(_get('inputass_identifier'), tr("Enable autoprompt identifiers"))
 mInputAssistant_s4 = ui.Check(_get('inputass_full_identifier'), tr("Enable full identifiers search"))
 mInputAssistant_s5 = ui.Check(_get('inputass_func_parameter_autocomplete'), tr("Enable function parameter autocomplete"))
 
@@ -6248,8 +6248,18 @@ def aftercreate(dlg):
 Mixin.setPlugin('prefdialog', 'aftercreate', aftercreate)
 
 def add_pref(preflist):
+    def _get(name):
+        def _f(name=name):
+            from modules import Globals
+            return getattr(Globals.pref, name)
+        return _f
 
     mInputAssistant_ia.bind('check', _toggle)
+    from modules import meide as ui
+    box = ui.HBox()
+    box.add(ui.Label(tr("Skip input assistance when typing rate faster than ")))
+    box.add(ui.Int(_get('inputass_typing_rate')), name='inputass_typing_rate')
+    box.add(ui.Label(tr(" milliseconds")))
 
     preflist.extend([
         (tr('Input Assistant'), 100, mInputAssistant_ia, 'input_assistant', '', None),
@@ -6258,7 +6268,7 @@ def add_pref(preflist):
         (tr('Input Assistant'), 130, mInputAssistant_s3, 'inputass_identifier', '', None),
         (tr('Input Assistant'), 140, mInputAssistant_s4, 'inputass_full_identifier', '', None),
         (tr('Input Assistant'), 150, mInputAssistant_s5, 'inputass_func_parameter_autocomplete', '', None),
-        (tr('Input Assistant'), 160, 'int', 'inputass_typing_rate', tr("Skip Input Assistant when typing rate faster than this milisecond"), None),
+        (tr('Input Assistant'), 160, box, '', '', {'span':True}),
     ])
 Mixin.setPlugin('preference', 'add_pref', add_pref)
 
@@ -6352,7 +6362,7 @@ def add_editor_menu(popmenulist):
     popmenulist.extend([
         (None,
         [
-            (270, 'IDPM_APPLYACP', tr('Apply Autocompleted Files'), wx.ITEM_NORMAL, 'OnApplyAcp', tr('Apply auto completed files to current document.')),
+            (270, 'IDPM_APPLYACP', tr('Apply Autocompleted Files'), wx.ITEM_NORMAL, 'OnApplyAcp', tr('Apply autocompleted files to current document.')),
         ]),
     ])
 Mixin.setPlugin('editor', 'add_menu', add_editor_menu)
@@ -6834,7 +6844,7 @@ Mixin.setPlugin('preference', 'init', pref_init)
 
 def add_pref(preflist):
     preflist.extend([
-        (tr('Document'), 180, 'check', 'auto_todo', tr('Auto show TODO window when opening file containing a TODO'), None),
+        (tr('Document'), 180, 'check', 'auto_todo', tr('Autoshow TODO window when opening file containing a TODO'), None),
     ])
 Mixin.setPlugin('preference', 'add_pref', add_pref)
 
@@ -6958,7 +6968,7 @@ Mixin.setPlugin('preference', 'init', pref_init)
 
 def add_pref(preflist):
     preflist.extend([
-        (tr('General'), 170, 'check', 'clear_message', tr('Auto clear message window content when running program'), None)
+        (tr('General'), 170, 'check', 'clear_message', tr('Autoclear message window content when program running'), None)
     ])
 Mixin.setPlugin('preference', 'add_pref', add_pref)
 
@@ -7291,7 +7301,7 @@ Mixin.setPlugin('preference', 'init', pref_init)
 def add_pref(preflist):
     preflist.extend([
         (tr('Commands'), 100, 'check', 'commands_impact', tr('Enable commands search impact mode'), None),
-        (tr('Commands'), 110, 'check', 'commands_autoclose', tr('Auto close commands search window after executing a command'), None),
+        (tr('Commands'), 110, 'check', 'commands_autoclose', tr('Autoclose commands search window after executing a command'), None),
     ])
 Mixin.setPlugin('preference', 'add_pref', add_pref)
 
@@ -7812,8 +7822,8 @@ def init(pref):
 Mixin.setPlugin('preference', 'init', init)
 
 preflist = [
-        (tr('Python'), 160, 'check', 'auto_py_check', tr('Auto check syntax when saving'), None),
-        (tr('Python'), 170, 'check', 'auto_py_pep8_check', tr('Auto PEP8 style check with syntax check'), None),
+        (tr('Python'), 160, 'check', 'auto_py_check', tr('Autocheck syntax when saving'), None),
+        (tr('Python'), 170, 'check', 'auto_py_pep8_check', tr('Auto-PEP8-style check with syntax check'), None),
 ]
 Mixin.setMixin('preference', 'preflist', preflist)
 
@@ -8284,7 +8294,7 @@ from modules import Mixin
 def add_editor_menu(popmenulist):
     popmenulist.extend([ (None, #parent menu id
         [
-            (5, 'IDPM_COPY_RUN', tr('&Run in Shell') + '\tCtrl+F5', wx.ITEM_NORMAL, 'OnEditorCopyRun', ''),
+            (5, 'IDPM_COPY_RUN', tr('Run in Shell') + '\tCtrl+F5', wx.ITEM_NORMAL, 'OnEditorCopyRun', ''),
         ]),
     ])
 Mixin.setPlugin('editor', 'add_menu', add_editor_menu)
@@ -8336,7 +8346,7 @@ def add_mainframe_menu(menulist):
     menulist.extend([
         ('IDM_EDIT',
         [
-            (285, 'IDM_EDIT_COPY_RUN', tr('&Run In Shell') + '\tCtrl+F5', wx.ITEM_NORMAL, 'OnEditCopyRun', tr('Copy code to shell window and run it.')),
+            (285, 'IDM_EDIT_COPY_RUN', tr('Run In Shell') + '\tCtrl+F5', wx.ITEM_NORMAL, 'OnEditCopyRun', tr('Copy code to shell window and run it.')),
         ]),
     ])
 Mixin.setPlugin('mainframe', 'add_menu', add_mainframe_menu)
@@ -8701,7 +8711,7 @@ Mixin.setPlugin('preference', 'init', pref_init)
 
 def add_pref(preflist):
     preflist.extend([
-        (tr('Update'), 100, 'check', 'check_update', tr('Check for updates when startup'), None),
+        (tr('Update'), 100, 'check', 'check_update', tr('Check for updates at startup'), None),
     ])
 Mixin.setPlugin('preference', 'add_pref', add_pref)
 

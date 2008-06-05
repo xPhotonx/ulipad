@@ -268,7 +268,7 @@ Mixin.setPlugin('preference', 'init', pref_init)
 
 def add_pref(preflist):
     preflist.extend([
-        (tr('Document'), 170, 'choice', 'notebook_direction', tr('Document tabs direction'), [tr('Top'), tr('Bottom')])
+        (tr('Document'), 170, 'choice', 'notebook_direction', tr('Document tabs direction:'), [tr('Top'), tr('Bottom')])
     ])
 Mixin.setPlugin('preference', 'add_pref', add_pref)
 

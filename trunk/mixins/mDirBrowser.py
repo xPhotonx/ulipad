@@ -121,7 +121,7 @@ Mixin.setPlugin('preference', 'init', pref_init)
 def add_pref(preflist):
     preflist.extend([
 #        (tr('General'), 100, 'num', 'recent_dir_paths_num', tr('Max number of recent browse directories:'), None),
-        (tr('General'), 150, 'check', 'open_last_dir_as_startup', tr('Open last directory browser upon startup'), None),
+        (tr('General'), 150, 'check', 'open_last_dir_as_startup', tr('Open last directory upon startup'), None),
         (tr('General'), 151, 'check', 'open_project_setting_dlg', tr('Automatically open Project Settings Dialog when adding directory to Directory Browser Window'), None),
         (tr('General'), 160, 'openfile', 'command_line', tr('Command line of Open Command Window Here'), {'span':True}),
     ])

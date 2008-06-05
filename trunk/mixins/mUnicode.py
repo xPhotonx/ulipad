@@ -36,7 +36,7 @@ Mixin.setPlugin('preference', 'init', pref_init)
 
 def add_pref(preflist):
     preflist.extend([
-        (tr('Document')+'/'+tr('Edit'), 130, 'check', 'auto_detect_utf8', tr('Auto detect UTF-8 encoding'), None),
+        (tr('Document')+'/'+tr('Edit'), 130, 'check', 'auto_detect_utf8', tr('Autodetect UTF-8 encoding'), None),
     ])
 Mixin.setPlugin('preference', 'add_pref', add_pref)
 
