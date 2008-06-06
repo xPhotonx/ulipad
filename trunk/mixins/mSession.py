@@ -121,7 +121,7 @@ from modules.EasyGuider import obj2ini
 
 def OnFileSessionOpen(win, event=None, filename=None):
     if not filename:
-        dlg = wx.FileDialog(win, tr("Open"), win.pref.last_session_dir, "", 'UliPad Session File|*.ses', wx.OPEN|wx.HIDE_READONLY)
+        dlg = wx.FileDialog(win, tr("Open"), win.pref.last_session_dir, "", 'UliPad Session File(*.ses)|*.ses', wx.OPEN|wx.HIDE_READONLY)
         filename = None
         if dlg.ShowModal() == wx.ID_OK:
             filename = dlg.GetPath()
@@ -139,11 +139,11 @@ def OnFileSessionOpen(win, event=None, filename=None):
                     wx.CallAfter(win.editctrl.switch, document, delay=False)
         except:
             error.traceback()
-            common.warn(tr('There are something wrong as loading session file.'))
+            common.warn(tr('There are something wrong when loading session file.'))
 Mixin.setMixin('mainframe', 'OnFileSessionOpen', OnFileSessionOpen)
 
 def OnFileSessionSave(win, event=None):
-    dlg = wx.FileDialog(win, tr("Save Session"), win.pref.last_session_dir, "", 'UliPad Session File|*.ses', wx.SAVE|wx.OVERWRITE_PROMPT)
+    dlg = wx.FileDialog(win, tr("Save Session"), win.pref.last_session_dir, "", 'UliPad Session File(*.ses)|*.ses', wx.SAVE|wx.OVERWRITE_PROMPT)
     filename = None
     if dlg.ShowModal() == wx.ID_OK:
         filename = dlg.GetPath()
@@ -156,7 +156,7 @@ def OnFileSessionSave(win, event=None):
             obj2ini.dump({'sessions':sessions, 'last_file':last_file}, filename)
         except:
             error.traceback()
-            common.warn(tr('There are something wrong as saving session file.'))
+            common.warn(tr('There are something wrong when saving session file.'))
 Mixin.setMixin('mainframe', 'OnFileSessionSave', OnFileSessionSave)
 
 def afterinit(win):
