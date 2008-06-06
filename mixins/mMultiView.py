@@ -73,7 +73,7 @@ Mixin.setPlugin('mainframe', 'closefile', closefile)
 def add_mainframe_menu(menulist):
     menulist.extend([ ('IDM_WINDOW',
         [
-            (220, 'IDM_WINDOW_MULTIVIEWWINDOW', tr('Open Multi View Window'), wx.ITEM_NORMAL, 'OnWindowMultiView', tr('Opens multi view window.')),
+            (220, 'IDM_WINDOW_MULTIVIEWWINDOW', tr('Open Multiview Window'), wx.ITEM_NORMAL, 'OnWindowMultiView', tr('Opens multi view window.')),
         ]),
     ])
 Mixin.setPlugin('mainframe', 'add_menu', add_mainframe_menu)

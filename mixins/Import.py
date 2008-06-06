@@ -5926,7 +5926,7 @@ from modules import Mixin
 
 def add_pref(preflist):
     preflist.extend([
-        (tr('General'), 140, 'check', 'splash_on_startup', tr('Show splash window on startup'), None),
+        (tr('General'), 140, 'check', 'splash_on_startup', tr('Display splash screen at startup'), None),
     ])
 Mixin.setPlugin('preference', 'add_pref', add_pref)
 
@@ -6070,7 +6070,7 @@ Mixin.setPlugin('preference', 'init', pref_init)
 
 def add_pref(preflist):
     preflist.extend([
-        (tr('General'), 150, 'check', 'open_last_dir_as_startup', tr('Open last directory upon startup'), None),
+        (tr('General'), 150, 'check', 'open_last_dir_as_startup', tr('Open last directory at startup'), None),
         (tr('General'), 151, 'check', 'open_project_setting_dlg', tr('Automatically open Project Settings Dialog when adding directory to Directory Browser Window'), None),
         (tr('General'), 160, 'openfile', 'command_line', tr('Command line of Open Command Window Here'), {'span':True}),
     ])
@@ -6672,11 +6672,11 @@ def add_pref(preflist):
     from modules import meide as ui
     box = ui.VGroup(tr('Network'))
     grid = ui.SimpleGrid()
-    grid.add('', ui.Check(_get('use_proxy'), tr('Use proxy')), name='use_proxy', span=True)
-    grid.add(tr('Proxy IP:'), ui.Text(_get('proxy')), name='proxy')
-    grid.add(tr('Proxy Port:'), ui.Int(_get('proxy_port')), name='proxy_port')
-    grid.add(tr('Proxy User:'), ui.Text(_get('proxy_user')), name='proxy_user')
-    grid.add(tr('Proxy Password:'), ui.Password(_get('proxy_password')), name='proxy_password')
+    grid.add('', ui.Check(_get('use_proxy'), tr('Use a proxy')), name='use_proxy', span=True)
+    grid.add(tr('IP address:'), ui.Text(_get('proxy')), name='proxy')
+    grid.add(tr('Port number:'), ui.Int(_get('proxy_port')), name='proxy_port')
+    grid.add(tr('User name:'), ui.Text(_get('proxy_user')), name='proxy_user')
+    grid.add(tr('Password:'), ui.Password(_get('proxy_password')), name='proxy_password')
     box.add(grid)
     preflist.extend([
         (tr('Network'), 100, box, '', '', {'span':True}),
@@ -6820,7 +6820,7 @@ from modules import Mixin
 def add_mainframe_menu(menulist):
     menulist.extend([('IDM_WINDOW', #parent menu id
         [
-            (210, 'IDM_WINDOW_TODO', tr('Open TODO Window')+u'\tCtrl+T', wx.ITEM_NORMAL, 'OnWindowTODO', tr('Open the TODO window.')),
+            (210, 'IDM_WINDOW_TODO', tr('Open To-do Window')+u'\tCtrl+T', wx.ITEM_NORMAL, 'OnWindowTODO', tr('Open the To-do window.')),
         ]),
     ])
 Mixin.setPlugin('mainframe', 'add_menu', add_mainframe_menu)
@@ -6828,7 +6828,7 @@ Mixin.setPlugin('mainframe', 'add_menu', add_mainframe_menu)
 def add_notebook_menu(popmenulist):
     popmenulist.extend([ (None,
         [
-            (190, 'IDPM_TODOWINDOW', tr('Open TODO Window'), wx.ITEM_NORMAL, 'OnNTodoWindow', tr('Opens the TODO window.')),
+            (190, 'IDPM_TODOWINDOW', tr('Open To-do Window'), wx.ITEM_NORMAL, 'OnNTodoWindow', tr('Opens the To-do window.')),
         ]),
     ])
 Mixin.setPlugin('notebook', 'add_menu', add_notebook_menu)
@@ -6844,11 +6844,11 @@ Mixin.setPlugin('preference', 'init', pref_init)
 
 def add_pref(preflist):
     preflist.extend([
-        (tr('Document'), 180, 'check', 'auto_todo', tr('Autoshow TODO window when opening file containing a TODO'), None),
+        (tr('Document'), 180, 'check', 'auto_todo', tr('Autoshow To-do window when opening file containing a TODO'), None),
     ])
 Mixin.setPlugin('preference', 'add_pref', add_pref)
 
-todo_pagename = tr('TODO')
+todo_pagename = tr('To-do')
 
 def createtodowindow(win):
     if not win.panel.getPage(todo_pagename):
@@ -7393,7 +7393,7 @@ Mixin.setPlugin('mainframe', 'closefile', closefile)
 def add_mainframe_menu(menulist):
     menulist.extend([ ('IDM_WINDOW',
         [
-            (220, 'IDM_WINDOW_MULTIVIEWWINDOW', tr('Open Multi View Window'), wx.ITEM_NORMAL, 'OnWindowMultiView', tr('Opens multi view window.')),
+            (220, 'IDM_WINDOW_MULTIVIEWWINDOW', tr('Open Multiview Window'), wx.ITEM_NORMAL, 'OnWindowMultiView', tr('Opens multi view window.')),
         ]),
     ])
 Mixin.setPlugin('mainframe', 'add_menu', add_mainframe_menu)
@@ -7941,7 +7941,7 @@ Mixin.setPlugin('preference', 'init', pref_init)
 
 def add_pref(preflist):
     preflist.extend([
-        (tr('Personal'), 100, 'text', 'personal_username', tr('Username'), None),
+        (tr('Personal'), 100, 'text', 'personal_username', tr('User name'), None),
     ])
 Mixin.setPlugin('preference', 'add_pref', add_pref)
 
