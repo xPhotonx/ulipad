@@ -42,11 +42,11 @@ def add_pref(preflist):
     from modules import meide as ui
     box = ui.VGroup(tr('Network'))
     grid = ui.SimpleGrid()
-    grid.add('', ui.Check(_get('use_proxy'), tr('Use proxy')), name='use_proxy', span=True)
-    grid.add(tr('Proxy IP:'), ui.Text(_get('proxy')), name='proxy')
-    grid.add(tr('Proxy Port:'), ui.Int(_get('proxy_port')), name='proxy_port')
-    grid.add(tr('Proxy User:'), ui.Text(_get('proxy_user')), name='proxy_user')
-    grid.add(tr('Proxy Password:'), ui.Password(_get('proxy_password')), name='proxy_password')
+    grid.add('', ui.Check(_get('use_proxy'), tr('Use a proxy')), name='use_proxy', span=True)
+    grid.add(tr('IP address:'), ui.Text(_get('proxy')), name='proxy')
+    grid.add(tr('Port number:'), ui.Int(_get('proxy_port')), name='proxy_port')
+    grid.add(tr('User name:'), ui.Text(_get('proxy_user')), name='proxy_user')
+    grid.add(tr('Password:'), ui.Password(_get('proxy_password')), name='proxy_password')
     box.add(grid)
 #    preflist.extend([
 #        (tr('Network'), 100, 'check', 'use_proxy', tr('Use proxy'), None),

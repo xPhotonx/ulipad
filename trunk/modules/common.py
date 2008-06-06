@@ -38,11 +38,11 @@ except:
     defaultencoding = None
 
 if not defaultencoding:
-    defaultencoding = 'utf-8'
+    defaultencoding = 'UTF-8'
 try:
     codecs.lookup(defaultencoding)
 except:
-    defaultencoding = 'utf-8'
+    defaultencoding = 'UTF-8'
 
 try:
     defaultfilesystemencoding = sys.getfilesystemencoding()
@@ -50,11 +50,11 @@ except:
     defaultfilesystemencoding = None
 
 if not defaultfilesystemencoding:
-    defaultfilesystemencoding = 'ascii'
+    defaultfilesystemencoding = 'ASCII'
 try:
     codecs.lookup(defaultfilesystemencoding)
 except:
-    defaultfilesystemencoding = 'ascii'
+    defaultfilesystemencoding = 'ASCII'
 
 def unicode_path(path, encoding=defaultfilesystemencoding):
     """convert path to unicode

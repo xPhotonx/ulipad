@@ -29,13 +29,13 @@ class MyStatusBar(wx.StatusBar):
 
         if wx.Platform == '__WXMSW__':
             self.SetFieldsCount(5)
-            self.SetStatusWidths([-1, 70, 60, 120, 140])
+            self.SetStatusWidths([-1, 70, 60, 120, 150])
         elif wx.Platform == '__WXGTK__':
             self.SetFieldsCount(5)
-            self.SetStatusWidths([-1, 70, 60, 120, 140])
+            self.SetStatusWidths([-1, 70, 60, 120, 150])
         else:
             self.SetFieldsCount(5)
-            self.SetStatusWidths([-1, 70, 60, 120, 140])
+            self.SetStatusWidths([-1, 70, 60, 120, 150])
 
         self.g1 = wx.Gauge(self, -1, 100, (1, 3), (105, 16))
         self.g1.SetBezelFace(1)
