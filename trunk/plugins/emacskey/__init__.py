@@ -35,7 +35,6 @@ def keyDown(editor, event):
     }
 
     scs = assembleShortcutString(event)
-    print scs
     if scs in shortcuts:
         if shortcuts[scs][0] == True:
             editor.CmdKeyExecute(shortcuts[scs][1])
@@ -52,13 +51,12 @@ def keyDown(editor, event):
         return True
 
     return False
-Mixin.setMixin('editor', 'on_first_keydown', keyDown)
+Mixin.setPlugin('editor', 'on_first_keydown', keyDown, nice=0)
 
 
 def matchPartial(scs, shortcuts):
     for key in shortcuts.keys():
         if scs == key.split(',')[0]:
-            print 'match partial'
             return True
     return False
 
@@ -85,12 +83,14 @@ def assembleShortcutString(event):
 
     if len(sc) > 0:
         sc = sc + '+'
-    sc = sc + chr(key).lower()
+        
+    if ord(' ') < key < 127:
+        sc = sc + chr(key).lower()
 
-    if inPartialShortcut is True and len(currentPartialMatch) > 0:
-        sc = currentPartialMatch + ',' + sc
-        inPartialShortcut = False
-        currentPartialMatch = ''
+        if inPartialShortcut is True and len(currentPartialMatch) > 0:
+            sc = currentPartialMatch + ',' + sc
+            inPartialShortcut = False
+            currentPartialMatch = ''
     return sc
 
 
