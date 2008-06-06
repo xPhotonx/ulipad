@@ -3887,9 +3887,9 @@ def add_lexer(lexer):
         (LexerRst.RstLexer.metaname, 'reStructuredText|*.rst',
             wx.stc.STC_LEX_CONTAINER, 'rst.stx', LexerRst.RstLexer),
         (LexerClass1.LuaLexer.metaname, 'Lua|*.lua',
-            wx.stc.STC_LEX_LUA, 'lur.stx', LexerClass1.LuaLexer),
+            wx.stc.STC_LEX_LUA, 'lua.stx', LexerClass1.LuaLexer),
         (LexerClass1.SliceLexer.metaname, 'Slice|*.ice',
-            wx.stc.STC_LEX_CPP, 'c.stx', LexerClass1.SliceLexer),
+            wx.stc.STC_LEX_CPP, 'slice.stx', LexerClass1.SliceLexer),
     ])
 Mixin.setPlugin('lexerfactory', 'add_lexer', add_lexer)
 
