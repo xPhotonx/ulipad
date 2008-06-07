@@ -6843,7 +6843,7 @@ Mixin.setPlugin('preference', 'init', pref_init)
 
 def add_pref(preflist):
     preflist.extend([
-        (tr('Document'), 180, 'check', 'auto_todo', tr('Autoshow TODO window after a file with a TODO tag is opened'), None),
+        (tr('Document'), 180, 'check', 'auto_todo', tr('Autoshow TODO window after a file with a TODO tag was opened'), None),
     ])
 Mixin.setPlugin('preference', 'add_pref', add_pref)
 
