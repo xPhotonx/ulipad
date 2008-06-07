@@ -108,10 +108,10 @@ Mixin.setPlugin('preference', 'add_pref_page', add_pref_page)
 
 def add_pref(preflist):
     preflist.extend([
-        (tab_startup, 110, 'check', 'startup_show_tabs', tr('Whitespace is visible on startup'), None),
-        (tab_startup, 120, 'check', 'startup_show_indent_guide', tr('Indentation guides are visible on startup'), None),
-        (tab_startup, 130, 'check', 'startup_show_longline', tr('Long line indicator is visible on startup'), None),
-        (tab_startup, 140, 'check', 'startup_show_linenumber', tr('Show line number on startup'), None),
+        (tab_startup, 110, 'check', 'startup_show_tabs', tr('Show whitespace indicators at startup'), None),
+        (tab_startup, 120, 'check', 'startup_show_indent_guide', tr('Make indentation guides visible at startup'), None),
+        (tab_startup, 130, 'check', 'startup_show_longline', tr('Make long-line indicator visible at startup'), None),
+        (tab_startup, 140, 'check', 'startup_show_linenumber', tr('Show line numbers at startup'), None),
         (tr('Document'), 100, 'num', 'edge_column_width', tr('Long line indicator column'), None),
     ])
 Mixin.setPlugin('preference', 'add_pref', add_pref)

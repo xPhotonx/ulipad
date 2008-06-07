@@ -35,7 +35,7 @@ Mixin.setPlugin('preference', 'init', pref_init)
 
 def add_pref(preflist):
     preflist.extend([
-        (tr('Document')+'/'+tr('Edit'), 140, 'check', 'duplicate_extend_mode', tr("Use duplication extend mode ('.' will be treated as word char)"), None)
+        (tr('Document')+'/'+tr('Edit'), 140, 'check', 'duplicate_extend_mode', tr("Use duplication extend mode and treat a dot as a normal character"), None)
     ])
 Mixin.setPlugin('preference', 'add_pref', add_pref)
 

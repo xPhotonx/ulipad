@@ -38,7 +38,7 @@ Mixin.setPlugin('preference', 'init', pref_init)
 
 def add_pref(preflist):
     preflist.extend([
-        (tr('General'), 100, 'check', 'load_session', tr('Autoload the files of last session'), None),
+        (tr('General'), 100, 'check', 'load_session', tr('Load files of last session at startup'), None),
     ])
 Mixin.setPlugin('preference', 'add_pref', add_pref)
 
@@ -104,8 +104,8 @@ Mixin.setPlugin('preference', 'init', pref_init)
 def add_mainframe_menu(menulist):
     menulist.extend([ ('IDM_FILE', #parent menu id
         [
-            (202, 'IDM_FILE_SESSION_OPEN', tr('Open Session'), wx.ITEM_NORMAL, 'OnFileSessionOpen', tr('Opens session.')),
-            (203, 'IDM_FILE_SESSION_SAVE', tr('Save Session'), wx.ITEM_NORMAL, 'OnFileSessionSave', tr('Saves session.')),
+            (202, 'IDM_FILE_SESSION_OPEN', tr('Open Session'), wx.ITEM_NORMAL, 'OnFileSessionOpen', tr('Opens a session.')),
+            (203, 'IDM_FILE_SESSION_SAVE', tr('Save Session'), wx.ITEM_NORMAL, 'OnFileSessionSave', tr('Saves the session.')),
             (204, 'IDM_FILE_SESSION_RECENT', tr('Open Recent Session'), wx.ITEM_NORMAL, '', ''),
             (205, '', '-', wx.ITEM_SEPARATOR, None, ''),
         ]),
@@ -121,7 +121,7 @@ from modules.EasyGuider import obj2ini
 
 def OnFileSessionOpen(win, event=None, filename=None):
     if not filename:
-        dlg = wx.FileDialog(win, tr("Open"), win.pref.last_session_dir, "", 'UliPad Session File(*.ses)|*.ses', wx.OPEN|wx.HIDE_READONLY)
+        dlg = wx.FileDialog(win, tr("Open"), win.pref.last_session_dir, "", 'UliPad Session File (*.ses)|*.ses', wx.OPEN|wx.HIDE_READONLY)
         filename = None
         if dlg.ShowModal() == wx.ID_OK:
             filename = dlg.GetPath()
@@ -139,11 +139,11 @@ def OnFileSessionOpen(win, event=None, filename=None):
                     wx.CallAfter(win.editctrl.switch, document, delay=False)
         except:
             error.traceback()
-            common.warn(tr('There are something wrong when loading session file.'))
+            common.warn(tr('There was something wrong with loading the session file.'))
 Mixin.setMixin('mainframe', 'OnFileSessionOpen', OnFileSessionOpen)
 
 def OnFileSessionSave(win, event=None):
-    dlg = wx.FileDialog(win, tr("Save Session"), win.pref.last_session_dir, "", 'UliPad Session File(*.ses)|*.ses', wx.SAVE|wx.OVERWRITE_PROMPT)
+    dlg = wx.FileDialog(win, tr("Save Session"), win.pref.last_session_dir, "", 'UliPad Session File (*.ses)|*.ses', wx.SAVE|wx.OVERWRITE_PROMPT)
     filename = None
     if dlg.ShowModal() == wx.ID_OK:
         filename = dlg.GetPath()
@@ -156,7 +156,7 @@ def OnFileSessionSave(win, event=None):
             obj2ini.dump({'sessions':sessions, 'last_file':last_file}, filename)
         except:
             error.traceback()
-            common.warn(tr('There are something wrong when saving session file.'))
+            common.warn(tr('There was something wrong with saving the session file.'))
 Mixin.setMixin('mainframe', 'OnFileSessionSave', OnFileSessionSave)
 
 def afterinit(win):

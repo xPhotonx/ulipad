@@ -29,7 +29,7 @@ def add_pref(preflist):
     names = LexerBase.color_theme.keys()
     names.sort()
     preflist.extend([
-        (tr('General'), 131, 'choice', 'default_color_theme', tr('Default color theme'), names),
+        (tr('General'), 131, 'choice', 'default_color_theme', tr('Default color theme:'), names),
     ])
 Mixin.setPlugin('preference', 'add_pref', add_pref)
 

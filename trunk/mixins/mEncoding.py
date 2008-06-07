@@ -37,7 +37,7 @@ if 'UTF-8' not in encodings:
 
 def add_pref(preflist):
     preflist.extend([
-        (tr('General'), 120, 'check', 'select_encoding', tr('Show encoding selection dialog when opening or saving file'), None),
+        (tr('General'), 120, 'check', 'select_encoding', tr('Show encoding dialog at file opening and at file saving'), None),
         (tr('Document'), 190, 'choice', 'default_encoding', tr('Default document encoding:'), encodings),
         (tr('Document'), 191, 'text', 'custom_encoding', tr("Custom default encoding(if set, it'll be the default):"), None),
     ])
