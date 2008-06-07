@@ -30,6 +30,7 @@ class LexerFactory(Mixin.Mixin):
 
     lexers = [] #(name, filewildchar, stxfile, lexerclass)
     lexnames = []
+    lexshownames = []
 
     def __init__(self, mainframe):
         self.initmixin()
@@ -41,14 +42,14 @@ class LexerFactory(Mixin.Mixin):
         #@add_lexer name, filewildchar, stxfile, lexerclass
         self.callplugin_once('add_lexer', LexerFactory.lexers)
 
-        self.lexers.sort()
+        self.lexers.sort(lambda x, y: cmp(x[1].lower(), y[1].lower()))
         s = []
         for name, filewildchar, syntaxtype, stxfile, lexerclass in self.lexers:
             lexobj = lexerclass(name, filewildchar, syntaxtype, stxfile)
             self.lexobjs.append(lexobj)
-            LexerFactory.lexnames.append(name)
+            n = filewildchar.split('|', 1)[0]
+            LexerFactory.lexnames.append((n, name))
             s.append(lexobj.getFilewildchar())
-        s.sort(lambda x, y: cmp(x.lower(), y.lower()))
         self.mainframe.filewildchar.extend(s)
 
     def reset(self):
@@ -59,17 +60,33 @@ class LexerFactory(Mixin.Mixin):
         return self.lexobjs
 
     def getDefaultLexer(self):
-        try:
-            obj = self.lexobjs[self.lexnames.index(self.pref.default_lexer)]
-        except:
+        obj = None
+        for i, v in self.lexnames:
+            n, name = v
+            if name == self.pref.default_lexer:
+                obj = self.lexobjs[i]
+                break
+        
+        if not obj:
             obj = self.lexobjs[self.lexnames.index('text')]
             self.pref.default_lexer = 'text'
             self.pref.save()
+
         return obj
 
     def getNamedLexer(self, name):
-        try:
-            obj = self.lexobjs[self.lexnames.index(name)]
-        except:
-            obj = None
+        obj = None
+        for i, v in enumerate(self.lexnames):
+            n, name = v
+            if name == self.pref.default_lexer:
+                obj = self.lexobjs[i]
+                break
         return obj
+    
+    def getLexerNames(self):
+        s = []
+        for v in self.lexnames:
+            n, name = v
+            s.append(n)
+        s.sort(lambda x, y: cmp(x.lower(), y.lower()))
+        return s

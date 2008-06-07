@@ -3876,13 +3876,13 @@ def add_lexer(lexer):
             wx.stc.STC_LEX_RUBY, 'ruby.stx', LexerClass1.RubyLexer),
         (LexerClass1.PerlLexer.metaname, 'Perl|*.pl',
             wx.stc.STC_LEX_PERL, 'perl.stx', LexerClass1.PerlLexer),
-        (LexerClass1.CSSLexer.metaname, 'Cascaded Style Sheet|*.css',
+        (LexerClass1.CSSLexer.metaname, 'CSS|*.css',
             wx.stc.STC_LEX_CSS, 'css.stx', LexerClass1.CSSLexer),
         (LexerClass1.JSLexer.metaname, 'JavaScript|*.js',
             wx.stc.STC_LEX_CPP, 'js.stx', LexerClass1.JSLexer),
         (LexerClass1.PHPLexer.metaname, 'PHP|*.php3;*.phtml;*.php',
             wx.stc.STC_LEX_HTML, 'php.stx', LexerClass1.PHPLexer),
-        (LexerClass1.ASPLexer.metaname, 'Active Server Pages|*.asp',
+        (LexerClass1.ASPLexer.metaname, 'ASP|*.asp',
             wx.stc.STC_LEX_HTML, 'asp.stx', LexerClass1.ASPLexer),
         (LexerRst.RstLexer.metaname, 'reStructuredText|*.rst',
             wx.stc.STC_LEX_CONTAINER, 'rst.stx', LexerRst.RstLexer),
@@ -3903,10 +3903,10 @@ def add_new_files(new_files):
         ('Java', LexerClass1.JavaLexer.metaname),
         ('Ruby', LexerClass1.RubyLexer.metaname),
         ('Perl', LexerClass1.PerlLexer.metaname),
-        ('Cascaded Style Sheets', LexerClass1.CSSLexer.metaname),
+        ('CSS', LexerClass1.CSSLexer.metaname),
         ('JavaScript', LexerClass1.JSLexer.metaname),
         ('PHP', LexerClass1.PHPLexer.metaname),
-        ('Active Server Pages', LexerClass1.ASPLexer.metaname),
+        ('ASP', LexerClass1.ASPLexer.metaname),
         ('reStructuredText', LexerRst.RstLexer.metaname),
         ('Lua', LexerClass1.LuaLexer.metaname),
         ('Slice', LexerClass1.SliceLexer.metaname),
@@ -4600,10 +4600,10 @@ import os
 from modules import Mixin
 from modules import common
 from modules import dict4ini
+from modules import Globals
 from LexerFactory import LexerFactory
 
 def call_lexer(win, oldfilename, filename, language):
-    from modules import Globals
 
     lexer_obj = None
     flag = False
@@ -4650,7 +4650,7 @@ def add_mainframe_menu(menulist):
 Mixin.setPlugin('mainframe', 'add_menu', add_mainframe_menu)
 
 def OnDocumentSyntaxHighlight(win, event):
-    items = [lexer.name for lexer in win.lexers.lexobjs]
+    items = win.lexers.getLexerNames()
     dlg = wx.SingleChoiceDialog(win, tr('Select a syntax highlight:'), tr('Syntax Highlight'), items, wx.CHOICEDLG_STYLE)
     if dlg.ShowModal() == wx.ID_OK:
         lexer = win.lexers.lexobjs[dlg.GetSelection()]
@@ -6843,7 +6843,7 @@ Mixin.setPlugin('preference', 'init', pref_init)
 
 def add_pref(preflist):
     preflist.extend([
-        (tr('Document'), 180, 'check', 'auto_todo', tr('Autoshow TODO window after a file with a TODO tag was opened'), None),
+        (tr('Document'), 180, 'check', 'auto_todo', tr('Autoshow TODO window after a file with a TODO tag is opened'), None),
     ])
 Mixin.setPlugin('preference', 'add_pref', add_pref)
 

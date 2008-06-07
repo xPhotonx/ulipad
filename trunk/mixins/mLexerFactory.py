@@ -28,10 +28,10 @@ import os
 from modules import Mixin
 from modules import common
 from modules import dict4ini
+from modules import Globals
 from LexerFactory import LexerFactory
 
 def call_lexer(win, oldfilename, filename, language):
-    from modules import Globals
     
 #    if oldfilename == filename and filename:
 #        return
@@ -89,7 +89,8 @@ def add_mainframe_menu(menulist):
 Mixin.setPlugin('mainframe', 'add_menu', add_mainframe_menu)
 
 def OnDocumentSyntaxHighlight(win, event):
-    items = [lexer.name for lexer in win.lexers.lexobjs]
+#    items = [lexer.name for lexer in win.lexers.lexobjs]
+    items = win.lexers.getLexerNames()
     dlg = wx.SingleChoiceDialog(win, tr('Select a syntax highlight:'), tr('Syntax Highlight'), items, wx.CHOICEDLG_STYLE)
     if dlg.ShowModal() == wx.ID_OK:
         lexer = win.lexers.lexobjs[dlg.GetSelection()]
