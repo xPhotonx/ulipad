@@ -8,7 +8,7 @@
 : BLOG: http://www.donews.net/limodou
 : Copyright: GPL
 
-Contents ..:: CONTENTS
+.. contents:: Content
 
 (Note: translated from Chinese Simplified by translate.google.com.  Will be improved over time.)
 
