@@ -164,7 +164,7 @@ def getEndOfLineCharacter(character):
 
 def add_pref(preflist):
     preflist.extend([
-        (tr('Document')+'/'+tr('Edit'), 180, 'check', 'edit_linestrip', tr('Strip the line ending when saving'), eolmess)
+        (tr('Document')+'/'+tr('Edit'), 180, 'check', 'edit_linestrip', tr('Strip line ending at file saving'), eolmess)
     ])
 Mixin.setPlugin('preference', 'add_pref', add_pref)
 

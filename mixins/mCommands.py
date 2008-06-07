@@ -93,7 +93,7 @@ Mixin.setPlugin('preference', 'init', pref_init)
 def add_pref(preflist):
     preflist.extend([
         (tr('Commands'), 100, 'check', 'commands_impact', tr('Enable commands search impact mode'), None),
-        (tr('Commands'), 110, 'check', 'commands_autoclose', tr('Autoclose commands search window after executing a command'), None),
+        (tr('Commands'), 110, 'check', 'commands_autoclose', tr('Close commands search window after command executed'), None),
     ])
 Mixin.setPlugin('preference', 'add_pref', add_pref)
 

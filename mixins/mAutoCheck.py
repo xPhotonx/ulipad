@@ -33,7 +33,7 @@ from modules import Globals
 def add_pref(preflist):
     preflist.extend([
         (tr('Document')+'/'+tr('Back-end'), 110, 'check', 'auto_check', tr('Autocheck if some opened files were modified by others'), None),
-        (tr('Document')+'/'+tr('Back-end'), 120, 'check', 'auto_check_confirm', tr('Require confirmation before a file is autoreloaded'), None)
+        (tr('Document')+'/'+tr('Back-end'), 120, 'check', 'auto_check_confirm', tr('Confirm file reload'), None)
     ])
 Mixin.setPlugin('preference', 'add_pref', add_pref)
 
