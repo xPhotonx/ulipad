@@ -121,7 +121,7 @@ Mixin.setPlugin('preference', 'init', pref_init)
 tab_edit = tr('Document')+'/'+tr('Edit')
 def add_pref(preflist):
     preflist.extend([
-        (tr('Document'), 110, 'num', 'tabwidth', tr('Tab width'), None),
+        (tr('Document'), 110, 'num', 'tabwidth', tr('Tab width in spaces:'), None),
         (tab_edit, 160, 'check', 'show_comment_chars_dialog', tr('Show comment character dialog when adding comment'), None),
     ])
 Mixin.setPlugin('preference', 'add_pref', add_pref)
