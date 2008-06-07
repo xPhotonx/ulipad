@@ -32,14 +32,14 @@ def pref_init(pref):
 Mixin.setPlugin('preference', 'init', pref_init)
 
 encodings = [common.defaultencoding]
-if 'UTF-8' not in encodings:
+if 'UTF-8' not in encodings and 'UTF8' not in encodings:
     encodings.append('UTF-8')
 
 def add_pref(preflist):
     preflist.extend([
         (tr('General'), 120, 'check', 'select_encoding', tr('Show encoding dialog at file opening and at file saving'), None),
         (tr('Document'), 190, 'choice', 'default_encoding', tr('Default document encoding:'), encodings),
-        (tr('Document'), 191, 'text', 'custom_encoding', tr("Custom default encoding(if set, it'll be the default):"), None),
+        (tr('Document'), 191, 'text', 'custom_encoding', tr("Set custom encoding to be default:"), None),
     ])
 Mixin.setPlugin('preference', 'add_pref', add_pref)
 

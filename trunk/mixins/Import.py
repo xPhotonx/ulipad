@@ -1143,7 +1143,7 @@ import wx
 from modules import Mixin
 from modules import common
 
-eolmess = [tr(r"Unix Mode ('\n')"), tr(r"DOS/Windows Mode ('\r\n')"), tr(r"Mac Mode ('\r')")]
+eolmess = [tr(r"Unix mode (\n)"), tr(r"DOS/Windows mode (\r\n)"), tr(r"Mac mode (\r)")]
 
 def beforeinit(win):
     win.lineendingsaremixed = False
@@ -1388,7 +1388,7 @@ def add_pref(preflist):
         (tab_startup, 120, 'check', 'startup_show_indent_guide', tr('Make indentation guides visible at startup'), None),
         (tab_startup, 130, 'check', 'startup_show_longline', tr('Make long-line indicator visible at startup'), None),
         (tab_startup, 140, 'check', 'startup_show_linenumber', tr('Show line numbers at startup'), None),
-        (tr('Document'), 100, 'num', 'edge_column_width', tr('Long line indicator column'), None),
+        (tr('Document'), 100, 'num', 'edge_column_width', tr('Long-line indicator column position:'), None),
     ])
 Mixin.setPlugin('preference', 'add_pref', add_pref)
 
@@ -1569,7 +1569,7 @@ Mixin.setPlugin('preference', 'init', pref_init)
 tab_edit = tr('Document')+'/'+tr('Edit')
 def add_pref(preflist):
     preflist.extend([
-        (tr('Document'), 110, 'num', 'tabwidth', tr('Tab width'), None),
+        (tr('Document'), 110, 'num', 'tabwidth', tr('Tab width in spaces:'), None),
         (tab_edit, 160, 'check', 'show_comment_chars_dialog', tr('Show comment character dialog when adding comment'), None),
     ])
 Mixin.setPlugin('preference', 'add_pref', add_pref)
@@ -4464,14 +4464,14 @@ def pref_init(pref):
 Mixin.setPlugin('preference', 'init', pref_init)
 
 encodings = [common.defaultencoding]
-if 'UTF-8' not in encodings:
+if 'UTF-8' not in encodings and 'UTF8' not in encodings:
     encodings.append('UTF-8')
 
 def add_pref(preflist):
     preflist.extend([
         (tr('General'), 120, 'check', 'select_encoding', tr('Show encoding dialog at file opening and at file saving'), None),
         (tr('Document'), 190, 'choice', 'default_encoding', tr('Default document encoding:'), encodings),
-        (tr('Document'), 191, 'text', 'custom_encoding', tr("Custom default encoding(if set, it'll be the default):"), None),
+        (tr('Document'), 191, 'text', 'custom_encoding', tr("Set custom encoding to be default:"), None),
     ])
 Mixin.setPlugin('preference', 'add_pref', add_pref)
 
@@ -7821,8 +7821,8 @@ def init(pref):
 Mixin.setPlugin('preference', 'init', init)
 
 preflist = [
-        (tr('Python'), 160, 'check', 'auto_py_check', tr('Check syntax for style errors at file saving'), None),
-        (tr('Python'), 170, 'check', 'auto_py_pep8_check', tr('Check syntax for PEP8-styles at python program run'), None),
+        (tr('Python'), 160, 'check', 'auto_py_check', tr('Check syntax errors at file saving'), None),
+        (tr('Python'), 170, 'check', 'auto_py_pep8_check', tr('Check syntax for PEP8-style at python program run'), None),
 ]
 Mixin.setMixin('preference', 'preflist', preflist)
 

@@ -25,7 +25,7 @@ import wx
 from modules import Mixin
 from modules import common
 
-eolmess = [tr(r"Unix Mode ('\n')"), tr(r"DOS/Windows Mode ('\r\n')"), tr(r"Mac Mode ('\r')")]
+eolmess = [tr(r"Unix mode (\n)"), tr(r"DOS/Windows mode (\r\n)"), tr(r"Mac mode (\r)")]
 
 def beforeinit(win):
     win.lineendingsaremixed = False
