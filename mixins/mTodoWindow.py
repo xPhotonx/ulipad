@@ -51,7 +51,7 @@ Mixin.setPlugin('preference', 'init', pref_init)
 
 def add_pref(preflist):
     preflist.extend([
-        (tr('Document'), 180, 'check', 'auto_todo', tr('Autoshow TODO window when opening file containing a TODO'), None),
+        (tr('Document'), 180, 'check', 'auto_todo', tr('Autoshow TODO window for an opened file with a TODO tag'), None),
     ])
 Mixin.setPlugin('preference', 'add_pref', add_pref)
 

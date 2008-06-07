@@ -57,7 +57,7 @@ Mixin.setPlugin('preference', 'init', pref_init)
 
 def add_pref(preflist):
     preflist.extend([
-        (tr('General'), 170, 'check', 'clear_message', tr('Autoclear message window content when program running'), None)
+        (tr('General'), 170, 'check', 'clear_message', tr('Autoclear message window content at program run'), None)
     ])
 Mixin.setPlugin('preference', 'add_pref', add_pref)
 
