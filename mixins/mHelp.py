@@ -44,12 +44,12 @@ class AboutDialog(wx.Dialog):
 #        self.SetFont(wx.Font(12, wx.SWISS, wx.NORMAL, wx.NORMAL, False))
 #
         box = ui.VBox(padding=6, namebinding='widget').create(self).auto_layout()
-        box.add(ui.Label(tr('UliPad Version %s') % Version.version), name='version', flag=wx.ALIGN_CENTER|wx.ALL)
+        box.add(ui.Label(tr('UliPad version %s') % Version.version), name='version', flag=wx.ALIGN_CENTER|wx.ALL)
         font = self.version.GetFont()
         font.SetPointSize(20)
         self.version.SetFont(font)
         box.add(ui.Label(tr('Author: %s (%s)') % (author, email)))
-        box.add(ui.Label(tr('If you have any question please contact me !')))
+        box.add(ui.Label(tr('If you have any questions, contact me.')))
 
         self.ID_HOMEPAGE = wx.NewId()
         self.homepage = HyperLinkCtrl(self, self.ID_HOMEPAGE, "The UliPad project homepage", URL=homepage)
