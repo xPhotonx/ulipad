@@ -44,7 +44,7 @@ class AboutDialog(wx.Dialog):
 #        self.SetFont(wx.Font(12, wx.SWISS, wx.NORMAL, wx.NORMAL, False))
 #
         box = ui.VBox(padding=6, namebinding='widget').create(self).auto_layout()
-        box.add(ui.Label(tr('UliPad version %s') % Version.version), name='version', flag=wx.ALIGN_CENTER|wx.ALL)
+        box.add(ui.Label(tr('UliPad %s') % Version.version), name='version', flag=wx.ALIGN_CENTER|wx.ALL)
         font = self.version.GetFont()
         font.SetPointSize(20)
         self.version.SetFont(font)
