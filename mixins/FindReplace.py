@@ -138,8 +138,11 @@ class Finder:
         case = 0
         if not self.matchcase:
             case = re.IGNORECASE
-
-        re_search = re.compile(getRawText(self.findtext), case | re.MULTILINE)
+        if self.wholeword:
+            ftext = r'\b'+self.findtext+r'\b'
+        else:
+            ftext = self.findtext
+        re_search = re.compile(getRawText(ftext), case | re.MULTILINE)
         matchedtext = re_search.search(self.win.getRawText(), start, end)
         if matchedtext == None:
             return None
