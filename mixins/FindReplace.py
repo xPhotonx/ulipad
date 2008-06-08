@@ -292,10 +292,10 @@ class FindPanel(wx.Panel):
         btn = FlatButtons.FlatBitmapButton(self, -1, common.getpngimage('images/prev.gif'))
         btn.SetToolTip(wx.ToolTip(tr("Prev")))
         box.add(btn).bind('click', self.OnPrev)
-        box.add(ui.Check(False, tr("Match Case")), name="chkCase")
-        box.add(ui.Check(False, tr("Whole Word")), name="chkWhole")
-        box.add(ui.Check(False, tr("Regular Expression")), name="chkRe")
-        box.add(ui.Check(False, tr("Wrap Search")), name="chkWrap")
+        box.add(ui.Check(False, tr("Match case")), name="chkCase")
+        box.add(ui.Check(False, tr("Whole word")), name="chkWhole")
+        box.add(ui.Check(False, tr("Regular expression")), name="chkRe")
+        box.add(ui.Check(False, tr("Wrap search")), name="chkWrap")
 
         #add replace widgets
         if replace:
@@ -311,10 +311,10 @@ class FindPanel(wx.Panel):
             box.add(ui.ComboBox, name='replacetext').bind('enter', self.OnReplace1)\
                 .bind(wx.EVT_KEY_DOWN, self.OnKeyDown)
             box.add(ui.Button(tr('Replace'))).bind('click', self.OnReplace)
-            box.add(ui.Button(tr('Replace All'))).bind('click', self.OnReplaceAll)
+            box.add(ui.Button(tr('Replace all'))).bind('click', self.OnReplaceAll)
             box.add(ui.Button(tr('Count'))).bind('click', self.OnCount)
-            box.add(ui.Radio(False, tr('Whole File'), style=wx.RB_GROUP), name='rdoWhole')
-            box.add(ui.Radio(False, tr('Selected Text')), name='rdoSelection')
+            box.add(ui.Radio(False, tr('Whole file'), style=wx.RB_GROUP), name='rdoWhole')
+            box.add(ui.Radio(False, tr('Selected text')), name='rdoSelection')
 
             self.parent.sizer.layout()
 

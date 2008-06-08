@@ -61,7 +61,7 @@ class LexerFactory(Mixin.Mixin):
 
     def getDefaultLexer(self):
         obj = None
-        for i, v in self.lexnames:
+        for i, v in enumerate(self.lexnames):
             n, name = v
             if name == self.pref.default_lexer:
                 obj = self.lexobjs[i]

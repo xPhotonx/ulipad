@@ -57,7 +57,7 @@ Mixin.setPlugin('preference', 'init', pref_init)
 
 def add_pref(preflist):
     preflist.extend([
-        (tr('General'), 170, 'check', 'clear_message', tr('Autoclear message window content at program run'), None)
+        (tr('General'), 170, 'check', 'clear_message', tr('Autoclear messages window content at program run'), None)
     ])
 Mixin.setPlugin('preference', 'add_pref', add_pref)
 
@@ -65,7 +65,7 @@ def add_mainframe_menu(menulist):
     menulist.extend([
         ('IDM_EDIT',
         [
-            (291, 'IDM_EDIT_CLEARMESSAGE', tr('Clear Message Window') + '\tShift+F5', wx.ITEM_NORMAL, 'OnEditClearMessage', tr('Clears content of message window.')),
+            (291, 'IDM_EDIT_CLEARMESSAGE', tr('Clear Messages Window') + '\tShift+F5', wx.ITEM_NORMAL, 'OnEditClearMessage', tr('Clears content of messages window.')),
         ]),
     ])
 Mixin.setPlugin('mainframe', 'add_menu', add_mainframe_menu)

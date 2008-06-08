@@ -66,7 +66,7 @@ class Ftp(wx.Panel, Mixin):
         box1.Add(self.cmbSite, 1, wx.ALIGN_CENTER_VERTICAL|wx.RIGHT, 2)
 
         #username
-        obj = wx.StaticText(self, -1, tr('User Name:'))
+        obj = wx.StaticText(self, -1, tr('Username:'))
         box1.Add(obj, 0, wx.ALIGN_CENTER_VERTICAL|wx.LEFT|wx.RIGHT, 2)
         self.txtUser = wx.TextCtrl(self, -1, '', size=(80, 20))
         box1.Add(self.txtUser, 0, wx.ALIGN_CENTER_VERTICAL|wx.RIGHT, 2)
@@ -79,12 +79,12 @@ class Ftp(wx.Panel, Mixin):
 
         #connect button
         self.ID_CONNECT = wx.NewId()
-        self.btnConnect = wx.Button(self, self.ID_CONNECT, tr('Connect'), size=(60, -1))
+        self.btnConnect = wx.Button(self, self.ID_CONNECT, tr('Connect'))
         box1.Add(self.btnConnect, 0, wx.ALIGN_CENTER_VERTICAL|wx.RIGHT, 2)
 
         #disconnect button
         self.ID_DISCONNECT = wx.NewId()
-        self.btnDisconnect = wx.Button(self, self.ID_DISCONNECT, tr('Disconnect'), size=(70, -1))
+        self.btnDisconnect = wx.Button(self, self.ID_DISCONNECT, tr('Disconnect'))
         box1.Add(self.btnDisconnect, 0, wx.ALIGN_CENTER_VERTICAL|wx.RIGHT, 2)
 
         box.Add(box1, 0, wx.ALL|wx.EXPAND, 3)
@@ -97,23 +97,23 @@ class Ftp(wx.Panel, Mixin):
         #encoding
         obj = wx.StaticText(self, -1, tr('Encoding:'))
         box2.Add(obj, 0, wx.ALIGN_CENTER_VERTICAL|wx.LEFT|wx.RIGHT, 2)
-        self.txtEncoding = wx.ComboBox(self, -1, "Default", choices=['Default', 'UTF-8', 'Custom'], size=(80, 20), style=wx.CB_READONLY)
+        self.txtEncoding = wx.ComboBox(self, -1, "Default", choices=['Default', 'UTF-8', 'Custom'], style=wx.CB_READONLY)
         box2.Add(self.txtEncoding, 0, wx.ALIGN_CENTER_VERTICAL|wx.RIGHT, 2)
 
         #remote path
-        obj = wx.StaticText(self, -1, tr('Remote Path:'))
+        obj = wx.StaticText(self, -1, tr('Remote path:'))
         box2.Add(obj, 0, wx.ALIGN_CENTER_VERTICAL|wx.LEFT|wx.RIGHT, 2)
         self.txtPath = wx.ComboBox(self, -1, "", choices=self.mainframe.pref.remote_paths, size=(150, 20))
         box2.Add(self.txtPath, 1, wx.ALIGN_CENTER_VERTICAL|wx.RIGHT, 2)
 
         #refresh button
         self.ID_REFRESH = wx.NewId()
-        self.btnRefresh = wx.Button(self, self.ID_REFRESH, tr('Refresh'), size=(60, -1))
+        self.btnRefresh = wx.Button(self, self.ID_REFRESH, tr('Refresh'))
         box2.Add(self.btnRefresh, 0, wx.ALIGN_CENTER_VERTICAL|wx.RIGHT, 2)
 
         #site button
         self.ID_SITE = wx.NewId()
-        self.btnSite = wx.Button(self, self.ID_SITE, tr('Site Set'), size=(60, -1))
+        self.btnSite = wx.Button(self, self.ID_SITE, tr('Site Setting'))
         box2.Add(self.btnSite, 0, wx.ALIGN_CENTER_VERTICAL|wx.RIGHT, 2)
 
         box.Add(box2, 0, wx.ALL|wx.EXPAND, 1)

@@ -35,7 +35,7 @@ def add_mainframe_menu(menulist):
             (110, 'IDM_WINDOW_BOTTOM', tr('Bottom Window')+'\tAlt+X', wx.ITEM_CHECK, 'OnWindowBottom', tr('Shows or hides the bottom Window')),
             (120, '-', '', wx.ITEM_SEPARATOR, '', ''),
             (130, 'IDM_WINDOW_SHELL', tr('Open Shell Window'), wx.ITEM_NORMAL, 'OnWindowShell', tr('Opens shell window.')),
-            (140, 'IDM_WINDOW_MESSAGE', tr('Open Message Window'), wx.ITEM_NORMAL, 'OnWindowMessage', tr('Opens message window.')),
+            (140, 'IDM_WINDOW_MESSAGE', tr('Open Messages Window'), wx.ITEM_NORMAL, 'OnWindowMessage', tr('Opens messages window.')),
         ]),
         ('IDM_EDIT',
         [
@@ -102,12 +102,12 @@ def createShellWindow(win):
 Mixin.setMixin('mainframe', 'createShellWindow', createShellWindow)
 
 def createMessageWindow(win):
-    if not win.panel.getPage(tr('Message')):
+    if not win.panel.getPage(tr('Messages')):
         from MessageWindow import MessageWindow
 
         page = MessageWindow(win.panel.createNotebook('bottom'), win)
-        win.panel.addPage('bottom', page, tr('Message'))
-    win.messagewindow = win.panel.getPage(tr('Message'))
+        win.panel.addPage('bottom', page, tr('Messages'))
+    win.messagewindow = win.panel.getPage(tr('Messages'))
 Mixin.setMixin('mainframe', 'createMessageWindow', createMessageWindow)
 
 def OnWindowShell(win, event):
@@ -117,14 +117,14 @@ Mixin.setMixin('mainframe', 'OnWindowShell', OnWindowShell)
 
 def OnWindowMessage(win, event):
     win.createMessageWindow()
-    win.panel.showPage(tr('Message'))
+    win.panel.showPage(tr('Messages'))
 Mixin.setMixin('mainframe', 'OnWindowMessage', OnWindowMessage)
 
 def add_editor_menu(popmenulist):
     popmenulist.extend([ (None,
         [
             (120, 'IDPM_SHELLWINDOW', tr('Open Shell Window'), wx.ITEM_NORMAL, 'OnShellWindow', tr('Opens shell window.')),
-            (130, 'IDPM_MESSAGEWINDOW', tr('Open Message Window'), wx.ITEM_NORMAL, 'OnMessageWindow', tr('Opens message window.')),
+            (130, 'IDPM_MESSAGEWINDOW', tr('Open Messages Window'), wx.ITEM_NORMAL, 'OnMessageWindow', tr('Opens messages window.')),
         ]),
     ])
 Mixin.setPlugin('notebook', 'add_menu', add_editor_menu)
@@ -136,7 +136,7 @@ Mixin.setMixin('notebook', 'OnShellWindow', OnShellWindow)
 
 def OnMessageWindow(win, event):
     win.mainframe.createMessageWindow()
-    win.panel.showPage(tr('Message'))
+    win.panel.showPage(tr('Messages'))
 Mixin.setMixin('notebook', 'OnMessageWindow', OnMessageWindow)
 
 def OnEditClearShell(win, event):

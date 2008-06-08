@@ -44,7 +44,7 @@ Mixin.setPlugin('mainframe', 'afterinit', afterinit)
 def on_mainframe_updateui(win, event):
     eid = event.GetId()
     if eid == win.IDM_WINDOW_DIRBROWSER:
-        page = win.panel.getPage(tr('Dir Browser'))
+        page = win.panel.getPage(tr('Directory browser'))
         event.Check(bool(page))
 Mixin.setPlugin('mainframe', 'on_update_ui', on_mainframe_updateui)
 
@@ -77,7 +77,7 @@ Mixin.setPlugin('mainframe', 'afterinit', afterinit)
 
 def createDirBrowserWindow(win, dirs=None):
     page = None
-    if not win.panel.getPage(tr('Dir Browser')):
+    if not win.panel.getPage(tr('Directory browser')):
         from DirBrowser import DirBrowser
 
         if not dirs:
@@ -88,12 +88,12 @@ def createDirBrowserWindow(win, dirs=None):
 Mixin.setMixin('mainframe', 'createDirBrowserWindow', createDirBrowserWindow)
 
 def toggleDirBrowserWindow(win):
-    page = win.panel.getPage(tr('Dir Browser'))
+    page = win.panel.getPage(tr('Directory browser'))
     if page:
-        win.panel.closePage(tr('Dir Browser'))
+        win.panel.closePage(tr('Directory browser'))
     else:
         if win.createDirBrowserWindow():
-            win.panel.showPage(tr('Dir Browser'))
+            win.panel.showPage(tr('Directory browser'))
 Mixin.setMixin('mainframe', 'toggleDirBrowserWindow', toggleDirBrowserWindow)
 
 def OnWindowDirBrowser(win, event):
@@ -122,7 +122,7 @@ def add_pref(preflist):
     preflist.extend([
 #        (tr('General'), 100, 'num', 'recent_dir_paths_num', tr('Max number of recent browse directories:'), None),
         (tr('General'), 150, 'check', 'open_last_dir_as_startup', tr('Open last directory at startup'), None),
-        (tr('General'), 151, 'check', 'open_project_setting_dlg', tr('Automatically open Project Settings Dialog when adding directory to Directory Browser Window'), None),
+        (tr('General'), 151, 'check', 'open_project_setting_dlg', tr('Automatically open Project Settings dialog when adding directory to Directory Browser window'), None),
         (tr('General'), 160, 'openfile', 'command_line', tr('Command line of Open Command Window Here'), {'span':True}),
     ])
 Mixin.setPlugin('preference', 'add_pref', add_pref)
