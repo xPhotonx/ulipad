@@ -447,7 +447,7 @@ class FindPanel(wx.Panel):
         self.chkWhole.SetValue(self.finder.wholeword)
 #        self.obj_ID_DIRECTION.SetSelection(self.finder.direction)
 #        self.obj_ID_DIRECTION.Enable(not self.finder.regular)
-        self.chkWhole.Enable(not self.chkRe.GetValue())
+#        self.chkWhole.Enable(not self.chkRe.GetValue())
         if self.is_replace_show():
             self.replacetext.SetValue(self.finder.replacetext)
 
