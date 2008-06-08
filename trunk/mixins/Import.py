@@ -3084,12 +3084,12 @@ class AboutDialog(wx.Dialog):
         wx.Dialog.__init__(self, parent, -1, size = (400, 340), style = wx.DEFAULT_DIALOG_STYLE, title = tr('About'))
 
         box = ui.VBox(padding=6, namebinding='widget').create(self).auto_layout()
-        box.add(ui.Label(tr('UliPad Version %s') % Version.version), name='version', flag=wx.ALIGN_CENTER|wx.ALL)
+        box.add(ui.Label(tr('UliPad version %s') % Version.version), name='version', flag=wx.ALIGN_CENTER|wx.ALL)
         font = self.version.GetFont()
         font.SetPointSize(20)
         self.version.SetFont(font)
         box.add(ui.Label(tr('Author: %s (%s)') % (author, email)))
-        box.add(ui.Label(tr('If you have any question please contact me !')))
+        box.add(ui.Label(tr('If you have any questions, please contact me.')))
 
         self.ID_HOMEPAGE = wx.NewId()
         self.homepage = HyperLinkCtrl(self, self.ID_HOMEPAGE, "The UliPad project homepage", URL=homepage)
@@ -4759,7 +4759,7 @@ def add_mainframe_menu(menulist):
         ('IDM_FILE_PRINT_MENU',
         [
             (100, 'wx.ID_PRINT_SETUP', tr('Page Setup...'), wx.ITEM_NORMAL, 'OnFilePageSetup', tr('Set page layout and options.')),
-            (105, 'IDM_FILE_PRINT_LINENUMBER', tr('Print Line Number'), wx.ITEM_CHECK, 'OnFilePrintLineNumber', tr('Print line number.')),
+            (105, 'IDM_FILE_PRINT_LINENUMBER', tr('Print Line Numbers'), wx.ITEM_CHECK, 'OnFilePrintLineNumber', tr('Print line numbers.')),
             (120, 'wx.ID_PREVIEW', tr('Print Preview...'), wx.ITEM_NORMAL, 'OnFilePrintPreview', tr('Displays the document on the screen as it would appear printed.')),
             (130, 'wx.ID_PRINT', tr('Print'), wx.ITEM_NORMAL, 'OnFilePrint', tr('Prints a document.')),
             (140, 'IDM_FILE_HTML', tr('HTML File'), wx.ITEM_NORMAL, '', None),
@@ -5233,7 +5233,7 @@ def add_mainframe_menu(menulist):
             (110, 'IDM_WINDOW_BOTTOM', tr('Bottom Window')+'\tAlt+X', wx.ITEM_CHECK, 'OnWindowBottom', tr('Shows or hides the bottom Window')),
             (120, '-', '', wx.ITEM_SEPARATOR, '', ''),
             (130, 'IDM_WINDOW_SHELL', tr('Open Shell Window'), wx.ITEM_NORMAL, 'OnWindowShell', tr('Opens shell window.')),
-            (140, 'IDM_WINDOW_MESSAGE', tr('Open Message Window'), wx.ITEM_NORMAL, 'OnWindowMessage', tr('Opens message window.')),
+            (140, 'IDM_WINDOW_MESSAGE', tr('Open Messages Window'), wx.ITEM_NORMAL, 'OnWindowMessage', tr('Opens messages window.')),
         ]),
         ('IDM_EDIT',
         [
@@ -5296,12 +5296,12 @@ def createShellWindow(win):
 Mixin.setMixin('mainframe', 'createShellWindow', createShellWindow)
 
 def createMessageWindow(win):
-    if not win.panel.getPage(tr('Message')):
+    if not win.panel.getPage(tr('Messages')):
         from MessageWindow import MessageWindow
 
         page = MessageWindow(win.panel.createNotebook('bottom'), win)
-        win.panel.addPage('bottom', page, tr('Message'))
-    win.messagewindow = win.panel.getPage(tr('Message'))
+        win.panel.addPage('bottom', page, tr('Messages'))
+    win.messagewindow = win.panel.getPage(tr('Messages'))
 Mixin.setMixin('mainframe', 'createMessageWindow', createMessageWindow)
 
 def OnWindowShell(win, event):
@@ -5311,14 +5311,14 @@ Mixin.setMixin('mainframe', 'OnWindowShell', OnWindowShell)
 
 def OnWindowMessage(win, event):
     win.createMessageWindow()
-    win.panel.showPage(tr('Message'))
+    win.panel.showPage(tr('Messages'))
 Mixin.setMixin('mainframe', 'OnWindowMessage', OnWindowMessage)
 
 def add_editor_menu(popmenulist):
     popmenulist.extend([ (None,
         [
             (120, 'IDPM_SHELLWINDOW', tr('Open Shell Window'), wx.ITEM_NORMAL, 'OnShellWindow', tr('Opens shell window.')),
-            (130, 'IDPM_MESSAGEWINDOW', tr('Open Message Window'), wx.ITEM_NORMAL, 'OnMessageWindow', tr('Opens message window.')),
+            (130, 'IDPM_MESSAGEWINDOW', tr('Open Messages Window'), wx.ITEM_NORMAL, 'OnMessageWindow', tr('Opens messages window.')),
         ]),
     ])
 Mixin.setPlugin('notebook', 'add_menu', add_editor_menu)
@@ -5330,7 +5330,7 @@ Mixin.setMixin('notebook', 'OnShellWindow', OnShellWindow)
 
 def OnMessageWindow(win, event):
     win.mainframe.createMessageWindow()
-    win.panel.showPage(tr('Message'))
+    win.panel.showPage(tr('Messages'))
 Mixin.setMixin('notebook', 'OnMessageWindow', OnMessageWindow)
 
 def OnEditClearShell(win, event):
@@ -5993,7 +5993,7 @@ Mixin.setPlugin('mainframe', 'afterinit', afterinit)
 def on_mainframe_updateui(win, event):
     eid = event.GetId()
     if eid == win.IDM_WINDOW_DIRBROWSER:
-        page = win.panel.getPage(tr('Dir Browser'))
+        page = win.panel.getPage(tr('Directory browser'))
         event.Check(bool(page))
 Mixin.setPlugin('mainframe', 'on_update_ui', on_mainframe_updateui)
 
@@ -6026,7 +6026,7 @@ Mixin.setPlugin('mainframe', 'afterinit', afterinit)
 
 def createDirBrowserWindow(win, dirs=None):
     page = None
-    if not win.panel.getPage(tr('Dir Browser')):
+    if not win.panel.getPage(tr('Directory browser')):
         from DirBrowser import DirBrowser
 
         if not dirs:
@@ -6037,12 +6037,12 @@ def createDirBrowserWindow(win, dirs=None):
 Mixin.setMixin('mainframe', 'createDirBrowserWindow', createDirBrowserWindow)
 
 def toggleDirBrowserWindow(win):
-    page = win.panel.getPage(tr('Dir Browser'))
+    page = win.panel.getPage(tr('Directory browser'))
     if page:
-        win.panel.closePage(tr('Dir Browser'))
+        win.panel.closePage(tr('Directory browser'))
     else:
         if win.createDirBrowserWindow():
-            win.panel.showPage(tr('Dir Browser'))
+            win.panel.showPage(tr('Directory browser'))
 Mixin.setMixin('mainframe', 'toggleDirBrowserWindow', toggleDirBrowserWindow)
 
 def OnWindowDirBrowser(win, event):
@@ -6070,7 +6070,7 @@ Mixin.setPlugin('preference', 'init', pref_init)
 def add_pref(preflist):
     preflist.extend([
         (tr('General'), 150, 'check', 'open_last_dir_as_startup', tr('Open last directory at startup'), None),
-        (tr('General'), 151, 'check', 'open_project_setting_dlg', tr('Automatically open Project Settings Dialog when adding directory to Directory Browser Window'), None),
+        (tr('General'), 151, 'check', 'open_project_setting_dlg', tr('Automatically open Project Settings dialog when adding directory to Directory Browser window'), None),
         (tr('General'), 160, 'openfile', 'command_line', tr('Command line of Open Command Window Here'), {'span':True}),
     ])
 Mixin.setPlugin('preference', 'add_pref', add_pref)
@@ -6601,7 +6601,7 @@ def add_mainframe_menu(menulist):
     menulist.extend([
         ('IDM_WINDOW',
         [
-            (200, 'IDM_WINDOW_SHARE', tr('Open Share Resource Window'), wx.ITEM_NORMAL, 'OnWindowShare', tr('Opens share resource window.'))
+            (200, 'IDM_WINDOW_SHARE', tr('Open Share Resources Window'), wx.ITEM_NORMAL, 'OnWindowShare', tr('Opens share resources window.'))
         ]),
     ])
 Mixin.setPlugin('mainframe', 'add_menu', add_mainframe_menu)
@@ -6609,7 +6609,7 @@ Mixin.setPlugin('mainframe', 'add_menu', add_mainframe_menu)
 def add_notebook_menu(popmenulist):
     popmenulist.extend([(None,
         [
-            (180, 'IDPM_SHAREWINDOW', tr('Open Share Resource Window'), wx.ITEM_NORMAL, 'OnShareWindow', tr('Opens share resource window.')),
+            (180, 'IDPM_SHAREWINDOW', tr('Open Share Resources Window'), wx.ITEM_NORMAL, 'OnShareWindow', tr('Opens share resources window.')),
         ]),
     ])
 Mixin.setPlugin('notebook', 'add_menu', add_notebook_menu)
@@ -6624,25 +6624,25 @@ Mixin.setPlugin('mainframe', 'afterinit', afterinit)
 
 
 def createShareWindow(win):
-    if not win.panel.getPage(tr('Share Resource')):
+    if not win.panel.getPage(tr('Share Resources')):
         from ShareWindow import ShareWindow
 
         page = ShareWindow(win.panel.createNotebook('left'), win)
-        win.panel.addPage('left', page, tr('Share Resource'))
+        win.panel.addPage('left', page, tr('Share Resources'))
 Mixin.setMixin('mainframe', 'createShareWindow', createShareWindow)
 
 def OnWindowShare(win, event):
     win.createShareWindow()
-    win.panel.showPage(tr('Share Resource'))
+    win.panel.showPage(tr('Share Resources'))
 Mixin.setMixin('mainframe', 'OnWindowShare', OnWindowShare)
 
 def OnShareWindow(win, event):
     win.mainframe.createShareWindow()
-    win.panel.showPage(tr('Share Resource'))
+    win.panel.showPage(tr('Share Resources'))
 Mixin.setMixin('notebook', 'OnShareWindow', OnShareWindow)
 
 def close_page(page, name):
-    if name == tr('Share Resource'):
+    if name == tr('Share Resources'):
         page.OnCloseWin()
 Mixin.setPlugin('notebook', 'close_page', close_page)
 
@@ -6674,7 +6674,7 @@ def add_pref(preflist):
     grid.add('', ui.Check(_get('use_proxy'), tr('Use a proxy')), name='use_proxy', span=True)
     grid.add(tr('IP address:'), ui.Text(_get('proxy')), name='proxy')
     grid.add(tr('Port number:'), ui.Int(_get('proxy_port')), name='proxy_port')
-    grid.add(tr('User name:'), ui.Text(_get('proxy_user')), name='proxy_user')
+    grid.add(tr('Username:'), ui.Text(_get('proxy_user')), name='proxy_user')
     grid.add(tr('Password:'), ui.Password(_get('proxy_password')), name='proxy_password')
     box.add(grid)
     preflist.extend([
@@ -6843,7 +6843,7 @@ Mixin.setPlugin('preference', 'init', pref_init)
 
 def add_pref(preflist):
     preflist.extend([
-        (tr('Document'), 180, 'check', 'auto_todo', tr('Autoshow TODO window after a file with a TODO tag is opened'), None),
+        (tr('Document'), 180, 'check', 'auto_todo', tr('Autoshow TODO window when a file with a TODO tag is opened'), None),
     ])
 Mixin.setPlugin('preference', 'add_pref', add_pref)
 
@@ -6967,7 +6967,7 @@ Mixin.setPlugin('preference', 'init', pref_init)
 
 def add_pref(preflist):
     preflist.extend([
-        (tr('General'), 170, 'check', 'clear_message', tr('Autoclear message window content at program run'), None)
+        (tr('General'), 170, 'check', 'clear_message', tr('Autoclear messages window content at program run'), None)
     ])
 Mixin.setPlugin('preference', 'add_pref', add_pref)
 
@@ -6975,7 +6975,7 @@ def add_mainframe_menu(menulist):
     menulist.extend([
         ('IDM_EDIT',
         [
-            (291, 'IDM_EDIT_CLEARMESSAGE', tr('Clear Message Window') + '\tShift+F5', wx.ITEM_NORMAL, 'OnEditClearMessage', tr('Clears content of message window.')),
+            (291, 'IDM_EDIT_CLEARMESSAGE', tr('Clear Messages Window') + '\tShift+F5', wx.ITEM_NORMAL, 'OnEditClearMessage', tr('Clears content of messages window.')),
         ]),
     ])
 Mixin.setPlugin('mainframe', 'add_menu', add_mainframe_menu)
@@ -7940,7 +7940,7 @@ Mixin.setPlugin('preference', 'init', pref_init)
 
 def add_pref(preflist):
     preflist.extend([
-        (tr('Personal'), 100, 'text', 'personal_username', tr('User name'), None),
+        (tr('Personal'), 100, 'text', 'personal_username', tr('Username'), None),
     ])
 Mixin.setPlugin('preference', 'add_pref', add_pref)
 
@@ -8411,10 +8411,6 @@ from modules import common
 
 def add_mainframe_menu(menulist):
     menulist.extend([
-        ('IDM_TOOL',
-        [
-            (125, 'IDM_WINDOW_CODESNIPPET', tr('Code Snippets'), wx.ITEM_NORMAL, 'OnWindowCodeSnippet', tr('Opens code snippet window.'))
-        ]),
         ('IDM_WINDOW',
         [
             (151, 'IDM_WINDOW_CODESNIPPET', tr('Open Code Snippets Window'), wx.ITEM_NORMAL, 'OnWindowCodeSnippet', tr('Opens code snippets window.'))
@@ -8470,12 +8466,12 @@ def createCodeSnippetWindow(win):
     except:
         import elementtree.ElementTree
 
-    page = win.panel.getPage(tr('Code Snippet'))
+    page = win.panel.getPage(tr('Code Snippets'))
     if not page:
         from CodeSnippet import CodeSnippetWindow
 
         page = CodeSnippetWindow(win.panel.createNotebook('left'), win)
-        win.panel.addPage('left', page, tr('Code Snippet'))
+        win.panel.addPage('left', page, tr('Code Snippets'))
     return page
 Mixin.setMixin('mainframe', 'createCodeSnippetWindow', createCodeSnippetWindow)
 
@@ -8486,27 +8482,27 @@ Mixin.setPlugin('mainframe', 'afterinit', afterinit)
 def on_mainframe_updateui(win, event):
     eid = event.GetId()
     if eid == win.IDTM_SNIPPETWINDOW:
-        page = win.panel.getPage(tr('Code Snippet'))
+        page = win.panel.getPage(tr('Code Snippets'))
         event.Check(bool(page))
 Mixin.setPlugin('mainframe', 'on_update_ui', on_mainframe_updateui)
 
 def OnToolbarWindowCodeSnippet(win, event):
-    page = win.panel.getPage(tr('Code Snippet'))
+    page = win.panel.getPage(tr('Code Snippets'))
     if page:
-        win.panel.closePage(tr('Code Snippet'))
+        win.panel.closePage(tr('Code Snippets'))
     else:
         if win.createCodeSnippetWindow():
-            win.panel.showPage(tr('Code Snippet'))
+            win.panel.showPage(tr('Code Snippets'))
 Mixin.setMixin('mainframe', 'OnToolbarWindowCodeSnippet', OnToolbarWindowCodeSnippet)
 
 def OnWindowCodeSnippet(win, event):
     if win.createCodeSnippetWindow():
-        win.panel.showPage(tr('Code Snippet'))
+        win.panel.showPage(tr('Code Snippets'))
 Mixin.setMixin('mainframe', 'OnWindowCodeSnippet', OnWindowCodeSnippet)
 
 def OnCodeSnippetWindow(win, event):
     if win.mainframe.createCodeSnippetWindow():
-        win.panel.showPage(tr('Code Snippet'))
+        win.panel.showPage(tr('Code Snippets'))
 Mixin.setMixin('notebook', 'OnCodeSnippetWindow', OnCodeSnippetWindow)
 
 def close_page(page, name):
@@ -8521,7 +8517,7 @@ Mixin.setPlugin('notebook', 'close_page', close_page)
 def on_close(win, event):
     if event.CanVeto():
         win = Globals.mainframe
-        snippet = win.panel.getPage(tr('Code Snippet'))
+        snippet = win.panel.getPage(tr('Code Snippets'))
         if snippet:
             return not snippet.canClose()
 Mixin.setPlugin('mainframe', 'on_close', on_close)

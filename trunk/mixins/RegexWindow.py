@@ -38,7 +38,7 @@ class RegexWindow(wx.Panel):
         sizer1 = wx.BoxSizer(wx.HORIZONTAL)
         sizer.Add(sizer1, 0, wx.EXPAND|wx.ALL, 2)
         
-        regex_title = wx.StaticBox(self, -1, tr("Regular Expression"))
+        regex_title = wx.StaticBox(self, -1, tr("Regular expression"))
         box1 = wx.StaticBoxSizer(regex_title, wx.VERTICAL)
         self.text = wx.TextCtrl(self, -1, "", style=wx.TE_MULTILINE)
         box1.Add(self.text, 1, wx.EXPAND|wx.ALL, 2)

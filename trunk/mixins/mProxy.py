@@ -45,7 +45,7 @@ def add_pref(preflist):
     grid.add('', ui.Check(_get('use_proxy'), tr('Use a proxy')), name='use_proxy', span=True)
     grid.add(tr('IP address:'), ui.Text(_get('proxy')), name='proxy')
     grid.add(tr('Port number:'), ui.Int(_get('proxy_port')), name='proxy_port')
-    grid.add(tr('User name:'), ui.Text(_get('proxy_user')), name='proxy_user')
+    grid.add(tr('Username:'), ui.Text(_get('proxy_user')), name='proxy_user')
     grid.add(tr('Password:'), ui.Password(_get('proxy_password')), name='proxy_password')
     box.add(grid)
 #    preflist.extend([

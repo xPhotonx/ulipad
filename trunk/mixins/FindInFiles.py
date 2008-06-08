@@ -59,8 +59,8 @@ class FindInFiles(wx.Panel):
         h.add(ui.ComboBox(v, choices=self.pref.searchinfile_extlist), name='extns')\
             .bind('enter', self.OnKeyDown)
         h.add(ui.Check(self.pref.searchinfile_case, tr("Case sensitive")), name='cs')
-        h.add(ui.Check(self.pref.searchinfile_subdir, tr("Search Subdirectories")), name='ss')
-        h.add(ui.Check(self.pref.searchinfile_regular, tr("Regular Expression")), name='re')
+        h.add(ui.Check(self.pref.searchinfile_subdir, tr("Search subdirectories")), name='ss')
+        h.add(ui.Check(self.pref.searchinfile_regular, tr("Regular expression")), name='re')
         h.add(ui.Check(self.pref.searchinfile_onlyfilename, tr("Only show filename")), name='onlyfilename')
         box.add(h, flag=wx.EXPAND)
         box.add(ui.ListBox, name='results').bind(wx.EVT_LISTBOX_DCLICK, self.OpenFound)

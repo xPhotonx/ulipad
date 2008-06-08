@@ -49,7 +49,7 @@ class AboutDialog(wx.Dialog):
         font.SetPointSize(20)
         self.version.SetFont(font)
         box.add(ui.Label(tr('Author: %s (%s)') % (author, email)))
-        box.add(ui.Label(tr('If you have any questions, contact me.')))
+        box.add(ui.Label(tr('If you have any questions, please contact me.')))
 
         self.ID_HOMEPAGE = wx.NewId()
         self.homepage = HyperLinkCtrl(self, self.ID_HOMEPAGE, "The UliPad project homepage", URL=homepage)

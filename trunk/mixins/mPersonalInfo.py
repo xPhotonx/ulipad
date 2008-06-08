@@ -29,6 +29,6 @@ Mixin.setPlugin('preference', 'init', pref_init)
 
 def add_pref(preflist):
     preflist.extend([
-        (tr('Personal'), 100, 'text', 'personal_username', tr('User name'), None),
+        (tr('Personal'), 100, 'text', 'personal_username', tr('Username'), None),
     ])
 Mixin.setPlugin('preference', 'add_pref', add_pref)
