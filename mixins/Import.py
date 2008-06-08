@@ -3505,7 +3505,7 @@ def RunCommand(win, command, redirect=True, hide=False, input_decorator=None,
         input_appendtext = appendtext
     if redirect:
         win.createMessageWindow()
-        win.panel.showPage(tr('Message'))
+        win.panel.showPage(tr('Messages'))
         win.callplugin('start_run', win, win.messagewindow)
         win.messagewindow.SetReadOnly(0)
         win.messagewindow.callback = callback
@@ -4298,7 +4298,7 @@ def OnPythonDoctests(win, event):
     def f(text):
         try:
             win.createMessageWindow()
-            win.panel.showPage(tr('Message'))
+            win.panel.showPage(tr('Messages'))
             appendtext(win.messagewindow, text)
         except:
             error.traceback()

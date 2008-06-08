@@ -220,7 +220,7 @@ def OnPythonDoctests(win, event):
     def f(text):
         try:
             win.createMessageWindow()
-            win.panel.showPage(tr('Message'))
+            win.panel.showPage(tr('Messages'))
             appendtext(win.messagewindow, text)
         except:
             error.traceback()
