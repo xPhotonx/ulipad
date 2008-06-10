@@ -151,7 +151,6 @@ def OnKeyDown(win, event):
             win.outputstream.write(text + '\n')
             win.GotoPos(win.GetLength())
         if keycode == wx.WXK_UP:
-            l = len(win.CommandArray)
             if (len(win.CommandArray) > 0):
                 if (win.CommandArrayPos + 1) < l:
                     win.GotoPos(win.editpoint)
@@ -159,6 +158,8 @@ def OnKeyDown(win, event):
                     win.SetTargetEnd(win.GetLength())
                     win.CommandArrayPos = win.CommandArrayPos + 1
                     win.ReplaceTarget(win.CommandArray[win.CommandArrayPos])
+            else:
+                event.Skip()
 
         elif keycode == wx.WXK_DOWN:
             if len(win.CommandArray) > 0:
@@ -172,12 +173,15 @@ def OnKeyDown(win, event):
                     if (win.CommandArrayPos - 1) > -2:
                         win.CommandArrayPos = win.CommandArrayPos - 1
                     win.ReplaceTarget("")
-    if ((pos > win.editpoint) and (not keycode == wx.WXK_UP)) or ((not keycode == wx.WXK_BACK) and (not keycode == wx.WXK_LEFT) and (not keycode == wx.WXK_UP) and (not keycode == wx.WXK_DOWN)):
-        if (pos < win.editpoint):
-            if (not keycode == wx.WXK_RIGHT):
+            else:
                 event.Skip()
-        else:
-            event.Skip()
+#    if ((pos > win.editpoint) and (not keycode == wx.WXK_UP)) or ((not keycode == wx.WXK_BACK) and (not keycode == wx.WXK_LEFT) and (not keycode == wx.WXK_UP) and (not keycode == wx.WXK_DOWN)):
+#        if (pos < win.editpoint):
+#            if (not keycode == wx.WXK_RIGHT):
+#                event.Skip()
+#        else:
+#            event.Skip()
+    event.Skip()
 Mixin.setMixin('messagewindow', 'OnKeyDown', OnKeyDown)
 
 def OnKeyUp(win, event):
