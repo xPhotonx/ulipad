@@ -72,7 +72,7 @@ def afterinit(win):
     }
     if win.pref.open_last_dir_as_startup and win.pref.last_dir_paths:
         wx.CallAfter(win.createDirBrowserWindow, win.pref.last_dir_paths)
-        wx.CallAfter(win.panel.showPage, tr('Dir Browser'))
+        wx.CallAfter(win.panel.showPage, tr('Directory browser'))
 Mixin.setPlugin('mainframe', 'afterinit', afterinit)
 
 def createDirBrowserWindow(win, dirs=None):
@@ -83,7 +83,7 @@ def createDirBrowserWindow(win, dirs=None):
         if not dirs:
             dirs = win.pref.last_dir_paths
         page = DirBrowser(win.panel.createNotebook('left'), win, dirs)
-        win.panel.addPage('left', page, tr('Dir Browser'))
+        win.panel.addPage('left', page, tr('Directory browser'))
     return page
 Mixin.setMixin('mainframe', 'createDirBrowserWindow', createDirBrowserWindow)
 

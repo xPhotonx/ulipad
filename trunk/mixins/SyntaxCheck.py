@@ -40,8 +40,8 @@ def check(codeString, filename):
             lineno = value.lineno
             offset = value.offset
             line = value.text
-            if line.endswith("\n"):
-                line = line[:-1]
+#            if line and line.endswith("\n"):
+#                line = line[:-1]
             message.append((filename, lineno, value.msg))
     except:
         error.traceback()
