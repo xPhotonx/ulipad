@@ -18,10 +18,9 @@ import codecs
 def dump(obj, filename, encoding=None):
     encoding = __getdefaultencoding(encoding)
 
-    if hasattr(filename, "write"):
-        f = filename
-    else:
-        f = file(filename, "w")
+    from StringIO import StringIO
+    
+    f = StringIO()
 
     if hasattr(obj, '__dict__'):
         objects = {}
@@ -37,6 +36,14 @@ def dump(obj, filename, encoding=None):
     else:
         f.write("#var\n")
         f.write(__uni_prt(obj, encoding))
+        
+    if hasattr(filename, "write"):
+        out = filename
+    else:
+        out = file(filename, "w")
+        
+    out.write(f.getvalue())
+    out.close()
 
 class EmptyClass:
     pass
