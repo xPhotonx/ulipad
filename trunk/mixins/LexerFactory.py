@@ -77,8 +77,8 @@ class LexerFactory(Mixin.Mixin):
     def getNamedLexer(self, name):
         obj = None
         for i, v in enumerate(self.lexnames):
-            n, name = v
-            if name == self.pref.default_lexer:
+            n, lexername = v
+            if name == lexername:
                 obj = self.lexobjs[i]
                 break
         return obj
