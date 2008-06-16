@@ -395,6 +395,8 @@ class TextEditor(wx.stc.StyledTextCtrl, Mixin.Mixin, DocumentBase.DocumentBase):
             f |= wx.ACCEL_SHIFT
         if event.AltDown():
             f |= wx.ACCEL_ALT
+        if event.CmdDown():
+            f |= wx.ACCEL_CMD
 
         #skip Shift+BS
         if event.ShiftDown() and key == wx.stc.STC_KEY_BACK:
