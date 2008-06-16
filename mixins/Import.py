@@ -6553,7 +6553,6 @@ def new_file(win, lexname=None):
         lexname = win.pref.last_new_type
     if lexname:
         lexer = win.lexers.getNamedLexer(lexname)
-        print lexer, lexname
         text = ''
         if lexer:
             templatefile = common.getConfigPathFile('template.%s' % lexer.name)
