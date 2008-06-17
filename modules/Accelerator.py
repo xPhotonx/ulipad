@@ -97,7 +97,7 @@ def create_key(keystr, keylist=keylist):
             f |= wx.ACCEL_ALT
         elif uk == 'SHIFT':
             f |= wx.ACCEL_SHIFT
-        elif uk == 'CMD':
+        elif uk == 'CMD' and hasattr(wx, 'ACCEL_CMD'):
             f |= wx.ACCEL_CMD
         elif keylist.has_key(uk):
             ikey = keylist[uk]
@@ -116,7 +116,7 @@ def get_keystring(fkey, keylist=keylist):
         s.append('Shift')
     if f & wx.ACCEL_ALT:
         s.append('Alt')
-    if f & wx.ACCEL_CMD:
+    if hasattr(wx, 'ACCEL_CMD')  and f & wx.ACCEL_CMD:
         s.append('Cmd')
        
     key = ''
