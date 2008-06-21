@@ -25,8 +25,6 @@ __doc__ = 'ftp class'
 
 import wx
 from modules.Debug import error
-from modules import i18n
-from modules import Resource
 from ftplib import FTP
 #from ftp import FTP
 import os.path
@@ -36,6 +34,8 @@ from modules.Entry import MyTextEntry
 import socket
 from modules import ftplistparse
 from modules import common
+from modules import meide as ui
+from modules import Globals
 
 FTP_LINUX = 0
 FTP_UNIX = 1
@@ -56,84 +56,39 @@ class Ftp(wx.Panel, Mixin):
         self.alive = False
         self.running = False
 
-        box = wx.BoxSizer(wx.VERTICAL)
-        box1 = wx.BoxSizer(wx.HORIZONTAL)
+        self.box = box = ui.VBox(namebinding='widget').create(self).auto_layout()
+        box1 = box.add(ui.HBox)
+        box1.add(ui.Label(tr('Sites:')))
+        box1.add(ui.ComboBox("", self.mainframe.pref.ftp_sites), name='cmbSite').bind(wx.EVT_COMBOBOX, self.OnSiteChanged)
+        box1.add(ui.Label(tr('Username:')))
+        box1.add(ui.Text('', size=(100, -1)), name = 'txtUser')
+        box1.add(ui.Label(tr('Password:')))
+        box1.add(ui.Password('', size=(100, -1)), name = 'txtPassword')
+        box1.add(ui.Button(tr('Connect')), name='btnConnect').bind('click', self.OnConnect)
+        box1.add(ui.Button(tr('Disconnect')),name='btnDisconnect').bind('click', self.OnDisconnect)
+    
+        box.add(ui.List(columns=[
+                (tr("Name"), 500, 'left'),
+                (tr("Size"), 80, 'right'),
+                (tr("Format"), 80, 'left'),
+                ], style=wx.LC_REPORT | wx.SUNKEN_BORDER | wx.LC_SINGLE_SEL), name='list')
 
-        obj = wx.StaticText(self, -1, tr('Site:'))
-        box1.Add(obj, 0, wx.ALIGN_CENTER_VERTICAL|wx.LEFT|wx.RIGHT, 2)
-        self.ID_SITELIST = wx.NewId()
-        self.cmbSite= wx.ComboBox(self, self.ID_SITELIST, "", choices=self.mainframe.pref.ftp_sites, size=(80, 20), style=wx.CB_READONLY)
-        box1.Add(self.cmbSite, 1, wx.ALIGN_CENTER_VERTICAL|wx.RIGHT, 2)
-
-        #username
-        obj = wx.StaticText(self, -1, tr('Username:'))
-        box1.Add(obj, 0, wx.ALIGN_CENTER_VERTICAL|wx.LEFT|wx.RIGHT, 2)
-        self.txtUser = wx.TextCtrl(self, -1, '', size=(80, 20))
-        box1.Add(self.txtUser, 0, wx.ALIGN_CENTER_VERTICAL|wx.RIGHT, 2)
-
-        #password
-        obj = wx.StaticText(self, -1, tr('Password:'))
-        box1.Add(obj, 0, wx.ALIGN_CENTER_VERTICAL|wx.LEFT|wx.RIGHT, 2)
-        self.txtPassword = wx.TextCtrl(self, -1, '', size=(80, 20), style=wx.TE_PASSWORD)
-        box1.Add(self.txtPassword, 0, wx.ALIGN_CENTER_VERTICAL|wx.RIGHT, 2)
-
-        #connect button
-        self.ID_CONNECT = wx.NewId()
-        self.btnConnect = wx.Button(self, self.ID_CONNECT, tr('Connect'))
-        box1.Add(self.btnConnect, 0, wx.ALIGN_CENTER_VERTICAL|wx.RIGHT, 2)
-
-        #disconnect button
-        self.ID_DISCONNECT = wx.NewId()
-        self.btnDisconnect = wx.Button(self, self.ID_DISCONNECT, tr('Disconnect'))
-        box1.Add(self.btnDisconnect, 0, wx.ALIGN_CENTER_VERTICAL|wx.RIGHT, 2)
-
-        box.Add(box1, 0, wx.ALL|wx.EXPAND, 3)
-
-        self.list = wx.ListCtrl(self, -1, style=wx.LC_REPORT | wx.LC_SINGLE_SEL | wx.SUNKEN_BORDER)
-        box.Add(self.list, 1, wx.EXPAND|wx.LEFT|wx.RIGHT, 2)
-
-        box2 = wx.BoxSizer(wx.HORIZONTAL)
-
-        #encoding
-        obj = wx.StaticText(self, -1, tr('Encoding:'))
-        box2.Add(obj, 0, wx.ALIGN_CENTER_VERTICAL|wx.LEFT|wx.RIGHT, 2)
-        self.txtEncoding = wx.ComboBox(self, -1, "Default", choices=['Default', 'UTF-8', 'Custom'], style=wx.CB_READONLY)
-        box2.Add(self.txtEncoding, 0, wx.ALIGN_CENTER_VERTICAL|wx.RIGHT, 2)
-
-        #remote path
-        obj = wx.StaticText(self, -1, tr('Remote path:'))
-        box2.Add(obj, 0, wx.ALIGN_CENTER_VERTICAL|wx.LEFT|wx.RIGHT, 2)
-        self.txtPath = wx.ComboBox(self, -1, "", choices=self.mainframe.pref.remote_paths, size=(150, 20))
-        box2.Add(self.txtPath, 1, wx.ALIGN_CENTER_VERTICAL|wx.RIGHT, 2)
-
-        #refresh button
-        self.ID_REFRESH = wx.NewId()
-        self.btnRefresh = wx.Button(self, self.ID_REFRESH, tr('Refresh'))
-        box2.Add(self.btnRefresh, 0, wx.ALIGN_CENTER_VERTICAL|wx.RIGHT, 2)
-
-        #site button
-        self.ID_SITE = wx.NewId()
-        self.btnSite = wx.Button(self, self.ID_SITE, tr('Site Setting'))
-        box2.Add(self.btnSite, 0, wx.ALIGN_CENTER_VERTICAL|wx.RIGHT, 2)
-
-        box.Add(box2, 0, wx.ALL|wx.EXPAND, 1)
-
-        self.SetSizer(box)
-        self.SetAutoLayout(True)
+        box2 = box.add(ui.HBox)
+        box2.add(ui.Label(tr('Encoding:')))
+        box2.add(ui.ComboBox("Default", ['Default', 'UTF-8', 'Custom'], size=(100, -1)), name='txtEncoding')
+        box2.add(ui.Label(tr('Remote path:')))
+        box2.add(ui.ComboBox("", self.mainframe.pref.remote_paths), name='txtPath')
+        box2.add(ui.Button(tr('Refresh')), name='btnRefresh').bind('click', self.OnRefresh)
+        box2.add(ui.Button(tr('Site set')), name='btnSite').bind('click', self.OnSite)
 
         self.load()
         self.initlist()
-
-        wx.EVT_UPDATE_UI(self.btnConnect, self.ID_CONNECT, self.OnUpdateUI)
-        wx.EVT_UPDATE_UI(self.btnDisconnect, self.ID_DISCONNECT, self.OnUpdateUI)
-        wx.EVT_UPDATE_UI(self.btnRefresh, self.ID_REFRESH, self.OnUpdateUI)
-        wx.EVT_UPDATE_UI(self.btnSite, self.ID_SITE, self.OnUpdateUI)
-        wx.EVT_BUTTON(self.btnSite, self.ID_SITE, self.OnSite)
-        wx.EVT_BUTTON(self.btnConnect, self.ID_CONNECT, self.OnConnect)
-        wx.EVT_BUTTON(self.btnDisconnect, self.ID_DISCONNECT, self.OnDisconnect)
-        wx.EVT_BUTTON(self.btnRefresh, self.ID_REFRESH, self.OnRefresh)
-        wx.EVT_COMBOBOX(self.cmbSite, self.ID_SITELIST, self.OnSiteChanged)
-        wx.EVT_LIST_ITEM_ACTIVATED(self.list, self.list.GetId(), self.OnEnter)
+        
+        box.bind('btnConnect', wx.EVT_UPDATE_UI, self.OnUpdateUI)
+        box.bind('btnDisconnect', wx.EVT_UPDATE_UI, self.OnUpdateUI)
+        box.bind('btnRefresh', wx.EVT_UPDATE_UI, self.OnUpdateUI)
+        box.bind('btnSite', wx.EVT_UPDATE_UI, self.OnUpdateUI)
+        box.bind('list', wx.EVT_LIST_ITEM_ACTIVATED, self.OnEnter)
 
         #@add_menu menulist
         self.callplugin_once('add_menu', Ftp.popmenulist)
@@ -149,19 +104,17 @@ class Ftp(wx.Panel, Mixin):
 
     def OnUpdateUI(self, event):
         eid = event.GetId()
-        if eid == self.ID_CONNECT:
+        if eid == self.btnConnect.GetId():
             event.Enable(bool(not self.cmbSite.IsEmpty() and not self.alive and not self.running))
-        elif eid == self.ID_DISCONNECT:
+        elif eid == self.btnDisconnect.GetId():
             event.Enable(self.alive or self.running)
-        elif eid == self.ID_SITE:
+        elif eid == self.btnSite.GetId():
             event.Enable(not self.alive and not self.running)
-        elif eid == self.ID_REFRESH:
+        elif eid == self.btnRefresh.GetId():
             event.Enable(self.alive and not self.running)
 
     def OnSite(self, event):
-        filename = i18n.makefilename(self.mainframe.ftp_resfile, self.mainframe.app.i18n.lang)
-        dlg = Resource.loadfromresfile(filename, self.mainframe, FtpManageDialog, 'FtpManageDialog', self.mainframe)
-        dlg.obj_ID_PORT.SetRange(0, 65535)
+        dlg = FtpManageDialog()
         dlg.ShowModal()
         self.load()
 
@@ -185,6 +138,8 @@ class Ftp(wx.Panel, Mixin):
                 if not flag:
                     common.setmessage(self.mainframe, tr('Connect canceled'))
                     self.ftp = None
+                    self.alive = False
+                    self.running = False
                     return
                 common.setmessage(self.mainframe, tr('Loginning'))
                 self.ftp.login(user, password)
@@ -324,8 +279,12 @@ class Ftp(wx.Panel, Mixin):
         if not user or not password:
             dlg = UserDialog(self, site['name'], user, password)
             answer = dlg.ShowModal()
+            v = None
             if answer == wx.ID_OK:
-                user, password = dlg.GetValue()
+                v = dlg.GetValue()
+                user, password = v['txtUser'], v['txtPassword']
+            dlg.Destroy()
+            if v:
                 return True, user, password
             else:
                 return False, '', ''
@@ -360,9 +319,6 @@ class Ftp(wx.Panel, Mixin):
         self.images = _imagel
 
         self.list.SetImageList(self.images, wx.IMAGE_LIST_SMALL)
-        self.list.InsertColumn(0, tr("Name"), width=300)
-        self.list.InsertColumn(1, tr("Size"), format=wx.LIST_FORMAT_RIGHT, width=80)
-        self.list.InsertColumn(2, tr("Format"), width=80)
 
     def receivedData(self, data):
         self.data.append(data)
@@ -593,8 +549,12 @@ def getuserpassword(mainframe, siteno):
     if not user or not password:
         dlg = UserDialog(mainframe, site['name'], user, password)
         answer = dlg.ShowModal()
+        v = None
         if answer == wx.ID_OK:
-            user, password = dlg.GetValue()
+            v = dlg.GetValue()
+            user, password = v['txtUser'], v['txtPassword']
+        dlg.Destroy()
+        if v:
             return True, user, password
         else:
             return False, '', ''
@@ -667,37 +627,50 @@ def writefile(mainframe, filename, siteno, text, user=None, password=None):
         common.showerror(mainframe, msg)
 
 class FtpManageDialog(wx.Dialog):
-    def __init__(self, *args, **kwargs):
-        wx.Dialog.__init__(self, *args, **kwargs)
+    def __init__(self):
+        wx.Dialog.__init__(self, Globals.mainframe, -1, title=tr('FTP Sites Manager'), size=(400, 300))
+        self.init()
 
-    def init(self, mainframe):
-        self.mainframe = mainframe
-        self.pref = self.mainframe.pref
+    def init(self):
+        mainframe = Globals.mainframe
+        self.pref = Globals.pref
 
-        self.obj_ID_CLOSE.SetId(wx.ID_CANCEL)
-
+        self.sizer = box = ui.Grid(growablecol=1, namebinding='widget').create(self).auto_layout()
+        box1 = box.add((0, 0), ui.VBox)
+        box1.add(ui.Label(tr('FTP sites:')))
+        box1.add(ui.ListBox, name='listbox').bind(wx.EVT_LISTBOX, self.OnFtpSelected)
+        box1.add(ui.Check(True, tr('Passive FTP')), name='chkPass')
+        box2 = box.add((0, 1), ui.SimpleGrid)
+        box2.add(tr('Site name:'), ui.Text, name='txtName')
+        box2.add(tr('Host IP:'), ui.Text, name='txtHost')
+        box2.add(tr('Port:'), ui.IntSpin(21, min=0, max=65535), name='txtPort')
+        box2.add(tr('Username:'), ui.Text, name='txtUsername')
+        box2.add(tr('Password:'), ui.Password, name='txtPassword')
+        box2.add(tr('Remote path:'), ui.Text, name='txtPath')
+        box3 = box.add((0, 2), ui.VBox)
+        box3.add(ui.Button(tr('Add')), name='btnAdd').bind('click', self.OnAdd)
+        box3.add(ui.Button(tr('Delete')), name='btnDelete').bind('click', self.OnDelete)
+        box3.add(ui.Button(tr('Update')), name='btnUpdate').bind('click', self.OnUpdate)
+        box3.add(ui.Button(tr('Close'), id=wx.ID_CANCEL, name='btnClose')).bind(wx.EVT_CLOSE, self.OnClose).bind('click', self.OnClose)
+        
         self.lastindex = self.pref.last_ftp_site
         self.load()
 
-        wx.EVT_UPDATE_UI(self.obj_ID_DELETE, self.ID_DELETE, self.OnUpdateUI)
-        wx.EVT_UPDATE_UI(self.obj_ID_UPDATE, self.ID_UPDATE, self.OnUpdateUI)
-        wx.EVT_UPDATE_UI(self.obj_ID_ADD, self.ID_ADD, self.OnUpdateUI)
-        wx.EVT_CLOSE(self, self.OnClose)
-        wx.EVT_BUTTON(self.obj_ID_CLOSE, wx.ID_CANCEL, self.OnClose)
-        wx.EVT_BUTTON(self.obj_ID_ADD, self.ID_ADD, self.OnAdd)
-        wx.EVT_BUTTON(self.obj_ID_UPDATE, self.ID_UPDATE, self.OnUpdate)
-        wx.EVT_BUTTON(self.obj_ID_DELETE, self.ID_DELETE, self.OnDelete)
-        wx.EVT_LISTBOX(self.obj_ID_FTP, self.obj_ID_FTP.GetId(), self.OnFtpSelected)
-
+        box.bind('btnDelete', wx.EVT_UPDATE_UI, self.OnUpdateUI)
+        box.bind('btnUpdate', wx.EVT_UPDATE_UI, self.OnUpdateUI)
+        box.bind('btnAdd', wx.EVT_UPDATE_UI, self.OnUpdateUI)
+        
+        box.auto_fit(2)
+        
     def OnUpdateUI(self, event):
         eid = event.GetId()
-        selected = len(self.obj_ID_FTP.GetSelections()) > 0
-        if eid == self.ID_DELETE:
+        selected = len(self.listbox.GetSelections()) > 0
+        if eid == self.btnDelete.GetId():
             event.Enable(selected)
-        elif eid == self.ID_UPDATE:
-            event.Enable(selected and len(self.obj_ID_NAME.GetValue()) > 0 and len(self.obj_ID_IP.GetValue()) > 0)
-        elif eid == self.ID_ADD:
-            event.Enable(len(self.obj_ID_NAME.GetValue()) > 0 and len(self.obj_ID_IP.GetValue()) > 0)
+        elif eid == self.btnUpdate.GetId():
+            event.Enable(selected and len(self.txtName.GetValue()) > 0 and len(self.txtHost.GetValue()) > 0)
+        elif eid == self.btnAdd.GetId():
+            event.Enable(len(self.txtName.GetValue()) > 0 and len(self.txtHost.GetValue()) > 0)
 
     def OnClose(self, event):
         self.Destroy()
@@ -705,7 +678,7 @@ class FtpManageDialog(wx.Dialog):
     def OnAdd(self, event):
         site = self.getSite()
         if site['name'] in self.pref.ftp_sites:
-            wx.MessageDialog(self, tr("The site name is duplicated! Try another."), tr("Add Ftp Site"), wx.OK | wx.ICON_INFORMATION).ShowModal()
+            wx.MessageDialog(self, tr("The site name is duplicated! Try another."), tr("Add FTP Site"), wx.OK | wx.ICON_INFORMATION).ShowModal()
         else:
             self.pref.ftp_sites.append(site['name'])
             self.pref.sites_info[site['name']] = site
@@ -727,104 +700,78 @@ class FtpManageDialog(wx.Dialog):
             self.OnAdd(event)
 
     def OnDelete(self, event):
-        index = self.obj_ID_FTP.GetSelection()
-        name = self.obj_ID_FTP.GetString(index)
-        self.obj_ID_FTP.Delete(index)
+        index = self.listbox.GetSelection()
+        name = self.listbox.GetString(index)
+        self.listbox.Delete(index)
         self.pref.ftp_sites.remove(name)
         del self.pref.sites_info[name]
         self.pref.save()
         self.load()
 
     def load(self):
-        self.obj_ID_FTP.Clear()
-        self.obj_ID_FTP.InsertItems(self.pref.ftp_sites, 0)
+        self.listbox.Clear()
+        self.listbox.InsertItems(self.pref.ftp_sites, 0)
         if self.lastindex >= len(self.pref.ftp_sites):
             self.lastindex = len(self.pref.ftp_sites) - 1
         if len(self.pref.ftp_sites) > 0:
-            self.obj_ID_FTP.SetSelection(self.lastindex)
+            self.listbox.SetSelection(self.lastindex)
             self.setSite(self.lastindex)
         else:
             self.setSite(-1)
 
     def getSite(self):
         site = {}
-        site['name'] = self.obj_ID_NAME.GetValue()
-        site['ip'] = self.obj_ID_IP.GetValue()
-        site['port'] = self.obj_ID_PORT.GetValue()
-        site['user'] = self.obj_ID_USER.GetValue()
-        site['password'] = self.obj_ID_PASSWORD.GetValue()
-        site['path'] = self.obj_ID_PATH.GetValue()
-        site['pasv'] = self.obj_ID_PASV.GetValue()
+        site['name'] = self.txtName.GetValue()
+        site['ip'] = self.txtHost.GetValue()
+        site['port'] = self.txtPort.GetValue()
+        site['user'] = self.txtUsername.GetValue()
+        site['password'] = self.txtPassword.GetValue()
+        site['path'] = self.txtPath.GetValue()
+        site['pasv'] = self.chkPass.GetValue()
 
         return site
 
     def setSite(self, index):
         if index > -1:
             site = self.pref.sites_info[self.pref.ftp_sites[index]]
-            self.obj_ID_NAME.SetValue(site['name'])
-            self.obj_ID_IP.SetValue(site['ip'])
-            self.obj_ID_PORT.SetValue(site['port'])
-            self.obj_ID_USER.SetValue(site['user'])
-            self.obj_ID_PASSWORD.SetValue(site['password'])
-            self.obj_ID_PATH.SetValue(site['path'])
-            self.obj_ID_PASV.SetValue(site['pasv'])
+            self.txtName.SetValue(site['name'])
+            self.txtHost.SetValue(site['ip'])
+            self.txtPort.SetValue(site['port'])
+            self.txtUsername.SetValue(site['user'])
+            self.txtPassword.SetValue(site['password'])
+            self.txtPath.SetValue(site['path'])
+            self.chkPass.SetValue(site['pasv'])
         else:
-            self.obj_ID_NAME.SetValue('')
-            self.obj_ID_IP.SetValue('')
-            self.obj_ID_PORT.SetValue(21)
-            self.obj_ID_USER.SetValue('')
-            self.obj_ID_PASSWORD.SetValue('')
-            self.obj_ID_PATH.SetValue('')
-            self.obj_ID_PASV.SetValue(True)
+            self.txtName.SetValue('')
+            self.txtHost.SetValue('')
+            self.txtPort.SetValue(21)
+            self.txtUsername.SetValue('')
+            self.txtPassword.SetValue('')
+            self.txtPath.SetValue('')
+            self.chkPass.SetValue(True)
 
 
 class UserDialog(wx.Dialog):
     def __init__(self, parent, ftpname, user, password):
-        wx.Dialog.__init__(self, parent, -1, style = wx.DEFAULT_DIALOG_STYLE, title = tr("Ftp site: %s") % ftpname)
+        wx.Dialog.__init__(self, parent, -1, style = wx.DEFAULT_DIALOG_STYLE, title = tr("FTP site: %s") % ftpname,size=(200, 50))
 
-        box = wx.BoxSizer(wx.VERTICAL)
-        box1 = wx.BoxSizer(wx.HORIZONTAL)
+        self.sizer = box = ui.SimpleGrid(namebinding='widget').create(self).auto_layout()
+        box.add(tr('Username:'), ui.Text(user), name='txtUser')
+        box.add(tr('Password:'), ui.Password(password), name='txtPassword')
 
-        #username
-        obj = wx.StaticText(self, -1, tr('User Name:'))
-        box1.Add(obj, 0, wx.ALIGN_CENTER_VERTICAL|wx.LEFT|wx.RIGHT, 2)
-        self.txtUser = wx.TextCtrl(self, -1, user, size=(80, 20))
-        box1.Add(self.txtUser, 0, wx.ALIGN_CENTER_VERTICAL|wx.RIGHT, 2)
-
-        box.Add(box1, 0, wx.ALL, 3)
-
-        box1 = wx.BoxSizer(wx.HORIZONTAL)
-
-        #password
-        obj = wx.StaticText(self, -1, tr('Password:'))
-        box1.Add(obj, 0, wx.ALIGN_CENTER_VERTICAL|wx.LEFT|wx.RIGHT, 2)
-        self.txtPassword = wx.TextCtrl(self, -1, password, size=(80, 20), style=wx.TE_PASSWORD)
-        box1.Add(self.txtPassword, 0, wx.ALIGN_CENTER_VERTICAL|wx.RIGHT, 2)
-
-        box.Add(box1, 0, wx.ALL, 3)
-
-        box2 = wx.BoxSizer(wx.HORIZONTAL)
-
-        btnOK = wx.Button(self, wx.ID_OK, tr("OK"), size=(60, -1))
-        btnOK.SetDefault()
-        box2.Add(btnOK, 0, wx.ALIGN_RIGHT|wx.RIGHT, 5)
-        btnCancel = wx.Button(self, wx.ID_CANCEL, tr("Cancel"), size=(60, -1))
-        box2.Add(btnCancel, 0, wx.ALIGN_LEFT|wx.LEFT, 5)
-        box.Add(box2, 0, wx.ALIGN_CENTER|wx.BOTTOM, 5)
-
-        self.SetSizer(box)
-        self.SetAutoLayout(True)
-
-        box.Fit(self)
-
-        wx.EVT_UPDATE_UI(btnOK, wx.ID_OK, self.OnUpdateUI)
+        box.add('', ui.simple_buttons(), flag=wx.ALIGN_CENTER|wx.BOTTOM, span=True)
+        self.btnOk.SetDefault()
+        
+        box.auto_fit(2)
+        
+        box.bind('btnOk', wx.EVT_UPDATE_UI, self.OnUpdateUI)
 
     def GetValue(self):
-        return self.txtUser.GetValue(), self.txtPassword.GetValue()
+        return self.sizer.GetValue()
 
     def OnUpdateUI(self, event):
         eid = event.GetId()
-        if eid == wx.ID_OK:
+        if eid == self.btnOk.GetId():
             event.Enable(len(self.txtUser.GetValue()) > 0)
 
 class UploadFileEntry(wx.Dialog):

@@ -142,15 +142,18 @@ def readfiletext(win, filename, stext):
     b = re_ftp.search(filename)
     if b:
         siteno = int(b.group(1))
-        filename = filename.split(':')[1]
+        filename = filename.split(':', 1)[1]
         from FtpClass import readfile
         text = readfile(win.mainframe, filename, siteno)
-        win.needcheckfile = False
-        if text is not None:
-            stext.append(text)
+        if text:
+            win.needcheckfile = False
+            if text is not None:
+                stext.append(text)
+            else:
+                stext.append(None)
+            return True, True
         else:
-            stext.append(None)
-        return True, True
+            return True, False
 Mixin.setPlugin('editor', 'readfiletext', readfiletext)
 
 def writefiletext(win, filename, text):

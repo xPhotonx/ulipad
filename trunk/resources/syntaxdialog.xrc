@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resource>
   <object class="wxDialog" name="SyntaxDialog">
-    <title>Syntax Preference Settings</title>
+    <title>Syntax Settings</title>
     <object class="wxStaticText">
       <label>Syntax selection:</label>
       <pos>5,2</pos>
@@ -9,15 +9,15 @@
     <object class="wxComboBox" name="ID_LANGUAGE">
       <content/>
       <pos>5, 20</pos>
-      <size>100, -1</size>
+      <size>150, -1</size>
       <style>wxCB_READONLY</style>
     </object>
     <object class="wxStaticText">
       <label>File extensions:</label>
-      <pos>115,2</pos>
+      <pos>175,2</pos>
     </object>
     <object class="wxTextCtrl" name="ID_EXTENSIONS">
-      <pos>115, 20</pos>
+      <pos>175, 20</pos>
       <size>220, -1</size>
     </object>
     <object class="wxStaticText">
@@ -82,11 +82,11 @@
     </object>
     <object class="wxTextCtrl" name="ID_FORE_VALUE">
       <pos>255, 118</pos>
-      <size>53,-1</size>
+      <size>60,-1</size>
     </object>
     <object class="wxButton" name="ID_FORE">
-      <label>Select Color</label>
-      <pos>315, 118</pos>
+      <label>Select color</label>
+      <pos>325, 117</pos>
       <size>90,-1</size>
     </object>
     <object class="wxCheckBox" name="ID_CHK_BACK">
@@ -99,11 +99,11 @@
     </object>
     <object class="wxTextCtrl" name="ID_BACK_VALUE">
       <pos>255, 143</pos>
-      <size>53,-1</size>
+      <size>60,-1</size>
     </object>
     <object class="wxButton" name="ID_BACK">
-      <label>Select Color</label>
-      <pos>315, 143</pos>
+      <label>Select color</label>
+      <pos>325, 142</pos>
       <size>90, -1</size>
     </object>
     <object class="wxCheckBox" name="ID_BOLD">
@@ -118,7 +118,7 @@
       <label>Underline</label>
       <pos>315, 171</pos>
     </object>
-    <size>410, 420</size>
+    <size>430, 420</size>
     <object class="wxStaticText">
       <label>Preview:</label>
       <pos>5, 195</pos>
