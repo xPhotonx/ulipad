@@ -3468,6 +3468,7 @@ import wx
 import types
 from modules import Mixin
 from modules import common
+from modules import Globals
 
 def message_init(win):
 
@@ -3544,6 +3545,8 @@ def StopCommand(win):
         win.messagewindow.SetReadOnly(1)
         win.messagewindow.pid = -1
         win.messagewindow.process = None
+    if Globals.pref.message_setfocus_back:
+        wx.CallAfter(win.document.SetFocus)
 Mixin.setMixin('mainframe', 'StopCommand', StopCommand)
 
 
@@ -3643,6 +3646,8 @@ def OnProcessEnded(win, event):
         win.SetStatusText(tr("Finished! "), 0)
         if win.messagewindow.callback:
             wx.CallAfter(win.messagewindow.callback)
+        if Globals.pref.message_setfocus_back:
+            wx.CallAfter(win.document.SetFocus)
 Mixin.setMixin('mainframe', 'OnProcessEnded', OnProcessEnded)
 
 def appendtext(win, text):
@@ -6961,11 +6966,13 @@ Mixin.setPlugin('messagewindow', 'init', messagewindow_init)
 def pref_init(pref):
     pref.clear_message = True
     pref.message_wrap = False
+    pref.message_setfocus_back = False
 Mixin.setPlugin('preference', 'init', pref_init)
 
 def add_pref(preflist):
     preflist.extend([
-        (tr('General'), 170, 'check', 'clear_message', tr('Autoclear messages window content at program run'), None)
+        (tr('General'), 170, 'check', 'clear_message', tr('Autoclear messages window content at program run'), None),
+        (tr('General'), 180, 'check', 'message_setfocus_back', tr('Set focus back to document window after program run'), None),
     ])
 Mixin.setPlugin('preference', 'add_pref', add_pref)
 
