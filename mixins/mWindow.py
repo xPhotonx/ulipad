@@ -32,9 +32,9 @@ def add_mainframe_menu(menulist):
         ('IDM_WINDOW',
         [
             (100, 'IDM_WINDOW_LEFT', tr('Left Window')+'\tAlt+Z', wx.ITEM_CHECK, 'OnWindowLeft', tr('Shows or hides the left Window')),
-            (110, 'IDM_WINDOW_BOTTOM', tr('Bottom Window'), wx.ITEM_CHECK, 'OnWindowBottom', tr('Shows or hides the bottom Window')),
+            (110, 'IDM_WINDOW_BOTTOM', tr('Bottom Window')+'\tAlt+X', wx.ITEM_CHECK, 'OnWindowBottom', tr('Shows or hides the bottom Window')),
             (120, '-', '', wx.ITEM_SEPARATOR, '', ''),
-            (130, 'IDM_WINDOW_SHELL', tr('Open Shell Window')+'\tAlt+X', wx.ITEM_NORMAL, 'OnWindowShell', tr('Opens shell window.')),
+            (130, 'IDM_WINDOW_SHELL', tr('Open Shell Window'), wx.ITEM_NORMAL, 'OnWindowShell', tr('Opens shell window.')),
             (140, 'IDM_WINDOW_MESSAGE', tr('Open Messages Window'), wx.ITEM_NORMAL, 'OnWindowMessage', tr('Opens messages window.')),
         ]),
         ('IDM_EDIT',
