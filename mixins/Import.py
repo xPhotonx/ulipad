@@ -4143,7 +4143,7 @@ Mixin.setMixin('prefdialog', 'OnSetInterpreter', OnSetInterpreter)
 
 def add_pref(preflist):
     preflist.extend([
-        ('Python', 150, 'button', 'python_interpreter', tr('Setup python interpreter'), 'OnSetInterpreter'),
+        ('Python', 150, 'button', 'python_interpreter', tr('Setup Python interpreter'), 'OnSetInterpreter'),
         ('Python', 155, 'check', 'python_show_args', tr('Show arguments dialog at python program run'), None),
         ('Python', 156, 'check', 'python_save_before_run', tr('Save modified file at python program run'), None),
     ])
@@ -5168,15 +5168,18 @@ def readfiletext(win, filename, stext):
     b = re_ftp.search(filename)
     if b:
         siteno = int(b.group(1))
-        filename = filename.split(':')[1]
+        filename = filename.split(':', 1)[1]
         from FtpClass import readfile
         text = readfile(win.mainframe, filename, siteno)
-        win.needcheckfile = False
-        if text is not None:
-            stext.append(text)
+        if text:
+            win.needcheckfile = False
+            if text is not None:
+                stext.append(text)
+            else:
+                stext.append(None)
+            return True, True
         else:
-            stext.append(None)
-        return True, True
+            return True, False
 Mixin.setPlugin('editor', 'readfiletext', readfiletext)
 
 def writefiletext(win, filename, text):

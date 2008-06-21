@@ -62,7 +62,7 @@ Mixin.setMixin('prefdialog', 'OnSetInterpreter', OnSetInterpreter)
 
 def add_pref(preflist):
     preflist.extend([
-        ('Python', 150, 'button', 'python_interpreter', tr('Setup python interpreter'), 'OnSetInterpreter'),
+        ('Python', 150, 'button', 'python_interpreter', tr('Setup Python interpreter'), 'OnSetInterpreter'),
         ('Python', 155, 'check', 'python_show_args', tr('Show arguments dialog at python program run'), None),
         ('Python', 156, 'check', 'python_save_before_run', tr('Save modified file at python program run'), None),
     ])

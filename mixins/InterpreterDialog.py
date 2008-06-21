@@ -27,14 +27,14 @@ from modules import common
 
 class InterpreterDialog(wx.Dialog):
     def __init__(self, parent, pref):
-        wx.Dialog.__init__(self, parent, -1, tr('Interpreter Setting'))
+        wx.Dialog.__init__(self, parent, -1, tr('Interpreter Setup'))
         self.parent = parent
         self.pref = pref
 
         box = wx.BoxSizer(wx.VERTICAL)
         self.list = wx.ListCtrl(self, -1, style=wx.LC_REPORT | wx.LC_SINGLE_SEL | wx.LC_EDIT_LABELS)
         self.list.InsertColumn(0, tr("Description"))
-        self.list.InsertColumn(1, tr("Interpreter Path"))
+        self.list.InsertColumn(1, tr("Interpreter path"))
         self.list.SetColumnWidth(0, 150)
         self.list.SetColumnWidth(1, 330)
         for i, item in enumerate(pref.python_interpreter):
