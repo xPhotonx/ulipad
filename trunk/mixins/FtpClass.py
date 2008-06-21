@@ -79,7 +79,7 @@ class Ftp(wx.Panel, Mixin):
         box2.add(ui.Label(tr('Remote path:')))
         box2.add(ui.ComboBox("", self.mainframe.pref.remote_paths), name='txtPath')
         box2.add(ui.Button(tr('Refresh')), name='btnRefresh').bind('click', self.OnRefresh)
-        box2.add(ui.Button(tr('Site set...')), name='btnSite').bind('click', self.OnSite)
+        box2.add(ui.Button(tr('Set site...')), name='btnSite').bind('click', self.OnSite)
 
         self.load()
         self.initlist()
