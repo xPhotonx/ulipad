@@ -628,7 +628,7 @@ def writefile(mainframe, filename, siteno, text, user=None, password=None):
 
 class FtpManageDialog(wx.Dialog):
     def __init__(self):
-        wx.Dialog.__init__(self, Globals.mainframe, -1, title=tr('FTP Sites Manager'), size=(400, 300))
+        wx.Dialog.__init__(self, Globals.mainframe, -1, title=tr('FTP Site Manager'), size=(400, 300))
         self.init()
 
     def init(self):
