@@ -28,7 +28,7 @@ def add_mainframe_menu(menulist):
     menulist.extend([
         ('IDM_WINDOW',
         [
-            (200, 'IDM_WINDOW_SHARE', tr('Open Share Resources Window'), wx.ITEM_NORMAL, 'OnWindowShare', tr('Opens share resources window.'))
+            (200, 'IDM_WINDOW_SHARE', tr('Resource Shares Window'), wx.ITEM_CHECK, 'OnWindowShare', tr('Opens resource shares window.'))
         ]),
     ])
 Mixin.setPlugin('mainframe', 'add_menu', add_mainframe_menu)
@@ -36,7 +36,7 @@ Mixin.setPlugin('mainframe', 'add_menu', add_mainframe_menu)
 def add_notebook_menu(popmenulist):
     popmenulist.extend([(None,
         [
-            (180, 'IDPM_SHAREWINDOW', tr('Open Share Resources Window'), wx.ITEM_NORMAL, 'OnShareWindow', tr('Opens share resources window.')),
+            (180, 'IDPM_SHAREWINDOW', tr('Resource Shares Window'), wx.ITEM_NORMAL, 'OnShareWindow', tr('Opens resource shares window.')),
         ]),
     ])
 Mixin.setPlugin('notebook', 'add_menu', add_notebook_menu)
@@ -60,25 +60,37 @@ Mixin.setPlugin('mainframe', 'afterinit', afterinit)
 #}
 #Mixin.setMixin('mainframe', 'toolbaritems', toolbaritems)
 
+_resshare_pagename = tr('Resource Shares')
+
+def on_mainframe_updateui(win, event):
+    eid = event.GetId()
+    if eid == win.IDM_WINDOW_SHARE:
+        event.Check(bool(win.panel.getPage(_resshare_pagename)))
+Mixin.setPlugin('mainframe', 'on_update_ui', on_mainframe_updateui)
+
+def afterinit(win):
+    wx.EVT_UPDATE_UI(win, win.IDM_WINDOW_SHARE, win.OnUpdateUI)
+Mixin.setPlugin('mainframe', 'afterinit', afterinit)
+
 def createShareWindow(win):
-    if not win.panel.getPage(tr('Share Resources')):
+    if not win.panel.getPage(_resshare_pagename):
         from ShareWindow import ShareWindow
 
         page = ShareWindow(win.panel.createNotebook('left'), win)
-        win.panel.addPage('left', page, tr('Share Resources'))
+        win.panel.addPage('left', page, _resshare_pagename)
 Mixin.setMixin('mainframe', 'createShareWindow', createShareWindow)
 
 def OnWindowShare(win, event):
     win.createShareWindow()
-    win.panel.showPage(tr('Share Resources'))
+    win.panel.showPage(_resshare_pagename)
 Mixin.setMixin('mainframe', 'OnWindowShare', OnWindowShare)
 
 def OnShareWindow(win, event):
     win.mainframe.createShareWindow()
-    win.panel.showPage(tr('Share Resources'))
+    win.panel.showPage(_resshare_pagename)
 Mixin.setMixin('notebook', 'OnShareWindow', OnShareWindow)
 
 def close_page(page, name):
-    if name == tr('Share Resources'):
+    if name == _resshare_pagename:
         page.OnCloseWin()
 Mixin.setPlugin('notebook', 'close_page', close_page)

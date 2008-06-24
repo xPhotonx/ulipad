@@ -61,7 +61,7 @@ def add_tool_list(toollist, toolbaritems):
 
     #order, IDname, imagefile, short text, long text, func
     toolbaritems.update({
-        'memo':(wx.ITEM_CHECK, 'IDM_TOOL_MEMO', 'images/memo.gif', tr('Easy Memo'), tr('Show Easy Memo windows, and you can write down everything what you want.'), 'OnToolMemo'),
+        'memo':(wx.ITEM_CHECK, 'IDM_TOOL_MEMO', 'images/memo.gif', tr('Open Easy Memo Window'), tr('Show Easy Memo windows, and you can write down everything what you want.'), 'OnToolMemo'),
     })
 Mixin.setPlugin('mainframe', 'add_tool_list', add_tool_list)
 

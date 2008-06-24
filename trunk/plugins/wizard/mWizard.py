@@ -23,21 +23,19 @@
 
 from modules import Mixin
 import wx
-import os.path
-from modules import common
 import images
 
 menulist = [
     ('IDM_WINDOW',
     [
-        (190, 'IDM_WINDOW_WIZARD', tr('Open Wizard Window'), wx.ITEM_NORMAL, 'OnWindowWizard', tr('Opens wizard window.'))
+        (190, 'IDM_WINDOW_WIZARD', tr('Wizard Window'), wx.ITEM_CHECK, 'OnWindowWizard', tr('Opens wizard window.'))
     ]),
 ]
 Mixin.setMixin('mainframe', 'menulist', menulist)
 
 popmenulist = [ (None,
     [
-        (140, 'IDPM_WIZARDWINDOW', tr('Open Wizard Window'), wx.ITEM_NORMAL, 'OnWizardWindow', tr('Opens wizard window.')),
+        (140, 'IDPM_WIZARDWINDOW', tr('Wizard Window'), wx.ITEM_NORMAL, 'OnWizardWindow', tr('Opens wizard window.')),
     ]),
 ]
 Mixin.setMixin('notebook', 'popmenulist', popmenulist)
@@ -47,26 +45,38 @@ toollist = [
 ]
 Mixin.setMixin('mainframe', 'toollist', toollist)
 
+_wizard_pagename = tr('Wizard')
+
 #order, IDname, imagefile, short text, long text, func
 toolbaritems = {
-        'wizard':(wx.ITEM_NORMAL, 'IDM_WINDOW_WIZARD', images.getWizardBitmap(), tr('wizard'), tr('Opens wizard window.'), 'OnWindowWizard'),
+        'wizard':(wx.ITEM_CHECK, 'IDM_WINDOW_WIZARD', images.getWizardBitmap(), _wizard_pagename, tr('Opens wizard window.'), 'OnWindowWizard'),
 }
 Mixin.setMixin('mainframe', 'toolbaritems', toolbaritems)
 
+def on_mainframe_updateui(win, event):
+    eid = event.GetId()
+    if eid == win.IDM_WINDOW_WIZARD:
+        event.Check(bool(win.panel.getPage(_wizard_pagename)))
+Mixin.setPlugin('mainframe', 'on_update_ui', on_mainframe_updateui)
+
+def afterinit(win):
+    wx.EVT_UPDATE_UI(win, win.IDM_WINDOW_WIZARD, win.OnUpdateUI)
+Mixin.setPlugin('mainframe', 'afterinit', afterinit)
+
 def createWizardWindow(win):
-    if not win.panel.getPage(tr('Wizard')):
+    if not win.panel.getPage(_wizard_pagename):
         from WizardPanel import WizardPanel
 
         page = WizardPanel(win.panel.createNotebook('left'), win)
-        win.panel.addPage('left', page, tr('Wizard'))
+        win.panel.addPage('left', page, _wizard_pagename)
 Mixin.setMixin('mainframe', 'createWizardWindow', createWizardWindow)
 
 def OnWindowWizard(win, event):
     win.createWizardWindow()
-    win.panel.showPage(tr('Wizard'))
+    win.panel.showPage(_wizard_pagename)
 Mixin.setMixin('mainframe', 'OnWindowWizard', OnWindowWizard)
 
 def OnWizardWindow(win, event):
     win.mainframe.createWizardWindow()
-    win.panel.showPage(tr('Wizard'))
+    win.panel.showPage(_wizard_pagename)
 Mixin.setMixin('notebook', 'OnWizardWindow', OnWizardWindow)
