@@ -24,6 +24,7 @@
 from modules import Mixin
 import wx
 import images
+from modules import Globals
 
 menulist = [
     ('IDM_WINDOW',
@@ -35,7 +36,7 @@ Mixin.setMixin('mainframe', 'menulist', menulist)
 
 popmenulist = [ (None,
     [
-        (140, 'IDPM_WIZARDWINDOW', tr('Wizard Window'), wx.ITEM_NORMAL, 'OnWizardWindow', tr('Opens wizard window.')),
+        (140, 'IDPM_WIZARDWINDOW', tr('Wizard Window'), wx.ITEM_CHECK, 'OnWizardWindow', tr('Opens wizard window.')),
     ]),
 ]
 Mixin.setMixin('notebook', 'popmenulist', popmenulist)
@@ -63,6 +64,16 @@ def afterinit(win):
     wx.EVT_UPDATE_UI(win, win.IDM_WINDOW_WIZARD, win.OnUpdateUI)
 Mixin.setPlugin('mainframe', 'afterinit', afterinit)
 
+def on_notebook_updateui(win, event):
+    eid = event.GetId()
+    if eid == win.IDPM_WIZARDWINDOW:
+        event.Check(bool(Globals.mainframe.panel.getPage(_wizard_pagename)))
+Mixin.setPlugin('notebook', 'on_update_ui', on_notebook_updateui)
+
+def init(win):
+    wx.EVT_UPDATE_UI(win, win.IDPM_WIZARDWINDOW, win.OnUpdateUI)
+Mixin.setPlugin('notebook', 'init', init)
+
 def createWizardWindow(win):
     if not win.panel.getPage(_wizard_pagename):
         from WizardPanel import WizardPanel
@@ -72,11 +83,17 @@ def createWizardWindow(win):
 Mixin.setMixin('mainframe', 'createWizardWindow', createWizardWindow)
 
 def OnWindowWizard(win, event):
-    win.createWizardWindow()
-    win.panel.showPage(_wizard_pagename)
+    if not win.panel.getPage(_wizard_pagename):
+        win.createWizardWindow()
+        win.panel.showPage(_wizard_pagename)
+    else:
+        win.panel.closePage(_wizard_pagename)
 Mixin.setMixin('mainframe', 'OnWindowWizard', OnWindowWizard)
 
 def OnWizardWindow(win, event):
-    win.mainframe.createWizardWindow()
-    win.panel.showPage(_wizard_pagename)
+    if not win.panel.getPage(_wizard_pagename):
+        win.mainframe.createWizardWindow()
+        win.panel.showPage(_wizard_pagename)
+    else:
+        win.panel.closePage(_wizard_pagename)
 Mixin.setMixin('notebook', 'OnWizardWindow', OnWizardWindow)

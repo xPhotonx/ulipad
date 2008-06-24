@@ -23,11 +23,12 @@
 
 import wx
 from modules import Mixin
+from modules import Globals
 
 def add_mainframe_menu(menulist):
     menulist.extend([('IDM_WINDOW', #parent menu id
         [
-            (210, 'IDM_WINDOW_TODO', tr('TODO Window')+u'\tCtrl+T', wx.ITEM_CHECK, 'OnWindowTODO', tr('Open the TODO window.')),
+            (210, 'IDM_WINDOW_TODO', tr('TODO Window')+u'\tCtrl+T', wx.ITEM_CHECK, 'OnWindowTODO', tr('Opens the TODO window.')),
         ]),
     ])
 Mixin.setPlugin('mainframe', 'add_menu', add_mainframe_menu)
@@ -35,7 +36,7 @@ Mixin.setPlugin('mainframe', 'add_menu', add_mainframe_menu)
 def add_notebook_menu(popmenulist):
     popmenulist.extend([ (None,
         [
-            (190, 'IDPM_TODOWINDOW', tr('TODO Window'), wx.ITEM_NORMAL, 'OnNTodoWindow', tr('Opens the TODO window.')),
+            (190, 'IDPM_TODOWINDOW', tr('TODO Window'), wx.ITEM_CHECK, 'OnNTodoWindow', tr('Opens the TODO window.')),
         ]),
     ])
 Mixin.setPlugin('notebook', 'add_menu', add_notebook_menu)
@@ -67,6 +68,16 @@ def afterinit(win):
     wx.EVT_UPDATE_UI(win, win.IDM_WINDOW_TODO, win.OnUpdateUI)
 Mixin.setPlugin('mainframe', 'afterinit', afterinit)
 
+def on_notebook_updateui(win, event):
+    eid = event.GetId()
+    if eid == win.IDPM_TODOWINDOW:
+        event.Check(bool(Globals.mainframe.panel.getPage(_todo_pagename)))
+Mixin.setPlugin('notebook', 'on_update_ui', on_notebook_updateui)
+
+def init(win):
+    wx.EVT_UPDATE_UI(win, win.IDPM_TODOWINDOW, win.OnUpdateUI)
+Mixin.setPlugin('notebook', 'init', init)
+
 def createtodowindow(win):
     if not win.panel.getPage(_todo_pagename):
         from TodoWindow import TodoWindow
@@ -77,15 +88,21 @@ def createtodowindow(win):
 Mixin.setMixin('mainframe', 'createtodowindow', createtodowindow)
 
 def OnWindowTODO(win, event):
-    win.createtodowindow()
-    win.panel.showPage(_todo_pagename)
-    win.todowindow.show(win.document)
+    if not win.panel.getPage(_todo_pagename):
+        win.createtodowindow()
+        win.panel.showPage(_todo_pagename)
+        win.todowindow.show(win.document)
+    else:
+        win.panel.closePage(_todo_pagename)
 Mixin.setMixin('mainframe', 'OnWindowTODO', OnWindowTODO)
 
 def OnNTodoWindow(win, event):
-    win.mainframe.createtodowindow()
-    win.panel.showPage(_todo_pagename)
-    win.mainframe.todowindow.show(win.mainframe.document)
+    if not win.panel.getPage(_todo_pagename):
+        win.mainframe.createtodowindow()
+        win.panel.showPage(_todo_pagename)
+        win.mainframe.todowindow.show(win.mainframe.document)
+    else:
+        win.panel.closePage(_todo_pagename)
 Mixin.setMixin('notebook', 'OnNTodoWindow', OnNTodoWindow)
 
 def aftersavefile(win, filename):

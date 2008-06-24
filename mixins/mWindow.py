@@ -23,6 +23,7 @@
 
 import wx
 from modules import Mixin
+from modules import Globals
 
 def add_mainframe_menu(menulist):
     menulist.extend([(None,
@@ -31,8 +32,8 @@ def add_mainframe_menu(menulist):
         ]),
         ('IDM_WINDOW',
         [
-            (100, 'IDM_WINDOW_LEFT', tr('Left Window')+'\tAlt+Z', wx.ITEM_CHECK, 'OnWindowLeft', tr('Shows or hides the left Window')),
-            (110, 'IDM_WINDOW_BOTTOM', tr('Bottom Window')+'\tAlt+X', wx.ITEM_CHECK, 'OnWindowBottom', tr('Shows or hides the bottom Window')),
+            (100, 'IDM_WINDOW_LEFT', tr('Left Window')+'\tAlt+Z', wx.ITEM_CHECK, 'OnWindowLeft', tr('Shows or hides the left Window.')),
+            (110, 'IDM_WINDOW_BOTTOM', tr('Bottom Window')+'\tAlt+X', wx.ITEM_CHECK, 'OnWindowBottom', tr('Shows or hides the bottom Window.')),
             (120, '-', '', wx.ITEM_SEPARATOR, '', ''),
             (130, 'IDM_WINDOW_SHELL', tr('Shell Window'), wx.ITEM_CHECK, 'OnWindowShell', tr('Opens shell window.')),
             (140, 'IDM_WINDOW_MESSAGE', tr('Messages Window'), wx.ITEM_CHECK, 'OnWindowMessage', tr('Opens messages window.')),
@@ -89,6 +90,19 @@ def afterinit(win):
     win.shellwindow = None
 Mixin.setPlugin('mainframe', 'afterinit', afterinit)
 
+def on_notebook_updateui(win, event):
+    eid = event.GetId()
+    if eid == win.IDPM_SHELLWINDOW:
+        event.Check(bool(Globals.mainframe.panel.getPage(_shell_page_name)))
+    if eid == win.IDPM_MESSAGEWINDOW:
+        event.Check(bool(Globals.mainframe.panel.getPage(_message_page_name)))
+Mixin.setPlugin('notebook', 'on_update_ui', on_notebook_updateui)
+
+def init(win):
+    wx.EVT_UPDATE_UI(win, win.IDPM_SHELLWINDOW, win.OnUpdateUI)
+    wx.EVT_UPDATE_UI(win, win.IDPM_MESSAGEWINDOW, win.OnUpdateUI)
+Mixin.setPlugin('notebook', 'init', init)
+
 def add_tool_list(toollist, toolbaritems):
     toollist.extend([
         (450, 'left'),
@@ -97,8 +111,8 @@ def add_tool_list(toollist, toolbaritems):
 
     #order, IDname, imagefile, short text, long text, func
     toolbaritems.update({
-        'left':(wx.ITEM_CHECK, 'IDM_WINDOW_LEFT', 'images/left.gif', tr('Toggle Left Window'), tr('Shows or hides the left Window'), 'OnWindowLeft'),
-        'bottom':(wx.ITEM_CHECK, 'IDM_WINDOW_BOTTOM', 'images/bottom.gif', tr('Toggle Bottom Window'), tr('Shows or hides the bottom Window'), 'OnWindowBottom'),
+        'left':(wx.ITEM_CHECK, 'IDM_WINDOW_LEFT', 'images/left.gif', tr('Toggle Left Window'), tr('Shows or hides the left Window.'), 'OnWindowLeft'),
+        'bottom':(wx.ITEM_CHECK, 'IDM_WINDOW_BOTTOM', 'images/bottom.gif', tr('Toggle Bottom Window'), tr('Shows or hides the bottom Window.'), 'OnWindowBottom'),
     })
 Mixin.setPlugin('mainframe', 'add_tool_list', add_tool_list)
 
@@ -121,32 +135,44 @@ def createMessageWindow(win):
 Mixin.setMixin('mainframe', 'createMessageWindow', createMessageWindow)
 
 def OnWindowShell(win, event):
-    win.createShellWindow()
-    win.panel.showPage(_shell_page_name)
+    if not win.panel.getPage(_shell_page_name):
+        win.createShellWindow()
+        win.panel.showPage(_shell_page_name)
+    else:
+        win.panel.closePage(_shell_page_name)
 Mixin.setMixin('mainframe', 'OnWindowShell', OnWindowShell)
 
 def OnWindowMessage(win, event):
-    win.createMessageWindow()
-    win.panel.showPage(_message_page_name)
+    if not win.panel.getPage(_message_page_name):
+        win.createMessageWindow()
+        win.panel.showPage(_message_page_name)
+    else:
+        win.panel.closePage(_message_page_name)
 Mixin.setMixin('mainframe', 'OnWindowMessage', OnWindowMessage)
 
 def add_editor_menu(popmenulist):
     popmenulist.extend([ (None,
         [
-            (120, 'IDPM_SHELLWINDOW', tr('Shell Window'), wx.ITEM_NORMAL, 'OnShellWindow', tr('Opens shell window.')),
-            (130, 'IDPM_MESSAGEWINDOW', tr('Messages Window'), wx.ITEM_NORMAL, 'OnMessageWindow', tr('Opens messages window.')),
+            (120, 'IDPM_SHELLWINDOW', tr('Shell Window'), wx.ITEM_CHECK, 'OnShellWindow', tr('Opens shell window.')),
+            (130, 'IDPM_MESSAGEWINDOW', tr('Messages Window'), wx.ITEM_CHECK, 'OnMessageWindow', tr('Opens messages window.')),
         ]),
     ])
 Mixin.setPlugin('notebook', 'add_menu', add_editor_menu)
 
 def OnShellWindow(win, event):
-    win.mainframe.createShellWindow()
-    win.panel.showPage(_shell_page_name)
+    if not win.panel.getPage(_shell_page_name):
+        win.mainframe.createShellWindow()
+        win.panel.showPage(_shell_page_name)
+    else:
+        win.panel.closePage(_shell_page_name)
 Mixin.setMixin('notebook', 'OnShellWindow', OnShellWindow)
 
 def OnMessageWindow(win, event):
-    win.mainframe.createMessageWindow()
-    win.panel.showPage(_message_page_name)
+    if not win.panel.getPage(_message_page_name):
+        win.mainframe.createMessageWindow()
+        win.panel.showPage(_message_page_name)
+    else:
+        win.panel.closePage(_message_page_name)
 Mixin.setMixin('notebook', 'OnMessageWindow', OnMessageWindow)
 
 def OnEditClearShell(win, event):

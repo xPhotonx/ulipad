@@ -36,7 +36,7 @@ Mixin.setPlugin('mainframe', 'add_menu', add_mainframe_menu)
 def add_notebook_menu(popmenulist):
     popmenulist.extend([(None,
         [
-            (180, 'IDPM_SHAREWINDOW', tr('Resource Shares Window'), wx.ITEM_NORMAL, 'OnShareWindow', tr('Opens resource shares window.')),
+            (180, 'IDPM_SHAREWINDOW', tr('Resource Shares Window'), wx.ITEM_CHECK, 'OnShareWindow', tr('Opens resource shares window.')),
         ]),
     ])
 Mixin.setPlugin('notebook', 'add_menu', add_notebook_menu)
@@ -72,6 +72,16 @@ def afterinit(win):
     wx.EVT_UPDATE_UI(win, win.IDM_WINDOW_SHARE, win.OnUpdateUI)
 Mixin.setPlugin('mainframe', 'afterinit', afterinit)
 
+def on_notebook_updateui(win, event):
+    eid = event.GetId()
+    if eid == win.IDPM_SHAREWINDOW:
+        event.Check(bool(Globals.mainframe.panel.getPage(_resshare_pagename)))
+Mixin.setPlugin('notebook', 'on_update_ui', on_notebook_updateui)
+
+def init(win):
+    wx.EVT_UPDATE_UI(win, win.IDPM_SHAREWINDOW, win.OnUpdateUI)
+Mixin.setPlugin('notebook', 'init', init)
+
 def createShareWindow(win):
     if not win.panel.getPage(_resshare_pagename):
         from ShareWindow import ShareWindow
@@ -81,13 +91,19 @@ def createShareWindow(win):
 Mixin.setMixin('mainframe', 'createShareWindow', createShareWindow)
 
 def OnWindowShare(win, event):
-    win.createShareWindow()
-    win.panel.showPage(_resshare_pagename)
+    if not win.panel.getPage(_resshare_pagename):
+        win.createShareWindow()
+        win.panel.showPage(_resshare_pagename)
+    else:
+        win.panel.closePage(_resshare_pagename)
 Mixin.setMixin('mainframe', 'OnWindowShare', OnWindowShare)
 
 def OnShareWindow(win, event):
-    win.mainframe.createShareWindow()
-    win.panel.showPage(_resshare_pagename)
+    if not win.panel.getPage(_resshare_pagename):
+        win.mainframe.createShareWindow()
+        win.panel.showPage(_resshare_pagename)
+    else:
+        win.panel.closePage(_resshare_pagename)
 Mixin.setMixin('notebook', 'OnShareWindow', OnShareWindow)
 
 def close_page(page, name):

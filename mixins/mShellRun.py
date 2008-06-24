@@ -39,9 +39,9 @@ def add_mainframe_menu(menulist):
         ]),
         ('IDM_SHELL', #parent menu id
         [
-            (100, 'IDM_SHELL_MANAGE', tr('External Tools Manager...'), wx.ITEM_NORMAL, 'OnShellManage', tr('Shell command manager')),
+            (100, 'IDM_SHELL_MANAGE', tr('External Tools Manager...'), wx.ITEM_NORMAL, 'OnShellManage', tr('Shell command manager.')),
             (110, '', '-', wx.ITEM_SEPARATOR, None, ''),
-            (120, 'IDM_SHELL_ITEMS', tr('(Empty)'), wx.ITEM_NORMAL, 'OnShellItems', tr('Execute an shell command')),
+            (120, 'IDM_SHELL_ITEMS', tr('(Empty)'), wx.ITEM_NORMAL, 'OnShellItems', tr('Execute an shell command.')),
         ]),
     ])
 Mixin.setPlugin('mainframe', 'add_menu', add_mainframe_menu)

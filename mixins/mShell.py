@@ -27,7 +27,7 @@ from modules import Mixin
 def add_editor_menu(popmenulist):
     popmenulist.extend([ (None, #parent menu id
         [
-            (5, 'IDPM_COPY_RUN', tr('Run in Shell') + '\tCtrl+F5', wx.ITEM_NORMAL, 'OnEditorCopyRun', ''),
+            (5, 'IDPM_COPY_RUN', tr('Run In Shell') + '\tCtrl+F5', wx.ITEM_NORMAL, 'OnEditorCopyRun', ''),
         ]),
     ])
 Mixin.setPlugin('editor', 'add_menu', add_editor_menu)

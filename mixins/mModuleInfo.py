@@ -27,7 +27,7 @@ from modules import Mixin
 def add_mainframe_menu(menulist):
     menulist.extend([ ('IDM_HELP', #parent menu id
         [
-            (102, 'IDM_HELP_MODULES', tr('Extended Modules Info'), wx.ITEM_NORMAL, 'OnHelpModules', tr('Extended modules infomation')),
+            (102, 'IDM_HELP_MODULES', tr('Extended Modules Info'), wx.ITEM_NORMAL, 'OnHelpModules', tr('Extended modules infomation.')),
         ]),
     ])
 Mixin.setPlugin('mainframe', 'add_menu', add_mainframe_menu)

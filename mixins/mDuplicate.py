@@ -46,14 +46,14 @@ def add_editor_menu(popmenulist):
         ]),
         ('IDPM_DUPLICATE', #parent menu id
         [
-            (90, 'IDPM_DUPLICATE_MODE', tr('Duplicate Extend Mode') + '\tF10', wx.ITEM_CHECK, 'OnDuplicateMode', tr('Toggle duplication extend mode')),
-            (100, 'IDPM_DUPLICATE_CURRENT_LINE', tr('Duplicate Current Line') + '\tCtrl+J', wx.ITEM_NORMAL, 'OnDuplicateCurrentLine', tr('Duplicates current line')),
+            (90, 'IDPM_DUPLICATE_MODE', tr('Duplicate Extend Mode') + '\tF10', wx.ITEM_CHECK, 'OnDuplicateMode', tr('Toggle duplication extend mode.')),
+            (100, 'IDPM_DUPLICATE_CURRENT_LINE', tr('Duplicate Current Line') + '\tCtrl+J', wx.ITEM_NORMAL, 'OnDuplicateCurrentLine', tr('Duplicates current line.')),
 #            (200, 'IDPM_DUPLICATE_CHAR', tr('Duplicate Previous Char') + '\tCtrl+M', wx.ITEM_NORMAL, 'OnDuplicateChar', tr('Copies a character from previous matched word')),
 #            (300, 'IDPM_DUPLICATE_NEXT_CHAR', tr('Duplicate Next Char') + '\tCtrl+Shift+M', wx.ITEM_NORMAL, 'OnDuplicateNextChar', tr('Copies a character from next matched word')),
-            (400, 'IDPM_DUPLICATE_WORD', tr('Duplicate Previous Word') + '\tCtrl+P', wx.ITEM_NORMAL, 'OnDuplicateWord', tr('Copies a word from previous matched line')),
-            (500, 'IDPM_DUPLICATE_NEXT_WORD', tr('Duplicate Next Word') + '\tCtrl+Shift+P', wx.ITEM_NORMAL, 'OnDuplicateNextWord', tr('Copies a word from next matched line')),
-            (600, 'IDPM_DUPLICATE_LINE', tr('Duplicate Previous Line') + '\tCtrl+L', wx.ITEM_NORMAL, 'OnDuplicateLine', tr('Copies a line from next matched line')),
-            (700, 'IDPM_DUPLICATE_NEXT_LINE', tr('Duplicate Next Line') + '\tCtrl+Shift+L', wx.ITEM_NORMAL, 'OnDuplicateNextLine', tr('Copies a line from next matched line')),
+            (400, 'IDPM_DUPLICATE_WORD', tr('Duplicate Previous Word') + '\tCtrl+P', wx.ITEM_NORMAL, 'OnDuplicateWord', tr('Copies a word from previous matched line.')),
+            (500, 'IDPM_DUPLICATE_NEXT_WORD', tr('Duplicate Next Word') + '\tCtrl+Shift+P', wx.ITEM_NORMAL, 'OnDuplicateNextWord', tr('Copies a word from next matched line.')),
+            (600, 'IDPM_DUPLICATE_LINE', tr('Duplicate Previous Line') + '\tCtrl+L', wx.ITEM_NORMAL, 'OnDuplicateLine', tr('Copies a line from next matched line.')),
+            (700, 'IDPM_DUPLICATE_NEXT_LINE', tr('Duplicate Next Line') + '\tCtrl+Shift+L', wx.ITEM_NORMAL, 'OnDuplicateNextLine', tr('Copies a line from next matched line.')),
         ]),
     ])
 Mixin.setPlugin('editor', 'add_menu', add_editor_menu)
@@ -108,14 +108,14 @@ def add_mainframe_menu(menulist):
         ]),
         ('IDM_EDIT_DUPLICATE', #parent menu id
         [
-            (90, 'IDM_EDIT_DUPLICATE_MODE', tr('Duplicate Extend Mode') + '\tF10', wx.ITEM_CHECK, 'OnEditDuplicateMode', tr('Toggle duplication extend mode')),
-            (100, 'IDM_EDIT_DUPLICATE_CURRENT_LINE', tr('Duplicate Current Line') + '\tE=Ctrl+J', wx.ITEM_NORMAL, 'OnEditDuplicateCurrentLine', tr('Duplicates current line')),
+            (90, 'IDM_EDIT_DUPLICATE_MODE', tr('Duplicate Extend Mode') + '\tF10', wx.ITEM_CHECK, 'OnEditDuplicateMode', tr('Toggle duplication extend mode.')),
+            (100, 'IDM_EDIT_DUPLICATE_CURRENT_LINE', tr('Duplicate Current Line') + '\tE=Ctrl+J', wx.ITEM_NORMAL, 'OnEditDuplicateCurrentLine', tr('Duplicates current line.')),
 #            (200, 'IDM_EDIT_DUPLICATE_CHAR', tr('Duplicate Previous Char') + '\tE=Ctrl+M', wx.ITEM_NORMAL, 'OnEditDuplicateChar', tr('Copies a character from previous matched word')),
 #            (300, 'IDM_EDIT_DUPLICATE_NEXT_CHAR', tr('Duplicate Next Char') + '\tE=Ctrl+Shift+M', wx.ITEM_NORMAL, 'OnEditDuplicateNextChar', tr('Copies a character from next matched word')),
-            (400, 'IDM_EDIT_DUPLICATE_WORD', tr('Duplicate Previous Word') + '\tE=Ctrl+P', wx.ITEM_NORMAL, 'OnEditDuplicateWord', tr('Copies a word from previous matched line')),
-            (500, 'IDM_EDIT_DUPLICATE_NEXT_WORD', tr('Duplicate Next Word') + '\tE=Ctrl+Shift+P', wx.ITEM_NORMAL, 'OnEditDuplicateNextWord', tr('Copies a word from next matched line')),
-            (600, 'IDM_EDIT_DUPLICATE_LINE', tr('Duplicate Previous Line') + '\tE=Ctrl+L', wx.ITEM_NORMAL, 'OnEditDuplicateLine', tr('Copies a line from next matched line')),
-            (700, 'IDM_EDIT_DUPLICATE_NEXT_LINE', tr('Duplicate Next Line') + '\tE=Ctrl+Shift+L', wx.ITEM_NORMAL, 'OnEditDuplicateNextLine', tr('Copies a line from next matched line')),
+            (400, 'IDM_EDIT_DUPLICATE_WORD', tr('Duplicate Previous Word') + '\tE=Ctrl+P', wx.ITEM_NORMAL, 'OnEditDuplicateWord', tr('Copies a word from previous matched line.')),
+            (500, 'IDM_EDIT_DUPLICATE_NEXT_WORD', tr('Duplicate Next Word') + '\tE=Ctrl+Shift+P', wx.ITEM_NORMAL, 'OnEditDuplicateNextWord', tr('Copies a word from next matched line.')),
+            (600, 'IDM_EDIT_DUPLICATE_LINE', tr('Duplicate Previous Line') + '\tE=Ctrl+L', wx.ITEM_NORMAL, 'OnEditDuplicateLine', tr('Copies a line from next matched line.')),
+            (700, 'IDM_EDIT_DUPLICATE_NEXT_LINE', tr('Duplicate Next Line') + '\tE=Ctrl+Shift+L', wx.ITEM_NORMAL, 'OnEditDuplicateNextLine', tr('Copies a line from next matched line.')),
         ]),
     ])
 Mixin.setPlugin('mainframe', 'add_menu', add_mainframe_menu)

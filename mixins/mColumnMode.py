@@ -12,7 +12,7 @@ Mixin.setPlugin('editor', 'init', editor_init)
 def add_editor_menu(popmenulist):
     popmenulist.extend([ (None, #parent menu id
         [
-            (245, 'IDPM_COLUMN_MODE', tr('Column Mode') +'\tAlt+C', wx.ITEM_CHECK, 'OnColumnMode', tr('Mark Column Mode Region')),
+            (245, 'IDPM_COLUMN_MODE', tr('Column Mode') +'\tAlt+C', wx.ITEM_CHECK, 'OnColumnMode', tr('Marks Column Mode region.')),
         ]),
     ])
 Mixin.setPlugin('editor', 'add_menu', add_editor_menu)
@@ -204,7 +204,7 @@ def add_mainframe_menu(menulist):
     menulist.extend([
         ('IDM_EDIT', #parent menu id
         [
-            (275, 'IDM_EDIT_COLUMN_MODE', tr('Column Mode') +'\tE=Alt+C', wx.ITEM_NORMAL, 'OnEditColumnMode', tr('Mark Column Mode Region')),
+            (275, 'IDM_EDIT_COLUMN_MODE', tr('Column Mode') +'\tE=Alt+C', wx.ITEM_CHECK, 'OnEditColumnMode', tr('Marks Column Mode region.')),
 
         ]),
     ])

@@ -45,8 +45,8 @@ Mixin.setPlugin('preference', 'add_pref', add_pref)
 def add_mainframe_menu(menulist):
     menulist.extend([('IDM_PYTHON', #parent menu id
             [
-                (100, 'IDM_PYTHON_CLASSBROWSER', tr('Class Browser'), wx.ITEM_CHECK, 'OnPythonClassBrowser', tr('Show python class browser window')),
-                (110, 'IDM_PYTHON_CLASSBROWSER_REFRESH', tr('Class Browser Refresh'), wx.ITEM_NORMAL, 'OnPythonClassBrowserRefresh', tr('Refresh python class browser window')),
+                (100, 'IDM_PYTHON_CLASSBROWSER', tr('Class Browser'), wx.ITEM_CHECK, 'OnPythonClassBrowser', tr('Show python class browser window.')),
+                (110, 'IDM_PYTHON_CLASSBROWSER_REFRESH', tr('Class Browser Refresh'), wx.ITEM_NORMAL, 'OnPythonClassBrowserRefresh', tr('Refresh python class browser window.')),
             ]),
     ])
 Mixin.setPlugin('pythonfiletype', 'add_menu', add_mainframe_menu)

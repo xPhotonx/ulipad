@@ -27,6 +27,7 @@ import wx
 from modules import Mixin
 from modules.Debug import error
 from modules import common
+from modules import Globals
 
 def add_mainframe_menu(menulist):
     menulist.extend([ ('IDM_WINDOW',
@@ -46,10 +47,30 @@ def afterinit(win):
     win.ftp = None
 Mixin.setPlugin('mainframe', 'afterinit', afterinit)
 
+def on_mainframe_updateui(win, event):
+    eid = event.GetId()
+    if eid == win.IDM_WINDOW_FTP:
+        event.Check(bool(win.panel.getPage('FTP')))
+Mixin.setPlugin('mainframe', 'on_update_ui', on_mainframe_updateui)
+
+def afterinit(win):
+    wx.EVT_UPDATE_UI(win, win.IDM_WINDOW_FTP, win.OnUpdateUI)
+Mixin.setPlugin('mainframe', 'afterinit', afterinit)
+
+def on_notebook_updateui(win, event):
+    eid = event.GetId()
+    if eid == win.IDPM_FTPWINDOW:
+        event.Check(bool(Globals.mainframe.panel.getPage('FTP')))
+Mixin.setPlugin('notebook', 'on_update_ui', on_notebook_updateui)
+
+def init(win):
+    wx.EVT_UPDATE_UI(win, win.IDPM_FTPWINDOW, win.OnUpdateUI)
+Mixin.setPlugin('notebook', 'init', init)
+
 def add_editor_menu(popmenulist):
     popmenulist.extend([ (None,
         [
-            (150, 'IDPM_FTPWINDOW', tr('FTP Window'), wx.ITEM_NORMAL, 'OnFtpWindow', tr('Opens FTP window.')),
+            (150, 'IDPM_FTPWINDOW', tr('FTP Window'), wx.ITEM_CHECK, 'OnFtpWindow', tr('Opens FTP window.')),
         ]),
     ])
 Mixin.setPlugin('notebook', 'add_menu', add_editor_menu)
@@ -65,13 +86,19 @@ def createFtpWindow(win, side='bottom'):
 Mixin.setMixin('mainframe', 'createFtpWindow', createFtpWindow)
 
 def OnWindowFtp(win, event):
-    win.createFtpWindow()
-    win.panel.showPage('FTP')
+    if not win.panel.getPage('FTP'):
+        win.createFtpWindow()
+        win.panel.showPage('FTP')
+    else:
+        win.panel.closePage('FTP')
 Mixin.setMixin('mainframe', 'OnWindowFtp', OnWindowFtp)
 
 def OnFtpWindow(win, event):
-    win.mainframe.createFtpWindow(win.side)
-    win.panel.showPage('FTP')
+    if not win.panel.getPage('FTP'):
+        win.mainframe.createFtpWindow('bottom')
+        win.panel.showPage('FTP')
+    else:
+        win.panel.closePage('FTP')
 Mixin.setMixin('notebook', 'OnFtpWindow', OnFtpWindow)
 
 def pref_init(pref):
@@ -176,7 +203,7 @@ def add_tool_list(toollist, toolbaritems):
 
     #order, IDname, imagefile, short text, long text, func
     toolbaritems.update({
-        'ftp':(wx.ITEM_NORMAL, 'IDM_FILE_FTP', 'images/ftp.gif', tr('Open FTP Window'), tr('Opens FTP window.'), 'OnWindowFtp'),
+        'ftp':(wx.ITEM_CHECK, 'IDM_FILE_FTP', 'images/ftp.gif', tr('Open FTP Window'), tr('Opens FTP window.'), 'OnWindowFtp'),
     })
 Mixin.setPlugin('mainframe', 'add_tool_list', add_tool_list)
 

@@ -28,7 +28,7 @@ from modules import Globals
 def add_editor_menu(popmenulist):
     popmenulist.extend([ (None,
         [
-            (200, 'IDPM_MULTIVIEWWINDOW', tr('Multiview Window'), wx.ITEM_NORMAL, 'OnMultiViewWindow', tr('Opens multiview window.')),
+            (200, 'IDPM_MULTIVIEWWINDOW', tr('Open Multiview Window'), wx.ITEM_NORMAL, 'OnMultiViewWindow', tr('Opens the multiview window.')),
         ]),
     ])
 Mixin.setPlugin('notebook', 'add_menu', add_editor_menu)
@@ -73,7 +73,7 @@ Mixin.setPlugin('mainframe', 'closefile', closefile)
 def add_mainframe_menu(menulist):
     menulist.extend([ ('IDM_WINDOW',
         [
-            (220, 'IDM_WINDOW_MULTIVIEWWINDOW', tr('Multiview Window'), wx.ITEM_NORMAL, 'OnWindowMultiView', tr('Opens multi view window.')),
+            (220, 'IDM_WINDOW_MULTIVIEWWINDOW', tr('Open Multiview Window'), wx.ITEM_NORMAL, 'OnWindowMultiView', tr('Opens the multiview window.')),
         ]),
     ])
 Mixin.setPlugin('mainframe', 'add_menu', add_mainframe_menu)
@@ -96,8 +96,8 @@ def other_popup_menu(editctrl, document, menus):
         menus.extend([ (None,
             [
                 (600, '', '-', wx.ITEM_SEPARATOR, None, ''),
-                (700, 'IDPM_MULTIVIEW_LEFT', tr('Open MultiView In Left Pane'), wx.ITEM_NORMAL, 'OnOpenViewLeft', tr('Opens multiview of current document in left pane.')),
-                (800, 'IDPM_MULTIVIEW_BOTTOM', tr('Open MultiView In Bottom Pane'), wx.ITEM_NORMAL, 'OnOpenViewBottom', tr('Opens multiview of current document in bottom pane.')),
+                (700, 'IDPM_MULTIVIEW_LEFT', tr('Open MultiView In Left Pane'), wx.ITEM_NORMAL, 'OnOpenViewLeft', tr('Opens the multiview of current document in left pane.')),
+                (800, 'IDPM_MULTIVIEW_BOTTOM', tr('Open MultiView In Bottom Pane'), wx.ITEM_NORMAL, 'OnOpenViewBottom', tr('Opens the multiview of current document in bottom pane.')),
             ]),
         ])
 Mixin.setPlugin('editctrl', 'other_popup_menu', other_popup_menu)

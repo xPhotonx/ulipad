@@ -17,7 +17,7 @@ def add_mainframe_menu(menulist):
         ]),
         ('IDM_TOOL_AUTO_LOAD_MIXINS',
         [
-            (110, 'IDM_TOOL_MIXINS_NAME', tr('Select Mixins Name To Reload') +'\tCtrl+M', wx.ITEM_NORMAL, 'OnToolReloadName', tr('Select Mixin names to reload.')),
+            (110, 'IDM_TOOL_MIXINS_NAME', tr('Select Mixins Name To Reload') +'\tCtrl+M', wx.ITEM_NORMAL, 'OnToolReloadName', tr('Selects Mixin names to reload.')),
             (120, 'IDM_TOOL_ENABLE_RELOAD_MIXINS', tr('Enable Reload Mixins') +'\tCtrl+Shift+M', wx.ITEM_CHECK, 'OnToolreload_mixins', tr('Switches to Mixins reload mode.')),
         ]),
     ])

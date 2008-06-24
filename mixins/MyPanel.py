@@ -28,6 +28,7 @@ from modules import Id
 from modules import makemenu
 from modules import Mixin
 from modules import common
+from modules import Globals
 
 class SashPanel(wx.Panel):
     def __init__(self, parent):
@@ -449,11 +450,17 @@ class Notebook(FNB.FlatNotebook, Mixin.Mixin):
         self.delete_must = False
         self.old_size = None
         self.full = False
+        
+        self.callplugin('init', self)
 
     def OnPageChanged(self, event):
 #        wx.CallAfter(self.GetPage(self.GetSelection()).SetFocus)
         event.Skip()
 
+    def OnUpdateUI(self, event):
+        if hasattr(Globals.app.wxApp, 'Active') and Globals.app.wxApp.Active:
+            self.callplugin('on_update_ui', self, event)
+    
     def OnClose(self, event):
         if not self.delete_must:
             if hasattr(event, 'Veto'):

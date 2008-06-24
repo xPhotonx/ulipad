@@ -45,16 +45,16 @@ def add_tool_list(toollist, toolbaritems):
 
     #order, IDname, imagefile, short text, long text, func
     toolbaritems.update({
-        'new':(wx.ITEM_NORMAL, 'IDM_FILE_NEW', 'images/new.gif', tr('New File'), tr('Creates a new document'), 'OnFileNew'),
-        'open':(wx.ITEM_NORMAL, 'IDM_FILE_OPEN', 'images/open.gif', tr('Open File'), tr('Opens an existing document'), 'OnFileOpen'),
-        'save':(wx.ITEM_NORMAL, 'IDM_FILE_SAVE', 'images/save.gif', tr('Save File'), tr('Saves an opened document using the same filename'), 'OnFileSave'),
-        'saveall':(wx.ITEM_NORMAL, 'IDM_FILE_SAVE_ALL', 'images/saveall.gif', tr('Save All Files'), tr('Saves all documents'), 'OnFileSaveAll'),
-        'cut':(wx.ITEM_NORMAL, 'IDM_EDIT_CUT', 'images/cut.gif', tr('Cut'), tr('Deletes text from the document and moves it to the clipboard'), 'DoSTCBuildIn'),
-        'copy':(wx.ITEM_NORMAL, 'IDM_EDIT_COPY', 'images/copy.gif', tr('Copy'), tr('Copies text from the document to the clipboard'), 'DoSTCBuildIn'),
-        'paste':(wx.ITEM_NORMAL, 'IDM_EDIT_PASTE', 'images/paste.gif', tr('Paste'), tr('Pastes text from the clipboard into the document'), 'DoSTCBuildIn'),
-        'undo':(wx.ITEM_NORMAL, 'IDM_EDIT_UNDO', 'images/undo.gif', tr('Undo'), tr('Reverse previous editing operation'), 'DoSTCBuildIn'),
-        'redo':(wx.ITEM_NORMAL, 'IDM_EDIT_REDO', 'images/redo.gif', tr('Redo'), tr('Reverse previous undo operation'), 'DoSTCBuildIn'),
-        'preference':(wx.ITEM_NORMAL, 'wx.ID_PREFERENCES', 'images/prop.gif', tr('Preferences'), tr('Setup program preferences'), 'OnOptionPreference'),
+        'new':(wx.ITEM_NORMAL, 'IDM_FILE_NEW', 'images/new.gif', tr('New File'), tr('Creates a new document.'), 'OnFileNew'),
+        'open':(wx.ITEM_NORMAL, 'IDM_FILE_OPEN', 'images/open.gif', tr('Open File'), tr('Opens an existing document.'), 'OnFileOpen'),
+        'save':(wx.ITEM_NORMAL, 'IDM_FILE_SAVE', 'images/save.gif', tr('Save File'), tr('Saves an opened document using the same filename.'), 'OnFileSave'),
+        'saveall':(wx.ITEM_NORMAL, 'IDM_FILE_SAVE_ALL', 'images/saveall.gif', tr('Save All Files'), tr('Saves all documents.'), 'OnFileSaveAll'),
+        'cut':(wx.ITEM_NORMAL, 'IDM_EDIT_CUT', 'images/cut.gif', tr('Cut'), tr('Deletes text from the document and moves it to the clipboard.'), 'DoSTCBuildIn'),
+        'copy':(wx.ITEM_NORMAL, 'IDM_EDIT_COPY', 'images/copy.gif', tr('Copy'), tr('Copies text from the document to the clipboard.'), 'DoSTCBuildIn'),
+        'paste':(wx.ITEM_NORMAL, 'IDM_EDIT_PASTE', 'images/paste.gif', tr('Paste'), tr('Pastes text from the clipboard into the document.'), 'DoSTCBuildIn'),
+        'undo':(wx.ITEM_NORMAL, 'IDM_EDIT_UNDO', 'images/undo.gif', tr('Undo'), tr('Reverse previous editing operation.'), 'DoSTCBuildIn'),
+        'redo':(wx.ITEM_NORMAL, 'IDM_EDIT_REDO', 'images/redo.gif', tr('Redo'), tr('Reverse previous undo operation.'), 'DoSTCBuildIn'),
+        'preference':(wx.ITEM_NORMAL, 'wx.ID_PREFERENCES', 'images/prop.gif', tr('Preferences'), tr('Setup program preferences.'), 'OnOptionPreference'),
     })
 Mixin.setPlugin('mainframe', 'add_tool_list', add_tool_list)
 
