@@ -133,6 +133,8 @@ class Finder:
         self.win.SetSelectionStart(start)
         self.win.SetSelectionEnd(end)
         self.win.EnsureCaretVisible()
+        self.win.EnsureVisible(self.win.GetCurrentLine())
+        
 
     def regularSearch(self, start, end):
         case = 0
