@@ -63,8 +63,8 @@ Mixin.setMixin('prefdialog', 'OnSetInterpreter', OnSetInterpreter)
 def add_pref(preflist):
     preflist.extend([
         ('Python', 150, 'button', 'python_interpreter', tr('Setup Python interpreter...'), 'OnSetInterpreter'),
-        ('Python', 155, 'check', 'python_show_args', tr('Show arguments dialog at python program run'), None),
-        ('Python', 156, 'check', 'python_save_before_run', tr('Save modified file at python program run'), None),
+        ('Python', 155, 'check', 'python_show_args', tr('Show arguments dialog at Python program run'), None),
+        ('Python', 156, 'check', 'python_save_before_run', tr('Save modified file at Python program run'), None),
     ])
 Mixin.setPlugin('preference', 'add_pref', add_pref)
 
@@ -72,9 +72,9 @@ def add_pyftype_menu(menulist):
     menulist.extend([('IDM_PYTHON', #parent menu id
         [
             (120, '', '-', wx.ITEM_SEPARATOR, None, ''),
-            (130, 'IDM_PYTHON_RUN', tr('Run')+u'\tE=F5', wx.ITEM_NORMAL, 'OnPythonRun', tr('Run python program.')),
-            (140, 'IDM_PYTHON_SETARGS', tr('Set Arguments...'), wx.ITEM_NORMAL, 'OnPythonSetArgs', tr('Set python program command line arugments.')),
-            (150, 'IDM_PYTHON_END', tr('Stop Program'), wx.ITEM_NORMAL, 'OnPythonEnd', tr('Stop current python program.')),
+            (130, 'IDM_PYTHON_RUN', tr('Run')+u'\tE=F5', wx.ITEM_NORMAL, 'OnPythonRun', tr('Run Python program.')),
+            (140, 'IDM_PYTHON_SETARGS', tr('Set Arguments...'), wx.ITEM_NORMAL, 'OnPythonSetArgs', tr('Set Python program command line arugments.')),
+            (150, 'IDM_PYTHON_END', tr('Stop Program'), wx.ITEM_NORMAL, 'OnPythonEnd', tr('Stop current Python program.')),
             (155, 'IDM_PYTHON_DOCTEST', tr('Run Doctests'), wx.ITEM_NORMAL, 'OnPythonDoctests', tr('Run doctests in current document.')),
         ]),
     ])
