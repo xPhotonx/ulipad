@@ -33,10 +33,10 @@ def add_mainframe_menu(menulist):
         ]),
         ('IDM_EDIT_CASE',
         [
-            (100, 'IDM_EDIT_CASE_UPPER_CASE', tr('Upper Case') + '\tE=Ctrl+U', wx.ITEM_NORMAL, 'OnEditCaseUpperCase', tr('Changes the selected text to upper case')),
-            (200, 'IDM_EDIT_CASE_LOWER_CASE', tr('Lower Case') + '\tE=Ctrl+Shift+U', wx.ITEM_NORMAL, 'OnEditCaseLowerCase', tr('Changes the selected text to lower case')),
-            (300, 'IDM_EDIT_CASE_INVERT_CASE', tr('Invert Case'), wx.ITEM_NORMAL, 'OnEditCaseInvertCase', tr('Inverts the case of the selected text')),
-            (400, 'IDM_EDIT_CASE_CAPITALIZE', tr('Capitalize'), wx.ITEM_NORMAL, 'OnEditCaseCapitalize', tr('Capitalizes all words of the selected text')),
+            (100, 'IDM_EDIT_CASE_UPPER_CASE', tr('Uppercase') + '\tE=Ctrl+U', wx.ITEM_NORMAL, 'OnEditCaseUpperCase', tr('Changes the selected text to upper case.')),
+            (200, 'IDM_EDIT_CASE_LOWER_CASE', tr('Lowercase') + '\tE=Ctrl+Shift+U', wx.ITEM_NORMAL, 'OnEditCaseLowerCase', tr('Changes the selected text to lower case.')),
+            (300, 'IDM_EDIT_CASE_INVERT_CASE', tr('Invert Case'), wx.ITEM_NORMAL, 'OnEditCaseInvertCase', tr('Inverts the case of the selected text.')),
+            (400, 'IDM_EDIT_CASE_CAPITALIZE', tr('Capitalize'), wx.ITEM_NORMAL, 'OnEditCaseCapitalize', tr('Capitalizes all words of the selected text.')),
         ]),
     ])
 Mixin.setPlugin('mainframe', 'add_menu', add_mainframe_menu)
@@ -48,10 +48,10 @@ def add_editor_menu(popmenulist):
         ]),
         ('IDPM_CASE',
         [
-            (100, 'IDPM_CASE_UPPER_CASE', tr('Upper Case') + '\tCtrl+U', wx.ITEM_NORMAL, 'OnCaseUpperCase', tr('Changes the selected text to upper case')),
-            (200, 'IDPM_CASE_LOWER_CASE', tr('Lower Case') + '\tCtrl+Shift+U', wx.ITEM_NORMAL, 'OnCaseLowerCase', tr('Changes the selected text to lower case')),
-            (300, 'IDPM_CASE_INVERT_CASE', tr('Invert Case'), wx.ITEM_NORMAL, 'OnCaseInvertCase', tr('Inverts the case of the selected text')),
-            (400, 'IDPM_CASE_CAPITALIZE', tr('Capitalize'), wx.ITEM_NORMAL, 'OnCaseCapitalize', tr('Capitalizes all words of the selected text')),
+            (100, 'IDPM_CASE_UPPER_CASE', tr('Uppercase') + '\tCtrl+U', wx.ITEM_NORMAL, 'OnCaseUpperCase', tr('Changes the selected text to upper case.')),
+            (200, 'IDPM_CASE_LOWER_CASE', tr('Lowercase') + '\tCtrl+Shift+U', wx.ITEM_NORMAL, 'OnCaseLowerCase', tr('Changes the selected text to lower case.')),
+            (300, 'IDPM_CASE_INVERT_CASE', tr('Invert Case'), wx.ITEM_NORMAL, 'OnCaseInvertCase', tr('Inverts the case of the selected text.')),
+            (400, 'IDPM_CASE_CAPITALIZE', tr('Capitalize'), wx.ITEM_NORMAL, 'OnCaseCapitalize', tr('Capitalizes all words of the selected text.')),
         ]),
     ])
 Mixin.setPlugin('editor', 'add_menu', add_editor_menu)

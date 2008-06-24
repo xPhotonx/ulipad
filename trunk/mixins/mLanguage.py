@@ -29,11 +29,11 @@ from modules import common
 def add_mainframe_menu(menulist):
     menulist.extend([('IDM_TOOL',
         [
-            (135, 'IDM_OPTION_LANGUAGE', tr('Language'), wx.ITEM_NORMAL, None, tr('Setup lanaguage')),
+            (135, 'IDM_OPTION_LANGUAGE', tr('Language'), wx.ITEM_NORMAL, None, ''),
         ]),
         ('IDM_OPTION_LANGUAGE',
         [
-            (100, 'IDM_OPTION_LANGUAGE_ENGLISH', 'English', wx.ITEM_CHECK, 'OnOptionLanguageChange', 'Change langauage'),
+            (100, 'IDM_OPTION_LANGUAGE_ENGLISH', 'English', wx.ITEM_CHECK, 'OnOptionLanguageChange', 'Change langauage.'),
         ]),
     ])
 Mixin.setPlugin('mainframe', 'add_menu', add_mainframe_menu)

@@ -30,7 +30,7 @@ def add_mainframe_menu(menulist):
     menulist.extend([
         ('IDM_SEARCH', #parent menu id
         [
-            (145, 'IDM_SEARCH_FIND_IN_FILES', tr('Find In Files...')+'\tCtrl+Shift+F4', wx.ITEM_NORMAL, 'OnSearchFindInFiles', tr('Find text in files')),
+            (145, 'IDM_SEARCH_FIND_IN_FILES', tr('Find In Files...')+'\tCtrl+Shift+F4', wx.ITEM_NORMAL, 'OnSearchFindInFiles', tr('Find text in files.')),
         ]),
     ])
 Mixin.setPlugin('mainframe', 'add_menu', add_mainframe_menu)

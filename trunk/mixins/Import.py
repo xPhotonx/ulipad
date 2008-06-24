@@ -120,16 +120,16 @@ from modules import Mixin
 def add_mainframe_menu(menulist):
     menulist.extend([ ('IDM_FILE',
         [
-            (100, 'IDM_FILE_NEW', tr('New') + '\tCtrl+N', wx.ITEM_NORMAL, 'OnFileNew', tr('Creates a new document')),
-            (105, 'IDM_FILE_NEWMORE', tr('New') + '...', wx.ITEM_NORMAL, None, tr('Creates a new document')),
-            (110, 'IDM_FILE_OPEN', tr('Open') + '\tCtrl+O', wx.ITEM_NORMAL, 'OnFileOpen', tr('Opens an existing document')),
-            (120, 'IDM_FILE_REOPEN', tr('Reopen') + '\tE=Ctrl+Shift+O', wx.ITEM_NORMAL, 'OnFileReOpen', tr('Reopens an existing document')),
-            (140, 'IDM_FILE_CLOSE', tr('Close') + '\tCtrl+F4', wx.ITEM_NORMAL, 'OnFileClose', tr('Closes an opened document')),
-            (150, 'IDM_FILE_CLOSE_ALL', tr('Close All'), wx.ITEM_NORMAL, 'OnFileCloseAll', tr('Closes all document windows')),
+            (100, 'IDM_FILE_NEW', tr('New') + '\tCtrl+N', wx.ITEM_NORMAL, 'OnFileNew', tr('Creates a new document.')),
+            (105, 'IDM_FILE_NEWMORE', tr('New') + '...', wx.ITEM_NORMAL, None, tr('Creates a new document.')),
+            (110, 'IDM_FILE_OPEN', tr('Open File...') + '\tCtrl+O', wx.ITEM_NORMAL, 'OnFileOpen', tr('Opens an existing document.')),
+            (120, 'IDM_FILE_REOPEN', tr('Reopen') + '\tE=Ctrl+Shift+O', wx.ITEM_NORMAL, 'OnFileReOpen', tr('Reopens an existing document.')),
+            (140, 'IDM_FILE_CLOSE', tr('Close') + '\tCtrl+F4', wx.ITEM_NORMAL, 'OnFileClose', tr('Closes an opened document.')),
+            (150, 'IDM_FILE_CLOSE_ALL', tr('Close All'), wx.ITEM_NORMAL, 'OnFileCloseAll', tr('Closes all document windows.')),
             (160, '', '-', wx.ITEM_SEPARATOR, None, ''),
-            (170, 'IDM_FILE_SAVE', tr('Save') + '\tE=Ctrl+S', wx.ITEM_NORMAL, 'OnFileSave', tr('Saves an opened document using the same filename')),
-            (180, 'IDM_FILE_SAVEAS', tr('Save As'), wx.ITEM_NORMAL, 'OnFileSaveAs', tr('Saves an opened document to a specified filename')),
-            (190, 'IDM_FILE_SAVE_ALL', tr('Save All'), wx.ITEM_NORMAL, 'OnFileSaveAll', tr('Saves all documents')),
+            (170, 'IDM_FILE_SAVE', tr('Save File...') + '\tE=Ctrl+S', wx.ITEM_NORMAL, 'OnFileSave', tr('Saves an opened document using the same filename.')),
+            (180, 'IDM_FILE_SAVEAS', tr('Save As...'), wx.ITEM_NORMAL, 'OnFileSaveAs', tr('Saves an opened document to a specified filename.')),
+            (190, 'IDM_FILE_SAVE_ALL', tr('Save All'), wx.ITEM_NORMAL, 'OnFileSaveAll', tr('Saves all documents.')),
         ]),
     ])
 Mixin.setPlugin('mainframe', 'add_menu', add_mainframe_menu)
@@ -137,12 +137,12 @@ Mixin.setPlugin('mainframe', 'add_menu', add_mainframe_menu)
 def add_editctrl_menu(popmenulist):
     popmenulist.extend([ (None,
         [
-            (100, 'IDPM_CLOSE', tr('Close') + '\tCtrl+F4', wx.ITEM_NORMAL, 'OnPopUpMenu', tr('Closes an opened document')),
-            (110, 'IDPM_CLOSE_ALL', tr('Close All'), wx.ITEM_NORMAL, 'OnPopUpMenu', tr('Closes all document windows')),
+            (100, 'IDPM_CLOSE', tr('Close') + '\tCtrl+F4', wx.ITEM_NORMAL, 'OnPopUpMenu', tr('Closes an opened document.')),
+            (110, 'IDPM_CLOSE_ALL', tr('Close All'), wx.ITEM_NORMAL, 'OnPopUpMenu', tr('Closes all document windows.')),
             (120, '', '-', wx.ITEM_SEPARATOR, None, ''),
-            (130, 'IDPM_SAVE', tr('Save') + '\tCtrl+S', wx.ITEM_NORMAL, 'OnPopUpMenu', tr('Saves an opened document using the same filename')),
-            (140, 'IDPM_SAVEAS', tr('Save As'), wx.ITEM_NORMAL, 'OnPopUpMenu', 'tr(Saves an opened document to a specified filename)'),
-            (150, 'IDPM_FILE_SAVE_ALL', tr('Save All'), wx.ITEM_NORMAL, 'OnPopUpMenu', tr('Saves all documents')),
+            (130, 'IDPM_SAVE', tr('Save File...') + '\tCtrl+S', wx.ITEM_NORMAL, 'OnPopUpMenu', tr('Saves an opened document using the same filename.')),
+            (140, 'IDPM_SAVEAS', tr('Save As...'), wx.ITEM_NORMAL, 'OnPopUpMenu', tr('Saves an opened document to a specified filename.')),
+            (150, 'IDPM_FILE_SAVE_ALL', tr('Save All'), wx.ITEM_NORMAL, 'OnPopUpMenu', tr('Saves all documents.')),
             (155, '', '-', wx.ITEM_SEPARATOR, None, ''),
             (156, 'IDPM_FILE_COPY_FILENAME', tr('Copy Filename To Clipboard'), wx.ITEM_NORMAL, 'OnCopyFilenameToClipboard', tr('Copy current document filename to clipboard.')),
             (160, '', '-', wx.ITEM_SEPARATOR, None, ''),
@@ -484,27 +484,27 @@ from modules import Mixin
 def add_editor_menu(popmenulist):
     popmenulist.extend([ (None, #parent menu id
         [
-            (100, 'IDPM_UNDO', tr('Undo') + '\tCtrl+Z', wx.ITEM_NORMAL, 'OnPopupEdit', tr('Reverse previous editing operation')),
-            (110, 'IDPM_REDO', tr('Redo') + '\tCtrl+Y', wx.ITEM_NORMAL, 'OnPopupEdit', tr('Reverse previous undo operation')),
+            (100, 'IDPM_UNDO', tr('Undo') + '\tCtrl+Z', wx.ITEM_NORMAL, 'OnPopupEdit', tr('Reverses previous editing operation.')),
+            (110, 'IDPM_REDO', tr('Redo') + '\tCtrl+Y', wx.ITEM_NORMAL, 'OnPopupEdit', tr('Reverses previous undo operation.')),
             (120, '', '-', wx.ITEM_SEPARATOR, None, ''),
-            (130, 'IDPM_CUT', tr('Cut') + '\tCtrl+X', wx.ITEM_NORMAL, 'OnPopupEdit', tr('Deletes text from the document and moves it to the clipboard')),
-            (140, 'IDPM_COPY', tr('Copy') + '\tCtrl+C', wx.ITEM_NORMAL, 'OnPopupEdit', tr('Copies text from the document to the clipboard')),
-            (150, 'IDPM_PASTE', tr('Paste') + '\tCtrl+V', wx.ITEM_NORMAL, 'OnPopupEdit', tr('Pastes text from the clipboard into the document')),
+            (130, 'IDPM_CUT', tr('Cut') + '\tCtrl+X', wx.ITEM_NORMAL, 'OnPopupEdit', tr('Deletes text from the document and moves it to the clipboard.')),
+            (140, 'IDPM_COPY', tr('Copy') + '\tCtrl+C', wx.ITEM_NORMAL, 'OnPopupEdit', tr('Copies text from the document to the clipboard.')),
+            (150, 'IDPM_PASTE', tr('Paste') + '\tCtrl+V', wx.ITEM_NORMAL, 'OnPopupEdit', tr('Pastes text from the clipboard into the document.')),
             (160, '', '-', wx.ITEM_SEPARATOR, None, ''),
             (170, 'IDPM_SELECTION', tr('Selection'), wx.ITEM_NORMAL, None, ''),
 
         ]),
         ('IDPM_SELECTION',
         [
-            (100, 'IDPM_SELECTION_SELECT_WORD', tr('Select Word') + '\tCtrl+W', wx.ITEM_NORMAL, 'OnSelectionWord', tr('Selects current word')),
-            (200, 'IDPM_SELECTION_SELECT_WORD_EXTEND', tr('Select Word Extend') + '\tCtrl+Shift+W', wx.ITEM_NORMAL, 'OnSelectionWordExtend', tr('Selects current word include "."')),
-            (300, 'IDPM_SELECTION_SELECT_PHRASE', tr('Match Select (Left First)') + '\tCtrl+E', wx.ITEM_NORMAL, 'OnSelectionMatchLeft', tr('Selects the text encluded by (){}[]<>""\'\', matching left first')),
-            (400, 'IDPM_SELECTION_SELECT_PHRASE_RIGHT', tr('Match Select (Right First)') + '\tCtrl+Shift+E', wx.ITEM_NORMAL, 'OnSelectionMatchRight', tr('Selects the text encluded by (){}[]<>""\'\', matching right first')),
-            (500, 'IDPM_SELECTION_SELECT_ENLARGE', tr('Enlarge Selection') + '\tCtrl+Alt+E', wx.ITEM_NORMAL, 'OnSelectionEnlarge', tr('Enlarges selection')),
-            (600, 'IDPM_SELECTION_SELECT_LINE', tr('Select Line') + '\tCtrl+R', wx.ITEM_NORMAL, 'OnSelectionLine', tr('Select current phrase')),
-            (700, 'IDPM_SELECTION_SELECTALL', tr('Select All') + '\tCtrl+A', wx.ITEM_NORMAL, 'OnPopupEdit', tr('Selects the entire document')),
-            (800, 'IDPM_SELECTION_BEGIN', tr('Set Start of Selection'), wx.ITEM_NORMAL, 'OnSelectionBegin', tr('Set selection begin')),
-            (900, 'IDPM_SELECTION_END', tr('Set End of Selection'), wx.ITEM_NORMAL, 'OnSelectionEnd', tr('Set selection end')),
+            (100, 'IDPM_SELECTION_SELECT_WORD', tr('Select Word') + '\tCtrl+W', wx.ITEM_NORMAL, 'OnSelectionWord', tr('Selects current word.')),
+            (200, 'IDPM_SELECTION_SELECT_WORD_EXTEND', tr('Select Word Extend') + '\tCtrl+Shift+W', wx.ITEM_NORMAL, 'OnSelectionWordExtend', tr('Selects current word include ".".')),
+            (300, 'IDPM_SELECTION_SELECT_PHRASE', tr('Match Select (Left First)') + '\tCtrl+E', wx.ITEM_NORMAL, 'OnSelectionMatchLeft', tr('Selects the text encluded by (){}[]<>""\'\', matching left first.')),
+            (400, 'IDPM_SELECTION_SELECT_PHRASE_RIGHT', tr('Match Select (Right First)') + '\tCtrl+Shift+E', wx.ITEM_NORMAL, 'OnSelectionMatchRight', tr('Selects the text encluded by (){}[]<>""\'\', matching right first.')),
+            (500, 'IDPM_SELECTION_SELECT_ENLARGE', tr('Enlarge Selection') + '\tCtrl+Alt+E', wx.ITEM_NORMAL, 'OnSelectionEnlarge', tr('Enlarges selection.')),
+            (600, 'IDPM_SELECTION_SELECT_LINE', tr('Select Line') + '\tCtrl+R', wx.ITEM_NORMAL, 'OnSelectionLine', tr('Select current phrase.')),
+            (700, 'IDPM_SELECTION_SELECTALL', tr('Select All') + '\tCtrl+A', wx.ITEM_NORMAL, 'OnPopupEdit', tr('Selects the entire document.')),
+            (800, 'IDPM_SELECTION_BEGIN', tr('Set Start Of Selection'), wx.ITEM_NORMAL, 'OnSelectionBegin', tr('Set selection begin.')),
+            (900, 'IDPM_SELECTION_END', tr('Set End Of Selection'), wx.ITEM_NORMAL, 'OnSelectionEnd', tr('Set selection end.')),
         ]),
     ])
 Mixin.setPlugin('editor', 'add_menu', add_editor_menu)
@@ -542,27 +542,27 @@ def add_mainframe_menu(menulist):
         ]),
         ('IDM_EDIT', #parent menu id
         [
-            (201, 'IDM_EDIT_UNDO', tr('Undo') +'\tE=Ctrl+Z', wx.ITEM_NORMAL, 'DoSTCBuildIn', tr('Reverse previous editing operation')),
-            (202, 'IDM_EDIT_REDO', tr('Redo') +'\tE=Ctrl+Y', wx.ITEM_NORMAL, 'DoSTCBuildIn', tr('Reverse previous undo operation')),
+            (201, 'IDM_EDIT_UNDO', tr('Undo') +'\tE=Ctrl+Z', wx.ITEM_NORMAL, 'DoSTCBuildIn', tr('Reverses previous editing operation.')),
+            (202, 'IDM_EDIT_REDO', tr('Redo') +'\tE=Ctrl+Y', wx.ITEM_NORMAL, 'DoSTCBuildIn', tr('Reverses previous undo operation.')),
             (203, '', '-', wx.ITEM_SEPARATOR, None, ''),
-            (204, 'IDM_EDIT_CUT', tr('Cut') + '\tE=Ctrl+X', wx.ITEM_NORMAL, 'DoSTCBuildIn', tr('Deletes text from the document and moves it to the clipboard')),
-            (205, 'IDM_EDIT_COPY', tr('Copy') + '\tE=Ctrl+C', wx.ITEM_NORMAL, 'DoSTCBuildIn', tr('Copies text from the document to the clipboard')),
-            (206, 'IDM_EDIT_PASTE', tr('Paste') + '\tE=Ctrl+V', wx.ITEM_NORMAL, 'DoSTCBuildIn', tr('Pastes text from the clipboard into the document')),
+            (204, 'IDM_EDIT_CUT', tr('Cut') + '\tE=Ctrl+X', wx.ITEM_NORMAL, 'DoSTCBuildIn', tr('Deletes text from the document and moves it to the clipboard.')),
+            (205, 'IDM_EDIT_COPY', tr('Copy') + '\tE=Ctrl+C', wx.ITEM_NORMAL, 'DoSTCBuildIn', tr('Copies text from the document to the clipboard.')),
+            (206, 'IDM_EDIT_PASTE', tr('Paste') + '\tE=Ctrl+V', wx.ITEM_NORMAL, 'DoSTCBuildIn', tr('Pastes text from the clipboard into the document.')),
             (210, '', '-', wx.ITEM_SEPARATOR, None, ''),
             (215, 'IDM_EDIT_SELECTION', tr('Selection'), wx.ITEM_NORMAL, None, ''),
 
         ]),
         ('IDM_EDIT_SELECTION',
         [
-            (100, 'IDM_EDIT_SELECTION_SELECT_WORD', tr('Select Word') + '\tE=Ctrl+W', wx.ITEM_NORMAL, 'OnEditSelectionWord', tr('Selects current word')),
-            (200, 'IDM_EDIT_SELECTION_SELECT_WORD_EXTEND', tr('Select Word Extend') + '\tE=Ctrl+Shift+W', wx.ITEM_NORMAL, 'OnEditSelectionWordExtend', tr('Selects current word include "."')),
-            (300, 'IDM_EDIT_SELECTION_SELECT_PHRASE', tr('Match Select (Left First)') + '\tE=Ctrl+E', wx.ITEM_NORMAL, 'OnEditSelectionMatchLeft', tr('Selects the text encluded by (){}[]<>""\'\', matching left first')),
-            (400, 'IDM_EDIT_SELECTION_SELECT_PHRASE_RIGHT', tr('Match Select (Right First)') + '\tE=Ctrl+Shift+E', wx.ITEM_NORMAL, 'OnEditSelectionMatchRight', tr('Selects the text encluded by (){}[]<>""\'\', matching right first')),
-            (500, 'IDM_EDIT_SELECTION_SELECT_ENLARGE', tr('Enlarge Selection') + '\tE=Ctrl+Alt+E', wx.ITEM_NORMAL, 'OnEditSelectionEnlarge', tr('Enlarges selection')),
-            (600, 'IDM_EDIT_SELECTION_SELECT_LINE', tr('Select Line') + '\tE=Ctrl+R', wx.ITEM_NORMAL, 'OnEditSelectionLine', tr('Select current phrase')),
-            (700, 'IDM_EDIT_SELECTION_SELECTALL', tr('Select All') + '\tE=Ctrl+A', wx.ITEM_NORMAL, 'DoSTCBuildIn', tr('Selects the entire document')),
-            (800, 'IDM_EDIT_SELECTION_BEGIN', tr('Select Begin'), wx.ITEM_NORMAL, 'OnEditSelectionBegin', tr('Set selection begin')),
-            (900, 'IDM_EDIT_SELECTION_END', tr('Select End'), wx.ITEM_NORMAL, 'OnEditSelectionEnd', tr('Set selection end')),
+            (100, 'IDM_EDIT_SELECTION_SELECT_WORD', tr('Select Word') + '\tE=Ctrl+W', wx.ITEM_NORMAL, 'OnEditSelectionWord', tr('Selects current word.')),
+            (200, 'IDM_EDIT_SELECTION_SELECT_WORD_EXTEND', tr('Select Word Extend') + '\tE=Ctrl+Shift+W', wx.ITEM_NORMAL, 'OnEditSelectionWordExtend', tr('Selects current word include ".".')),
+            (300, 'IDM_EDIT_SELECTION_SELECT_PHRASE', tr('Match Select (Left First)') + '\tE=Ctrl+E', wx.ITEM_NORMAL, 'OnEditSelectionMatchLeft', tr('Selects the text encluded by (){}[]<>""\'\', matching left first.')),
+            (400, 'IDM_EDIT_SELECTION_SELECT_PHRASE_RIGHT', tr('Match Select (Right First)') + '\tE=Ctrl+Shift+E', wx.ITEM_NORMAL, 'OnEditSelectionMatchRight', tr('Selects the text encluded by (){}[]<>""\'\', matching right first.')),
+            (500, 'IDM_EDIT_SELECTION_SELECT_ENLARGE', tr('Enlarge Selection') + '\tE=Ctrl+Alt+E', wx.ITEM_NORMAL, 'OnEditSelectionEnlarge', tr('Enlarges selection.')),
+            (600, 'IDM_EDIT_SELECTION_SELECT_LINE', tr('Select Line') + '\tE=Ctrl+R', wx.ITEM_NORMAL, 'OnEditSelectionLine', tr('Select current phrase.')),
+            (700, 'IDM_EDIT_SELECTION_SELECTALL', tr('Select All') + '\tE=Ctrl+A', wx.ITEM_NORMAL, 'DoSTCBuildIn', tr('Selects the entire document.')),
+            (800, 'IDM_EDIT_SELECTION_BEGIN', tr('Select Begin'), wx.ITEM_NORMAL, 'OnEditSelectionBegin', tr('Set selection begin.')),
+            (900, 'IDM_EDIT_SELECTION_END', tr('Select End'), wx.ITEM_NORMAL, 'OnEditSelectionEnd', tr('Set selection end.')),
         ]),
     ])
 Mixin.setPlugin('mainframe', 'add_menu', add_mainframe_menu)
@@ -857,16 +857,16 @@ def add_tool_list(toollist, toolbaritems):
 
     #order, IDname, imagefile, short text, long text, func
     toolbaritems.update({
-        'new':(wx.ITEM_NORMAL, 'IDM_FILE_NEW', 'images/new.gif', tr('New File'), tr('Creates a new document'), 'OnFileNew'),
-        'open':(wx.ITEM_NORMAL, 'IDM_FILE_OPEN', 'images/open.gif', tr('Open File'), tr('Opens an existing document'), 'OnFileOpen'),
-        'save':(wx.ITEM_NORMAL, 'IDM_FILE_SAVE', 'images/save.gif', tr('Save File'), tr('Saves an opened document using the same filename'), 'OnFileSave'),
-        'saveall':(wx.ITEM_NORMAL, 'IDM_FILE_SAVE_ALL', 'images/saveall.gif', tr('Save All Files'), tr('Saves all documents'), 'OnFileSaveAll'),
-        'cut':(wx.ITEM_NORMAL, 'IDM_EDIT_CUT', 'images/cut.gif', tr('Cut'), tr('Deletes text from the document and moves it to the clipboard'), 'DoSTCBuildIn'),
-        'copy':(wx.ITEM_NORMAL, 'IDM_EDIT_COPY', 'images/copy.gif', tr('Copy'), tr('Copies text from the document to the clipboard'), 'DoSTCBuildIn'),
-        'paste':(wx.ITEM_NORMAL, 'IDM_EDIT_PASTE', 'images/paste.gif', tr('Paste'), tr('Pastes text from the clipboard into the document'), 'DoSTCBuildIn'),
-        'undo':(wx.ITEM_NORMAL, 'IDM_EDIT_UNDO', 'images/undo.gif', tr('Undo'), tr('Reverse previous editing operation'), 'DoSTCBuildIn'),
-        'redo':(wx.ITEM_NORMAL, 'IDM_EDIT_REDO', 'images/redo.gif', tr('Redo'), tr('Reverse previous undo operation'), 'DoSTCBuildIn'),
-        'preference':(wx.ITEM_NORMAL, 'wx.ID_PREFERENCES', 'images/prop.gif', tr('Preferences'), tr('Setup program preferences'), 'OnOptionPreference'),
+        'new':(wx.ITEM_NORMAL, 'IDM_FILE_NEW', 'images/new.gif', tr('New File'), tr('Creates a new document.'), 'OnFileNew'),
+        'open':(wx.ITEM_NORMAL, 'IDM_FILE_OPEN', 'images/open.gif', tr('Open File'), tr('Opens an existing document.'), 'OnFileOpen'),
+        'save':(wx.ITEM_NORMAL, 'IDM_FILE_SAVE', 'images/save.gif', tr('Save File'), tr('Saves an opened document using the same filename.'), 'OnFileSave'),
+        'saveall':(wx.ITEM_NORMAL, 'IDM_FILE_SAVE_ALL', 'images/saveall.gif', tr('Save All Files'), tr('Saves all documents.'), 'OnFileSaveAll'),
+        'cut':(wx.ITEM_NORMAL, 'IDM_EDIT_CUT', 'images/cut.gif', tr('Cut'), tr('Deletes text from the document and moves it to the clipboard.'), 'DoSTCBuildIn'),
+        'copy':(wx.ITEM_NORMAL, 'IDM_EDIT_COPY', 'images/copy.gif', tr('Copy'), tr('Copies text from the document to the clipboard.'), 'DoSTCBuildIn'),
+        'paste':(wx.ITEM_NORMAL, 'IDM_EDIT_PASTE', 'images/paste.gif', tr('Paste'), tr('Pastes text from the clipboard into the document.'), 'DoSTCBuildIn'),
+        'undo':(wx.ITEM_NORMAL, 'IDM_EDIT_UNDO', 'images/undo.gif', tr('Undo'), tr('Reverse previous editing operation.'), 'DoSTCBuildIn'),
+        'redo':(wx.ITEM_NORMAL, 'IDM_EDIT_REDO', 'images/redo.gif', tr('Redo'), tr('Reverse previous undo operation.'), 'DoSTCBuildIn'),
+        'preference':(wx.ITEM_NORMAL, 'wx.ID_PREFERENCES', 'images/prop.gif', tr('Preferences'), tr('Setup program preferences.'), 'OnOptionPreference'),
     })
 Mixin.setPlugin('mainframe', 'add_tool_list', add_tool_list)
 
@@ -973,7 +973,7 @@ def add_mainframe_menu(menulist):
         ]),
         ('IDM_SEARCH', #parent menu id
         [
-            (100, 'wx.ID_FIND', tr('Find...') + '\tE=Ctrl+F', wx.ITEM_NORMAL, 'OnSearchFind', tr('Find text')),
+            (100, 'wx.ID_FIND', tr('Find...') + '\tE=Ctrl+F', wx.ITEM_NORMAL, 'OnSearchFind', tr('Find text.')),
             (110, 'IDM_SEARCH_DIRECTFIND', tr('Directly Find') + '\tE=F4', wx.ITEM_NORMAL, 'OnSearchDirectFind', tr('Find selected text directly.')),
             (120, 'wx.ID_REPLACE', tr('Find And Replace...') + '\tE=Ctrl+H', wx.ITEM_NORMAL, 'OnSearchReplace', tr('Find and replace text.')),
             (130, 'wx.ID_BACKWARD', tr('Find Previous') + '\tE=Shift+F3', wx.ITEM_NORMAL, 'OnSearchFindPrev', tr('Find previous occurance of text.')),
@@ -1175,9 +1175,9 @@ def add_mainframe_menu(menulist):
         ]),
         ('IDM_DOCUMENT_EOL_CONVERT',
         [
-            (100, 'IDM_DOCUMENT_EOL_CONVERT_PC', tr('Convert To Windows Format'), wx.ITEM_NORMAL, 'OnDocumentEolConvertWin', tr('Convert line ending to windows format')),
-            (200, 'IDM_DOCUMENT_EOL_CONVERT_UNIX', tr('Convert To Unix Format'), wx.ITEM_NORMAL, 'OnDocumentEolConvertUnix', tr('Convert line ending to unix format')),
-            (300, 'IDM_DOCUMENT_EOL_CONVERT_MAX', tr('Convert To Mac Format'), wx.ITEM_NORMAL, 'OnDocumentEolConvertMac', tr('Convert line ending to mac format')),
+            (100, 'IDM_DOCUMENT_EOL_CONVERT_PC', tr('Convert To Windows Format'), wx.ITEM_NORMAL, 'OnDocumentEolConvertWin', tr('Convert line ending to windows format.')),
+            (200, 'IDM_DOCUMENT_EOL_CONVERT_UNIX', tr('Convert To Unix Format'), wx.ITEM_NORMAL, 'OnDocumentEolConvertUnix', tr('Convert line ending to unix format.')),
+            (300, 'IDM_DOCUMENT_EOL_CONVERT_MAX', tr('Convert To Mac Format'), wx.ITEM_NORMAL, 'OnDocumentEolConvertMac', tr('Convert line ending to mac format.')),
         ]),
     ])
 Mixin.setPlugin('mainframe', 'add_menu', add_mainframe_menu)
@@ -1307,11 +1307,11 @@ def add_mainframe_menu(menulist):
         ]),
         ('IDM_VIEW', #parent menu id
         [
-            (100, 'IDM_VIEW_TAB', tr('Tabs And Spaces'), wx.ITEM_CHECK, 'OnViewTab', tr('Shows or hides space and tab marks')),
-            (110, 'IDM_VIEW_INDENTATION_GUIDES', tr('Indentation Guides'), wx.ITEM_CHECK, 'OnViewIndentationGuides', tr('Shows or hides indentation guides')),
-            (120, 'IDM_VIEW_RIGHT_EDGE', tr('Right Edge Indicator'), wx.ITEM_CHECK, 'OnViewRightEdge', tr('Shows or hides right edge indicator')),
-            (130, 'IDM_VIEW_LINE_NUMBER', tr('Line Number'), wx.ITEM_CHECK, 'OnViewLineNumber', tr('Shows or hides line number')),
-            (131, 'IDM_VIEW_ENDOFLINE_MARK', tr('End-of-line Marker'), wx.ITEM_CHECK, 'OnViewEndOfLineMark', tr('Shows or hides end-of-line marker')),
+            (100, 'IDM_VIEW_TAB', tr('Tabs And Spaces'), wx.ITEM_CHECK, 'OnViewTab', tr('Shows or hides space and tab marks.')),
+            (110, 'IDM_VIEW_INDENTATION_GUIDES', tr('Indentation Guides'), wx.ITEM_CHECK, 'OnViewIndentationGuides', tr('Shows or hides indentation guides.')),
+            (120, 'IDM_VIEW_RIGHT_EDGE', tr('Right Edge Indicator'), wx.ITEM_CHECK, 'OnViewRightEdge', tr('Shows or hides right edge indicator.')),
+            (130, 'IDM_VIEW_LINE_NUMBER', tr('Line Number'), wx.ITEM_CHECK, 'OnViewLineNumber', tr('Shows or hides line number.')),
+            (131, 'IDM_VIEW_ENDOFLINE_MARK', tr('End-of-line Marker'), wx.ITEM_CHECK, 'OnViewEndOfLineMark', tr('Shows or hides end-of-line marker.')),
         ]),
     ])
 Mixin.setPlugin('mainframe', 'add_menu', add_mainframe_menu)
@@ -1481,19 +1481,19 @@ def add_mainframe_menu(menulist):
         ]),
         ('IDM_EDIT_FORMAT',
         [
-            (100, 'IDM_EDIT_FORMAT_CHOP', tr('Trim Trailing Spaces'), wx.ITEM_NORMAL, 'OnEditFormatChop', tr('Trims trailing white spaces')),
-            (110, 'IDM_EDIT_FORMAT_SPACETOTAB', tr('Leading Spaces To Tabs'), wx.ITEM_NORMAL, 'OnEditFormatSpaceToTab', tr('Converts leading spaces to tabs')),
-            (120, 'IDM_EDIT_FORMAT_TABTOSPACE', tr('Leading Tabs To Spaces'), wx.ITEM_NORMAL, 'OnEditFormatTabToSpace', tr('Converts leading tabs to spaces')),
-            (125, 'IDM_EDIT_FORMAT_ALLTABTOSPACE', tr('All Tabs To Spaces'), wx.ITEM_NORMAL, 'OnEditFormatAllTabToSpace', tr('Converts all tabs to spaces')),
+            (100, 'IDM_EDIT_FORMAT_CHOP', tr('Trim Trailing Spaces'), wx.ITEM_NORMAL, 'OnEditFormatChop', tr('Trims trailing white spaces.')),
+            (110, 'IDM_EDIT_FORMAT_SPACETOTAB', tr('Leading Spaces To Tabs'), wx.ITEM_NORMAL, 'OnEditFormatSpaceToTab', tr('Converts leading spaces to tabs.')),
+            (120, 'IDM_EDIT_FORMAT_TABTOSPACE', tr('Leading Tabs To Spaces'), wx.ITEM_NORMAL, 'OnEditFormatTabToSpace', tr('Converts leading tabs to spaces.')),
+            (125, 'IDM_EDIT_FORMAT_ALLTABTOSPACE', tr('All Tabs To Spaces'), wx.ITEM_NORMAL, 'OnEditFormatAllTabToSpace', tr('Converts all tabs to spaces.')),
             (130, '', '-', wx.ITEM_SEPARATOR, None, ''),
-            (140, 'IDM_EDIT_FORMAT_INDENT', tr('Increase Indent'), wx.ITEM_NORMAL, 'OnEditFormatIndent', tr('Increases the indentation of current line or selected block')),
-            (150, 'IDM_EDIT_FORMAT_UNINDENT', tr('Decrease Indent'), wx.ITEM_NORMAL, 'OnEditFormatUnindent', tr('Decreases the indentation of current line or selected block')),
+            (140, 'IDM_EDIT_FORMAT_INDENT', tr('Increase Indent'), wx.ITEM_NORMAL, 'OnEditFormatIndent', tr('Increases the indentation of current line or selected block.')),
+            (150, 'IDM_EDIT_FORMAT_UNINDENT', tr('Decrease Indent'), wx.ITEM_NORMAL, 'OnEditFormatUnindent', tr('Decreases the indentation of current line or selected block.')),
             (160, '', '-', wx.ITEM_SEPARATOR, None, ''),
-            (170, 'IDM_EDIT_FORMAT_COMMENT', tr('Line Comment...') + '\tE=Ctrl+/', wx.ITEM_NORMAL, 'OnEditFormatComment', tr('Inserts comment sign at the beginning of line')),
-            (180, 'IDM_EDIT_FORMAT_UNCOMMENT', tr('Line Uncomment...') + '\tE=Ctrl+\\', wx.ITEM_NORMAL, 'OnEditFormatUncomment', tr('Removes comment sign at the beginning of line')),
+            (170, 'IDM_EDIT_FORMAT_COMMENT', tr('Line Comment...') + '\tE=Ctrl+/', wx.ITEM_NORMAL, 'OnEditFormatComment', tr('Inserts comment sign at the beginning of line.')),
+            (180, 'IDM_EDIT_FORMAT_UNCOMMENT', tr('Line Uncomment...') + '\tE=Ctrl+\\', wx.ITEM_NORMAL, 'OnEditFormatUncomment', tr('Removes comment sign at the beginning of line.')),
             (190, '', '-', wx.ITEM_SEPARATOR, None, ''),
-            (200, 'IDM_EDIT_FORMAT_QUOTE', tr('Text Quote...') + '\tE=Ctrl+\'', wx.ITEM_NORMAL, 'OnEditFormatQuote', tr('Quote selected text')),
-            (210, 'IDM_EDIT_FORMAT_UNQUOTE', tr('Text Unquote...') + '\tE=Ctrl+Shift+\'', wx.ITEM_NORMAL, 'OnEditFormatUnquote', tr('Unquote selected text')),
+            (200, 'IDM_EDIT_FORMAT_QUOTE', tr('Text Quote...') + '\tE=Ctrl+\'', wx.ITEM_NORMAL, 'OnEditFormatQuote', tr('Quote selected text.')),
+            (210, 'IDM_EDIT_FORMAT_UNQUOTE', tr('Text Unquote...') + '\tE=Ctrl+Shift+\'', wx.ITEM_NORMAL, 'OnEditFormatUnquote', tr('Unquote selected text.')),
         ]),
     ])
 Mixin.setPlugin('mainframe', 'add_menu', add_mainframe_menu)
@@ -1505,19 +1505,19 @@ def add_editor_menu(popmenulist):
         ]),
         ('IDPM_FORMAT',
         [
-            (100, 'IDPM_FORMAT_CHOP', tr('Trim Trailing Spaces'), wx.ITEM_NORMAL, 'OnFormatChop', tr('Trims trailing white spaces')),
-            (110, 'IDPM_FORMAT_SPACETOTAB', tr('Convert Leading Spaces To Tabs'), wx.ITEM_NORMAL, 'OnFormatSpaceToTab', tr('Converts leading spaces to tabs')),
-            (120, 'IDPM_FORMAT_TABTOSPACE', tr('Convert Leading Tabs To Spaces'), wx.ITEM_NORMAL, 'OnFormatTabToSpace', tr('Converts leading tabs to spaces')),
-            (125, 'IDPM_FORMAT_ALLTABTOSPACE', tr('Convert All Tabs To Spaces'), wx.ITEM_NORMAL, 'OnFormatAllTabToSpace', tr('Converts all tabs to spaces')),
+            (100, 'IDPM_FORMAT_CHOP', tr('Trim Trailing Spaces'), wx.ITEM_NORMAL, 'OnFormatChop', tr('Trims trailing white spaces.')),
+            (110, 'IDPM_FORMAT_SPACETOTAB', tr('Convert Leading Spaces To Tabs'), wx.ITEM_NORMAL, 'OnFormatSpaceToTab', tr('Converts leading spaces to tabs.')),
+            (120, 'IDPM_FORMAT_TABTOSPACE', tr('Convert Leading Tabs To Spaces'), wx.ITEM_NORMAL, 'OnFormatTabToSpace', tr('Converts leading tabs to spaces.')),
+            (125, 'IDPM_FORMAT_ALLTABTOSPACE', tr('Convert All Tabs To Spaces'), wx.ITEM_NORMAL, 'OnFormatAllTabToSpace', tr('Converts all tabs to spaces.')),
             (130, '', '-', wx.ITEM_SEPARATOR, None, ''),
-            (140, 'IDPM_FORMAT_INDENT', tr('Increase Indent'), wx.ITEM_NORMAL, 'OnFormatIndent', tr('Increases the indentation of current line or selected block')),
-            (150, 'IDPM_FORMAT_UNINDENT', tr('Decrease Indent'), wx.ITEM_NORMAL, 'OnFormatUnindent', tr('Decreases the indentation of current line or selected block')),
+            (140, 'IDPM_FORMAT_INDENT', tr('Increase Indent'), wx.ITEM_NORMAL, 'OnFormatIndent', tr('Increases the indentation of current line or selected block.')),
+            (150, 'IDPM_FORMAT_UNINDENT', tr('Decrease Indent'), wx.ITEM_NORMAL, 'OnFormatUnindent', tr('Decreases the indentation of current line or selected block.')),
             (160, '', '-', wx.ITEM_SEPARATOR, None, ''),
-            (170, 'IDPM_FORMAT_COMMENT', tr('Line Comment...') + '\tCtrl+/', wx.ITEM_NORMAL, 'OnFormatComment', tr('Inserts comment sign at the beginning of line')),
-            (180, 'IDPM_FORMAT_UNCOMMENT', tr('Line Uncomment...') + '\tCtrl+\\', wx.ITEM_NORMAL, 'OnFormatUncomment', tr('Removes comment sign at the beginning of line')),
+            (170, 'IDPM_FORMAT_COMMENT', tr('Line Comment...') + '\tCtrl+/', wx.ITEM_NORMAL, 'OnFormatComment', tr('Inserts comment sign at the beginning of line.')),
+            (180, 'IDPM_FORMAT_UNCOMMENT', tr('Line Uncomment...') + '\tCtrl+\\', wx.ITEM_NORMAL, 'OnFormatUncomment', tr('Removes comment sign at the beginning of line.')),
             (190, '', '-', wx.ITEM_SEPARATOR, None, ''),
-            (200, 'IDPM_FORMAT_QUOTE', tr('Text Quote...') + '\tCtrl+\'', wx.ITEM_NORMAL, 'OnFormatQuote', tr('Quote selected text')),
-            (210, 'IDPM_FORMAT_UNQUOTE', tr('Text Unquote...') + '\tCtrl+Shift+\'', wx.ITEM_NORMAL, 'OnFormatUnquote', tr('Unquote selected text')),
+            (200, 'IDPM_FORMAT_QUOTE', tr('Text Quote...') + '\tCtrl+\'', wx.ITEM_NORMAL, 'OnFormatQuote', tr('Quote selected text.')),
+            (210, 'IDPM_FORMAT_UNQUOTE', tr('Text Unquote...') + '\tCtrl+Shift+\'', wx.ITEM_NORMAL, 'OnFormatUnquote', tr('Unquote selected text.')),
         ]),
     ])
 Mixin.setPlugin('editor', 'add_menu', add_editor_menu)
@@ -1849,10 +1849,10 @@ def add_mainframe_menu(menulist):
         ]),
         ('IDM_EDIT_CASE',
         [
-            (100, 'IDM_EDIT_CASE_UPPER_CASE', tr('Upper Case') + '\tE=Ctrl+U', wx.ITEM_NORMAL, 'OnEditCaseUpperCase', tr('Changes the selected text to upper case')),
-            (200, 'IDM_EDIT_CASE_LOWER_CASE', tr('Lower Case') + '\tE=Ctrl+Shift+U', wx.ITEM_NORMAL, 'OnEditCaseLowerCase', tr('Changes the selected text to lower case')),
-            (300, 'IDM_EDIT_CASE_INVERT_CASE', tr('Invert Case'), wx.ITEM_NORMAL, 'OnEditCaseInvertCase', tr('Inverts the case of the selected text')),
-            (400, 'IDM_EDIT_CASE_CAPITALIZE', tr('Capitalize'), wx.ITEM_NORMAL, 'OnEditCaseCapitalize', tr('Capitalizes all words of the selected text')),
+            (100, 'IDM_EDIT_CASE_UPPER_CASE', tr('Uppercase') + '\tE=Ctrl+U', wx.ITEM_NORMAL, 'OnEditCaseUpperCase', tr('Changes the selected text to upper case.')),
+            (200, 'IDM_EDIT_CASE_LOWER_CASE', tr('Lowercase') + '\tE=Ctrl+Shift+U', wx.ITEM_NORMAL, 'OnEditCaseLowerCase', tr('Changes the selected text to lower case.')),
+            (300, 'IDM_EDIT_CASE_INVERT_CASE', tr('Invert Case'), wx.ITEM_NORMAL, 'OnEditCaseInvertCase', tr('Inverts the case of the selected text.')),
+            (400, 'IDM_EDIT_CASE_CAPITALIZE', tr('Capitalize'), wx.ITEM_NORMAL, 'OnEditCaseCapitalize', tr('Capitalizes all words of the selected text.')),
         ]),
     ])
 Mixin.setPlugin('mainframe', 'add_menu', add_mainframe_menu)
@@ -1864,10 +1864,10 @@ def add_editor_menu(popmenulist):
         ]),
         ('IDPM_CASE',
         [
-            (100, 'IDPM_CASE_UPPER_CASE', tr('Upper Case') + '\tCtrl+U', wx.ITEM_NORMAL, 'OnCaseUpperCase', tr('Changes the selected text to upper case')),
-            (200, 'IDPM_CASE_LOWER_CASE', tr('Lower Case') + '\tCtrl+Shift+U', wx.ITEM_NORMAL, 'OnCaseLowerCase', tr('Changes the selected text to lower case')),
-            (300, 'IDPM_CASE_INVERT_CASE', tr('Invert Case'), wx.ITEM_NORMAL, 'OnCaseInvertCase', tr('Inverts the case of the selected text')),
-            (400, 'IDPM_CASE_CAPITALIZE', tr('Capitalize'), wx.ITEM_NORMAL, 'OnCaseCapitalize', tr('Capitalizes all words of the selected text')),
+            (100, 'IDPM_CASE_UPPER_CASE', tr('Uppercase') + '\tCtrl+U', wx.ITEM_NORMAL, 'OnCaseUpperCase', tr('Changes the selected text to upper case.')),
+            (200, 'IDPM_CASE_LOWER_CASE', tr('Lowercase') + '\tCtrl+Shift+U', wx.ITEM_NORMAL, 'OnCaseLowerCase', tr('Changes the selected text to lower case.')),
+            (300, 'IDPM_CASE_INVERT_CASE', tr('Invert Case'), wx.ITEM_NORMAL, 'OnCaseInvertCase', tr('Inverts the case of the selected text.')),
+            (400, 'IDPM_CASE_CAPITALIZE', tr('Capitalize'), wx.ITEM_NORMAL, 'OnCaseCapitalize', tr('Capitalizes all words of the selected text.')),
         ]),
     ])
 Mixin.setPlugin('editor', 'add_menu', add_editor_menu)
@@ -2496,8 +2496,8 @@ def add_mainframe_menu(menulist):
         ('IDM_VIEW', #parent menu id
         [
             (170, '', '-', wx.ITEM_SEPARATOR, None, ''),
-            (185, 'IDM_VIEW_ZOOM_IN', tr('Zoom In'), wx.ITEM_NORMAL, 'OnViewZoomIn', tr('Increases the font size of the document')),
-            (190, 'IDM_VIEW_ZOOM_OUT', tr('Zoom Out'), wx.ITEM_NORMAL, 'OnViewZoomOut', tr('Decreases the font size of the document')),
+            (185, 'IDM_VIEW_ZOOM_IN', tr('Zoom In'), wx.ITEM_NORMAL, 'OnViewZoomIn', tr('Increases the font size of the document.')),
+            (190, 'IDM_VIEW_ZOOM_OUT', tr('Zoom Out'), wx.ITEM_NORMAL, 'OnViewZoomOut', tr('Decreases the font size of the document.')),
         ]),
     ])
 Mixin.setPlugin('mainframe', 'add_menu', add_mainframe_menu)
@@ -2814,12 +2814,12 @@ def add_editor_menu(popmenulist):
         ]),
         ('IDPM_DUPLICATE', #parent menu id
         [
-            (90, 'IDPM_DUPLICATE_MODE', tr('Duplicate Extend Mode') + '\tF10', wx.ITEM_CHECK, 'OnDuplicateMode', tr('Toggle duplication extend mode')),
-            (100, 'IDPM_DUPLICATE_CURRENT_LINE', tr('Duplicate Current Line') + '\tCtrl+J', wx.ITEM_NORMAL, 'OnDuplicateCurrentLine', tr('Duplicates current line')),
-            (400, 'IDPM_DUPLICATE_WORD', tr('Duplicate Previous Word') + '\tCtrl+P', wx.ITEM_NORMAL, 'OnDuplicateWord', tr('Copies a word from previous matched line')),
-            (500, 'IDPM_DUPLICATE_NEXT_WORD', tr('Duplicate Next Word') + '\tCtrl+Shift+P', wx.ITEM_NORMAL, 'OnDuplicateNextWord', tr('Copies a word from next matched line')),
-            (600, 'IDPM_DUPLICATE_LINE', tr('Duplicate Previous Line') + '\tCtrl+L', wx.ITEM_NORMAL, 'OnDuplicateLine', tr('Copies a line from next matched line')),
-            (700, 'IDPM_DUPLICATE_NEXT_LINE', tr('Duplicate Next Line') + '\tCtrl+Shift+L', wx.ITEM_NORMAL, 'OnDuplicateNextLine', tr('Copies a line from next matched line')),
+            (90, 'IDPM_DUPLICATE_MODE', tr('Duplicate Extend Mode') + '\tF10', wx.ITEM_CHECK, 'OnDuplicateMode', tr('Toggle duplication extend mode.')),
+            (100, 'IDPM_DUPLICATE_CURRENT_LINE', tr('Duplicate Current Line') + '\tCtrl+J', wx.ITEM_NORMAL, 'OnDuplicateCurrentLine', tr('Duplicates current line.')),
+            (400, 'IDPM_DUPLICATE_WORD', tr('Duplicate Previous Word') + '\tCtrl+P', wx.ITEM_NORMAL, 'OnDuplicateWord', tr('Copies a word from previous matched line.')),
+            (500, 'IDPM_DUPLICATE_NEXT_WORD', tr('Duplicate Next Word') + '\tCtrl+Shift+P', wx.ITEM_NORMAL, 'OnDuplicateNextWord', tr('Copies a word from next matched line.')),
+            (600, 'IDPM_DUPLICATE_LINE', tr('Duplicate Previous Line') + '\tCtrl+L', wx.ITEM_NORMAL, 'OnDuplicateLine', tr('Copies a line from next matched line.')),
+            (700, 'IDPM_DUPLICATE_NEXT_LINE', tr('Duplicate Next Line') + '\tCtrl+Shift+L', wx.ITEM_NORMAL, 'OnDuplicateNextLine', tr('Copies a line from next matched line.')),
         ]),
     ])
 Mixin.setPlugin('editor', 'add_menu', add_editor_menu)
@@ -2867,12 +2867,12 @@ def add_mainframe_menu(menulist):
         ]),
         ('IDM_EDIT_DUPLICATE', #parent menu id
         [
-            (90, 'IDM_EDIT_DUPLICATE_MODE', tr('Duplicate Extend Mode') + '\tF10', wx.ITEM_CHECK, 'OnEditDuplicateMode', tr('Toggle duplication extend mode')),
-            (100, 'IDM_EDIT_DUPLICATE_CURRENT_LINE', tr('Duplicate Current Line') + '\tE=Ctrl+J', wx.ITEM_NORMAL, 'OnEditDuplicateCurrentLine', tr('Duplicates current line')),
-            (400, 'IDM_EDIT_DUPLICATE_WORD', tr('Duplicate Previous Word') + '\tE=Ctrl+P', wx.ITEM_NORMAL, 'OnEditDuplicateWord', tr('Copies a word from previous matched line')),
-            (500, 'IDM_EDIT_DUPLICATE_NEXT_WORD', tr('Duplicate Next Word') + '\tE=Ctrl+Shift+P', wx.ITEM_NORMAL, 'OnEditDuplicateNextWord', tr('Copies a word from next matched line')),
-            (600, 'IDM_EDIT_DUPLICATE_LINE', tr('Duplicate Previous Line') + '\tE=Ctrl+L', wx.ITEM_NORMAL, 'OnEditDuplicateLine', tr('Copies a line from next matched line')),
-            (700, 'IDM_EDIT_DUPLICATE_NEXT_LINE', tr('Duplicate Next Line') + '\tE=Ctrl+Shift+L', wx.ITEM_NORMAL, 'OnEditDuplicateNextLine', tr('Copies a line from next matched line')),
+            (90, 'IDM_EDIT_DUPLICATE_MODE', tr('Duplicate Extend Mode') + '\tF10', wx.ITEM_CHECK, 'OnEditDuplicateMode', tr('Toggle duplication extend mode.')),
+            (100, 'IDM_EDIT_DUPLICATE_CURRENT_LINE', tr('Duplicate Current Line') + '\tE=Ctrl+J', wx.ITEM_NORMAL, 'OnEditDuplicateCurrentLine', tr('Duplicates current line.')),
+            (400, 'IDM_EDIT_DUPLICATE_WORD', tr('Duplicate Previous Word') + '\tE=Ctrl+P', wx.ITEM_NORMAL, 'OnEditDuplicateWord', tr('Copies a word from previous matched line.')),
+            (500, 'IDM_EDIT_DUPLICATE_NEXT_WORD', tr('Duplicate Next Word') + '\tE=Ctrl+Shift+P', wx.ITEM_NORMAL, 'OnEditDuplicateNextWord', tr('Copies a word from next matched line.')),
+            (600, 'IDM_EDIT_DUPLICATE_LINE', tr('Duplicate Previous Line') + '\tE=Ctrl+L', wx.ITEM_NORMAL, 'OnEditDuplicateLine', tr('Copies a line from next matched line.')),
+            (700, 'IDM_EDIT_DUPLICATE_NEXT_LINE', tr('Duplicate Next Line') + '\tE=Ctrl+Shift+L', wx.ITEM_NORMAL, 'OnEditDuplicateNextLine', tr('Copies a line from next matched line.')),
         ]),
     ])
 Mixin.setPlugin('mainframe', 'add_menu', add_mainframe_menu)
@@ -3076,7 +3076,7 @@ homepage = 'http://code.google.com/p/ulipad/'
 blog = 'http://www.donews.net/limodou'
 email = 'limodou@gmail.com'
 ulispot = 'http://ulipad.appspot.com'
-author = 'limodou'
+author = 'Limodou'
 maillist = 'http://groups.google.com/group/ulipad'
 
 class AboutDialog(wx.Dialog):
@@ -3133,14 +3133,14 @@ class AboutDialog(wx.Dialog):
 def add_mainframe_menu(menulist):
     menulist.extend([ ('IDM_HELP', #parent menu id
         [
-            (100, 'wx.ID_HELP', tr('UliPad Help Document') + '\tF1', wx.ITEM_NORMAL, 'OnHelpIndex', tr('UliPad help document')),
+            (100, 'wx.ID_HELP', tr('UliPad Help Document') + '\tF1', wx.ITEM_NORMAL, 'OnHelpIndex', tr('UliPad help document.')),
             (200, '-', '', wx.ITEM_SEPARATOR, '', ''),
-            (210, 'wx.ID_HOME', tr('Visit Project Homepage'), wx.ITEM_NORMAL, 'OnHelpProject', tr('Visit Project Homepage: %s') % homepage),
-            (220, 'IDM_HELP_MAILLIST', tr('Visit Mail List'), wx.ITEM_NORMAL, 'OnHelpMaillist', tr('Visit Project Mail List: %s') % maillist),
-            (230, 'IDM_HELP_MYBLOG', tr('Visit My Blog'), wx.ITEM_NORMAL, 'OnHelpMyBlog', tr('Visit My blog: %s') % blog),
-            (240, 'IDM_HELP_ULISPOT', tr('Visit UliPad Snippets Site'), wx.ITEM_NORMAL, 'OnHelpUlispot', tr('Visit UliPad snippets site: %s') % ulispot),
-            (250, 'IDM_HELP_EMAIL', tr('Contact Me'), wx.ITEM_NORMAL, 'OnHelpEmail', tr('Send email to me mailto:%s') % email),
-            (900, 'wx.ID_ABOUT', tr('About...'), wx.ITEM_NORMAL, 'OnHelpAbout', tr('About this program')),
+            (210, 'wx.ID_HOME', tr('Visit Project Homepage'), wx.ITEM_NORMAL, 'OnHelpProject', tr('Visit Project Homepage: %s.') % homepage),
+            (220, 'IDM_HELP_MAILLIST', tr('Visit Mail List'), wx.ITEM_NORMAL, 'OnHelpMaillist', tr('Visit Project Mail List: %s.') % maillist),
+            (230, 'IDM_HELP_MYBLOG', tr('Visit My Blog'), wx.ITEM_NORMAL, 'OnHelpMyBlog', tr('Visit My blog: %s.') % blog),
+            (240, 'IDM_HELP_ULISPOT', tr('Visit UliPad Snippets Site'), wx.ITEM_NORMAL, 'OnHelpUlispot', tr('Visit UliPad snippets site: %s.') % ulispot),
+            (250, 'IDM_HELP_EMAIL', tr('Contact Me'), wx.ITEM_NORMAL, 'OnHelpEmail', tr('Send email to me mailto:%s.') % email),
+            (900, 'wx.ID_ABOUT', tr('About...'), wx.ITEM_NORMAL, 'OnHelpAbout', tr('About this program.')),
         ]),
     ])
 Mixin.setPlugin('mainframe', 'add_menu', add_mainframe_menu)
@@ -3206,8 +3206,8 @@ Mixin.setPlugin('preference', 'add_pref', add_pref)
 def add_mainframe_menu(menulist):
     menulist.extend([('IDM_PYTHON', #parent menu id
             [
-                (100, 'IDM_PYTHON_CLASSBROWSER', tr('Class Browser'), wx.ITEM_CHECK, 'OnPythonClassBrowser', tr('Show python class browser window')),
-                (110, 'IDM_PYTHON_CLASSBROWSER_REFRESH', tr('Class Browser Refresh'), wx.ITEM_NORMAL, 'OnPythonClassBrowserRefresh', tr('Refresh python class browser window')),
+                (100, 'IDM_PYTHON_CLASSBROWSER', tr('Class Browser'), wx.ITEM_CHECK, 'OnPythonClassBrowser', tr('Show python class browser window.')),
+                (110, 'IDM_PYTHON_CLASSBROWSER_REFRESH', tr('Class Browser Refresh'), wx.ITEM_NORMAL, 'OnPythonClassBrowserRefresh', tr('Refresh python class browser window.')),
             ]),
     ])
 Mixin.setPlugin('pythonfiletype', 'add_menu', add_mainframe_menu)
@@ -3697,9 +3697,9 @@ def add_mainframe_menu(menulist):
         ]),
         ('IDM_SCRIPT', #parent menu id
         [
-            (100, 'IDM_SCRIPT_MANAGE', tr('Scripts Manager...'), wx.ITEM_NORMAL, 'OnScriptManage', tr('Script manager')),
+            (100, 'IDM_SCRIPT_MANAGE', tr('Scripts Manager...'), wx.ITEM_NORMAL, 'OnScriptManage', tr('Script manager.')),
             (110, '', '-', wx.ITEM_SEPARATOR, None, ''),
-            (120, 'IDM_SCRIPT_ITEMS', tr('(Empty)'), wx.ITEM_NORMAL, 'OnScriptItems', tr('Execute an script')),
+            (120, 'IDM_SCRIPT_ITEMS', tr('(Empty)'), wx.ITEM_NORMAL, 'OnScriptItems', tr('Executes an script.')),
         ]),
     ])
 Mixin.setPlugin('mainframe', 'add_menu', add_mainframe_menu)
@@ -3795,11 +3795,11 @@ from modules import common
 def add_mainframe_menu(menulist):
     menulist.extend([('IDM_TOOL',
         [
-            (135, 'IDM_OPTION_LANGUAGE', tr('Language'), wx.ITEM_NORMAL, None, tr('Setup lanaguage')),
+            (135, 'IDM_OPTION_LANGUAGE', tr('Language'), wx.ITEM_NORMAL, None, ''),
         ]),
         ('IDM_OPTION_LANGUAGE',
         [
-            (100, 'IDM_OPTION_LANGUAGE_ENGLISH', 'English', wx.ITEM_CHECK, 'OnOptionLanguageChange', 'Change langauage'),
+            (100, 'IDM_OPTION_LANGUAGE_ENGLISH', 'English', wx.ITEM_CHECK, 'OnOptionLanguageChange', 'Change langauage.'),
         ]),
     ])
 Mixin.setPlugin('mainframe', 'add_menu', add_mainframe_menu)
@@ -3929,7 +3929,7 @@ def add_mainframe_menu(menulist):
     menulist.extend([
         ('IDM_SEARCH', #parent menu id
         [
-            (145, 'IDM_SEARCH_FIND_IN_FILES', tr('Find In Files...')+'\tCtrl+Shift+F4', wx.ITEM_NORMAL, 'OnSearchFindInFiles', tr('Find text in files')),
+            (145, 'IDM_SEARCH_FIND_IN_FILES', tr('Find In Files...')+'\tCtrl+Shift+F4', wx.ITEM_NORMAL, 'OnSearchFindInFiles', tr('Find text in files.')),
         ]),
     ])
 Mixin.setPlugin('mainframe', 'add_menu', add_mainframe_menu)
@@ -4153,8 +4153,8 @@ def add_pyftype_menu(menulist):
     menulist.extend([('IDM_PYTHON', #parent menu id
         [
             (120, '', '-', wx.ITEM_SEPARATOR, None, ''),
-            (130, 'IDM_PYTHON_RUN', tr('Run')+u'\tE=F5', wx.ITEM_NORMAL, 'OnPythonRun', tr('Run python program')),
-            (140, 'IDM_PYTHON_SETARGS', tr('Set Arguments...'), wx.ITEM_NORMAL, 'OnPythonSetArgs', tr('Set python program command line arugments')),
+            (130, 'IDM_PYTHON_RUN', tr('Run')+u'\tE=F5', wx.ITEM_NORMAL, 'OnPythonRun', tr('Run python program.')),
+            (140, 'IDM_PYTHON_SETARGS', tr('Set Arguments...'), wx.ITEM_NORMAL, 'OnPythonSetArgs', tr('Set python program command line arugments.')),
             (150, 'IDM_PYTHON_END', tr('Stop Program'), wx.ITEM_NORMAL, 'OnPythonEnd', tr('Stop current python program.')),
             (155, 'IDM_PYTHON_DOCTEST', tr('Run Doctests'), wx.ITEM_NORMAL, 'OnPythonDoctests', tr('Run doctests in current document.')),
         ]),
@@ -4401,9 +4401,9 @@ def add_mainframe_menu(menulist):
         ]),
         ('IDM_SHELL', #parent menu id
         [
-            (100, 'IDM_SHELL_MANAGE', tr('External Tools Manager...'), wx.ITEM_NORMAL, 'OnShellManage', tr('Shell command manager')),
+            (100, 'IDM_SHELL_MANAGE', tr('External Tools Manager...'), wx.ITEM_NORMAL, 'OnShellManage', tr('Shell command manager.')),
             (110, '', '-', wx.ITEM_SEPARATOR, None, ''),
-            (120, 'IDM_SHELL_ITEMS', tr('(Empty)'), wx.ITEM_NORMAL, 'OnShellItems', tr('Execute an shell command')),
+            (120, 'IDM_SHELL_ITEMS', tr('(Empty)'), wx.ITEM_NORMAL, 'OnShellItems', tr('Execute an shell command.')),
         ]),
     ])
 Mixin.setPlugin('mainframe', 'add_menu', add_mainframe_menu)
@@ -5054,6 +5054,7 @@ import wx
 from modules import Mixin
 from modules.Debug import error
 from modules import common
+from modules import Globals
 
 def add_mainframe_menu(menulist):
     menulist.extend([ ('IDM_WINDOW',
@@ -5073,10 +5074,30 @@ def afterinit(win):
     win.ftp = None
 Mixin.setPlugin('mainframe', 'afterinit', afterinit)
 
+def on_mainframe_updateui(win, event):
+    eid = event.GetId()
+    if eid == win.IDM_WINDOW_FTP:
+        event.Check(bool(win.panel.getPage('FTP')))
+Mixin.setPlugin('mainframe', 'on_update_ui', on_mainframe_updateui)
+
+def afterinit(win):
+    wx.EVT_UPDATE_UI(win, win.IDM_WINDOW_FTP, win.OnUpdateUI)
+Mixin.setPlugin('mainframe', 'afterinit', afterinit)
+
+def on_notebook_updateui(win, event):
+    eid = event.GetId()
+    if eid == win.IDPM_FTPWINDOW:
+        event.Check(bool(Globals.mainframe.panel.getPage('FTP')))
+Mixin.setPlugin('notebook', 'on_update_ui', on_notebook_updateui)
+
+def init(win):
+    wx.EVT_UPDATE_UI(win, win.IDPM_FTPWINDOW, win.OnUpdateUI)
+Mixin.setPlugin('notebook', 'init', init)
+
 def add_editor_menu(popmenulist):
     popmenulist.extend([ (None,
         [
-            (150, 'IDPM_FTPWINDOW', tr('FTP Window'), wx.ITEM_NORMAL, 'OnFtpWindow', tr('Opens FTP window.')),
+            (150, 'IDPM_FTPWINDOW', tr('FTP Window'), wx.ITEM_CHECK, 'OnFtpWindow', tr('Opens FTP window.')),
         ]),
     ])
 Mixin.setPlugin('notebook', 'add_menu', add_editor_menu)
@@ -5092,13 +5113,19 @@ def createFtpWindow(win, side='bottom'):
 Mixin.setMixin('mainframe', 'createFtpWindow', createFtpWindow)
 
 def OnWindowFtp(win, event):
-    win.createFtpWindow()
-    win.panel.showPage('FTP')
+    if not win.panel.getPage('FTP'):
+        win.createFtpWindow()
+        win.panel.showPage('FTP')
+    else:
+        win.panel.closePage('FTP')
 Mixin.setMixin('mainframe', 'OnWindowFtp', OnWindowFtp)
 
 def OnFtpWindow(win, event):
-    win.mainframe.createFtpWindow(win.side)
-    win.panel.showPage('FTP')
+    if not win.panel.getPage('FTP'):
+        win.mainframe.createFtpWindow('bottom')
+        win.panel.showPage('FTP')
+    else:
+        win.panel.closePage('FTP')
 Mixin.setMixin('notebook', 'OnFtpWindow', OnFtpWindow)
 
 def pref_init(pref):
@@ -5202,7 +5229,7 @@ def add_tool_list(toollist, toolbaritems):
 
     #order, IDname, imagefile, short text, long text, func
     toolbaritems.update({
-        'ftp':(wx.ITEM_NORMAL, 'IDM_FILE_FTP', 'images/ftp.gif', tr('Open FTP Window'), tr('Opens FTP window.'), 'OnWindowFtp'),
+        'ftp':(wx.ITEM_CHECK, 'IDM_FILE_FTP', 'images/ftp.gif', tr('Open FTP Window'), tr('Opens FTP window.'), 'OnWindowFtp'),
     })
 Mixin.setPlugin('mainframe', 'add_tool_list', add_tool_list)
 
@@ -5227,6 +5254,7 @@ Mixin.setMixin('editor', 'getShortFilename', getShortFilename)
 
 import wx
 from modules import Mixin
+from modules import Globals
 
 def add_mainframe_menu(menulist):
     menulist.extend([(None,
@@ -5235,8 +5263,8 @@ def add_mainframe_menu(menulist):
         ]),
         ('IDM_WINDOW',
         [
-            (100, 'IDM_WINDOW_LEFT', tr('Left Window')+'\tAlt+Z', wx.ITEM_CHECK, 'OnWindowLeft', tr('Shows or hides the left Window')),
-            (110, 'IDM_WINDOW_BOTTOM', tr('Bottom Window')+'\tAlt+X', wx.ITEM_CHECK, 'OnWindowBottom', tr('Shows or hides the bottom Window')),
+            (100, 'IDM_WINDOW_LEFT', tr('Left Window')+'\tAlt+Z', wx.ITEM_CHECK, 'OnWindowLeft', tr('Shows or hides the left Window.')),
+            (110, 'IDM_WINDOW_BOTTOM', tr('Bottom Window')+'\tAlt+X', wx.ITEM_CHECK, 'OnWindowBottom', tr('Shows or hides the bottom Window.')),
             (120, '-', '', wx.ITEM_SEPARATOR, '', ''),
             (130, 'IDM_WINDOW_SHELL', tr('Shell Window'), wx.ITEM_CHECK, 'OnWindowShell', tr('Opens shell window.')),
             (140, 'IDM_WINDOW_MESSAGE', tr('Messages Window'), wx.ITEM_CHECK, 'OnWindowMessage', tr('Opens messages window.')),
@@ -5289,6 +5317,19 @@ def afterinit(win):
     win.shellwindow = None
 Mixin.setPlugin('mainframe', 'afterinit', afterinit)
 
+def on_notebook_updateui(win, event):
+    eid = event.GetId()
+    if eid == win.IDPM_SHELLWINDOW:
+        event.Check(bool(Globals.mainframe.panel.getPage(_shell_page_name)))
+    if eid == win.IDPM_MESSAGEWINDOW:
+        event.Check(bool(Globals.mainframe.panel.getPage(_message_page_name)))
+Mixin.setPlugin('notebook', 'on_update_ui', on_notebook_updateui)
+
+def init(win):
+    wx.EVT_UPDATE_UI(win, win.IDPM_SHELLWINDOW, win.OnUpdateUI)
+    wx.EVT_UPDATE_UI(win, win.IDPM_MESSAGEWINDOW, win.OnUpdateUI)
+Mixin.setPlugin('notebook', 'init', init)
+
 def add_tool_list(toollist, toolbaritems):
     toollist.extend([
         (450, 'left'),
@@ -5297,8 +5338,8 @@ def add_tool_list(toollist, toolbaritems):
 
     #order, IDname, imagefile, short text, long text, func
     toolbaritems.update({
-        'left':(wx.ITEM_CHECK, 'IDM_WINDOW_LEFT', 'images/left.gif', tr('Toggle Left Window'), tr('Shows or hides the left Window'), 'OnWindowLeft'),
-        'bottom':(wx.ITEM_CHECK, 'IDM_WINDOW_BOTTOM', 'images/bottom.gif', tr('Toggle Bottom Window'), tr('Shows or hides the bottom Window'), 'OnWindowBottom'),
+        'left':(wx.ITEM_CHECK, 'IDM_WINDOW_LEFT', 'images/left.gif', tr('Toggle Left Window'), tr('Shows or hides the left Window.'), 'OnWindowLeft'),
+        'bottom':(wx.ITEM_CHECK, 'IDM_WINDOW_BOTTOM', 'images/bottom.gif', tr('Toggle Bottom Window'), tr('Shows or hides the bottom Window.'), 'OnWindowBottom'),
     })
 Mixin.setPlugin('mainframe', 'add_tool_list', add_tool_list)
 
@@ -5321,32 +5362,44 @@ def createMessageWindow(win):
 Mixin.setMixin('mainframe', 'createMessageWindow', createMessageWindow)
 
 def OnWindowShell(win, event):
-    win.createShellWindow()
-    win.panel.showPage(_shell_page_name)
+    if not win.panel.getPage(_shell_page_name):
+        win.createShellWindow()
+        win.panel.showPage(_shell_page_name)
+    else:
+        win.panel.closePage(_shell_page_name)
 Mixin.setMixin('mainframe', 'OnWindowShell', OnWindowShell)
 
 def OnWindowMessage(win, event):
-    win.createMessageWindow()
-    win.panel.showPage(_message_page_name)
+    if not win.panel.getPage(_message_page_name):
+        win.createMessageWindow()
+        win.panel.showPage(_message_page_name)
+    else:
+        win.panel.closePage(_message_page_name)
 Mixin.setMixin('mainframe', 'OnWindowMessage', OnWindowMessage)
 
 def add_editor_menu(popmenulist):
     popmenulist.extend([ (None,
         [
-            (120, 'IDPM_SHELLWINDOW', tr('Shell Window'), wx.ITEM_NORMAL, 'OnShellWindow', tr('Opens shell window.')),
-            (130, 'IDPM_MESSAGEWINDOW', tr('Messages Window'), wx.ITEM_NORMAL, 'OnMessageWindow', tr('Opens messages window.')),
+            (120, 'IDPM_SHELLWINDOW', tr('Shell Window'), wx.ITEM_CHECK, 'OnShellWindow', tr('Opens shell window.')),
+            (130, 'IDPM_MESSAGEWINDOW', tr('Messages Window'), wx.ITEM_CHECK, 'OnMessageWindow', tr('Opens messages window.')),
         ]),
     ])
 Mixin.setPlugin('notebook', 'add_menu', add_editor_menu)
 
 def OnShellWindow(win, event):
-    win.mainframe.createShellWindow()
-    win.panel.showPage(_shell_page_name)
+    if not win.panel.getPage(_shell_page_name):
+        win.mainframe.createShellWindow()
+        win.panel.showPage(_shell_page_name)
+    else:
+        win.panel.closePage(_shell_page_name)
 Mixin.setMixin('notebook', 'OnShellWindow', OnShellWindow)
 
 def OnMessageWindow(win, event):
-    win.mainframe.createMessageWindow()
-    win.panel.showPage(_message_page_name)
+    if not win.panel.getPage(_message_page_name):
+        win.mainframe.createMessageWindow()
+        win.panel.showPage(_message_page_name)
+    else:
+        win.panel.closePage(_message_page_name)
 Mixin.setMixin('notebook', 'OnMessageWindow', OnMessageWindow)
 
 def OnEditClearShell(win, event):
@@ -5866,7 +5919,7 @@ def add_py_menu(menulist):
         ('IDM_PYTHON', #parent menu id
         [
             (115, '', '-', wx.ITEM_SEPARATOR, None, ''),
-            (116, 'IDM_VIEW_OPEN_MODULE', tr('Open Module File') + '\tF6', wx.ITEM_NORMAL, 'OnViewOpenModuleFile', tr('Open current word as Python module file')),
+            (116, 'IDM_VIEW_OPEN_MODULE', tr('Open Module File') + '\tF6', wx.ITEM_NORMAL, 'OnViewOpenModuleFile', tr('Open current word as Python module file.')),
         ]),
     ])
 Mixin.setPlugin('pythonfiletype', 'add_menu', add_py_menu)
@@ -5875,7 +5928,7 @@ def other_popup_menu(editor, projectname, menus):
     if editor.languagename == 'python' :
         menus.extend([(None, #parent menu id
             [
-                (10, 'IDPM_OPEN_MODULE', tr('Open Module File') + '\tF6', wx.ITEM_NORMAL, 'OnOpenModuleFile', tr('Open current word as Python module file')),
+                (10, 'IDPM_OPEN_MODULE', tr('Open Module File') + '\tF6', wx.ITEM_NORMAL, 'OnOpenModuleFile', tr('Open current word as Python module file.')),
                 (20, '', '-', wx.ITEM_SEPARATOR, None, ''),
             ]),
         ])
@@ -5972,7 +6025,7 @@ from modules import Mixin
 def add_mainframe_menu(menulist):
     menulist.extend([ ('IDM_HELP', #parent menu id
         [
-            (102, 'IDM_HELP_MODULES', tr('Extended Modules Info'), wx.ITEM_NORMAL, 'OnHelpModules', tr('Extended modules infomation')),
+            (102, 'IDM_HELP_MODULES', tr('Extended Modules Info'), wx.ITEM_NORMAL, 'OnHelpModules', tr('Extended modules infomation.')),
         ]),
     ])
 Mixin.setPlugin('mainframe', 'add_menu', add_mainframe_menu)
@@ -5998,7 +6051,7 @@ def add_tool_list(toollist, toolbaritems):
 
     #order, IDname, imagefile, short text, long text, func
     toolbaritems.update({
-        'dir':(wx.ITEM_CHECK, 'IDM_WINDOW_DIRBROWSER', 'images/dir.gif', tr('Open Directory Browser'), tr('Opens directory browser window.'), 'OnWindowDirBrowser'),
+        'dir':(wx.ITEM_CHECK, 'IDM_WINDOW_DIRBROWSER', 'images/dir.gif', tr('Open Directory Browser Window'), tr('Opens directory browser window.'), 'OnWindowDirBrowser'),
     })
 Mixin.setPlugin('mainframe', 'add_tool_list', add_tool_list)
 
@@ -6006,10 +6059,12 @@ def afterinit(win):
     wx.EVT_UPDATE_UI(win, win.IDM_WINDOW_DIRBROWSER, win.OnUpdateUI)
 Mixin.setPlugin('mainframe', 'afterinit', afterinit)
 
+_dirbrowser_pagename = tr('Directory Browser')
+
 def on_mainframe_updateui(win, event):
     eid = event.GetId()
     if eid == win.IDM_WINDOW_DIRBROWSER:
-        page = win.panel.getPage(tr('Directory browser'))
+        page = win.panel.getPage(_dirbrowser_pagename)
         event.Check(bool(page))
 Mixin.setPlugin('mainframe', 'on_update_ui', on_mainframe_updateui)
 
@@ -6037,28 +6092,28 @@ def afterinit(win):
     }
     if win.pref.open_last_dir_as_startup and win.pref.last_dir_paths:
         wx.CallAfter(win.createDirBrowserWindow, win.pref.last_dir_paths)
-        wx.CallAfter(win.panel.showPage, tr('Directory browser'))
+        wx.CallAfter(win.panel.showPage, _dirbrowser_pagename)
 Mixin.setPlugin('mainframe', 'afterinit', afterinit)
 
 def createDirBrowserWindow(win, dirs=None):
     page = None
-    if not win.panel.getPage(tr('Directory browser')):
+    if not win.panel.getPage(_dirbrowser_pagename):
         from DirBrowser import DirBrowser
 
         if not dirs:
             dirs = win.pref.last_dir_paths
         page = DirBrowser(win.panel.createNotebook('left'), win, dirs)
-        win.panel.addPage('left', page, tr('Directory browser'))
+        win.panel.addPage('left', page, _dirbrowser_pagename)
     return page
 Mixin.setMixin('mainframe', 'createDirBrowserWindow', createDirBrowserWindow)
 
 def toggleDirBrowserWindow(win):
-    page = win.panel.getPage(tr('Directory browser'))
+    page = win.panel.getPage(_dirbrowser_pagename)
     if page:
-        win.panel.closePage(tr('Directory browser'))
+        win.panel.closePage(_dirbrowser_pagename)
     else:
         if win.createDirBrowserWindow():
-            win.panel.showPage(tr('Directory browser'))
+            win.panel.showPage(_dirbrowser_pagename)
 Mixin.setMixin('mainframe', 'toggleDirBrowserWindow', toggleDirBrowserWindow)
 
 def OnWindowDirBrowser(win, event):
@@ -6633,7 +6688,7 @@ Mixin.setPlugin('mainframe', 'add_menu', add_mainframe_menu)
 def add_notebook_menu(popmenulist):
     popmenulist.extend([(None,
         [
-            (180, 'IDPM_SHAREWINDOW', tr('Resource Shares Window'), wx.ITEM_NORMAL, 'OnShareWindow', tr('Opens resource shares window.')),
+            (180, 'IDPM_SHAREWINDOW', tr('Resource Shares Window'), wx.ITEM_CHECK, 'OnShareWindow', tr('Opens resource shares window.')),
         ]),
     ])
 Mixin.setPlugin('notebook', 'add_menu', add_notebook_menu)
@@ -6659,6 +6714,16 @@ def afterinit(win):
     wx.EVT_UPDATE_UI(win, win.IDM_WINDOW_SHARE, win.OnUpdateUI)
 Mixin.setPlugin('mainframe', 'afterinit', afterinit)
 
+def on_notebook_updateui(win, event):
+    eid = event.GetId()
+    if eid == win.IDPM_SHAREWINDOW:
+        event.Check(bool(Globals.mainframe.panel.getPage(_resshare_pagename)))
+Mixin.setPlugin('notebook', 'on_update_ui', on_notebook_updateui)
+
+def init(win):
+    wx.EVT_UPDATE_UI(win, win.IDPM_SHAREWINDOW, win.OnUpdateUI)
+Mixin.setPlugin('notebook', 'init', init)
+
 def createShareWindow(win):
     if not win.panel.getPage(_resshare_pagename):
         from ShareWindow import ShareWindow
@@ -6668,13 +6733,19 @@ def createShareWindow(win):
 Mixin.setMixin('mainframe', 'createShareWindow', createShareWindow)
 
 def OnWindowShare(win, event):
-    win.createShareWindow()
-    win.panel.showPage(_resshare_pagename)
+    if not win.panel.getPage(_resshare_pagename):
+        win.createShareWindow()
+        win.panel.showPage(_resshare_pagename)
+    else:
+        win.panel.closePage(_resshare_pagename)
 Mixin.setMixin('mainframe', 'OnWindowShare', OnWindowShare)
 
 def OnShareWindow(win, event):
-    win.mainframe.createShareWindow()
-    win.panel.showPage(_resshare_pagename)
+    if not win.panel.getPage(_resshare_pagename):
+        win.mainframe.createShareWindow()
+        win.panel.showPage(_resshare_pagename)
+    else:
+        win.panel.closePage(_resshare_pagename)
 Mixin.setMixin('notebook', 'OnShareWindow', OnShareWindow)
 
 def close_page(page, name):
@@ -6851,11 +6922,12 @@ Mixin.setMixin('dirbrowser', 'OnCreatePythonPackage', OnCreatePythonPackage)
 
 import wx
 from modules import Mixin
+from modules import Globals
 
 def add_mainframe_menu(menulist):
     menulist.extend([('IDM_WINDOW', #parent menu id
         [
-            (210, 'IDM_WINDOW_TODO', tr('TODO Window')+u'\tCtrl+T', wx.ITEM_CHECK, 'OnWindowTODO', tr('Open the TODO window.')),
+            (210, 'IDM_WINDOW_TODO', tr('TODO Window')+u'\tCtrl+T', wx.ITEM_CHECK, 'OnWindowTODO', tr('Opens the TODO window.')),
         ]),
     ])
 Mixin.setPlugin('mainframe', 'add_menu', add_mainframe_menu)
@@ -6863,7 +6935,7 @@ Mixin.setPlugin('mainframe', 'add_menu', add_mainframe_menu)
 def add_notebook_menu(popmenulist):
     popmenulist.extend([ (None,
         [
-            (190, 'IDPM_TODOWINDOW', tr('TODO Window'), wx.ITEM_NORMAL, 'OnNTodoWindow', tr('Opens the TODO window.')),
+            (190, 'IDPM_TODOWINDOW', tr('TODO Window'), wx.ITEM_CHECK, 'OnNTodoWindow', tr('Opens the TODO window.')),
         ]),
     ])
 Mixin.setPlugin('notebook', 'add_menu', add_notebook_menu)
@@ -6895,6 +6967,16 @@ def afterinit(win):
     wx.EVT_UPDATE_UI(win, win.IDM_WINDOW_TODO, win.OnUpdateUI)
 Mixin.setPlugin('mainframe', 'afterinit', afterinit)
 
+def on_notebook_updateui(win, event):
+    eid = event.GetId()
+    if eid == win.IDPM_TODOWINDOW:
+        event.Check(bool(Globals.mainframe.panel.getPage(_todo_pagename)))
+Mixin.setPlugin('notebook', 'on_update_ui', on_notebook_updateui)
+
+def init(win):
+    wx.EVT_UPDATE_UI(win, win.IDPM_TODOWINDOW, win.OnUpdateUI)
+Mixin.setPlugin('notebook', 'init', init)
+
 def createtodowindow(win):
     if not win.panel.getPage(_todo_pagename):
         from TodoWindow import TodoWindow
@@ -6905,15 +6987,21 @@ def createtodowindow(win):
 Mixin.setMixin('mainframe', 'createtodowindow', createtodowindow)
 
 def OnWindowTODO(win, event):
-    win.createtodowindow()
-    win.panel.showPage(_todo_pagename)
-    win.todowindow.show(win.document)
+    if not win.panel.getPage(_todo_pagename):
+        win.createtodowindow()
+        win.panel.showPage(_todo_pagename)
+        win.todowindow.show(win.document)
+    else:
+        win.panel.closePage(_todo_pagename)
 Mixin.setMixin('mainframe', 'OnWindowTODO', OnWindowTODO)
 
 def OnNTodoWindow(win, event):
-    win.mainframe.createtodowindow()
-    win.panel.showPage(_todo_pagename)
-    win.mainframe.todowindow.show(win.mainframe.document)
+    if not win.panel.getPage(_todo_pagename):
+        win.mainframe.createtodowindow()
+        win.panel.showPage(_todo_pagename)
+        win.mainframe.todowindow.show(win.mainframe.document)
+    else:
+        win.panel.closePage(_todo_pagename)
 Mixin.setMixin('notebook', 'OnNTodoWindow', OnNTodoWindow)
 
 def aftersavefile(win, filename):
@@ -7056,7 +7144,7 @@ Mixin.setPlugin('editor', 'init', editor_init)
 def add_editor_menu(popmenulist):
     popmenulist.extend([ (None, #parent menu id
         [
-            (245, 'IDPM_COLUMN_MODE', tr('Column Mode') +'\tAlt+C', wx.ITEM_CHECK, 'OnColumnMode', tr('Mark Column Mode Region')),
+            (245, 'IDPM_COLUMN_MODE', tr('Column Mode') +'\tAlt+C', wx.ITEM_CHECK, 'OnColumnMode', tr('Marks Column Mode region.')),
         ]),
     ])
 Mixin.setPlugin('editor', 'add_menu', add_editor_menu)
@@ -7248,7 +7336,7 @@ def add_mainframe_menu(menulist):
     menulist.extend([
         ('IDM_EDIT', #parent menu id
         [
-            (275, 'IDM_EDIT_COLUMN_MODE', tr('Column Mode') +'\tE=Alt+C', wx.ITEM_NORMAL, 'OnEditColumnMode', tr('Mark Column Mode Region')),
+            (275, 'IDM_EDIT_COLUMN_MODE', tr('Column Mode') +'\tE=Alt+C', wx.ITEM_CHECK, 'OnEditColumnMode', tr('Marks Column Mode region.')),
 
         ]),
     ])
@@ -7395,7 +7483,7 @@ from modules import Globals
 def add_editor_menu(popmenulist):
     popmenulist.extend([ (None,
         [
-            (200, 'IDPM_MULTIVIEWWINDOW', tr('Multiview Window'), wx.ITEM_NORMAL, 'OnMultiViewWindow', tr('Opens multiview window.')),
+            (200, 'IDPM_MULTIVIEWWINDOW', tr('Open Multiview Window'), wx.ITEM_NORMAL, 'OnMultiViewWindow', tr('Opens the multiview window.')),
         ]),
     ])
 Mixin.setPlugin('notebook', 'add_menu', add_editor_menu)
@@ -7440,7 +7528,7 @@ Mixin.setPlugin('mainframe', 'closefile', closefile)
 def add_mainframe_menu(menulist):
     menulist.extend([ ('IDM_WINDOW',
         [
-            (220, 'IDM_WINDOW_MULTIVIEWWINDOW', tr('Multiview Window'), wx.ITEM_NORMAL, 'OnWindowMultiView', tr('Opens multi view window.')),
+            (220, 'IDM_WINDOW_MULTIVIEWWINDOW', tr('Open Multiview Window'), wx.ITEM_NORMAL, 'OnWindowMultiView', tr('Opens the multiview window.')),
         ]),
     ])
 Mixin.setPlugin('mainframe', 'add_menu', add_mainframe_menu)
@@ -7463,8 +7551,8 @@ def other_popup_menu(editctrl, document, menus):
         menus.extend([ (None,
             [
                 (600, '', '-', wx.ITEM_SEPARATOR, None, ''),
-                (700, 'IDPM_MULTIVIEW_LEFT', tr('Open MultiView In Left Pane'), wx.ITEM_NORMAL, 'OnOpenViewLeft', tr('Opens multiview of current document in left pane.')),
-                (800, 'IDPM_MULTIVIEW_BOTTOM', tr('Open MultiView In Bottom Pane'), wx.ITEM_NORMAL, 'OnOpenViewBottom', tr('Opens multiview of current document in bottom pane.')),
+                (700, 'IDPM_MULTIVIEW_LEFT', tr('Open MultiView In Left Pane'), wx.ITEM_NORMAL, 'OnOpenViewLeft', tr('Opens the multiview of current document in left pane.')),
+                (800, 'IDPM_MULTIVIEW_BOTTOM', tr('Open MultiView In Bottom Pane'), wx.ITEM_NORMAL, 'OnOpenViewBottom', tr('Opens the multiview of current document in bottom pane.')),
             ]),
         ])
 Mixin.setPlugin('editctrl', 'other_popup_menu', other_popup_menu)
@@ -8041,9 +8129,9 @@ def add_mainframe_menu(menulist):
         ]),
         ('IDM_SEARCH_SMART_NAV',
             [
-                (100, 'IDM_SEARCH_NAV_PREV', tr('Go To Previous File'), wx.ITEM_NORMAL, 'OnSmartNavPrev', tr('Goto previous file.')),
-                (110, 'IDM_SEARCH_NAV_NEXT', tr('Go To Next File'), wx.ITEM_NORMAL, 'OnSmartNavNext', tr('Goto next file.')),
-                (120, 'IDM_SEARCH_NAV_CLEAR', tr('Clear Files'), wx.ITEM_NORMAL, 'OnSmartNavClear', tr('Clear buffered files.')),
+                (100, 'IDM_SEARCH_NAV_PREV', tr('Go To Previous File'), wx.ITEM_NORMAL, 'OnSmartNavPrev', tr('Goes to previous file.')),
+                (110, 'IDM_SEARCH_NAV_NEXT', tr('Go To Next File'), wx.ITEM_NORMAL, 'OnSmartNavNext', tr('Goes to next file.')),
+                (120, 'IDM_SEARCH_NAV_CLEAR', tr('Clear Files'), wx.ITEM_NORMAL, 'OnSmartNavClear', tr('Clears buffered files.')),
             ]),
 
     ])
@@ -8202,7 +8290,7 @@ def add_mainframe_menu(menulist):
         ]),
         ('IDM_TOOL_AUTO_LOAD_MIXINS',
         [
-            (110, 'IDM_TOOL_MIXINS_NAME', tr('Select Mixins Name To Reload') +'\tCtrl+M', wx.ITEM_NORMAL, 'OnToolReloadName', tr('Select Mixin names to reload.')),
+            (110, 'IDM_TOOL_MIXINS_NAME', tr('Select Mixins Name To Reload') +'\tCtrl+M', wx.ITEM_NORMAL, 'OnToolReloadName', tr('Selects Mixin names to reload.')),
             (120, 'IDM_TOOL_ENABLE_RELOAD_MIXINS', tr('Enable Reload Mixins') +'\tCtrl+Shift+M', wx.ITEM_CHECK, 'OnToolreload_mixins', tr('Switches to Mixins reload mode.')),
         ]),
     ])
@@ -8341,7 +8429,7 @@ from modules import Mixin
 def add_editor_menu(popmenulist):
     popmenulist.extend([ (None, #parent menu id
         [
-            (5, 'IDPM_COPY_RUN', tr('Run in Shell') + '\tCtrl+F5', wx.ITEM_NORMAL, 'OnEditorCopyRun', ''),
+            (5, 'IDPM_COPY_RUN', tr('Run In Shell') + '\tCtrl+F5', wx.ITEM_NORMAL, 'OnEditorCopyRun', ''),
         ]),
     ])
 Mixin.setPlugin('editor', 'add_menu', add_editor_menu)
@@ -8469,7 +8557,7 @@ Mixin.setPlugin('mainframe', 'add_menu', add_mainframe_menu)
 def add_notebook_menu(popmenulist):
     popmenulist.extend([(None,
         [
-            (135, 'IDPM_CODESNIPPETWINDOW', tr('Code Snippets Window'), wx.ITEM_NORMAL, 'OnCodeSnippetWindow', tr('Opens code snippet window.')),
+            (135, 'IDPM_CODESNIPPETWINDOW', tr('Code Snippets Window'), wx.ITEM_CHECK, 'OnCodeSnippetWindow', tr('Opens code snippet window.')),
         ]),
     ])
 Mixin.setPlugin('notebook', 'add_menu', add_notebook_menu)
@@ -8507,7 +8595,7 @@ def add_tool_list(toollist, toolbaritems):
     })
 Mixin.setPlugin('mainframe', 'add_tool_list', add_tool_list)
 
-_codesnippet_page_name = tr('Code Snippet')
+_codesnippet_page_name = tr('Code Snippets')
 
 def createCodeSnippetWindow(win):
     from modules import common
@@ -8536,6 +8624,16 @@ def on_mainframe_updateui(win, event):
         event.Check(bool(page))
 Mixin.setPlugin('mainframe', 'on_update_ui', on_mainframe_updateui)
 
+def on_notebook_updateui(win, event):
+    eid = event.GetId()
+    if eid == win.IDPM_CODESNIPPETWINDOW:
+        event.Check(bool(Globals.mainframe.panel.getPage(_codesnippet_page_name)))
+Mixin.setPlugin('notebook', 'on_update_ui', on_notebook_updateui)
+
+def init(win):
+    wx.EVT_UPDATE_UI(win, win.IDPM_CODESNIPPETWINDOW, win.OnUpdateUI)
+Mixin.setPlugin('notebook', 'init', init)
+
 def OnToolbarWindowCodeSnippet(win, event):
     page = win.panel.getPage(_codesnippet_page_name)
     if page:
@@ -8546,13 +8644,21 @@ def OnToolbarWindowCodeSnippet(win, event):
 Mixin.setMixin('mainframe', 'OnToolbarWindowCodeSnippet', OnToolbarWindowCodeSnippet)
 
 def OnWindowCodeSnippet(win, event):
-    if win.createCodeSnippetWindow():
-        win.panel.showPage(_codesnippet_page_name)
+    page = win.panel.getPage(_codesnippet_page_name)
+    if page:
+        win.panel.closePage(_codesnippet_page_name)
+    else:
+        if win.createCodeSnippetWindow():
+            win.panel.showPage(_codesnippet_page_name)
 Mixin.setMixin('mainframe', 'OnWindowCodeSnippet', OnWindowCodeSnippet)
 
 def OnCodeSnippetWindow(win, event):
-    if win.mainframe.createCodeSnippetWindow():
-        win.panel.showPage(_codesnippet_page_name)
+    page = win.mainframe.panel.getPage(_codesnippet_page_name)
+    if page:
+        win.mainframe.panel.closePage(_codesnippet_page_name)
+    else:
+        if win.mainframe.createCodeSnippetWindow():
+            win.mainframe.panel.showPage(_codesnippet_page_name)
 Mixin.setMixin('notebook', 'OnCodeSnippetWindow', OnCodeSnippetWindow)
 
 def close_page(page, name):
@@ -8895,7 +9001,7 @@ def add_mainframe_menu(menulist):
     menulist.extend([
         ('IDM_EDIT_FORMAT',
         [
-            (126, 'IDM_EDIT_FORMAT_WRAP', tr('Wrap Text...'), wx.ITEM_NORMAL, 'OnEditFormatWrap', tr('Wrap selected text.')),
+            (126, 'IDM_EDIT_FORMAT_WRAP', tr('Wrap Text...'), wx.ITEM_NORMAL, 'OnEditFormatWrap', tr('Wraps selected text.')),
         ]),
     ])
 Mixin.setPlugin('mainframe', 'add_menu', add_mainframe_menu)
@@ -8904,7 +9010,7 @@ def add_editor_menu(popmenulist):
     popmenulist.extend([
         ('IDPM_FORMAT',
         [
-            (126, 'IDPM_FORMAT_WRAP', tr('Wrap Text...'), wx.ITEM_NORMAL, 'OnFormatWrap', tr('Wrap selected text.')),
+            (126, 'IDPM_FORMAT_WRAP', tr('Wrap Text...'), wx.ITEM_NORMAL, 'OnFormatWrap', tr('Wraps selected text.')),
         ]),
     ])
 Mixin.setPlugin('editor', 'add_menu', add_editor_menu)

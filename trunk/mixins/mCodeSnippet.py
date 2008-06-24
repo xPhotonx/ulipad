@@ -42,7 +42,7 @@ Mixin.setPlugin('mainframe', 'add_menu', add_mainframe_menu)
 def add_notebook_menu(popmenulist):
     popmenulist.extend([(None,
         [
-            (135, 'IDPM_CODESNIPPETWINDOW', tr('Code Snippets Window'), wx.ITEM_NORMAL, 'OnCodeSnippetWindow', tr('Opens code snippet window.')),
+            (135, 'IDPM_CODESNIPPETWINDOW', tr('Code Snippets Window'), wx.ITEM_CHECK, 'OnCodeSnippetWindow', tr('Opens code snippet window.')),
         ]),
     ])
 Mixin.setPlugin('notebook', 'add_menu', add_notebook_menu)
@@ -80,7 +80,7 @@ def add_tool_list(toollist, toolbaritems):
     })
 Mixin.setPlugin('mainframe', 'add_tool_list', add_tool_list)
 
-_codesnippet_page_name = tr('Code Snippet')
+_codesnippet_page_name = tr('Code Snippets')
 
 def createCodeSnippetWindow(win):
     from modules import common
@@ -109,6 +109,16 @@ def on_mainframe_updateui(win, event):
         event.Check(bool(page))
 Mixin.setPlugin('mainframe', 'on_update_ui', on_mainframe_updateui)
 
+def on_notebook_updateui(win, event):
+    eid = event.GetId()
+    if eid == win.IDPM_CODESNIPPETWINDOW:
+        event.Check(bool(Globals.mainframe.panel.getPage(_codesnippet_page_name)))
+Mixin.setPlugin('notebook', 'on_update_ui', on_notebook_updateui)
+
+def init(win):
+    wx.EVT_UPDATE_UI(win, win.IDPM_CODESNIPPETWINDOW, win.OnUpdateUI)
+Mixin.setPlugin('notebook', 'init', init)
+
 def OnToolbarWindowCodeSnippet(win, event):
     page = win.panel.getPage(_codesnippet_page_name)
     if page:
@@ -119,13 +129,21 @@ def OnToolbarWindowCodeSnippet(win, event):
 Mixin.setMixin('mainframe', 'OnToolbarWindowCodeSnippet', OnToolbarWindowCodeSnippet)
 
 def OnWindowCodeSnippet(win, event):
-    if win.createCodeSnippetWindow():
-        win.panel.showPage(_codesnippet_page_name)
+    page = win.panel.getPage(_codesnippet_page_name)
+    if page:
+        win.panel.closePage(_codesnippet_page_name)
+    else:
+        if win.createCodeSnippetWindow():
+            win.panel.showPage(_codesnippet_page_name)
 Mixin.setMixin('mainframe', 'OnWindowCodeSnippet', OnWindowCodeSnippet)
 
 def OnCodeSnippetWindow(win, event):
-    if win.mainframe.createCodeSnippetWindow():
-        win.panel.showPage(_codesnippet_page_name)
+    page = win.mainframe.panel.getPage(_codesnippet_page_name)
+    if page:
+        win.mainframe.panel.closePage(_codesnippet_page_name)
+    else:
+        if win.mainframe.createCodeSnippetWindow():
+            win.mainframe.panel.showPage(_codesnippet_page_name)
 Mixin.setMixin('notebook', 'OnCodeSnippetWindow', OnCodeSnippetWindow)
 
 def close_page(page, name):

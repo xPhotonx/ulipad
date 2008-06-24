@@ -31,7 +31,7 @@ def add_py_menu(menulist):
         ('IDM_PYTHON', #parent menu id
         [
             (115, '', '-', wx.ITEM_SEPARATOR, None, ''),
-            (116, 'IDM_VIEW_OPEN_MODULE', tr('Open Module File') + '\tF6', wx.ITEM_NORMAL, 'OnViewOpenModuleFile', tr('Open current word as Python module file')),
+            (116, 'IDM_VIEW_OPEN_MODULE', tr('Open Module File') + '\tF6', wx.ITEM_NORMAL, 'OnViewOpenModuleFile', tr('Open current word as Python module file.')),
         ]),
     ])
 Mixin.setPlugin('pythonfiletype', 'add_menu', add_py_menu)
@@ -40,7 +40,7 @@ def other_popup_menu(editor, projectname, menus):
     if editor.languagename == 'python' :
         menus.extend([(None, #parent menu id
             [
-                (10, 'IDPM_OPEN_MODULE', tr('Open Module File') + '\tF6', wx.ITEM_NORMAL, 'OnOpenModuleFile', tr('Open current word as Python module file')),
+                (10, 'IDPM_OPEN_MODULE', tr('Open Module File') + '\tF6', wx.ITEM_NORMAL, 'OnOpenModuleFile', tr('Open current word as Python module file.')),
                 (20, '', '-', wx.ITEM_SEPARATOR, None, ''),
             ]),
         ])

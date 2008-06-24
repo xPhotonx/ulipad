@@ -50,7 +50,7 @@ def add_mainframe_menu(menulist):
     menulist.extend([
         ('IDM_EDIT_FORMAT',
         [
-            (126, 'IDM_EDIT_FORMAT_WRAP', tr('Wrap Text...'), wx.ITEM_NORMAL, 'OnEditFormatWrap', tr('Wrap selected text.')),
+            (126, 'IDM_EDIT_FORMAT_WRAP', tr('Wrap Text...'), wx.ITEM_NORMAL, 'OnEditFormatWrap', tr('Wraps selected text.')),
         ]),
     ])
 Mixin.setPlugin('mainframe', 'add_menu', add_mainframe_menu)
@@ -59,7 +59,7 @@ def add_editor_menu(popmenulist):
     popmenulist.extend([
         ('IDPM_FORMAT',
         [
-            (126, 'IDPM_FORMAT_WRAP', tr('Wrap Text...'), wx.ITEM_NORMAL, 'OnFormatWrap', tr('Wrap selected text.')),
+            (126, 'IDPM_FORMAT_WRAP', tr('Wrap Text...'), wx.ITEM_NORMAL, 'OnFormatWrap', tr('Wraps selected text.')),
         ]),
     ])
 Mixin.setPlugin('editor', 'add_menu', add_editor_menu)
