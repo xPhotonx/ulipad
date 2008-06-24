@@ -27,15 +27,15 @@ from modules import Mixin
 def add_mainframe_menu(menulist):
     menulist.extend([(None,
         [
-            (890, 'IDM_WINDOW', tr('Window'), wx.ITEM_NORMAL, '', ''),
+            (890, 'IDM_WINDOW', tr('Windows'), wx.ITEM_NORMAL, '', ''),
         ]),
         ('IDM_WINDOW',
         [
             (100, 'IDM_WINDOW_LEFT', tr('Left Window')+'\tAlt+Z', wx.ITEM_CHECK, 'OnWindowLeft', tr('Shows or hides the left Window')),
             (110, 'IDM_WINDOW_BOTTOM', tr('Bottom Window')+'\tAlt+X', wx.ITEM_CHECK, 'OnWindowBottom', tr('Shows or hides the bottom Window')),
             (120, '-', '', wx.ITEM_SEPARATOR, '', ''),
-            (130, 'IDM_WINDOW_SHELL', tr('Open Shell Window'), wx.ITEM_NORMAL, 'OnWindowShell', tr('Opens shell window.')),
-            (140, 'IDM_WINDOW_MESSAGE', tr('Open Messages Window'), wx.ITEM_NORMAL, 'OnWindowMessage', tr('Opens messages window.')),
+            (130, 'IDM_WINDOW_SHELL', tr('Shell Window'), wx.ITEM_CHECK, 'OnWindowShell', tr('Opens shell window.')),
+            (140, 'IDM_WINDOW_MESSAGE', tr('Messages Window'), wx.ITEM_CHECK, 'OnWindowMessage', tr('Opens messages window.')),
         ]),
         ('IDM_EDIT',
         [
@@ -63,20 +63,28 @@ def OnWindowBottom(win, event):
 
     win.panel.showWindow('bottom', flag)
     if flag:
-        win.panel.showPage(tr('Shell'))
+        win.panel.showPage(_shell_page_name)
 Mixin.setMixin('mainframe', 'OnWindowBottom', OnWindowBottom)
 
+_shell_page_name = tr('Shell')
+_message_page_name = tr('Messages')
 def on_mainframe_updateui(win, event):
     eid = event.GetId()
     if eid == win.IDM_WINDOW_LEFT:
         event.Check(win.panel.LeftIsVisible)
     elif eid == win.IDM_WINDOW_BOTTOM:
         event.Check(win.panel.BottomIsVisible)
+    elif eid == win.IDM_WINDOW_SHELL:
+        event.Check(bool(win.panel.getPage(_shell_page_name)))
+    elif eid == win.IDM_WINDOW_MESSAGE:
+        event.Check(bool(win.panel.getPage(_message_page_name)))
 Mixin.setPlugin('mainframe', 'on_update_ui', on_mainframe_updateui)
 
 def afterinit(win):
     wx.EVT_UPDATE_UI(win, win.IDM_WINDOW_LEFT, win.OnUpdateUI)
     wx.EVT_UPDATE_UI(win, win.IDM_WINDOW_BOTTOM, win.OnUpdateUI)
+    wx.EVT_UPDATE_UI(win, win.IDM_WINDOW_SHELL, win.OnUpdateUI)
+    wx.EVT_UPDATE_UI(win, win.IDM_WINDOW_MESSAGE, win.OnUpdateUI)
     win.messagewindow = None
     win.shellwindow = None
 Mixin.setPlugin('mainframe', 'afterinit', afterinit)
@@ -95,54 +103,54 @@ def add_tool_list(toollist, toolbaritems):
 Mixin.setPlugin('mainframe', 'add_tool_list', add_tool_list)
 
 def createShellWindow(win):
-    if not win.panel.getPage(tr('Shell')):
+    if not win.panel.getPage(_shell_page_name):
         from ShellWindow import ShellWindow
 
         page = ShellWindow(win.panel.createNotebook('bottom'), win)
-        win.panel.addPage('bottom', page, tr('Shell'))
-    win.shellwindow = win.panel.getPage(tr('Shell'))
+        win.panel.addPage('bottom', page, _shell_page_name)
+    win.shellwindow = win.panel.getPage(_shell_page_name)
 Mixin.setMixin('mainframe', 'createShellWindow', createShellWindow)
 
 def createMessageWindow(win):
-    if not win.panel.getPage(tr('Messages')):
+    if not win.panel.getPage(_message_page_name):
         from MessageWindow import MessageWindow
 
         page = MessageWindow(win.panel.createNotebook('bottom'), win)
-        win.panel.addPage('bottom', page, tr('Messages'))
-    win.messagewindow = win.panel.getPage(tr('Messages'))
+        win.panel.addPage('bottom', page, _message_page_name)
+    win.messagewindow = win.panel.getPage(_message_page_name)
 Mixin.setMixin('mainframe', 'createMessageWindow', createMessageWindow)
 
 def OnWindowShell(win, event):
     win.createShellWindow()
-    win.panel.showPage(tr('Shell'))
+    win.panel.showPage(_shell_page_name)
 Mixin.setMixin('mainframe', 'OnWindowShell', OnWindowShell)
 
 def OnWindowMessage(win, event):
     win.createMessageWindow()
-    win.panel.showPage(tr('Messages'))
+    win.panel.showPage(_message_page_name)
 Mixin.setMixin('mainframe', 'OnWindowMessage', OnWindowMessage)
 
 def add_editor_menu(popmenulist):
     popmenulist.extend([ (None,
         [
-            (120, 'IDPM_SHELLWINDOW', tr('Open Shell Window'), wx.ITEM_NORMAL, 'OnShellWindow', tr('Opens shell window.')),
-            (130, 'IDPM_MESSAGEWINDOW', tr('Open Messages Window'), wx.ITEM_NORMAL, 'OnMessageWindow', tr('Opens messages window.')),
+            (120, 'IDPM_SHELLWINDOW', tr('Shell Window'), wx.ITEM_NORMAL, 'OnShellWindow', tr('Opens shell window.')),
+            (130, 'IDPM_MESSAGEWINDOW', tr('Messages Window'), wx.ITEM_NORMAL, 'OnMessageWindow', tr('Opens messages window.')),
         ]),
     ])
 Mixin.setPlugin('notebook', 'add_menu', add_editor_menu)
 
 def OnShellWindow(win, event):
     win.mainframe.createShellWindow()
-    win.panel.showPage(tr('Shell'))
+    win.panel.showPage(_shell_page_name)
 Mixin.setMixin('notebook', 'OnShellWindow', OnShellWindow)
 
 def OnMessageWindow(win, event):
     win.mainframe.createMessageWindow()
-    win.panel.showPage(tr('Messages'))
+    win.panel.showPage(_message_page_name)
 Mixin.setMixin('notebook', 'OnMessageWindow', OnMessageWindow)
 
 def OnEditClearShell(win, event):
-    shellwin = win.panel.getPage(tr('Shell'))
+    shellwin = win.panel.getPage(_shell_page_name)
     if shellwin:
         shellwin.clear()
         shellwin.prompt()

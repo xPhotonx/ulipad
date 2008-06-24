@@ -31,7 +31,7 @@ from modules import common
 def add_mainframe_menu(menulist):
     menulist.extend([ ('IDM_WINDOW',
         [
-            (160, 'IDM_WINDOW_FTP', tr('Open FTP Window'), wx.ITEM_NORMAL, 'OnWindowFtp', tr('Opens FTP window.')),
+            (160, 'IDM_WINDOW_FTP', tr('FTP Window'), wx.ITEM_CHECK, 'OnWindowFtp', tr('Opens FTP window.')),
         ]),
     ])
 Mixin.setPlugin('mainframe', 'add_menu', add_mainframe_menu)
@@ -49,7 +49,7 @@ Mixin.setPlugin('mainframe', 'afterinit', afterinit)
 def add_editor_menu(popmenulist):
     popmenulist.extend([ (None,
         [
-            (150, 'IDPM_FTPWINDOW', tr('Open FTP Window'), wx.ITEM_NORMAL, 'OnFtpWindow', tr('Opens FTP window.')),
+            (150, 'IDPM_FTPWINDOW', tr('FTP Window'), wx.ITEM_NORMAL, 'OnFtpWindow', tr('Opens FTP window.')),
         ]),
     ])
 Mixin.setPlugin('notebook', 'add_menu', add_editor_menu)

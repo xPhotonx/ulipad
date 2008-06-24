@@ -276,8 +276,8 @@ class FindPanel(wx.Panel):
         btn = FlatButtons.FlatBitmapButton(self, -1, common.getpngimage('images/closewin.gif'))
         btn.SetToolTip(wx.ToolTip(tr("Close")))
         box1.add(btn).bind('click', self.OnClose)
-        btn = FlatButtons.FlatBitmapButton(self, -1, common.getpngimage('images/replace.gif'))
-        btn.SetToolTip(wx.ToolTip(tr("Open Replace")))
+        self.btnToggleReplace = btn = FlatButtons.FlatBitmapButton(self, -1, common.getpngimage('images/replace.gif'))
+        btn.SetToolTip(wx.ToolTip(tr("Show Replace Pane")))
         box1.add(btn).bind('click', self.OnOpenReplace)
 
         box2 = ui.VBox(0)
@@ -303,6 +303,8 @@ class FindPanel(wx.Panel):
         #add replace widgets
         if replace:
             self._create_replace()
+            self.btnToggleReplace.SetToolTip(wx.ToolTip(tr("Hide Replace Pane")))
+            
 #        self.SetBackgroundColour('#FFFFE1')
 
     def _create_replace(self):
@@ -423,11 +425,14 @@ class FindPanel(wx.Panel):
         if 'replace_sizer' not in self.sizer:
             self._create_replace()
             self._reset_replace()
+            self.btnToggleReplace.SetToolTip(wx.ToolTip(tr("Hide Replace Pane")))
         else:
             if self.sizer.is_shown('replace_sizer'):
                 self.sizer.hide('replace_sizer')
+                self.btnToggleReplace.SetToolTip(wx.ToolTip(tr("Show Replace Pane")))
             else:
                 self.sizer.show('replace_sizer')
+                self.btnToggleReplace.SetToolTip(wx.ToolTip(tr("Hide Replace Pane")))
             self.parent.sizer.layout()
 
     def getValue(self):

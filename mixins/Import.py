@@ -1002,8 +1002,8 @@ def add_tool_list(toollist, toolbaritems):
     ])
 
     toolbaritems.update({
-        'find':(wx.ITEM_NORMAL, 'wx.ID_FIND', 'images/find.gif', tr('Find'), tr('Find Text'), 'OnSearchFind'),
-        'replace':(wx.ITEM_NORMAL, 'wx.ID_REPLACE', 'images/replace.gif', tr('Find And Replace'), tr('Find and replace text'), 'OnSearchReplace'),
+        'find':(wx.ITEM_NORMAL, 'wx.ID_FIND', 'images/find.gif', tr('Open Find Window'), tr('Find Text'), 'OnSearchFind'),
+        'replace':(wx.ITEM_NORMAL, 'wx.ID_REPLACE', 'images/replace.gif', tr('Open Find And Replace Window'), tr('Find and replace text'), 'OnSearchReplace'),
     })
 Mixin.setPlugin('mainframe', 'add_tool_list', add_tool_list)
 
@@ -5058,7 +5058,7 @@ from modules import common
 def add_mainframe_menu(menulist):
     menulist.extend([ ('IDM_WINDOW',
         [
-            (160, 'IDM_WINDOW_FTP', tr('Open FTP Window'), wx.ITEM_NORMAL, 'OnWindowFtp', tr('Opens FTP window.')),
+            (160, 'IDM_WINDOW_FTP', tr('FTP Window'), wx.ITEM_CHECK, 'OnWindowFtp', tr('Opens FTP window.')),
         ]),
     ])
 Mixin.setPlugin('mainframe', 'add_menu', add_mainframe_menu)
@@ -5076,7 +5076,7 @@ Mixin.setPlugin('mainframe', 'afterinit', afterinit)
 def add_editor_menu(popmenulist):
     popmenulist.extend([ (None,
         [
-            (150, 'IDPM_FTPWINDOW', tr('Open FTP Window'), wx.ITEM_NORMAL, 'OnFtpWindow', tr('Opens FTP window.')),
+            (150, 'IDPM_FTPWINDOW', tr('FTP Window'), wx.ITEM_NORMAL, 'OnFtpWindow', tr('Opens FTP window.')),
         ]),
     ])
 Mixin.setPlugin('notebook', 'add_menu', add_editor_menu)
@@ -5231,15 +5231,15 @@ from modules import Mixin
 def add_mainframe_menu(menulist):
     menulist.extend([(None,
         [
-            (890, 'IDM_WINDOW', tr('Window'), wx.ITEM_NORMAL, '', ''),
+            (890, 'IDM_WINDOW', tr('Windows'), wx.ITEM_NORMAL, '', ''),
         ]),
         ('IDM_WINDOW',
         [
             (100, 'IDM_WINDOW_LEFT', tr('Left Window')+'\tAlt+Z', wx.ITEM_CHECK, 'OnWindowLeft', tr('Shows or hides the left Window')),
             (110, 'IDM_WINDOW_BOTTOM', tr('Bottom Window')+'\tAlt+X', wx.ITEM_CHECK, 'OnWindowBottom', tr('Shows or hides the bottom Window')),
             (120, '-', '', wx.ITEM_SEPARATOR, '', ''),
-            (130, 'IDM_WINDOW_SHELL', tr('Open Shell Window'), wx.ITEM_NORMAL, 'OnWindowShell', tr('Opens shell window.')),
-            (140, 'IDM_WINDOW_MESSAGE', tr('Open Messages Window'), wx.ITEM_NORMAL, 'OnWindowMessage', tr('Opens messages window.')),
+            (130, 'IDM_WINDOW_SHELL', tr('Shell Window'), wx.ITEM_CHECK, 'OnWindowShell', tr('Opens shell window.')),
+            (140, 'IDM_WINDOW_MESSAGE', tr('Messages Window'), wx.ITEM_CHECK, 'OnWindowMessage', tr('Opens messages window.')),
         ]),
         ('IDM_EDIT',
         [
@@ -5263,20 +5263,28 @@ def OnWindowBottom(win, event):
 
     win.panel.showWindow('bottom', flag)
     if flag:
-        win.panel.showPage(tr('Shell'))
+        win.panel.showPage(_shell_page_name)
 Mixin.setMixin('mainframe', 'OnWindowBottom', OnWindowBottom)
 
+_shell_page_name = tr('Shell')
+_message_page_name = tr('Messages')
 def on_mainframe_updateui(win, event):
     eid = event.GetId()
     if eid == win.IDM_WINDOW_LEFT:
         event.Check(win.panel.LeftIsVisible)
     elif eid == win.IDM_WINDOW_BOTTOM:
         event.Check(win.panel.BottomIsVisible)
+    elif eid == win.IDM_WINDOW_SHELL:
+        event.Check(bool(win.panel.getPage(_shell_page_name)))
+    elif eid == win.IDM_WINDOW_MESSAGE:
+        event.Check(bool(win.panel.getPage(_message_page_name)))
 Mixin.setPlugin('mainframe', 'on_update_ui', on_mainframe_updateui)
 
 def afterinit(win):
     wx.EVT_UPDATE_UI(win, win.IDM_WINDOW_LEFT, win.OnUpdateUI)
     wx.EVT_UPDATE_UI(win, win.IDM_WINDOW_BOTTOM, win.OnUpdateUI)
+    wx.EVT_UPDATE_UI(win, win.IDM_WINDOW_SHELL, win.OnUpdateUI)
+    wx.EVT_UPDATE_UI(win, win.IDM_WINDOW_MESSAGE, win.OnUpdateUI)
     win.messagewindow = None
     win.shellwindow = None
 Mixin.setPlugin('mainframe', 'afterinit', afterinit)
@@ -5295,54 +5303,54 @@ def add_tool_list(toollist, toolbaritems):
 Mixin.setPlugin('mainframe', 'add_tool_list', add_tool_list)
 
 def createShellWindow(win):
-    if not win.panel.getPage(tr('Shell')):
+    if not win.panel.getPage(_shell_page_name):
         from ShellWindow import ShellWindow
 
         page = ShellWindow(win.panel.createNotebook('bottom'), win)
-        win.panel.addPage('bottom', page, tr('Shell'))
-    win.shellwindow = win.panel.getPage(tr('Shell'))
+        win.panel.addPage('bottom', page, _shell_page_name)
+    win.shellwindow = win.panel.getPage(_shell_page_name)
 Mixin.setMixin('mainframe', 'createShellWindow', createShellWindow)
 
 def createMessageWindow(win):
-    if not win.panel.getPage(tr('Messages')):
+    if not win.panel.getPage(_message_page_name):
         from MessageWindow import MessageWindow
 
         page = MessageWindow(win.panel.createNotebook('bottom'), win)
-        win.panel.addPage('bottom', page, tr('Messages'))
-    win.messagewindow = win.panel.getPage(tr('Messages'))
+        win.panel.addPage('bottom', page, _message_page_name)
+    win.messagewindow = win.panel.getPage(_message_page_name)
 Mixin.setMixin('mainframe', 'createMessageWindow', createMessageWindow)
 
 def OnWindowShell(win, event):
     win.createShellWindow()
-    win.panel.showPage(tr('Shell'))
+    win.panel.showPage(_shell_page_name)
 Mixin.setMixin('mainframe', 'OnWindowShell', OnWindowShell)
 
 def OnWindowMessage(win, event):
     win.createMessageWindow()
-    win.panel.showPage(tr('Messages'))
+    win.panel.showPage(_message_page_name)
 Mixin.setMixin('mainframe', 'OnWindowMessage', OnWindowMessage)
 
 def add_editor_menu(popmenulist):
     popmenulist.extend([ (None,
         [
-            (120, 'IDPM_SHELLWINDOW', tr('Open Shell Window'), wx.ITEM_NORMAL, 'OnShellWindow', tr('Opens shell window.')),
-            (130, 'IDPM_MESSAGEWINDOW', tr('Open Messages Window'), wx.ITEM_NORMAL, 'OnMessageWindow', tr('Opens messages window.')),
+            (120, 'IDPM_SHELLWINDOW', tr('Shell Window'), wx.ITEM_NORMAL, 'OnShellWindow', tr('Opens shell window.')),
+            (130, 'IDPM_MESSAGEWINDOW', tr('Messages Window'), wx.ITEM_NORMAL, 'OnMessageWindow', tr('Opens messages window.')),
         ]),
     ])
 Mixin.setPlugin('notebook', 'add_menu', add_editor_menu)
 
 def OnShellWindow(win, event):
     win.mainframe.createShellWindow()
-    win.panel.showPage(tr('Shell'))
+    win.panel.showPage(_shell_page_name)
 Mixin.setMixin('notebook', 'OnShellWindow', OnShellWindow)
 
 def OnMessageWindow(win, event):
     win.mainframe.createMessageWindow()
-    win.panel.showPage(tr('Messages'))
+    win.panel.showPage(_message_page_name)
 Mixin.setMixin('notebook', 'OnMessageWindow', OnMessageWindow)
 
 def OnEditClearShell(win, event):
-    shellwin = win.panel.getPage(tr('Shell'))
+    shellwin = win.panel.getPage(_shell_page_name)
     if shellwin:
         shellwin.clear()
         shellwin.prompt()
@@ -6008,7 +6016,7 @@ Mixin.setPlugin('mainframe', 'on_update_ui', on_mainframe_updateui)
 def add_mainframe_menu(menulist):
     menulist.extend([('IDM_FILE',
         [
-            (138, 'IDM_WINDOW_DIRBROWSER', tr('Open Directory Browser')+'\tF2', wx.ITEM_CHECK, 'OnWindowDirBrowser', tr('Opens directory browser window.'))
+            (138, 'IDM_WINDOW_DIRBROWSER', tr('Directory Browser')+'\tF2', wx.ITEM_CHECK, 'OnWindowDirBrowser', tr('Opens directory browser window.'))
         ]),
     ])
 Mixin.setPlugin('mainframe', 'add_menu', add_mainframe_menu)
@@ -6016,7 +6024,7 @@ Mixin.setPlugin('mainframe', 'add_menu', add_mainframe_menu)
 def add_notebook_menu(popmenulist):
     popmenulist.extend([(None,
         [
-            (170, 'IDPM_DIRBROWSERWINDOW', tr('Open Directory Browser'), wx.ITEM_NORMAL, 'OnDirBrowserWindow', tr('Opens directory browser window.')),
+            (170, 'IDPM_DIRBROWSERWINDOW', tr('Directory Browser'), wx.ITEM_NORMAL, 'OnDirBrowserWindow', tr('Opens directory browser window.')),
         ]),
     ])
 Mixin.setPlugin('notebook', 'add_menu', add_notebook_menu)
@@ -6354,7 +6362,7 @@ def add_mainframe_menu(menulist):
         ]),
         ('IDM_CONFIG',
         [
-            (100, 'IDM_CONFIG_INPUTASSISTANT', tr('Toggle Input Assistant')+'\tAlt+A', wx.ITEM_CHECK, 'OnConfigInputAssistant', tr('Toggle input assistant.')),
+            (100, 'IDM_CONFIG_INPUTASSISTANT', tr('Enable Input Assistant')+'\tAlt+A', wx.ITEM_CHECK, 'OnConfigInputAssistant', tr('Enable input assistant.')),
         ]),
 
     ])
@@ -6482,20 +6490,28 @@ def main_init(win):
     win.auto_routin_ac_action.start()
 Mixin.setPlugin('mainframe', 'init', main_init)
 
+def _set_input_assistant_menu(win):
+    menuitem = win.menuitems['IDM_CONFIG_INPUTASSISTANT']
+    t = menuitem.GetItemLabel()
+    accel = t.split()[-1]
+    if Globals.pref.input_assistant:
+        text = tr('Disable Input Assistant')
+    else:
+        text = tr('Enable Input Assistant')
+    from modules.makemenu import setmenuitemtext
+    setmenuitemtext(menuitem, text, accel)
+    menuitem.Check(Globals.pref.input_assistant)
+
 def OnConfigInputAssistant(win, event):
     Globals.pref.input_assistant = not Globals.pref.input_assistant
     Globals.pref.save()
+    _set_input_assistant_menu(win)
 Mixin.setMixin('mainframe', 'OnConfigInputAssistant', OnConfigInputAssistant)
 
 def afterinit(win):
-    wx.EVT_UPDATE_UI(win, win.IDM_CONFIG_INPUTASSISTANT, win.OnUpdateUI)
+    _set_input_assistant_menu(win)
 Mixin.setPlugin('mainframe', 'afterinit', afterinit)
 
-def on_mainframe_updateui(win, event):
-    eid = event.GetId()
-    if eid == win.IDM_CONFIG_INPUTASSISTANT:
-        event.Check(Globals.pref.input_assistant)
-Mixin.setPlugin('mainframe', 'on_update_ui', on_mainframe_updateui)
 
 
 
@@ -6609,7 +6625,7 @@ def add_mainframe_menu(menulist):
     menulist.extend([
         ('IDM_WINDOW',
         [
-            (200, 'IDM_WINDOW_SHARE', tr('Open Share Resources Window'), wx.ITEM_NORMAL, 'OnWindowShare', tr('Opens share resources window.'))
+            (200, 'IDM_WINDOW_SHARE', tr('Resource Shares Window'), wx.ITEM_CHECK, 'OnWindowShare', tr('Opens resource shares window.'))
         ]),
     ])
 Mixin.setPlugin('mainframe', 'add_menu', add_mainframe_menu)
@@ -6617,7 +6633,7 @@ Mixin.setPlugin('mainframe', 'add_menu', add_mainframe_menu)
 def add_notebook_menu(popmenulist):
     popmenulist.extend([(None,
         [
-            (180, 'IDPM_SHAREWINDOW', tr('Open Share Resources Window'), wx.ITEM_NORMAL, 'OnShareWindow', tr('Opens share resources window.')),
+            (180, 'IDPM_SHAREWINDOW', tr('Resource Shares Window'), wx.ITEM_NORMAL, 'OnShareWindow', tr('Opens resource shares window.')),
         ]),
     ])
 Mixin.setPlugin('notebook', 'add_menu', add_notebook_menu)
@@ -6631,26 +6647,38 @@ def afterinit(win):
 Mixin.setPlugin('mainframe', 'afterinit', afterinit)
 
 
+_resshare_pagename = tr('Resource Shares')
+
+def on_mainframe_updateui(win, event):
+    eid = event.GetId()
+    if eid == win.IDM_WINDOW_SHARE:
+        event.Check(bool(win.panel.getPage(_resshare_pagename)))
+Mixin.setPlugin('mainframe', 'on_update_ui', on_mainframe_updateui)
+
+def afterinit(win):
+    wx.EVT_UPDATE_UI(win, win.IDM_WINDOW_SHARE, win.OnUpdateUI)
+Mixin.setPlugin('mainframe', 'afterinit', afterinit)
+
 def createShareWindow(win):
-    if not win.panel.getPage(tr('Share Resources')):
+    if not win.panel.getPage(_resshare_pagename):
         from ShareWindow import ShareWindow
 
         page = ShareWindow(win.panel.createNotebook('left'), win)
-        win.panel.addPage('left', page, tr('Share Resources'))
+        win.panel.addPage('left', page, _resshare_pagename)
 Mixin.setMixin('mainframe', 'createShareWindow', createShareWindow)
 
 def OnWindowShare(win, event):
     win.createShareWindow()
-    win.panel.showPage(tr('Share Resources'))
+    win.panel.showPage(_resshare_pagename)
 Mixin.setMixin('mainframe', 'OnWindowShare', OnWindowShare)
 
 def OnShareWindow(win, event):
     win.mainframe.createShareWindow()
-    win.panel.showPage(tr('Share Resources'))
+    win.panel.showPage(_resshare_pagename)
 Mixin.setMixin('notebook', 'OnShareWindow', OnShareWindow)
 
 def close_page(page, name):
-    if name == tr('Share Resources'):
+    if name == _resshare_pagename:
         page.OnCloseWin()
 Mixin.setPlugin('notebook', 'close_page', close_page)
 
@@ -6734,7 +6762,7 @@ def add_tool_list(toollist, toolbaritems):
 
     #order, IDname, imagefile, short text, long text, func
     toolbaritems.update({
-        'memo':(wx.ITEM_CHECK, 'IDM_TOOL_MEMO', 'images/memo.gif', tr('Easy Memo'), tr('Show Easy Memo windows, and you can write down everything what you want.'), 'OnToolMemo'),
+        'memo':(wx.ITEM_CHECK, 'IDM_TOOL_MEMO', 'images/memo.gif', tr('Open Easy Memo Window'), tr('Show Easy Memo windows, and you can write down everything what you want.'), 'OnToolMemo'),
     })
 Mixin.setPlugin('mainframe', 'add_tool_list', add_tool_list)
 
@@ -6827,7 +6855,7 @@ from modules import Mixin
 def add_mainframe_menu(menulist):
     menulist.extend([('IDM_WINDOW', #parent menu id
         [
-            (210, 'IDM_WINDOW_TODO', tr('Open TODO Window')+u'\tCtrl+T', wx.ITEM_NORMAL, 'OnWindowTODO', tr('Open the TODO window.')),
+            (210, 'IDM_WINDOW_TODO', tr('TODO Window')+u'\tCtrl+T', wx.ITEM_CHECK, 'OnWindowTODO', tr('Open the TODO window.')),
         ]),
     ])
 Mixin.setPlugin('mainframe', 'add_menu', add_mainframe_menu)
@@ -6835,7 +6863,7 @@ Mixin.setPlugin('mainframe', 'add_menu', add_mainframe_menu)
 def add_notebook_menu(popmenulist):
     popmenulist.extend([ (None,
         [
-            (190, 'IDPM_TODOWINDOW', tr('Open TODO Window'), wx.ITEM_NORMAL, 'OnNTodoWindow', tr('Opens the TODO window.')),
+            (190, 'IDPM_TODOWINDOW', tr('TODO Window'), wx.ITEM_NORMAL, 'OnNTodoWindow', tr('Opens the TODO window.')),
         ]),
     ])
 Mixin.setPlugin('notebook', 'add_menu', add_notebook_menu)
@@ -6855,32 +6883,42 @@ def add_pref(preflist):
     ])
 Mixin.setPlugin('preference', 'add_pref', add_pref)
 
-todo_pagename = tr('TODO')
+_todo_pagename = tr('TODO')
+
+def on_mainframe_updateui(win, event):
+    eid = event.GetId()
+    if eid == win.IDM_WINDOW_TODO:
+        event.Check(bool(win.panel.getPage(_todo_pagename)))
+Mixin.setPlugin('mainframe', 'on_update_ui', on_mainframe_updateui)
+
+def afterinit(win):
+    wx.EVT_UPDATE_UI(win, win.IDM_WINDOW_TODO, win.OnUpdateUI)
+Mixin.setPlugin('mainframe', 'afterinit', afterinit)
 
 def createtodowindow(win):
-    if not win.panel.getPage(todo_pagename):
+    if not win.panel.getPage(_todo_pagename):
         from TodoWindow import TodoWindow
 
         page = TodoWindow(win.panel.createNotebook('bottom'), win)
-        win.panel.addPage('bottom', page, todo_pagename)
-    win.todowindow = win.panel.getPage(todo_pagename)
+        win.panel.addPage('bottom', page, _todo_pagename)
+    win.todowindow = win.panel.getPage(_todo_pagename)
 Mixin.setMixin('mainframe', 'createtodowindow', createtodowindow)
 
 def OnWindowTODO(win, event):
     win.createtodowindow()
-    win.panel.showPage(todo_pagename)
+    win.panel.showPage(_todo_pagename)
     win.todowindow.show(win.document)
 Mixin.setMixin('mainframe', 'OnWindowTODO', OnWindowTODO)
 
 def OnNTodoWindow(win, event):
     win.mainframe.createtodowindow()
-    win.panel.showPage(todo_pagename)
+    win.panel.showPage(_todo_pagename)
     win.mainframe.todowindow.show(win.mainframe.document)
 Mixin.setMixin('notebook', 'OnNTodoWindow', OnNTodoWindow)
 
 def aftersavefile(win, filename):
     def f():
-        todo = win.mainframe.panel.getPage(todo_pagename)
+        todo = win.mainframe.panel.getPage(_todo_pagename)
         if todo:
             data = read_todos(win)
             if data:
@@ -6891,10 +6929,10 @@ def aftersavefile(win, filename):
                 data = read_todos(win)
                 if data:
                     win.mainframe.createtodowindow()
-                    win.mainframe.panel.showPage(todo_pagename)
+                    win.mainframe.panel.showPage(_todo_pagename)
                     win.mainframe.todowindow.show(win, data)
                     return
-        win.mainframe.panel.closePage(todo_pagename, savestatus=False)
+        win.mainframe.panel.closePage(_todo_pagename, savestatus=False)
     wx.CallAfter(f)
 Mixin.setPlugin('editor', 'aftersavefile', aftersavefile)
 
@@ -6904,17 +6942,17 @@ def on_document_enter(win, editor):
             data = read_todos(win.document)
             if data:
                 win.mainframe.createtodowindow()
-                win.mainframe.panel.showPage(todo_pagename)
+                win.mainframe.panel.showPage(_todo_pagename)
                 win.mainframe.todowindow.show(win.document, data)
                 return
     else:
-        todo = win.mainframe.panel.getPage(todo_pagename)
+        todo = win.mainframe.panel.getPage(_todo_pagename)
         if todo:
             data = read_todos(win.document)
             if data:
                 win.mainframe.todowindow.show(win.document, data)
                 return
-    win.mainframe.panel.closePage(todo_pagename, savestatus=False)
+    win.mainframe.panel.closePage(_todo_pagename, savestatus=False)
 Mixin.setPlugin('editctrl', 'on_document_enter', on_document_enter)
 
 def editor_init(editor):
@@ -7357,7 +7395,7 @@ from modules import Globals
 def add_editor_menu(popmenulist):
     popmenulist.extend([ (None,
         [
-            (200, 'IDPM_MULTIVIEWWINDOW', tr('Open Multiview Window'), wx.ITEM_NORMAL, 'OnMultiViewWindow', tr('Opens multiview window.')),
+            (200, 'IDPM_MULTIVIEWWINDOW', tr('Multiview Window'), wx.ITEM_NORMAL, 'OnMultiViewWindow', tr('Opens multiview window.')),
         ]),
     ])
 Mixin.setPlugin('notebook', 'add_menu', add_editor_menu)
@@ -7402,7 +7440,7 @@ Mixin.setPlugin('mainframe', 'closefile', closefile)
 def add_mainframe_menu(menulist):
     menulist.extend([ ('IDM_WINDOW',
         [
-            (220, 'IDM_WINDOW_MULTIVIEWWINDOW', tr('Open Multiview Window'), wx.ITEM_NORMAL, 'OnWindowMultiView', tr('Opens multi view window.')),
+            (220, 'IDM_WINDOW_MULTIVIEWWINDOW', tr('Multiview Window'), wx.ITEM_NORMAL, 'OnWindowMultiView', tr('Opens multi view window.')),
         ]),
     ])
 Mixin.setPlugin('mainframe', 'add_menu', add_mainframe_menu)
@@ -7425,8 +7463,8 @@ def other_popup_menu(editctrl, document, menus):
         menus.extend([ (None,
             [
                 (600, '', '-', wx.ITEM_SEPARATOR, None, ''),
-                (700, 'IDPM_MULTIVIEW_LEFT', tr('Open View In Left Pane'), wx.ITEM_NORMAL, 'OnOpenViewLeft', tr('Opens view of current document in left pane.')),
-                (800, 'IDPM_MULTIVIEW_BOTTOM', tr('Open View In Bottom Pane'), wx.ITEM_NORMAL, 'OnOpenViewBottom', tr('Opens view of current document in bottom pane.')),
+                (700, 'IDPM_MULTIVIEW_LEFT', tr('Open MultiView In Left Pane'), wx.ITEM_NORMAL, 'OnOpenViewLeft', tr('Opens multiview of current document in left pane.')),
+                (800, 'IDPM_MULTIVIEW_BOTTOM', tr('Open MultiView In Bottom Pane'), wx.ITEM_NORMAL, 'OnOpenViewBottom', tr('Opens multiview of current document in bottom pane.')),
             ]),
         ])
 Mixin.setPlugin('editctrl', 'other_popup_menu', other_popup_menu)
@@ -8423,7 +8461,7 @@ def add_mainframe_menu(menulist):
     menulist.extend([
         ('IDM_WINDOW',
         [
-            (151, 'IDM_WINDOW_CODESNIPPET', tr('Open Code Snippets Window'), wx.ITEM_NORMAL, 'OnWindowCodeSnippet', tr('Opens code snippets window.'))
+            (151, 'IDM_WINDOW_CODESNIPPET', tr('Code Snippets Window'), wx.ITEM_CHECK, 'OnWindowCodeSnippet', tr('Opens code snippets window.'))
         ]),
     ])
 Mixin.setPlugin('mainframe', 'add_menu', add_mainframe_menu)
@@ -8431,7 +8469,7 @@ Mixin.setPlugin('mainframe', 'add_menu', add_mainframe_menu)
 def add_notebook_menu(popmenulist):
     popmenulist.extend([(None,
         [
-            (135, 'IDPM_CODESNIPPETWINDOW', tr('Open Code Snippets Window'), wx.ITEM_NORMAL, 'OnCodeSnippetWindow', tr('Opens code snippet window.')),
+            (135, 'IDPM_CODESNIPPETWINDOW', tr('Code Snippets Window'), wx.ITEM_NORMAL, 'OnCodeSnippetWindow', tr('Opens code snippet window.')),
         ]),
     ])
 Mixin.setPlugin('notebook', 'add_menu', add_notebook_menu)
@@ -8465,9 +8503,11 @@ def add_tool_list(toollist, toolbaritems):
 
     #order, IDname, imagefile, short text, long text, func
     toolbaritems.update({
-        'snippet':(wx.ITEM_CHECK, 'IDTM_SNIPPETWINDOW', 'images/snippet.png', tr('Open Snippets Window'), tr('Open code snippet window.'), 'OnToolbarWindowCodeSnippet'),
+        'snippet':(wx.ITEM_CHECK, 'IDM_WINDOW_CODESNIPPET', 'images/snippet.png', tr('Open Code Snippets Window'), tr('Open code snippet window.'), 'OnToolbarWindowCodeSnippet'),
     })
 Mixin.setPlugin('mainframe', 'add_tool_list', add_tool_list)
+
+_codesnippet_page_name = tr('Code Snippet')
 
 def createCodeSnippetWindow(win):
     from modules import common
@@ -8476,43 +8516,43 @@ def createCodeSnippetWindow(win):
     except:
         import elementtree.ElementTree
 
-    page = win.panel.getPage(tr('Code Snippets'))
+    page = win.panel.getPage(_codesnippet_page_name)
     if not page:
         from CodeSnippet import CodeSnippetWindow
 
         page = CodeSnippetWindow(win.panel.createNotebook('left'), win)
-        win.panel.addPage('left', page, tr('Code Snippets'))
+        win.panel.addPage('left', page, _codesnippet_page_name)
     return page
 Mixin.setMixin('mainframe', 'createCodeSnippetWindow', createCodeSnippetWindow)
 
 def afterinit(win):
-    wx.EVT_UPDATE_UI(win, win.IDTM_SNIPPETWINDOW, win.OnUpdateUI)
+    wx.EVT_UPDATE_UI(win, win.IDM_WINDOW_CODESNIPPET, win.OnUpdateUI)
 Mixin.setPlugin('mainframe', 'afterinit', afterinit)
 
 def on_mainframe_updateui(win, event):
     eid = event.GetId()
-    if eid == win.IDTM_SNIPPETWINDOW:
-        page = win.panel.getPage(tr('Code Snippets'))
+    if eid == win.IDM_WINDOW_CODESNIPPET:
+        page = win.panel.getPage(_codesnippet_page_name)
         event.Check(bool(page))
 Mixin.setPlugin('mainframe', 'on_update_ui', on_mainframe_updateui)
 
 def OnToolbarWindowCodeSnippet(win, event):
-    page = win.panel.getPage(tr('Code Snippets'))
+    page = win.panel.getPage(_codesnippet_page_name)
     if page:
-        win.panel.closePage(tr('Code Snippets'))
+        win.panel.closePage(_codesnippet_page_name)
     else:
         if win.createCodeSnippetWindow():
-            win.panel.showPage(tr('Code Snippets'))
+            win.panel.showPage(_codesnippet_page_name)
 Mixin.setMixin('mainframe', 'OnToolbarWindowCodeSnippet', OnToolbarWindowCodeSnippet)
 
 def OnWindowCodeSnippet(win, event):
     if win.createCodeSnippetWindow():
-        win.panel.showPage(tr('Code Snippets'))
+        win.panel.showPage(_codesnippet_page_name)
 Mixin.setMixin('mainframe', 'OnWindowCodeSnippet', OnWindowCodeSnippet)
 
 def OnCodeSnippetWindow(win, event):
     if win.mainframe.createCodeSnippetWindow():
-        win.panel.showPage(tr('Code Snippets'))
+        win.panel.showPage(_codesnippet_page_name)
 Mixin.setMixin('notebook', 'OnCodeSnippetWindow', OnCodeSnippetWindow)
 
 def close_page(page, name):
@@ -8527,7 +8567,7 @@ Mixin.setPlugin('notebook', 'close_page', close_page)
 def on_close(win, event):
     if event.CanVeto():
         win = Globals.mainframe
-        snippet = win.panel.getPage(tr('Code Snippets'))
+        snippet = win.panel.getPage(_codesnippet_page_name)
         if snippet:
             return not snippet.canClose()
 Mixin.setPlugin('mainframe', 'on_close', on_close)
