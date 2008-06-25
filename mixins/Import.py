@@ -6417,7 +6417,7 @@ def add_mainframe_menu(menulist):
         ]),
         ('IDM_CONFIG',
         [
-            (100, 'IDM_CONFIG_INPUTASSISTANT', tr('Enable Input Assistant')+'\tAlt+A', wx.ITEM_CHECK, 'OnConfigInputAssistant', tr('Enable input assistant.')),
+            (100, 'IDM_CONFIG_INPUTASSISTANT', tr('Input Assistant Enabled')+'\tAlt+A', wx.ITEM_CHECK, 'OnConfigInputAssistant', tr('Enable input assistant.')),
         ]),
 
     ])
@@ -6545,28 +6545,20 @@ def main_init(win):
     win.auto_routin_ac_action.start()
 Mixin.setPlugin('mainframe', 'init', main_init)
 
-def _set_input_assistant_menu(win):
-    menuitem = win.menuitems['IDM_CONFIG_INPUTASSISTANT']
-    t = menuitem.GetItemLabel()
-    accel = t.split()[-1]
-    if Globals.pref.input_assistant:
-        text = tr('Disable Input Assistant')
-    else:
-        text = tr('Enable Input Assistant')
-    from modules.makemenu import setmenuitemtext
-    setmenuitemtext(menuitem, text, accel)
-    menuitem.Check(Globals.pref.input_assistant)
-
 def OnConfigInputAssistant(win, event):
     Globals.pref.input_assistant = not Globals.pref.input_assistant
     Globals.pref.save()
-    _set_input_assistant_menu(win)
 Mixin.setMixin('mainframe', 'OnConfigInputAssistant', OnConfigInputAssistant)
 
 def afterinit(win):
-    _set_input_assistant_menu(win)
+    wx.EVT_UPDATE_UI(win, win.IDM_CONFIG_INPUTASSISTANT, win.OnUpdateUI)
 Mixin.setPlugin('mainframe', 'afterinit', afterinit)
 
+def on_mainframe_updateui(win, event):
+    eid = event.GetId()
+    if eid == win.IDM_CONFIG_INPUTASSISTANT:
+        event.Check(Globals.pref.input_assistant)
+Mixin.setPlugin('mainframe', 'on_update_ui', on_mainframe_updateui)
 
 
 
