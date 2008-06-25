@@ -120,16 +120,16 @@ from modules import Mixin
 def add_mainframe_menu(menulist):
     menulist.extend([ ('IDM_FILE',
         [
-            (100, 'IDM_FILE_NEW', tr('New') + '\tCtrl+N', wx.ITEM_NORMAL, 'OnFileNew', tr('Creates a new document.')),
-            (105, 'IDM_FILE_NEWMORE', tr('New') + '...', wx.ITEM_NORMAL, None, tr('Creates a new document.')),
-            (110, 'IDM_FILE_OPEN', tr('Open File...') + '\tCtrl+O', wx.ITEM_NORMAL, 'OnFileOpen', tr('Opens an existing document.')),
-            (120, 'IDM_FILE_REOPEN', tr('Reopen') + '\tE=Ctrl+Shift+O', wx.ITEM_NORMAL, 'OnFileReOpen', tr('Reopens an existing document.')),
-            (140, 'IDM_FILE_CLOSE', tr('Close') + '\tCtrl+F4', wx.ITEM_NORMAL, 'OnFileClose', tr('Closes an opened document.')),
-            (150, 'IDM_FILE_CLOSE_ALL', tr('Close All'), wx.ITEM_NORMAL, 'OnFileCloseAll', tr('Closes all document windows.')),
+            (100, 'IDM_FILE_NEW', tr('New') + '\tCtrl+N', wx.ITEM_NORMAL, 'OnFileNew', tr('Creates a new file.')),
+            (105, 'IDM_FILE_NEWMORE', tr('New') + '...', wx.ITEM_NORMAL, None, tr('Creates a new file.')),
+            (110, 'IDM_FILE_OPEN', tr('Open File...') + '\tCtrl+O', wx.ITEM_NORMAL, 'OnFileOpen', tr('Opens an existing file.')),
+            (120, 'IDM_FILE_REOPEN', tr('Reopen') + '\tE=Ctrl+Shift+O', wx.ITEM_NORMAL, 'OnFileReOpen', tr('Reopens an existing file.')),
+            (140, 'IDM_FILE_CLOSE', tr('Close') + '\tCtrl+F4', wx.ITEM_NORMAL, 'OnFileClose', tr('Closes an opened file.')),
+            (150, 'IDM_FILE_CLOSE_ALL', tr('Close All'), wx.ITEM_NORMAL, 'OnFileCloseAll', tr('Closes all opened files.')),
             (160, '', '-', wx.ITEM_SEPARATOR, None, ''),
             (170, 'IDM_FILE_SAVE', tr('Save File...') + '\tE=Ctrl+S', wx.ITEM_NORMAL, 'OnFileSave', tr('Saves an opened document using the same filename.')),
             (180, 'IDM_FILE_SAVEAS', tr('Save As...'), wx.ITEM_NORMAL, 'OnFileSaveAs', tr('Saves an opened document to a specified filename.')),
-            (190, 'IDM_FILE_SAVE_ALL', tr('Save All'), wx.ITEM_NORMAL, 'OnFileSaveAll', tr('Saves all documents.')),
+            (190, 'IDM_FILE_SAVE_ALL', tr('Save All'), wx.ITEM_NORMAL, 'OnFileSaveAll', tr('Saves all files.')),
         ]),
     ])
 Mixin.setPlugin('mainframe', 'add_menu', add_mainframe_menu)
@@ -137,12 +137,12 @@ Mixin.setPlugin('mainframe', 'add_menu', add_mainframe_menu)
 def add_editctrl_menu(popmenulist):
     popmenulist.extend([ (None,
         [
-            (100, 'IDPM_CLOSE', tr('Close') + '\tCtrl+F4', wx.ITEM_NORMAL, 'OnPopUpMenu', tr('Closes an opened document.')),
-            (110, 'IDPM_CLOSE_ALL', tr('Close All'), wx.ITEM_NORMAL, 'OnPopUpMenu', tr('Closes all document windows.')),
+            (100, 'IDPM_CLOSE', tr('Close') + '\tCtrl+F4', wx.ITEM_NORMAL, 'OnPopUpMenu', tr('Closes an opened file.')),
+            (110, 'IDPM_CLOSE_ALL', tr('Close All'), wx.ITEM_NORMAL, 'OnPopUpMenu', tr('Closes all opened files.')),
             (120, '', '-', wx.ITEM_SEPARATOR, None, ''),
             (130, 'IDPM_SAVE', tr('Save File...') + '\tCtrl+S', wx.ITEM_NORMAL, 'OnPopUpMenu', tr('Saves an opened document using the same filename.')),
             (140, 'IDPM_SAVEAS', tr('Save As...'), wx.ITEM_NORMAL, 'OnPopUpMenu', tr('Saves an opened document to a specified filename.')),
-            (150, 'IDPM_FILE_SAVE_ALL', tr('Save All'), wx.ITEM_NORMAL, 'OnPopUpMenu', tr('Saves all documents.')),
+            (150, 'IDPM_FILE_SAVE_ALL', tr('Save All'), wx.ITEM_NORMAL, 'OnPopUpMenu', tr('Saves all files.')),
             (155, '', '-', wx.ITEM_SEPARATOR, None, ''),
             (156, 'IDPM_FILE_COPY_FILENAME', tr('Copy Filename To Clipboard'), wx.ITEM_NORMAL, 'OnCopyFilenameToClipboard', tr('Copy current document filename to clipboard.')),
             (160, '', '-', wx.ITEM_SEPARATOR, None, ''),
@@ -902,7 +902,7 @@ from modules import Globals
 def add_mainframe_menu(menulist):
     menulist.extend([('IDM_FILE',
         [
-            (130, 'IDM_FILE_RECENTFILES', tr('Open Recent Files')+'\tAlt+R', wx.ITEM_NORMAL, 'OnOpenRecentFiles', 'Opens recent files.'),
+            (130, 'IDM_FILE_RECENTFILES', tr('Recent Files...')+'\tAlt+R', wx.ITEM_NORMAL, 'OnOpenRecentFiles', 'Opens the recent files pop-up window.'),
         ]),
     ])
 Mixin.setPlugin('mainframe', 'add_menu', add_mainframe_menu)
@@ -3219,8 +3219,8 @@ Mixin.setPlugin('editor', 'init', editor_init)
 
 def OnPythonClassBrowser(win, event):
     win.document.class_browser = not win.document.class_browser
-    win.document.panel.showWindow('LEFT', win.document.class_browser)
-    if win.document.panel.LeftIsVisible:
+    win.document.panel.showWindow('RIGHT', win.document.class_browser)
+    if win.document.panel.RightIsVisible:
         if win.document.init_class_browser == False:
             win.document.init_class_browser = True
             win.document.outlinebrowser.show()
@@ -3241,7 +3241,7 @@ Mixin.setMixin('mainframe', 'OnPythonClassBrowserRefresh', OnPythonClassBrowserR
 def OnPythonUpdateUI(win, event):
     eid = event.GetId()
     if eid == win.IDM_PYTHON_CLASSBROWSER and hasattr(win, 'document') and win.document and not win.document.multiview:
-        event.Check(win.document.panel.LeftIsVisible and getattr(win.document, 'init_class_browser', False))
+        event.Check(win.document.panel.RightIsVisible and getattr(win.document, 'init_class_browser', False))
 Mixin.setMixin('mainframe', 'OnPythonUpdateUI', OnPythonUpdateUI)
 
 def on_enter(mainframe, document):
@@ -3253,8 +3253,8 @@ def on_document_enter(mainframe, document):
         return
     if mainframe.pref.python_classbrowser_show and document.init_class_browser == False:
         document.class_browser = not document.class_browser
-        document.panel.showWindow('LEFT', document.class_browser)
-        if document.panel.LeftIsVisible:
+        document.panel.showWindow('RIGHT', document.class_browser)
+        if document.panel.RightIsVisible:
             if document.init_class_browser == False:
                 document.init_class_browser = True
                 document.outlinebrowser.show()
@@ -3383,7 +3383,7 @@ def addlocals(win, root, node, treenode):
 
 def new_window(win, document, panel):
     from OutlineBrowser import OutlineBrowser
-    document.outlinebrowser = OutlineBrowser(panel.left, document, autoexpand=False)
+    document.outlinebrowser = OutlineBrowser(panel.right, document, autoexpand=False)
     document.outlinebrowser.set_tooltip_func(on_get_tool_tip)
 Mixin.setPlugin('textpanel', 'new_window', new_window)
 
@@ -3585,6 +3585,9 @@ def OnKeyDown(win, event):
                 text = common.encode_string(text)
             win.outputstream.write(text + '\n')
             win.GotoPos(win.GetLength())
+            win.CmdKeyExecute(wx.stc.STC_CMD_NEWLINE)
+            win.writeposition = win.GetLength()
+            return
         if keycode == wx.WXK_UP:
             if (len(win.CommandArray) > 0):
                 if (win.CommandArrayPos + 1) < l:
@@ -6071,7 +6074,7 @@ Mixin.setPlugin('mainframe', 'on_update_ui', on_mainframe_updateui)
 def add_mainframe_menu(menulist):
     menulist.extend([('IDM_FILE',
         [
-            (138, 'IDM_WINDOW_DIRBROWSER', tr('Directory Browser')+'\tF2', wx.ITEM_CHECK, 'OnWindowDirBrowser', tr('Opens directory browser window.'))
+            (138, 'IDM_WINDOW_DIRBROWSER', tr('Directory Browser')+'\tF2', wx.ITEM_CHECK, 'OnWindowDirBrowser', tr('Opens the Directory Browser window.'))
         ]),
     ])
 Mixin.setPlugin('mainframe', 'add_menu', add_mainframe_menu)
