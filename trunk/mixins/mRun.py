@@ -153,6 +153,9 @@ def OnKeyDown(win, event):
                 text = common.encode_string(text)
             win.outputstream.write(text + '\n')
             win.GotoPos(win.GetLength())
+            win.CmdKeyExecute(wx.stc.STC_CMD_NEWLINE)
+            win.writeposition = win.GetLength()
+            return
         if keycode == wx.WXK_UP:
             if (len(win.CommandArray) > 0):
                 if (win.CommandArrayPos + 1) < l:

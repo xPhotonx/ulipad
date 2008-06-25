@@ -58,8 +58,8 @@ Mixin.setPlugin('editor', 'init', editor_init)
 
 def OnPythonClassBrowser(win, event):
     win.document.class_browser = not win.document.class_browser
-    win.document.panel.showWindow('LEFT', win.document.class_browser)
-    if win.document.panel.LeftIsVisible:
+    win.document.panel.showWindow('RIGHT', win.document.class_browser)
+    if win.document.panel.RightIsVisible:
         if win.document.init_class_browser == False:
             win.document.init_class_browser = True
             win.document.outlinebrowser.show()
@@ -80,7 +80,7 @@ Mixin.setMixin('mainframe', 'OnPythonClassBrowserRefresh', OnPythonClassBrowserR
 def OnPythonUpdateUI(win, event):
     eid = event.GetId()
     if eid == win.IDM_PYTHON_CLASSBROWSER and hasattr(win, 'document') and win.document and not win.document.multiview:
-        event.Check(win.document.panel.LeftIsVisible and getattr(win.document, 'init_class_browser', False))
+        event.Check(win.document.panel.RightIsVisible and getattr(win.document, 'init_class_browser', False))
 Mixin.setMixin('mainframe', 'OnPythonUpdateUI', OnPythonUpdateUI)
 
 def on_enter(mainframe, document):
@@ -92,8 +92,8 @@ def on_document_enter(mainframe, document):
         return
     if mainframe.pref.python_classbrowser_show and document.init_class_browser == False:
         document.class_browser = not document.class_browser
-        document.panel.showWindow('LEFT', document.class_browser)
-        if document.panel.LeftIsVisible:
+        document.panel.showWindow('RIGHT', document.class_browser)
+        if document.panel.RightIsVisible:
             if document.init_class_browser == False:
                 document.init_class_browser = True
                 document.outlinebrowser.show()
@@ -223,7 +223,7 @@ def addlocals(win, root, node, treenode):
     
 def new_window(win, document, panel):
     from OutlineBrowser import OutlineBrowser
-    document.outlinebrowser = OutlineBrowser(panel.left, document, autoexpand=False)
+    document.outlinebrowser = OutlineBrowser(panel.right, document, autoexpand=False)
     document.outlinebrowser.set_tooltip_func(on_get_tool_tip)
 Mixin.setPlugin('textpanel', 'new_window', new_window)
 

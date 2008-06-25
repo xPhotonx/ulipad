@@ -58,7 +58,7 @@ class SashPanel(wx.Panel):
 
         self.bottomsize = 20
         self.leftsize = 20
-        self.rightsize = 10
+        self.rightsize = 30
 
         self.BottomIsVisible = False
         self.LeftIsVisible = False
