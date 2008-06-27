@@ -26,7 +26,7 @@ from modules import Mixin
 
 menulist = [('IDM_PYTHON', #parent menu id
         [
-            (170, 'IDM_PYTHON_CHECK', tr('Syntax Check'), wx.ITEM_NORMAL,
+            (170, 'IDM_PYTHON_CHECK', tr('Check Syntax'), wx.ITEM_NORMAL,
                 'OnPythonCheck', tr('Check python source code syntax.')),
         ]),
 ]
@@ -69,10 +69,10 @@ def aftersavefile(win, filename):
 Mixin.setPlugin('editor', 'aftersavefile', aftersavefile, Mixin.LOW)
 
 def createSyntaxCheckWindow(win):
-    if not win.panel.getPage(tr('Syntax Check')):
+    if not win.panel.getPage(tr('Check Syntax')):
         from SyntaxCheck import SyntaxCheckWindow
 
         page = SyntaxCheckWindow(win.panel.createNotebook('bottom'), win)
-        win.panel.addPage('bottom', page, tr('Syntax Check'))
-    win.syntaxcheckwindow = win.panel.getPage(tr('Syntax Check'))
+        win.panel.addPage('bottom', page, tr('Check Syntax'))
+    win.syntaxcheckwindow = win.panel.getPage(tr('Check Syntax'))
 Mixin.setMixin('mainframe', 'createSyntaxCheckWindow', createSyntaxCheckWindow)

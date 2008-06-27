@@ -30,7 +30,7 @@ from modules import common
 
 class ScriptDialog(wx.Dialog):
     def __init__(self, parent, pref):
-        wx.Dialog.__init__(self, parent, -1, tr('Script Manage'), size=(600, 300))
+        wx.Dialog.__init__(self, parent, -1, tr('Script Manager'), size=(600, 300))
         self.parent = parent
         self.pref = pref
 

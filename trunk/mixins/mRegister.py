@@ -36,8 +36,8 @@ if wx.Platform == '__WXMSW__':
         menulist.extend([ ('IDM_TOOL',
             [
                 (890, '-', '', wx.ITEM_SEPARATOR, '', ''),
-                (900, 'IDM_TOOL_REGISTER', tr('Register to Explore'), wx.ITEM_NORMAL, 'OnToolRegister', tr('Registers to explore context menu.')),
-                (910, 'IDM_TOOL_UNREGISTER', tr('Unregister from Explore'), wx.ITEM_NORMAL, 'OnToolUnRegister', tr('Unregisters from explore context menu.')),
+                (900, 'IDM_TOOL_REGISTER', tr('Register To Explore'), wx.ITEM_NORMAL, 'OnToolRegister', tr('Registers to explore context menu.')),
+                (910, 'IDM_TOOL_UNREGISTER', tr('Unregister From Explore'), wx.ITEM_NORMAL, 'OnToolUnRegister', tr('Unregisters from explore context menu.')),
             ]),
         ])
     Mixin.setPlugin('mainframe', 'add_menu', add_mainframe_menu)
