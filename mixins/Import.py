@@ -5057,7 +5057,6 @@ import wx
 from modules import Mixin
 from modules.Debug import error
 from modules import common
-from modules import Globals
 
 def add_mainframe_menu(menulist):
     menulist.extend([ ('IDM_WINDOW',
@@ -5080,7 +5079,7 @@ Mixin.setPlugin('mainframe', 'afterinit', afterinit)
 def on_mainframe_updateui(win, event):
     eid = event.GetId()
     if eid == win.IDM_WINDOW_FTP:
-        event.Check(bool(win.panel.getPage('FTP')))
+        event.Check(bool(win.panel.getPage('FTP')) and win.panel.BottomIsVisible)
 Mixin.setPlugin('mainframe', 'on_update_ui', on_mainframe_updateui)
 
 def afterinit(win):
@@ -5090,7 +5089,7 @@ Mixin.setPlugin('mainframe', 'afterinit', afterinit)
 def on_notebook_updateui(win, event):
     eid = event.GetId()
     if eid == win.IDPM_FTPWINDOW:
-        event.Check(bool(Globals.mainframe.panel.getPage('FTP')))
+        event.Check(bool(win.panel.getPage('FTP')) and win.panel.BottomIsVisible)
 Mixin.setPlugin('notebook', 'on_update_ui', on_notebook_updateui)
 
 def init(win):
@@ -5306,9 +5305,9 @@ def on_mainframe_updateui(win, event):
     elif eid == win.IDM_WINDOW_BOTTOM:
         event.Check(win.panel.BottomIsVisible)
     elif eid == win.IDM_WINDOW_SHELL:
-        event.Check(bool(win.panel.getPage(_shell_page_name)))
+        event.Check(bool(win.panel.getPage(_shell_page_name)) and win.panel.BottomIsVisible)
     elif eid == win.IDM_WINDOW_MESSAGE:
-        event.Check(bool(win.panel.getPage(_message_page_name)))
+        event.Check(bool(win.panel.getPage(_message_page_name)) and win.panel.BottomIsVisible)
 Mixin.setPlugin('mainframe', 'on_update_ui', on_mainframe_updateui)
 
 def afterinit(win):
@@ -5323,9 +5322,9 @@ Mixin.setPlugin('mainframe', 'afterinit', afterinit)
 def on_notebook_updateui(win, event):
     eid = event.GetId()
     if eid == win.IDPM_SHELLWINDOW:
-        event.Check(bool(Globals.mainframe.panel.getPage(_shell_page_name)))
+        event.Check(bool(Globals.mainframe.panel.getPage(_shell_page_name)) and win.panel.BottomIsVisible)
     if eid == win.IDPM_MESSAGEWINDOW:
-        event.Check(bool(Globals.mainframe.panel.getPage(_message_page_name)))
+        event.Check(bool(Globals.mainframe.panel.getPage(_message_page_name)) and win.panel.BottomIsVisible)
 Mixin.setPlugin('notebook', 'on_update_ui', on_notebook_updateui)
 
 def init(win):
@@ -6068,7 +6067,7 @@ def on_mainframe_updateui(win, event):
     eid = event.GetId()
     if eid == win.IDM_WINDOW_DIRBROWSER:
         page = win.panel.getPage(_dirbrowser_pagename)
-        event.Check(bool(page))
+        event.Check(bool(page) and win.panel.LeftIsVisible)
 Mixin.setPlugin('mainframe', 'on_update_ui', on_mainframe_updateui)
 
 def add_mainframe_menu(menulist):
@@ -6086,6 +6085,16 @@ def add_notebook_menu(popmenulist):
         ]),
     ])
 Mixin.setPlugin('notebook', 'add_menu', add_notebook_menu)
+
+def on_notebook_updateui(win, event):
+    eid = event.GetId()
+    if eid == win.IDPM_DIRBROWSERWINDOW:
+        event.Check(bool(Globals.mainframe.panel.getPage(tr('Directory Browser'))) and win.panel.LeftIsVisible)
+Mixin.setPlugin('notebook', 'on_update_ui', on_notebook_updateui)
+
+def init(win):
+    wx.EVT_UPDATE_UI(win, win.IDPM_DIRBROWSERWINDOW, win.OnUpdateUI)
+Mixin.setPlugin('notebook', 'init', init)
 
 def afterinit(win):
     win.dirbrowser_imagelist = {
@@ -6702,7 +6711,7 @@ _resshare_pagename = tr('Resource Shares')
 def on_mainframe_updateui(win, event):
     eid = event.GetId()
     if eid == win.IDM_WINDOW_SHARE:
-        event.Check(bool(win.panel.getPage(_resshare_pagename)))
+        event.Check(bool(win.panel.getPage(_resshare_pagename)) and win.panel.LeftIsVisible)
 Mixin.setPlugin('mainframe', 'on_update_ui', on_mainframe_updateui)
 
 def afterinit(win):
@@ -6712,7 +6721,7 @@ Mixin.setPlugin('mainframe', 'afterinit', afterinit)
 def on_notebook_updateui(win, event):
     eid = event.GetId()
     if eid == win.IDPM_SHAREWINDOW:
-        event.Check(bool(Globals.mainframe.panel.getPage(_resshare_pagename)))
+        event.Check(bool(win.panel.getPage(_resshare_pagename)) and win.panel.LeftIsVisible)
 Mixin.setPlugin('notebook', 'on_update_ui', on_notebook_updateui)
 
 def init(win):
@@ -6917,7 +6926,6 @@ Mixin.setMixin('dirbrowser', 'OnCreatePythonPackage', OnCreatePythonPackage)
 
 import wx
 from modules import Mixin
-from modules import Globals
 
 def add_mainframe_menu(menulist):
     menulist.extend([('IDM_WINDOW', #parent menu id
@@ -6955,7 +6963,7 @@ _todo_pagename = tr('TODO')
 def on_mainframe_updateui(win, event):
     eid = event.GetId()
     if eid == win.IDM_WINDOW_TODO:
-        event.Check(bool(win.panel.getPage(_todo_pagename)))
+        event.Check(bool(win.panel.getPage(_todo_pagename)) and win.panel.BottomIsVisible)
 Mixin.setPlugin('mainframe', 'on_update_ui', on_mainframe_updateui)
 
 def afterinit(win):
@@ -6965,7 +6973,7 @@ Mixin.setPlugin('mainframe', 'afterinit', afterinit)
 def on_notebook_updateui(win, event):
     eid = event.GetId()
     if eid == win.IDPM_TODOWINDOW:
-        event.Check(bool(Globals.mainframe.panel.getPage(_todo_pagename)))
+        event.Check(bool(win.panel.getPage(_todo_pagename)) and win.panel.BottomIsVisible)
 Mixin.setPlugin('notebook', 'on_update_ui', on_notebook_updateui)
 
 def init(win):
@@ -8593,7 +8601,6 @@ Mixin.setPlugin('mainframe', 'add_tool_list', add_tool_list)
 _codesnippet_page_name = tr('Code Snippets')
 
 def createCodeSnippetWindow(win):
-    from modules import common
     try:
         import xml.etree.ElementTree
     except:
@@ -8616,13 +8623,13 @@ def on_mainframe_updateui(win, event):
     eid = event.GetId()
     if eid == win.IDM_WINDOW_CODESNIPPET:
         page = win.panel.getPage(_codesnippet_page_name)
-        event.Check(bool(page))
+        event.Check(bool(page) and win.panel.LeftIsVisible)
 Mixin.setPlugin('mainframe', 'on_update_ui', on_mainframe_updateui)
 
 def on_notebook_updateui(win, event):
     eid = event.GetId()
     if eid == win.IDPM_CODESNIPPETWINDOW:
-        event.Check(bool(Globals.mainframe.panel.getPage(_codesnippet_page_name)))
+        event.Check(bool(win.panel.getPage(_codesnippet_page_name)) and win.panel.LeftIsVisible)
 Mixin.setPlugin('notebook', 'on_update_ui', on_notebook_updateui)
 
 def init(win):

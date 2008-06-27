@@ -23,7 +23,6 @@
 
 import wx
 from modules import Mixin
-from modules import Globals
 
 def add_mainframe_menu(menulist):
     menulist.extend([('IDM_WINDOW', #parent menu id
@@ -61,7 +60,7 @@ _todo_pagename = tr('TODO')
 def on_mainframe_updateui(win, event):
     eid = event.GetId()
     if eid == win.IDM_WINDOW_TODO:
-        event.Check(bool(win.panel.getPage(_todo_pagename)))
+        event.Check(bool(win.panel.getPage(_todo_pagename)) and win.panel.BottomIsVisible)
 Mixin.setPlugin('mainframe', 'on_update_ui', on_mainframe_updateui)
 
 def afterinit(win):
@@ -71,7 +70,7 @@ Mixin.setPlugin('mainframe', 'afterinit', afterinit)
 def on_notebook_updateui(win, event):
     eid = event.GetId()
     if eid == win.IDPM_TODOWINDOW:
-        event.Check(bool(Globals.mainframe.panel.getPage(_todo_pagename)))
+        event.Check(bool(win.panel.getPage(_todo_pagename)) and win.panel.BottomIsVisible)
 Mixin.setPlugin('notebook', 'on_update_ui', on_notebook_updateui)
 
 def init(win):
