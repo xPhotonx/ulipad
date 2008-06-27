@@ -161,14 +161,14 @@ class PythonArgsDialog(wx.Dialog):
             default_interpreter = 'default'
 
         box1 = wx.BoxSizer(wx.HORIZONTAL)
-        stext = wx.StaticText(self, -1, label=tr('Select Python Interpreter:'))
+        stext = wx.StaticText(self, -1, label=tr('Select Python interpreter:'))
         box1.Add(stext, 0, wx.ALIGN_LEFT|wx.ALIGN_CENTER_VERTICAL|wx.ALL, 2)
         self.ID_INTER = wx.NewId()
         self.cb = wx.ComboBox(self, self.ID_INTER, default_interpreter, choices = interpreters.keys(), style = wx.CB_DROPDOWN|wx.CB_READONLY )
         box1.Add(self.cb, 1, wx.EXPAND|wx.ALL, 2)
         box.Add(box1, 0, wx.EXPAND)
 
-        self.chkDirect = wx.CheckBox(self, -1, tr('ReDirect input and output'))
+        self.chkDirect = wx.CheckBox(self, -1, tr('Redirect input and output'))
         self.chkDirect.SetValue(defaultchkvalue)
         box.Add(self.chkDirect, 0, wx.ALIGN_LEFT|wx.LEFT|wx.BOTTOM, 2)
 

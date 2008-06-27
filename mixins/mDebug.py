@@ -28,7 +28,7 @@ from modules import common
 
 menulist = [('IDM_PYTHON', #parent menu id
                 [
-                        (160, 'IDM_PYTHON_DEBUG', tr('Debug in WinPdb'), wx.ITEM_NORMAL, 'OnPythonDebug', tr('Debug the current program in WinPdb.')),
+                        (160, 'IDM_PYTHON_DEBUG', tr('Debug In WinPdb'), wx.ITEM_NORMAL, 'OnPythonDebug', tr('Debug the current program in WinPdb.')),
                 ]),
 ]
 Mixin.setMixin('pythonfiletype', 'menulist', menulist)

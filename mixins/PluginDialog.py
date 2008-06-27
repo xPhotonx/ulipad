@@ -32,7 +32,7 @@ from modules.Debug import error
 
 class PluginDialog(wx.Dialog):
     def __init__(self, parent):
-        wx.Dialog.__init__(self, parent, -1, tr('Plugin Manage'), size=(600, 400))
+        wx.Dialog.__init__(self, parent, -1, tr('Plugin Manager'), size=(600, 400))
         self.parent = parent
         self.mainframe = parent
         self.state = {}

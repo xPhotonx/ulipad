@@ -75,7 +75,7 @@ def add_pyftype_menu(menulist):
             (130, 'IDM_PYTHON_RUN', tr('Run')+u'\tE=F5', wx.ITEM_NORMAL, 'OnPythonRun', tr('Run Python program.')),
             (140, 'IDM_PYTHON_SETARGS', tr('Set Arguments...'), wx.ITEM_NORMAL, 'OnPythonSetArgs', tr('Set Python program command line arugments.')),
             (150, 'IDM_PYTHON_END', tr('Stop Program'), wx.ITEM_NORMAL, 'OnPythonEnd', tr('Stop current Python program.')),
-            (155, 'IDM_PYTHON_DOCTEST', tr('Run Doctests'), wx.ITEM_NORMAL, 'OnPythonDoctests', tr('Run doctests in current document.')),
+            (155, 'IDM_PYTHON_DOCTEST', tr('Run Doctest'), wx.ITEM_NORMAL, 'OnPythonDoctests', tr('Run doctest in current document.')),
         ]),
     ])
 Mixin.setPlugin('pythonfiletype', 'add_menu', add_pyftype_menu)
@@ -159,7 +159,7 @@ Mixin.setMixin('mainframe', 'OnPythonRun', OnPythonRun)
 def get_python_args(win):
     from InterpreterDialog import PythonArgsDialog
     
-    dlg = PythonArgsDialog(win, win.pref, tr('Set Python Arguments'),
+    dlg = PythonArgsDialog(win, win.pref, tr('Python Arguments Manager'),
         tr("Enter the command line arguments:\n$file will be replaced by current document filename\n$path will be replaced by current document filename's directory"),
         win.document.args, win.document.redirect)
     answer = dlg.ShowModal()

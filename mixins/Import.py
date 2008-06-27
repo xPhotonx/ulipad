@@ -122,12 +122,12 @@ def add_mainframe_menu(menulist):
         [
             (100, 'IDM_FILE_NEW', tr('New') + '\tCtrl+N', wx.ITEM_NORMAL, 'OnFileNew', tr('Creates a new file.')),
             (105, 'IDM_FILE_NEWMORE', tr('New') + '...', wx.ITEM_NORMAL, None, tr('Creates a new file.')),
-            (110, 'IDM_FILE_OPEN', tr('Open File...') + '\tCtrl+O', wx.ITEM_NORMAL, 'OnFileOpen', tr('Opens an existing file.')),
+            (110, 'IDM_FILE_OPEN', tr('Open...') + '\tCtrl+O', wx.ITEM_NORMAL, 'OnFileOpen', tr('Opens an existing file.')),
             (120, 'IDM_FILE_REOPEN', tr('Reopen') + '\tE=Ctrl+Shift+O', wx.ITEM_NORMAL, 'OnFileReOpen', tr('Reopens an existing file.')),
             (140, 'IDM_FILE_CLOSE', tr('Close') + '\tCtrl+F4', wx.ITEM_NORMAL, 'OnFileClose', tr('Closes an opened file.')),
             (150, 'IDM_FILE_CLOSE_ALL', tr('Close All'), wx.ITEM_NORMAL, 'OnFileCloseAll', tr('Closes all opened files.')),
             (160, '', '-', wx.ITEM_SEPARATOR, None, ''),
-            (170, 'IDM_FILE_SAVE', tr('Save File...') + '\tE=Ctrl+S', wx.ITEM_NORMAL, 'OnFileSave', tr('Saves an opened document using the same filename.')),
+            (170, 'IDM_FILE_SAVE', tr('Save') + '\tE=Ctrl+S', wx.ITEM_NORMAL, 'OnFileSave', tr('Saves an opened document using the same filename.')),
             (180, 'IDM_FILE_SAVEAS', tr('Save As...'), wx.ITEM_NORMAL, 'OnFileSaveAs', tr('Saves an opened document to a specified filename.')),
             (190, 'IDM_FILE_SAVE_ALL', tr('Save All'), wx.ITEM_NORMAL, 'OnFileSaveAll', tr('Saves all files.')),
         ]),
@@ -140,7 +140,7 @@ def add_editctrl_menu(popmenulist):
             (100, 'IDPM_CLOSE', tr('Close') + '\tCtrl+F4', wx.ITEM_NORMAL, 'OnPopUpMenu', tr('Closes an opened file.')),
             (110, 'IDPM_CLOSE_ALL', tr('Close All'), wx.ITEM_NORMAL, 'OnPopUpMenu', tr('Closes all opened files.')),
             (120, '', '-', wx.ITEM_SEPARATOR, None, ''),
-            (130, 'IDPM_SAVE', tr('Save File...') + '\tCtrl+S', wx.ITEM_NORMAL, 'OnPopUpMenu', tr('Saves an opened document using the same filename.')),
+            (130, 'IDPM_SAVE', tr('Save') + '\tCtrl+S', wx.ITEM_NORMAL, 'OnPopUpMenu', tr('Saves an opened document using the same filename.')),
             (140, 'IDPM_SAVEAS', tr('Save As...'), wx.ITEM_NORMAL, 'OnPopUpMenu', tr('Saves an opened document to a specified filename.')),
             (150, 'IDPM_FILE_SAVE_ALL', tr('Save All'), wx.ITEM_NORMAL, 'OnPopUpMenu', tr('Saves all files.')),
             (155, '', '-', wx.ITEM_SEPARATOR, None, ''),
@@ -192,7 +192,7 @@ def OnFileNew(win, event):
 Mixin.setMixin('mainframe', 'OnFileNew', OnFileNew)
 
 def OnFileOpen(win, event):
-    dlg = wx.FileDialog(win, tr("Open"), win.pref.last_dir, "", '|'.join(win.filewildchar), wx.OPEN|wx.HIDE_READONLY|wx.MULTIPLE)
+    dlg = wx.FileDialog(win, tr("Choose A File"), win.pref.last_dir, "", '|'.join(win.filewildchar), wx.OPEN|wx.HIDE_READONLY|wx.MULTIPLE)
     dlg.SetFilterIndex(getFilterIndex(win))
     if dlg.ShowModal() == wx.ID_OK:
         encoding = win.execplugin('getencoding', win, win)
@@ -316,7 +316,7 @@ def SaveFile(win, ctrl, issaveas=False):
     if issaveas or len(ctrl.filename)<=0:
         encoding = win.execplugin('getencoding', win, win)
         filename = get_suffix_filename(ctrl, ctrl.getFilename())
-        dlg = wx.FileDialog(win, tr("Save File %s As") % filename, win.pref.last_dir, filename, '|'.join(win.filewildchar), wx.SAVE|wx.OVERWRITE_PROMPT)
+        dlg = wx.FileDialog(win, tr("Save File %s As...") % filename, win.pref.last_dir, filename, '|'.join(win.filewildchar), wx.SAVE|wx.OVERWRITE_PROMPT)
         dlg.SetFilterIndex(getFilterIndex(win))
         if (dlg.ShowModal() == wx.ID_OK):
             filename = dlg.GetPath()
@@ -1309,9 +1309,9 @@ def add_mainframe_menu(menulist):
         [
             (100, 'IDM_VIEW_TAB', tr('Tabs And Spaces'), wx.ITEM_CHECK, 'OnViewTab', tr('Shows or hides space and tab marks.')),
             (110, 'IDM_VIEW_INDENTATION_GUIDES', tr('Indentation Guides'), wx.ITEM_CHECK, 'OnViewIndentationGuides', tr('Shows or hides indentation guides.')),
-            (120, 'IDM_VIEW_RIGHT_EDGE', tr('Right Edge Indicator'), wx.ITEM_CHECK, 'OnViewRightEdge', tr('Shows or hides right edge indicator.')),
-            (130, 'IDM_VIEW_LINE_NUMBER', tr('Line Number'), wx.ITEM_CHECK, 'OnViewLineNumber', tr('Shows or hides line number.')),
-            (131, 'IDM_VIEW_ENDOFLINE_MARK', tr('End-of-line Marker'), wx.ITEM_CHECK, 'OnViewEndOfLineMark', tr('Shows or hides end-of-line marker.')),
+            (120, 'IDM_VIEW_RIGHT_EDGE', tr('Long-Line Indicator'), wx.ITEM_CHECK, 'OnViewRightEdge', tr('Shows or hides long line indicator.')),
+            (130, 'IDM_VIEW_LINE_NUMBER', tr('Line Numbers'), wx.ITEM_CHECK, 'OnViewLineNumber', tr('Shows or hides line numbers.')),
+            (131, 'IDM_VIEW_ENDOFLINE_MARK', tr('End-Of-Line Marker'), wx.ITEM_CHECK, 'OnViewEndOfLineMark', tr('Shows or hides end-of-line marker.')),
         ]),
     ])
 Mixin.setPlugin('mainframe', 'add_menu', add_mainframe_menu)
@@ -3207,7 +3207,7 @@ def add_mainframe_menu(menulist):
     menulist.extend([('IDM_PYTHON', #parent menu id
             [
                 (100, 'IDM_PYTHON_CLASSBROWSER', tr('Class Browser'), wx.ITEM_CHECK, 'OnPythonClassBrowser', tr('Show python class browser window.')),
-                (110, 'IDM_PYTHON_CLASSBROWSER_REFRESH', tr('Class Browser Refresh'), wx.ITEM_NORMAL, 'OnPythonClassBrowserRefresh', tr('Refresh python class browser window.')),
+                (110, 'IDM_PYTHON_CLASSBROWSER_REFRESH', tr('Refresh Class Browser'), wx.ITEM_NORMAL, 'OnPythonClassBrowserRefresh', tr('Refresh python class browser window.')),
             ]),
     ])
 Mixin.setPlugin('pythonfiletype', 'add_menu', add_mainframe_menu)
@@ -4159,7 +4159,7 @@ def add_pyftype_menu(menulist):
             (130, 'IDM_PYTHON_RUN', tr('Run')+u'\tE=F5', wx.ITEM_NORMAL, 'OnPythonRun', tr('Run Python program.')),
             (140, 'IDM_PYTHON_SETARGS', tr('Set Arguments...'), wx.ITEM_NORMAL, 'OnPythonSetArgs', tr('Set Python program command line arugments.')),
             (150, 'IDM_PYTHON_END', tr('Stop Program'), wx.ITEM_NORMAL, 'OnPythonEnd', tr('Stop current Python program.')),
-            (155, 'IDM_PYTHON_DOCTEST', tr('Run Doctests'), wx.ITEM_NORMAL, 'OnPythonDoctests', tr('Run doctests in current document.')),
+            (155, 'IDM_PYTHON_DOCTEST', tr('Run Doctest'), wx.ITEM_NORMAL, 'OnPythonDoctests', tr('Run doctest in current document.')),
         ]),
     ])
 Mixin.setPlugin('pythonfiletype', 'add_menu', add_pyftype_menu)
@@ -4243,7 +4243,7 @@ Mixin.setMixin('mainframe', 'OnPythonRun', OnPythonRun)
 def get_python_args(win):
     from InterpreterDialog import PythonArgsDialog
 
-    dlg = PythonArgsDialog(win, win.pref, tr('Set Python Arguments'),
+    dlg = PythonArgsDialog(win, win.pref, tr('Python Arguments Manager'),
         tr("Enter the command line arguments:\n$file will be replaced by current document filename\n$path will be replaced by current document filename's directory"),
         win.document.args, win.document.redirect)
     answer = dlg.ShowModal()
@@ -5430,8 +5430,8 @@ if wx.Platform == '__WXMSW__':
         menulist.extend([ ('IDM_TOOL',
             [
                 (890, '-', '', wx.ITEM_SEPARATOR, '', ''),
-                (900, 'IDM_TOOL_REGISTER', tr('Register to Explore'), wx.ITEM_NORMAL, 'OnToolRegister', tr('Registers to explore context menu.')),
-                (910, 'IDM_TOOL_UNREGISTER', tr('Unregister from Explore'), wx.ITEM_NORMAL, 'OnToolUnRegister', tr('Unregisters from explore context menu.')),
+                (900, 'IDM_TOOL_REGISTER', tr('Register To Explore'), wx.ITEM_NORMAL, 'OnToolRegister', tr('Registers to explore context menu.')),
+                (910, 'IDM_TOOL_UNREGISTER', tr('Unregister From Explore'), wx.ITEM_NORMAL, 'OnToolUnRegister', tr('Unregisters from explore context menu.')),
             ]),
         ])
     Mixin.setPlugin('mainframe', 'add_menu', add_mainframe_menu)
@@ -6675,90 +6675,6 @@ def create_menu(win, menu):
 
 
 
-#-----------------------  mShare.py ------------------
-
-import wx
-from modules import Mixin
-
-def add_mainframe_menu(menulist):
-    menulist.extend([
-        ('IDM_WINDOW',
-        [
-            (200, 'IDM_WINDOW_SHARE', tr('Resource Shares Window'), wx.ITEM_CHECK, 'OnWindowShare', tr('Opens resource shares window.'))
-        ]),
-    ])
-Mixin.setPlugin('mainframe', 'add_menu', add_mainframe_menu)
-
-def add_notebook_menu(popmenulist):
-    popmenulist.extend([(None,
-        [
-            (180, 'IDPM_SHAREWINDOW', tr('Resource Shares Window'), wx.ITEM_CHECK, 'OnShareWindow', tr('Opens resource shares window.')),
-        ]),
-    ])
-Mixin.setPlugin('notebook', 'add_menu', add_notebook_menu)
-
-def afterinit(win):
-    win.share_imagelist = {
-        'close':'images/folderclose.gif',
-        'open':'images/folderopen.gif',
-        'item':'images/file.gif',
-    }
-Mixin.setPlugin('mainframe', 'afterinit', afterinit)
-
-
-_resshare_pagename = tr('Resource Shares')
-
-def on_mainframe_updateui(win, event):
-    eid = event.GetId()
-    if eid == win.IDM_WINDOW_SHARE:
-        event.Check(bool(win.panel.getPage(_resshare_pagename)) and win.panel.LeftIsVisible)
-Mixin.setPlugin('mainframe', 'on_update_ui', on_mainframe_updateui)
-
-def afterinit(win):
-    wx.EVT_UPDATE_UI(win, win.IDM_WINDOW_SHARE, win.OnUpdateUI)
-Mixin.setPlugin('mainframe', 'afterinit', afterinit)
-
-def on_notebook_updateui(win, event):
-    eid = event.GetId()
-    if eid == win.IDPM_SHAREWINDOW:
-        event.Check(bool(win.panel.getPage(_resshare_pagename)) and win.panel.LeftIsVisible)
-Mixin.setPlugin('notebook', 'on_update_ui', on_notebook_updateui)
-
-def init(win):
-    wx.EVT_UPDATE_UI(win, win.IDPM_SHAREWINDOW, win.OnUpdateUI)
-Mixin.setPlugin('notebook', 'init', init)
-
-def createShareWindow(win):
-    if not win.panel.getPage(_resshare_pagename):
-        from ShareWindow import ShareWindow
-
-        page = ShareWindow(win.panel.createNotebook('left'), win)
-        win.panel.addPage('left', page, _resshare_pagename)
-Mixin.setMixin('mainframe', 'createShareWindow', createShareWindow)
-
-def OnWindowShare(win, event):
-    if not win.panel.getPage(_resshare_pagename):
-        win.createShareWindow()
-        win.panel.showPage(_resshare_pagename)
-    else:
-        win.panel.closePage(_resshare_pagename)
-Mixin.setMixin('mainframe', 'OnWindowShare', OnWindowShare)
-
-def OnShareWindow(win, event):
-    if not win.panel.getPage(_resshare_pagename):
-        win.mainframe.createShareWindow()
-        win.panel.showPage(_resshare_pagename)
-    else:
-        win.panel.closePage(_resshare_pagename)
-Mixin.setMixin('notebook', 'OnShareWindow', OnShareWindow)
-
-def close_page(page, name):
-    if name == _resshare_pagename:
-        page.OnCloseWin()
-Mixin.setPlugin('notebook', 'close_page', close_page)
-
-
-
 #-----------------------  mProxy.py ------------------
 
 from modules import Mixin
@@ -7929,7 +7845,7 @@ from modules import Mixin
 
 menulist = [('IDM_PYTHON', #parent menu id
         [
-            (170, 'IDM_PYTHON_CHECK', tr('Syntax Check'), wx.ITEM_NORMAL,
+            (170, 'IDM_PYTHON_CHECK', tr('Check Syntax'), wx.ITEM_NORMAL,
                 'OnPythonCheck', tr('Check python source code syntax.')),
         ]),
 ]
@@ -7972,12 +7888,12 @@ def aftersavefile(win, filename):
 Mixin.setPlugin('editor', 'aftersavefile', aftersavefile, Mixin.LOW)
 
 def createSyntaxCheckWindow(win):
-    if not win.panel.getPage(tr('Syntax Check')):
+    if not win.panel.getPage(tr('Check Syntax')):
         from SyntaxCheck import SyntaxCheckWindow
 
         page = SyntaxCheckWindow(win.panel.createNotebook('bottom'), win)
-        win.panel.addPage('bottom', page, tr('Syntax Check'))
-    win.syntaxcheckwindow = win.panel.getPage(tr('Syntax Check'))
+        win.panel.addPage('bottom', page, tr('Check Syntax'))
+    win.syntaxcheckwindow = win.panel.getPage(tr('Check Syntax'))
 Mixin.setMixin('mainframe', 'createSyntaxCheckWindow', createSyntaxCheckWindow)
 
 
@@ -8379,7 +8295,7 @@ from modules import common
 
 menulist = [('IDM_PYTHON', #parent menu id
                 [
-                        (160, 'IDM_PYTHON_DEBUG', tr('Debug in WinPdb'), wx.ITEM_NORMAL, 'OnPythonDebug', tr('Debug the current program in WinPdb.')),
+                        (160, 'IDM_PYTHON_DEBUG', tr('Debug In WinPdb'), wx.ITEM_NORMAL, 'OnPythonDebug', tr('Debug the current program in WinPdb.')),
                 ]),
 ]
 Mixin.setMixin('pythonfiletype', 'menulist', menulist)
