@@ -76,9 +76,9 @@ def on_mainframe_updateui(win, event):
     elif eid == win.IDM_WINDOW_BOTTOM:
         event.Check(win.panel.BottomIsVisible)
     elif eid == win.IDM_WINDOW_SHELL:
-        event.Check(bool(win.panel.getPage(_shell_page_name)))
+        event.Check(bool(win.panel.getPage(_shell_page_name)) and win.panel.BottomIsVisible)
     elif eid == win.IDM_WINDOW_MESSAGE:
-        event.Check(bool(win.panel.getPage(_message_page_name)))
+        event.Check(bool(win.panel.getPage(_message_page_name)) and win.panel.BottomIsVisible)
 Mixin.setPlugin('mainframe', 'on_update_ui', on_mainframe_updateui)
 
 def afterinit(win):
@@ -93,9 +93,9 @@ Mixin.setPlugin('mainframe', 'afterinit', afterinit)
 def on_notebook_updateui(win, event):
     eid = event.GetId()
     if eid == win.IDPM_SHELLWINDOW:
-        event.Check(bool(Globals.mainframe.panel.getPage(_shell_page_name)))
+        event.Check(bool(Globals.mainframe.panel.getPage(_shell_page_name)) and win.panel.BottomIsVisible)
     if eid == win.IDPM_MESSAGEWINDOW:
-        event.Check(bool(Globals.mainframe.panel.getPage(_message_page_name)))
+        event.Check(bool(Globals.mainframe.panel.getPage(_message_page_name)) and win.panel.BottomIsVisible)
 Mixin.setPlugin('notebook', 'on_update_ui', on_notebook_updateui)
 
 def init(win):

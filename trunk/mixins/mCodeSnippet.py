@@ -83,7 +83,6 @@ Mixin.setPlugin('mainframe', 'add_tool_list', add_tool_list)
 _codesnippet_page_name = tr('Code Snippets')
 
 def createCodeSnippetWindow(win):
-    from modules import common
     try:
         import xml.etree.ElementTree
     except:
@@ -106,13 +105,13 @@ def on_mainframe_updateui(win, event):
     eid = event.GetId()
     if eid == win.IDM_WINDOW_CODESNIPPET:
         page = win.panel.getPage(_codesnippet_page_name)
-        event.Check(bool(page))
+        event.Check(bool(page) and win.panel.LeftIsVisible)
 Mixin.setPlugin('mainframe', 'on_update_ui', on_mainframe_updateui)
 
 def on_notebook_updateui(win, event):
     eid = event.GetId()
     if eid == win.IDPM_CODESNIPPETWINDOW:
-        event.Check(bool(Globals.mainframe.panel.getPage(_codesnippet_page_name)))
+        event.Check(bool(win.panel.getPage(_codesnippet_page_name)) and win.panel.LeftIsVisible)
 Mixin.setPlugin('notebook', 'on_update_ui', on_notebook_updateui)
 
 def init(win):

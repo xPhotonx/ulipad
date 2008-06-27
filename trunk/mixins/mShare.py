@@ -65,7 +65,7 @@ _resshare_pagename = tr('Resource Shares')
 def on_mainframe_updateui(win, event):
     eid = event.GetId()
     if eid == win.IDM_WINDOW_SHARE:
-        event.Check(bool(win.panel.getPage(_resshare_pagename)))
+        event.Check(bool(win.panel.getPage(_resshare_pagename)) and win.panel.LeftIsVisible)
 Mixin.setPlugin('mainframe', 'on_update_ui', on_mainframe_updateui)
 
 def afterinit(win):
@@ -75,7 +75,7 @@ Mixin.setPlugin('mainframe', 'afterinit', afterinit)
 def on_notebook_updateui(win, event):
     eid = event.GetId()
     if eid == win.IDPM_SHAREWINDOW:
-        event.Check(bool(Globals.mainframe.panel.getPage(_resshare_pagename)))
+        event.Check(bool(win.panel.getPage(_resshare_pagename)) and win.panel.LeftIsVisible)
 Mixin.setPlugin('notebook', 'on_update_ui', on_notebook_updateui)
 
 def init(win):

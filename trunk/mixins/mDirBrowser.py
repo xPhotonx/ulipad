@@ -47,7 +47,7 @@ def on_mainframe_updateui(win, event):
     eid = event.GetId()
     if eid == win.IDM_WINDOW_DIRBROWSER:
         page = win.panel.getPage(_dirbrowser_pagename)
-        event.Check(bool(page))
+        event.Check(bool(page) and win.panel.LeftIsVisible)
 Mixin.setPlugin('mainframe', 'on_update_ui', on_mainframe_updateui)
 
 def add_mainframe_menu(menulist):
@@ -65,6 +65,16 @@ def add_notebook_menu(popmenulist):
         ]),
     ])
 Mixin.setPlugin('notebook', 'add_menu', add_notebook_menu)
+
+def on_notebook_updateui(win, event):
+    eid = event.GetId()
+    if eid == win.IDPM_DIRBROWSERWINDOW:
+        event.Check(bool(Globals.mainframe.panel.getPage(tr('Directory Browser'))) and win.panel.LeftIsVisible)
+Mixin.setPlugin('notebook', 'on_update_ui', on_notebook_updateui)
+
+def init(win):
+    wx.EVT_UPDATE_UI(win, win.IDPM_DIRBROWSERWINDOW, win.OnUpdateUI)
+Mixin.setPlugin('notebook', 'init', init)
 
 def afterinit(win):
     win.dirbrowser_imagelist = {
