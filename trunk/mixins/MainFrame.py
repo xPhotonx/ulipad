@@ -41,7 +41,7 @@ class MainFrame(wx.Frame, Mixin.Mixin):
         ('IDM_FILE',
         [
             (900, '', '-', wx.ITEM_SEPARATOR, None, ''),
-            (910, 'wx.ID_EXIT', tr('Exit')+'\tCtrl+Q', wx.ITEM_NORMAL, 'OnExit', tr('Exit Program')),
+            (910, 'wx.ID_EXIT', tr('Exit')+'\tCtrl+Q', wx.ITEM_NORMAL, 'OnExit', tr('Exits the application.')),
         ]),
     ]
     accellist = {}

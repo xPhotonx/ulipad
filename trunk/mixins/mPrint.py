@@ -34,17 +34,17 @@ def add_mainframe_menu(menulist):
         ]),
         ('IDM_FILE_PRINT_MENU',
         [
-            (100, 'wx.ID_PRINT_SETUP', tr('Page Setup...'), wx.ITEM_NORMAL, 'OnFilePageSetup', tr('Set page layout and options.')),
-            (105, 'IDM_FILE_PRINT_LINENUMBER', tr('Print Line Numbers'), wx.ITEM_CHECK, 'OnFilePrintLineNumber', tr('Print line numbers.')),
+            (100, 'wx.ID_PRINT_SETUP', tr('Page Setup...'), wx.ITEM_NORMAL, 'OnFilePageSetup', tr('Sets the page layout and options.'),
+            (105, 'IDM_FILE_PRINT_LINENUMBER', tr('Print Line Numbers'), wx.ITEM_CHECK, 'OnFilePrintLineNumber', tr('Prints the line numbers.')),
 #            (110, 'IDM_FILE_PRINTER_SETUP', tr('Printer Setup...'), wx.ITEM_NORMAL, 'OnFilePrinterSetup', tr('Selects a printer and printer connection.')),
-            (120, 'wx.ID_PREVIEW', tr('Print Preview...'), wx.ITEM_NORMAL, 'OnFilePrintPreview', tr('Displays the document on the screen as it would appear printed.')),
-            (130, 'wx.ID_PRINT', tr('Print'), wx.ITEM_NORMAL, 'OnFilePrint', tr('Prints a document.')),
+            (120, 'wx.ID_PREVIEW', tr('Print Preview...'), wx.ITEM_NORMAL, 'OnFilePrintPreview', tr('Shows a print preview of the file.')),
+            (130, 'wx.ID_PRINT', tr('Print'), wx.ITEM_NORMAL, 'OnFilePrint', tr('Prints the file.')),
             (140, 'IDM_FILE_HTML', tr('HTML File'), wx.ITEM_NORMAL, '', None),
         ]),
         ('IDM_FILE_HTML',
         [
-            (100, 'IDM_FILE_HTML_PRINT_PREVIEW', tr('HTML File Preview...'), wx.ITEM_NORMAL, 'OnFileHtmlPreview', tr('Displays the HTML document on the screen as it would appear printed.')),
-            (110, 'IDM_FILE_HTML_PRINT', tr('HTML File Print'), wx.ITEM_NORMAL, 'OnFileHtmlPrint', tr('Prints a HTML document.')),
+            (100, 'IDM_FILE_HTML_PRINT_PREVIEW', tr('HTML File Preview...'), wx.ITEM_NORMAL, 'OnFileHtmlPreview', tr('Shows a print preview of the HTML file.')),
+            (110, 'IDM_FILE_HTML_PRINT', tr('Print HTML File'), wx.ITEM_NORMAL, 'OnFileHtmlPrint', tr('Prints the HTML file.')),
         ]),
     ])
 Mixin.setPlugin('mainframe', 'add_menu', add_mainframe_menu)
