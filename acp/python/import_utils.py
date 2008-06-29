@@ -87,24 +87,16 @@ def evaluate(win, word, syncvar=None):
         return obj
     except:
         try:
-            eval_in_main(import_document)(win, syncvar)
+            import_document(win, syncvar)
             obj = eval(word, namespace)
             return obj
         except:
             try:
-                def f():
-                    exec('import %s' % word) in namespace
-                eval_in_main(f)()
+                exec('import %s' % word) in namespace
                 obj = eval(word, namespace)
                 return obj
             except:
                 return None
-
-from modules.callinmainthread import CallFunctionOnMainThread
-
-def eval_in_main(f):
-    func = CallFunctionOnMainThread(f)
-    return func
 
 def getargspec(win, func):
     """Get argument specifications"""
