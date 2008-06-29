@@ -104,8 +104,8 @@ Mixin.setPlugin('preference', 'init', pref_init)
 def add_mainframe_menu(menulist):
     menulist.extend([ ('IDM_FILE', #parent menu id
         [
-            (202, 'IDM_FILE_SESSION_OPEN', tr('Open Session'), wx.ITEM_NORMAL, 'OnFileSessionOpen', tr('Opens a session.')),
-            (203, 'IDM_FILE_SESSION_SAVE', tr('Save Session'), wx.ITEM_NORMAL, 'OnFileSessionSave', tr('Saves the session.')),
+            (202, 'IDM_FILE_SESSION_OPEN', tr('Open Session...'), wx.ITEM_NORMAL, 'OnFileSessionOpen', tr('Opens the dialog Choose A Session File.')),
+            (203, 'IDM_FILE_SESSION_SAVE', tr('Save Session...'), wx.ITEM_NORMAL, 'OnFileSessionSave', tr('Saves current documents to a session file.')),
             (204, 'IDM_FILE_SESSION_RECENT', tr('Open Recent Session'), wx.ITEM_NORMAL, '', ''),
             (205, '', '-', wx.ITEM_SEPARATOR, None, ''),
         ]),
@@ -121,7 +121,7 @@ from modules.EasyGuider import obj2ini
 
 def OnFileSessionOpen(win, event=None, filename=None):
     if not filename:
-        dlg = wx.FileDialog(win, tr("Open"), win.pref.last_session_dir, "", 'UliPad Session File (*.ses)|*.ses', wx.OPEN|wx.HIDE_READONLY)
+        dlg = wx.FileDialog(win, tr("Choose A Session File"), win.pref.last_session_dir, "", 'UliPad Session File (*.ses)|*.ses', wx.OPEN|wx.HIDE_READONLY)
         filename = None
         if dlg.ShowModal() == wx.ID_OK:
             filename = dlg.GetPath()
@@ -143,7 +143,7 @@ def OnFileSessionOpen(win, event=None, filename=None):
 Mixin.setMixin('mainframe', 'OnFileSessionOpen', OnFileSessionOpen)
 
 def OnFileSessionSave(win, event=None):
-    dlg = wx.FileDialog(win, tr("Save Session"), win.pref.last_session_dir, "", 'UliPad Session File (*.ses)|*.ses', wx.SAVE|wx.OVERWRITE_PROMPT)
+    dlg = wx.FileDialog(win, tr("Save To A Session File"), win.pref.last_session_dir, "", 'UliPad Session File (*.ses)|*.ses', wx.SAVE|wx.OVERWRITE_PROMPT)
     filename = None
     if dlg.ShowModal() == wx.ID_OK:
         filename = dlg.GetPath()

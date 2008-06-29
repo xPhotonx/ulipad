@@ -127,8 +127,8 @@ def add_mainframe_menu(menulist):
             (140, 'IDM_FILE_CLOSE', tr('Close') + '\tCtrl+F4', wx.ITEM_NORMAL, 'OnFileClose', tr('Closes an opened file.')),
             (150, 'IDM_FILE_CLOSE_ALL', tr('Close All'), wx.ITEM_NORMAL, 'OnFileCloseAll', tr('Closes all opened files.')),
             (160, '', '-', wx.ITEM_SEPARATOR, None, ''),
-            (170, 'IDM_FILE_SAVE', tr('Save') + '\tE=Ctrl+S', wx.ITEM_NORMAL, 'OnFileSave', tr('Saves an opened document using the same filename.')),
-            (180, 'IDM_FILE_SAVEAS', tr('Save As...'), wx.ITEM_NORMAL, 'OnFileSaveAs', tr('Saves an opened document to a specified filename.')),
+            (170, 'IDM_FILE_SAVE', tr('Save') + '\tE=Ctrl+S', wx.ITEM_NORMAL, 'OnFileSave', tr('Saves the file.')),
+            (180, 'IDM_FILE_SAVEAS', tr('Save As...'), wx.ITEM_NORMAL, 'OnFileSaveAs', tr('Saves a file as...')),
             (190, 'IDM_FILE_SAVE_ALL', tr('Save All'), wx.ITEM_NORMAL, 'OnFileSaveAll', tr('Saves all files.')),
         ]),
     ])
@@ -140,8 +140,8 @@ def add_editctrl_menu(popmenulist):
             (100, 'IDPM_CLOSE', tr('Close') + '\tCtrl+F4', wx.ITEM_NORMAL, 'OnPopUpMenu', tr('Closes an opened file.')),
             (110, 'IDPM_CLOSE_ALL', tr('Close All'), wx.ITEM_NORMAL, 'OnPopUpMenu', tr('Closes all opened files.')),
             (120, '', '-', wx.ITEM_SEPARATOR, None, ''),
-            (130, 'IDPM_SAVE', tr('Save') + '\tCtrl+S', wx.ITEM_NORMAL, 'OnPopUpMenu', tr('Saves an opened document using the same filename.')),
-            (140, 'IDPM_SAVEAS', tr('Save As...'), wx.ITEM_NORMAL, 'OnPopUpMenu', tr('Saves an opened document to a specified filename.')),
+            (130, 'IDPM_SAVE', tr('Save') + '\tCtrl+S', wx.ITEM_NORMAL, 'OnPopUpMenu', tr('Saves the file.')),
+            (140, 'IDPM_SAVEAS', tr('Save As...'), wx.ITEM_NORMAL, 'OnPopUpMenu', tr('Saves a file as...')),
             (150, 'IDPM_FILE_SAVE_ALL', tr('Save All'), wx.ITEM_NORMAL, 'OnPopUpMenu', tr('Saves all files.')),
             (155, '', '-', wx.ITEM_SEPARATOR, None, ''),
             (156, 'IDPM_FILE_COPY_FILENAME', tr('Copy Filename To Clipboard'), wx.ITEM_NORMAL, 'OnCopyFilenameToClipboard', tr('Copy current document filename to clipboard.')),
@@ -484,8 +484,8 @@ from modules import Mixin
 def add_editor_menu(popmenulist):
     popmenulist.extend([ (None, #parent menu id
         [
-            (100, 'IDPM_UNDO', tr('Undo') + '\tCtrl+Z', wx.ITEM_NORMAL, 'OnPopupEdit', tr('Reverses previous editing operation.')),
-            (110, 'IDPM_REDO', tr('Redo') + '\tCtrl+Y', wx.ITEM_NORMAL, 'OnPopupEdit', tr('Reverses previous undo operation.')),
+            (100, 'IDPM_UNDO', tr('Undo') + '\tCtrl+Z', wx.ITEM_NORMAL, 'OnPopupEdit', tr('Undoes the previous changes.')),
+            (110, 'IDPM_REDO', tr('Redo') + '\tCtrl+Y', wx.ITEM_NORMAL, 'OnPopupEdit', tr('Redoes the next changes.')),
             (120, '', '-', wx.ITEM_SEPARATOR, None, ''),
             (130, 'IDPM_CUT', tr('Cut') + '\tCtrl+X', wx.ITEM_NORMAL, 'OnPopupEdit', tr('Deletes text from the document and moves it to the clipboard.')),
             (140, 'IDPM_COPY', tr('Copy') + '\tCtrl+C', wx.ITEM_NORMAL, 'OnPopupEdit', tr('Copies text from the document to the clipboard.')),
@@ -2604,8 +2604,8 @@ Mixin.setPlugin('preference', 'init', pref_init)
 def add_mainframe_menu(menulist):
     menulist.extend([ ('IDM_FILE', #parent menu id
         [
-            (202, 'IDM_FILE_SESSION_OPEN', tr('Open Session'), wx.ITEM_NORMAL, 'OnFileSessionOpen', tr('Opens a session.')),
-            (203, 'IDM_FILE_SESSION_SAVE', tr('Save Session'), wx.ITEM_NORMAL, 'OnFileSessionSave', tr('Saves the session.')),
+            (202, 'IDM_FILE_SESSION_OPEN', tr('Open Session...'), wx.ITEM_NORMAL, 'OnFileSessionOpen', tr('Opens the dialog Choose A Session File.')),
+            (203, 'IDM_FILE_SESSION_SAVE', tr('Save Session...'), wx.ITEM_NORMAL, 'OnFileSessionSave', tr('Saves current documents to a session file.')),
             (204, 'IDM_FILE_SESSION_RECENT', tr('Open Recent Session'), wx.ITEM_NORMAL, '', ''),
             (205, '', '-', wx.ITEM_SEPARATOR, None, ''),
         ]),
@@ -2621,7 +2621,7 @@ from modules.EasyGuider import obj2ini
 
 def OnFileSessionOpen(win, event=None, filename=None):
     if not filename:
-        dlg = wx.FileDialog(win, tr("Open"), win.pref.last_session_dir, "", 'UliPad Session File (*.ses)|*.ses', wx.OPEN|wx.HIDE_READONLY)
+        dlg = wx.FileDialog(win, tr("Choose A Session File"), win.pref.last_session_dir, "", 'UliPad Session File (*.ses)|*.ses', wx.OPEN|wx.HIDE_READONLY)
         filename = None
         if dlg.ShowModal() == wx.ID_OK:
             filename = dlg.GetPath()
@@ -2643,7 +2643,7 @@ def OnFileSessionOpen(win, event=None, filename=None):
 Mixin.setMixin('mainframe', 'OnFileSessionOpen', OnFileSessionOpen)
 
 def OnFileSessionSave(win, event=None):
-    dlg = wx.FileDialog(win, tr("Save Session"), win.pref.last_session_dir, "", 'UliPad Session File (*.ses)|*.ses', wx.SAVE|wx.OVERWRITE_PROMPT)
+    dlg = wx.FileDialog(win, tr("Save To A Session File"), win.pref.last_session_dir, "", 'UliPad Session File (*.ses)|*.ses', wx.SAVE|wx.OVERWRITE_PROMPT)
     filename = None
     if dlg.ShowModal() == wx.ID_OK:
         filename = dlg.GetPath()
@@ -4764,16 +4764,16 @@ def add_mainframe_menu(menulist):
         ]),
         ('IDM_FILE_PRINT_MENU',
         [
-            (100, 'wx.ID_PRINT_SETUP', tr('Page Setup...'), wx.ITEM_NORMAL, 'OnFilePageSetup', tr('Set page layout and options.')),
-            (105, 'IDM_FILE_PRINT_LINENUMBER', tr('Print Line Numbers'), wx.ITEM_CHECK, 'OnFilePrintLineNumber', tr('Print line numbers.')),
-            (120, 'wx.ID_PREVIEW', tr('Print Preview...'), wx.ITEM_NORMAL, 'OnFilePrintPreview', tr('Displays the document on the screen as it would appear printed.')),
-            (130, 'wx.ID_PRINT', tr('Print'), wx.ITEM_NORMAL, 'OnFilePrint', tr('Prints a document.')),
+            (100, 'wx.ID_PRINT_SETUP', tr('Page Setup...'), wx.ITEM_NORMAL, 'OnFilePageSetup', tr('Sets the page layout and options.'),
+            (105, 'IDM_FILE_PRINT_LINENUMBER', tr('Print Line Numbers'), wx.ITEM_CHECK, 'OnFilePrintLineNumber', tr('Prints the line numbers.')),
+            (120, 'wx.ID_PREVIEW', tr('Print Preview...'), wx.ITEM_NORMAL, 'OnFilePrintPreview', tr('Shows a print preview of the file.')),
+            (130, 'wx.ID_PRINT', tr('Print'), wx.ITEM_NORMAL, 'OnFilePrint', tr('Prints the file.')),
             (140, 'IDM_FILE_HTML', tr('HTML File'), wx.ITEM_NORMAL, '', None),
         ]),
         ('IDM_FILE_HTML',
         [
-            (100, 'IDM_FILE_HTML_PRINT_PREVIEW', tr('HTML File Preview...'), wx.ITEM_NORMAL, 'OnFileHtmlPreview', tr('Displays the HTML document on the screen as it would appear printed.')),
-            (110, 'IDM_FILE_HTML_PRINT', tr('HTML File Print'), wx.ITEM_NORMAL, 'OnFileHtmlPrint', tr('Prints a HTML document.')),
+            (100, 'IDM_FILE_HTML_PRINT_PREVIEW', tr('HTML File Preview...'), wx.ITEM_NORMAL, 'OnFileHtmlPreview', tr('Shows a print preview of the HTML file.')),
+            (110, 'IDM_FILE_HTML_PRINT', tr('Print HTML File'), wx.ITEM_NORMAL, 'OnFileHtmlPrint', tr('Prints the HTML file.')),
         ]),
     ])
 Mixin.setPlugin('mainframe', 'add_menu', add_mainframe_menu)
