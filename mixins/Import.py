@@ -4764,7 +4764,7 @@ def add_mainframe_menu(menulist):
         ]),
         ('IDM_FILE_PRINT_MENU',
         [
-            (100, 'wx.ID_PRINT_SETUP', tr('Page Setup...'), wx.ITEM_NORMAL, 'OnFilePageSetup', tr('Sets the page layout and options.'),
+            (100, 'wx.ID_PRINT_SETUP', tr('Page Setup...'), wx.ITEM_NORMAL, 'OnFilePageSetup', tr('Sets the page layout and options.')),
             (105, 'IDM_FILE_PRINT_LINENUMBER', tr('Print Line Numbers'), wx.ITEM_CHECK, 'OnFilePrintLineNumber', tr('Prints the line numbers.')),
             (120, 'wx.ID_PREVIEW', tr('Print Preview...'), wx.ITEM_NORMAL, 'OnFilePrintPreview', tr('Shows a print preview of the file.')),
             (130, 'wx.ID_PRINT', tr('Print'), wx.ITEM_NORMAL, 'OnFilePrint', tr('Prints the file.')),
