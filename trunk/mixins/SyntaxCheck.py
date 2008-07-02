@@ -54,7 +54,7 @@ def check(codeString, filename):
 
     return message
 
-syntax_pagename = tr('Syntax Check')
+syntax_pagename = tr('Check Syntax')
 
 def Check(mainframe, document):
     message = []

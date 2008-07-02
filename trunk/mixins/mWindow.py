@@ -59,12 +59,13 @@ Mixin.setMixin('mainframe', 'OnWindowLeft', OnWindowLeft)
 def OnWindowBottom(win, event):
     flag = not win.panel.BottomIsVisible
     if flag:
-        win.createShellWindow()
-#        win.createMessageWindow()
-
+        if not win.panel.bottombook or win.panel.bottombook.GetPageCount() == 0:
+            win.createShellWindow()
+    
     win.panel.showWindow('bottom', flag)
     if flag:
-        win.panel.showPage(_shell_page_name)
+        if not win.panel.bottombook or win.panel.bottombook.GetPageCount() == 0:
+            win.panel.showPage(_shell_page_name)
 Mixin.setMixin('mainframe', 'OnWindowBottom', OnWindowBottom)
 
 _shell_page_name = tr('Shell')
