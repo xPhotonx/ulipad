@@ -28,7 +28,7 @@ from modules import common
 
 def add_pref(preflist):
     preflist.extend([
-        (tr('Document')+'/'+tr('Back-end'), 100, 'check', 'auto_make_bak', tr('Make file backup at opening a file'), None)
+        (tr('Document')+'/'+tr('Back-End'), 100, 'check', 'auto_make_bak', tr('Make file backup at opening a file'), None)
     ])
 Mixin.setPlugin('preference', 'add_pref', add_pref)
 

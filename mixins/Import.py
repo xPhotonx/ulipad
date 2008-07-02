@@ -3974,7 +3974,7 @@ from modules import common
 
 def add_pref(preflist):
     preflist.extend([
-        (tr('Document')+'/'+tr('Back-end'), 100, 'check', 'auto_make_bak', tr('Make file backup at opening a file'), None)
+        (tr('Document')+'/'+tr('Back-End'), 100, 'check', 'auto_make_bak', tr('Make file backup at opening a file'), None)
     ])
 Mixin.setPlugin('preference', 'add_pref', add_pref)
 
@@ -4006,8 +4006,8 @@ from modules import Globals
 
 def add_pref(preflist):
     preflist.extend([
-        (tr('Document')+'/'+tr('Back-end'), 110, 'check', 'auto_check', tr('Autocheck if opened files were modified by others'), None),
-        (tr('Document')+'/'+tr('Back-end'), 120, 'check', 'auto_check_confirm', tr('Confirm file reload'), None)
+        (tr('Document')+'/'+tr('Back-End'), 110, 'check', 'auto_check', tr('Autocheck if opened files were modified by others'), None),
+        (tr('Document')+'/'+tr('Back-End'), 120, 'check', 'auto_check_confirm', tr('Confirm file reload'), None)
     ])
 Mixin.setPlugin('preference', 'add_pref', add_pref)
 
