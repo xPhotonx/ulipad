@@ -92,6 +92,8 @@ class SyntaxDialog(wx.Dialog):
         wx.EVT_BUTTON(self.obj_ID_FORE, self.ID_FORE, self.OnForeClick)
         wx.EVT_BUTTON(self.obj_ID_BACK, self.ID_BACK, self.OnBackClick)
         wx.EVT_TEXT(self.obj_ID_EXTENSIONS, self.ID_EXTENSIONS, self.OnExtensionsChange)
+        wx.EVT_TEXT(self.obj_ID_FORE_VALUE, self.ID_FORE_VALUE, self.OnUpdate)
+        wx.EVT_TEXT(self.obj_ID_BACK_VALUE, self.ID_BACK_VALUE, self.OnUpdate)
         wx.EVT_IDLE(self, self.OnIdle)
 
         self.obj_ID_LANGUAGE.SetSelection(self.langindex)
@@ -353,4 +355,3 @@ class SyntaxDialog(wx.Dialog):
     def OnStyleNeeded(self, event):
         if self.curlang.syntaxtype == wx.stc.STC_LEX_CONTAINER:
             self.curlang.styleneeded(self.obj_ID_PREVIEW, event.GetPosition())
-    
