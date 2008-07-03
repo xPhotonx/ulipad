@@ -154,7 +154,7 @@ class App(Mixin.Mixin):
             import plugins
         except:
             Debug.error.traceback()
-            common.showerror(None, tr('There is something wrong as importing plugins.'))
+            common.showerror(None, tr('There was something wrong with importing plugins.'))
 
         #before running gui
         self.callplugin("beforegui", self)
