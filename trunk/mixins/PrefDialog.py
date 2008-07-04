@@ -252,6 +252,8 @@ class PrefDialog(wx.Dialog, Mixin.Mixin):
                 obj = ui.Password(prefvalue)
             elif kind == 'openfile':
                 obj = ui.OpenFile(prefvalue)
+            elif kind == 'opendir':
+                obj = ui.Dir(prefvalue)
             elif kind == 'button':
                 label = ''
                 func = getattr(self, extern)
