@@ -431,7 +431,7 @@ class Notebook(FNB.FlatNotebook, Mixin.Mixin):
         self.SetRightClickMenu(self.popmenu)
         FNB.EVT_FLATNOTEBOOK_PAGE_CHANGED(self, self.GetId(), self.OnPageChanged)
 #        wx.EVT_LEFT_UP(self, self.OnPageChanged)
-        wx.EVT_RIGHT_DCLICK(self._pages, self.OnDClick)
+        wx.EVT_LEFT_DCLICK(self._pages, self.OnDClick)
 #        wx.EVT_RIGHT_DOWN(self, self.OnPopUp)
         FNB.EVT_FLATNOTEBOOK_PAGE_CLOSING(self, self.GetId(), self.OnClose)
         self.SetActiveTabColour('#7FFFD4')
@@ -523,23 +523,32 @@ class Notebook(FNB.FlatNotebook, Mixin.Mixin):
         return self.side
     
     def OnDClick(self, event):
-        panel = self.parent.GetParent()
-        if not self.full:
-            if self.side == 'left':
-                self.old_size = panel.leftsize
-            elif self.side == 'right':
-                self.old_size = panel.rightsize
-            elif self.side == 'bottom':
-                self.old_size = panel.bottomsize
-            panel.setSize(self.side, 50)
-            panel.OnSize(None)
-            panel.Refresh()
-            self.full = True
+        pages = self._pages
+        where, tabIdx = pages.HitTest(event.GetPosition())
+               
+        if where == FNB.FNB_RIGHT_ARROW:
+            pages.RotateRight()
+        
+        elif where == FNB.FNB_LEFT_ARROW:
+            pages.RotateLeft()
         else:
-            panel.setSize(self.side, self.old_size)
-            panel.OnSize(None)
-            panel.Refresh()
-            self.full = False
+            panel = self.parent.GetParent()
+            if not self.full:
+                if self.side == 'left':
+                    self.old_size = panel.leftsize
+                elif self.side == 'right':
+                    self.old_size = panel.rightsize
+                elif self.side == 'bottom':
+                    self.old_size = panel.bottomsize
+                panel.setSize(self.side, 50)
+                panel.OnSize(None)
+                panel.Refresh()
+                self.full = True
+            else:
+                panel.setSize(self.side, self.old_size)
+                panel.OnSize(None)
+                panel.Refresh()
+                self.full = False
             
     def setImageIndex(self, page, imagename):
         imageindex = self.pageimageindex.get(imagename, -1)
