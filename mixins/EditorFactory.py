@@ -78,7 +78,7 @@ class EditorFactory(FNB.FlatNotebook, Mixin.Mixin):
 #        self.SetRightClickMenu(self.popmenu)
         FNB.EVT_FLATNOTEBOOK_PAGE_CHANGED(self, self.id, self.OnChanged)
         FNB.EVT_FLATNOTEBOOK_PAGE_CLOSING(self, self.id, self.OnClose)
-        wx.EVT_RIGHT_DCLICK(self._pages, self.OnDClick)
+        wx.EVT_LEFT_DCLICK(self._pages, self.OnDClick)
         FNB.EVT_FLATNOTEBOOK_PAGE_CONTEXT_MENU(self, self.id, self.OnPopup)
 
         self.imageindex = {}
@@ -377,19 +377,29 @@ class EditorFactory(FNB.FlatNotebook, Mixin.Mixin):
         self.skip_closing = False
         
     def OnDClick(self, event):
-        panel = self.mainframe.panel
-        if not self.full:
-            s = self.last_side_panel_status = panel.get_status()
-            status = {}
-            status['left'] = (False, s['left'][1])
-            status['right'] = (False, s['right'][1])
-            status['bottom'] = (False, s['bottom'][1])
-            panel.restore_status(status)
-            self.full = True
-        else:
-            panel.restore_status(self.last_side_panel_status)
-            self.full = False
-
+        pages = self._pages
+        where, tabIdx = pages.HitTest(event.GetPosition())
+               
+        if where == FNB.FNB_RIGHT_ARROW:
+            pages.RotateRight()
+        
+        elif where == FNB.FNB_LEFT_ARROW:
+            pages.RotateLeft()
+        
+        else:            
+            panel = self.mainframe.panel
+            if not self.full:
+                s = self.last_side_panel_status = panel.get_status()
+                status = {}
+                status['left'] = (False, s['left'][1])
+                status['right'] = (False, s['right'][1])
+                status['bottom'] = (False, s['bottom'][1])
+                panel.restore_status(status)
+                self.full = True
+            else:
+                panel.restore_status(self.last_side_panel_status)
+                self.full = False
+    
     def new_with_state(self, fullstate):
         filename = fullstate[0]
         for i, s in enumerate(self.pref.sessions):
