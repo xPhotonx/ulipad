@@ -11,7 +11,7 @@
 # Python Code By:
 #
 # Andrea Gavana, @ 02 Oct 2006
-# Latest Revision: 22 Nov 2007, 14.00 GMT
+# Latest Revision: 30 May 2008, 23.00 GMT
 #
 #
 # For All Kind Of Problems, Requests Of Enhancements And Bug Reports, Please
@@ -58,9 +58,9 @@ License And Version:
 
 FlatNotebook Is Freeware And Distributed Under The wxPython License. 
 
-Latest Revision: Andrea Gavana @ 22 Nov 2007, 14.00 GMT
+Latest Revision: Andrea Gavana @ 30 May 2008, 23.00 GMT
 
-Version 2.4.
+Version 2.5.
 
 @undocumented: FNB_HEIGHT_SPACER, VERTICAL_BORDER_PADDING, VC8_SHAPE_LEN,
     wxEVT*, left_arrow_*, right_arrow*, x_button*, down_arrow*,
@@ -79,7 +79,10 @@ import random
 import math
 import weakref
 import cPickle
-    
+
+if wx.Platform == '__WXMAC__':
+    import Carbon.Appearance
+
 # Check for the new method in 2.7 (not present in 2.6.3.3)
 if wx.VERSION_STRING < "2.7":
     wx.Rect.Contains = lambda self, point: wx.Rect.Inside(self, point)
@@ -625,31 +628,14 @@ down_arrow_xpm = [
 
 
 #----------------------------------------------------------------------
-def GetMondrianData():
-    return \
-'\x89PNG\r\n\x1a\n\x00\x00\x00\rIHDR\x00\x00\x00 \x00\x00\x00 \x08\x06\x00\
-\x00\x00szz\xf4\x00\x00\x00\x04sBIT\x08\x08\x08\x08|\x08d\x88\x00\x00\x00qID\
-ATX\x85\xed\xd6;\n\x800\x10E\xd1{\xc5\x8d\xb9r\x97\x16\x0b\xad$\x8a\x82:\x16\
-o\xda\x84pB2\x1f\x81Fa\x8c\x9c\x08\x04Z{\xcf\xa72\xbcv\xfa\xc5\x08 \x80r\x80\
-\xfc\xa2\x0e\x1c\xe4\xba\xfaX\x1d\xd0\xde]S\x07\x02\xd8>\xe1wa-`\x9fQ\xe9\
-\x86\x01\x04\x10\x00\\(Dk\x1b-\x04\xdc\x1d\x07\x14\x98;\x0bS\x7f\x7f\xf9\x13\
-\x04\x10@\xf9X\xbe\x00\xc9 \x14K\xc1<={\x00\x00\x00\x00IEND\xaeB`\x82' 
+from wx.lib.embeddedimage import PyEmbeddedImage
 
+Mondrian = PyEmbeddedImage(
+    "iVBORw0KGgoAAAANSUhEUgAAACAAAAAgCAYAAABzenr0AAAABHNCSVQICAgIfAhkiAAAAHFJ"
+    "REFUWIXt1jsKgDAQRdF7xY25cpcWC60kioI6Fm/ahHBCMh+BRmGMnAgEWnvPpzK8dvrFCCCA"
+    "coD8og4c5Lr6WB3Q3l1TBwLYPuF3YS1gn1HphgEEEABcKERrGy0E3B0HFJg7C1N/f/kTBBBA"
+    "+Vi+AMkgFEvBPD17AAAAAElFTkSuQmCC")
 
-def GetMondrianBitmap():
-    return wx.BitmapFromImage(GetMondrianImage().Scale(16, 16))
-
-
-def GetMondrianImage():
-    import cStringIO
-    stream = cStringIO.StringIO(GetMondrianData())
-    return wx.ImageFromStream(stream)
-
-
-def GetMondrianIcon():
-    icon = wx.EmptyIcon()
-    icon.CopyFromBitmap(GetMondrianBitmap())
-    return icon
 #----------------------------------------------------------------------
 
 
@@ -1091,7 +1077,7 @@ class TabNavigatorWindow(wx.Dialog):
         self._indexMap = []
         
         if icon is None:
-            self._bmp = GetMondrianBitmap()
+            self._bmp = Mondrian.GetBitmap()
         else:
             self._bmp = icon
 
@@ -1137,6 +1123,10 @@ class TabNavigatorWindow(wx.Dialog):
         self.GetSizer().Layout()
         self.Centre()
 
+        # Set focus on the list box to avoid having to click on it to change
+        # the tab selection under GTK.
+        self._listBox.SetFocus()
+
 
     def OnKeyUp(self, event):
         """Handles the wx.EVT_KEY_UP for the L{TabNavigatorWindow}."""
@@ -1144,12 +1134,15 @@ class TabNavigatorWindow(wx.Dialog):
         if event.GetKeyCode() == wx.WXK_CONTROL:
             self.CloseDialog()
 
-    def Navigation(self, direction=True):
+
+    def OnNavigationKey(self, event):
+        """Handles the wx.EVT_NAVIGATION_KEY for the L{TabNavigatorWindow}. """
+
         selected = self._listBox.GetSelection()
         bk = self.GetParent()
         maxItems = bk.GetPageCount()
             
-        if direction:
+        if event.GetDirection():
         
             # Select next page
             if selected == maxItems - 1:
@@ -1166,10 +1159,6 @@ class TabNavigatorWindow(wx.Dialog):
                 itemToSelect = selected - 1
         
         self._listBox.SetSelection(itemToSelect)
-        
-    def OnNavigationKey(self, event):
-        """Handles the wx.EVT_NAVIGATION_KEY for the L{TabNavigatorWindow}. """
-        self.Navigation(event.GetDirection())
 
 
     def PopulateListControl(self, book):
@@ -1221,8 +1210,9 @@ class TabNavigatorWindow(wx.Dialog):
         bk = self.GetParent()
         self._selectedItem = self._listBox.GetSelection()
         iter = self._indexMap[self._selectedItem]
-        bk._pages.FireEvent(iter)
         self.EndModal(wx.ID_OK)
+        wx.CallAfter(bk._pages.FireEvent, iter)
+        self.Destroy()
         
 
     def OnPanelPaint(self, event):
@@ -1284,12 +1274,12 @@ class FNBRenderer:
         self._tabHeight = None
 
         if wx.Platform == "__WXMAC__":
-            #color = wx.SystemSettings_GetColour(wx.SYS_COLOUR_3DSHADOW)
-            # This is the actual highlight color for some reason it does
-            # not exist in SystemSettings. The closest is 3DSHADOW but it
-            # still does not look right.
-            color = wx.Colour(171, 180, 193)
-            self._focusPen = wx.Pen(color, 2, wx.SOLID)
+            # Hack to get proper highlight color for focus rectangle from
+            # current theme by creating a theme brush and getting its color.
+            # kThemeBrushFocusHighlight is available on Mac OS 8.5 and higher
+            brush = wx.BLACK_BRUSH
+            brush.MacSetTheme(Carbon.Appearance.kThemeBrushFocusHighlight)
+            self._focusPen = wx.Pen(brush.GetColour(), 2, wx.SOLID)
         else:
             self._focusPen = wx.Pen(wx.BLACK, 1, wx.USER_DASH)
             self._focusPen.SetDashes([1, 1])
@@ -3315,10 +3305,6 @@ class FlatNotebook(wx.PyPanel):
 
         self._pages._iActivePage = page
         self._pages.DoSetSelection(page)
-        
-    def EnsureVisible(self, page):
-        self._pages.EnsureVisible(page)
-
 
     def DeletePage(self, page):
         """
@@ -3446,7 +3432,7 @@ class FlatNotebook(wx.PyPanel):
             self._naviIcon = bmp
         else:
             raise TypeError, "SetNavigatorIcon requires a valid bitmap"
-        
+
     def Navigation(self, direction=True):
         if len(self._windows) >= 1:
             if not self._popupWin:
@@ -3467,8 +3453,16 @@ class FlatNotebook(wx.PyPanel):
                 return
             # change pages
             if self.HasFlag(FNB_SMART_TABS):
-                self.Navigation(event.GetDirection())
-                return
+                if not self._popupWin:
+                    self._popupWin = TabNavigatorWindow(self, self._naviIcon)
+                    self._popupWin.SetReturnCode(wx.ID_OK)
+                    self._popupWin.ShowModal()
+                    self._popupWin.Destroy()
+                    self._popupWin = None
+                else:
+                    # a dialog is already opened
+                    self._popupWin.OnNavigationKey(event)
+                    return
             else:
                 # change pages
                 self.AdvanceSelection(event.GetDirection())
@@ -3739,6 +3733,12 @@ class FlatNotebook(wx.PyPanel):
         return self._pages._activeTabColor
 
 
+    def EnsureVisible(self, page):
+       """ Ensures that a tab is visible. """
+
+       self._pages.DoSetSelection(page)
+
+       
 # ---------------------------------------------------------------------------- #
 # Class PageContainer
 # Acts as a container for the pages you add to FlatNotebook
@@ -3964,7 +3964,7 @@ class PageContainer(wx.Panel):
         self._nArrowDownButtonStatus = FNB_BTN_NONE
 
         self._nLeftClickZone, tabIdx = self.HitTest(event.GetPosition())
-        
+
         if self._nLeftClickZone == FNB_DROP_DOWN_ARROW:
             self._nArrowDownButtonStatus = FNB_BTN_PRESSED
             self.Refresh()
@@ -4195,9 +4195,9 @@ class PageContainer(wx.Panel):
             #! fix for tabfocus
             da_page = self._pParent.GetPage(page)
     
-            if da_page != None:
-                da_page.SetFocus()
-        
+#            if da_page != None:
+#                da_page.SetFocus()
+#        
         self.EnsureVisible(page)
 
     def EnsureVisible(self, page, refresh=True):
@@ -4205,7 +4205,7 @@ class PageContainer(wx.Panel):
             # Try to remove one tab from start and try again
             
             if not self.CanFitToScreen(page):
-        
+
                 if self._nFrom > page:
                     self._nFrom = page
                 else:
@@ -4215,7 +4215,8 @@ class PageContainer(wx.Panel):
                             break
         if refresh:
             self.Refresh()
-        
+
+
     def DeletePage(self, page):
         """ Delete the specified page from L{FlatNotebook}. """
 
@@ -4260,6 +4261,7 @@ class PageContainer(wx.Panel):
             event.SetSelection(self._iActivePage)
             event.SetOldSelection(self._iPreviousActivePage)
             event.SetEventObject(self.GetParent())
+            self.GetParent().GetEventHandler().ProcessEvent(event)            
 
             book.SetSelection(self._iActivePage)
             book._bForceSelection = False
@@ -4863,6 +4865,7 @@ class PageContainer(wx.Panel):
             event.SetEventType(wxEVT_FLATNOTEBOOK_PAGE_CHANGED)
             event.SetOldSelection(oldSelection)
             self.GetParent().GetEventHandler().ProcessEvent(event)
+#            self.SetFocus()
             
 
     def SetImageList(self, imglist):
