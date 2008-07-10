@@ -125,7 +125,9 @@ def parsetext(win, editor):
             nodes = PyParse.parseString(editor.GetText())
         else:
             nodes = editor.syntax_info
-               
+    else:
+        return
+    
     #add doc_nodes to editor
     editor.doc_nodes = {}
     
