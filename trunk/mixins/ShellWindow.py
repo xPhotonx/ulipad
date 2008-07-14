@@ -49,6 +49,8 @@ class ShellWindow(wx.py.shell.Shell, Mixin.Mixin):
             (160, '', '-', wx.ITEM_SEPARATOR, None, ''),
             (170, 'IDPM_SELECTALL', tr('Select All') + '\tCtrl+A', wx.ITEM_NORMAL, 'OnPopupEdit', tr('Selects all text.')),
             (180, 'IDPM_CLEAR', tr('Clear Shell Window') + '\tCtrl+Alt+R', wx.ITEM_NORMAL, 'OnClearShell', tr('Clears content of shell window.')),
+            (185, 'IDPM_RESTART_SHELL', tr('Restart Shell') + '\tCtrl+R', wx.ITEM_NORMAL, 'OnRestartShell', tr('Restarts the shell')),
+            
         ]),
     ]
     imagelist = {
@@ -201,6 +203,10 @@ class ShellWindow(wx.py.shell.Shell, Mixin.Mixin):
         endpos = self.GetTextLength()
         selecting = self.GetSelectionStart() != self.GetSelectionEnd()
         
+        # If the user presses CTRL-R, then restart the shell.
+        if controlDown and not altDown and key == ord('R'):
+            self.OnRestartShell(None)
+        
         if not controlDown and altDown and not shiftDown and key in [wx.WXK_RETURN, wx.WXK_NUMPAD_ENTER]:
             if self.CallTipActive():
                 self.CallTipCancel()
@@ -210,6 +216,17 @@ class ShellWindow(wx.py.shell.Shell, Mixin.Mixin):
                 self.insertLineBreak()
         else:
             super(ShellWindow, self).OnKeyDown(event)
+            
+    def OnRestartShell(self, event):
+        'Replace the interpreter, "in place"'
+        self.SetSelection(self.GetCurrentPos(), self.GetCurrentPos())
+        self.Execute('## --- RESTARTING SHELL ---\n')
+        self.interp = NEInterpreter(locals = None,
+                                    rawin = self.raw_input,
+                                    stdin = self.interp.stdin,
+                                    stdout = self.interp.stdout,
+                                    stderr = self.interp.stderr)
+        self.setLocalShell()
 
 class NEInterpreter(Interpreter):
     def push(self, command):
