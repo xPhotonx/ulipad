@@ -120,7 +120,7 @@ def check_update(force=False):
                     dlg.Destroy()
                 else:
                     if force:
-                        common.showmessage(tr("There is no new version."))
+                        common.showmessage(tr("There is no newer version."))
             wx.CallAfter(_f)
         except Exception, e:
             if force:
