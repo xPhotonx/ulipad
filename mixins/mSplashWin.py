@@ -27,7 +27,7 @@ from modules import Mixin
 
 def add_pref(preflist):
     preflist.extend([
-        (tr('General'), 140, 'check', 'splash_on_startup', tr('Display splash screen at startup'), None),
+        (tr('General'), 140, 'check', 'splash_on_startup', tr('Show splash screen at startup'), None),
     ])
 Mixin.setPlugin('preference', 'add_pref', add_pref)
 
