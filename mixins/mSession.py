@@ -105,7 +105,7 @@ def add_mainframe_menu(menulist):
     menulist.extend([ ('IDM_FILE', #parent menu id
         [
             (202, 'IDM_FILE_SESSION_OPEN', tr('Open Session...'), wx.ITEM_NORMAL, 'OnFileSessionOpen', tr('Opens an existing session file.')),
-            (203, 'IDM_FILE_SESSION_SAVE', tr('Save Session...'), wx.ITEM_NORMAL, 'OnFileSessionSave', tr('Saves openned documents to a session file.')),
+            (203, 'IDM_FILE_SESSION_SAVE', tr('Save Session...'), wx.ITEM_NORMAL, 'OnFileSessionSave', tr('Saves opened documents to a session file.')),
             (204, 'IDM_FILE_SESSION_RECENT', tr('Open Recent Session'), wx.ITEM_NORMAL, '', ''),
             (205, '', '-', wx.ITEM_SEPARATOR, None, ''),
         ]),
