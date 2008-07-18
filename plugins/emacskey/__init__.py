@@ -24,6 +24,11 @@ def keyDown(editor, event):
         inPartialShortcut = True
         currentPartialMatch = scs
         return True
+
+    # Allow for '<'
+    if scs == 'shift+,':
+        return False
+
     if len(scs.split(',')) > 1 and scs != ',': # multi-key shortcut reach here
                                 # means invalid key
         return True

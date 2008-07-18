@@ -122,6 +122,8 @@ class TodoWindow(wx.Panel, Mixin):
         self.pref.save()
  
 r_duedate = re.compile(r'\(?\$D:(\d{4}[/-]\d{1,2}[/-]\d{1,2})\)?')
+#todo example:
+#     #todo This is a todo test $D:2008-05-06 !!!!
 def read_todos(editor):
     lang = editor.languagename
     filename = editor.filename
