@@ -31,15 +31,15 @@ def add_mainframe_menu(menulist):
     menulist.extend([ ('IDM_FILE',
         [
             (100, 'IDM_FILE_NEW', tr('New') + '\tCtrl+N', wx.ITEM_NORMAL, 'OnFileNew', tr('Creates a new document.')),
-            (105, 'IDM_FILE_NEWMORE', tr('New') + '...', wx.ITEM_NORMAL, None, tr('Creates a new document.')),
+            (105, 'IDM_FILE_NEWMORE', tr('New') + '...', wx.ITEM_NORMAL, None, tr('Creates a new type document.')),
             (110, 'IDM_FILE_OPEN', tr('Open...') + '\tCtrl+O', wx.ITEM_NORMAL, 'OnFileOpen', tr('Opens an existing document.')),
-            (120, 'IDM_FILE_REOPEN', tr('Reopen') + '\tE=Ctrl+Shift+O', wx.ITEM_NORMAL, 'OnFileReOpen', tr('Reopens current document again.')),
-            (140, 'IDM_FILE_CLOSE', tr('Close') + '\tCtrl+F4', wx.ITEM_NORMAL, 'OnFileClose', tr('Closes the current document.')),
-            (150, 'IDM_FILE_CLOSE_ALL', tr('Close All'), wx.ITEM_NORMAL, 'OnFileCloseAll', tr('Closes all the documents.')),
+            (120, 'IDM_FILE_REOPEN', tr('Reopen') + '\tE=Ctrl+Shift+O', wx.ITEM_NORMAL, 'OnFileReOpen', tr('Reopens the current document again.')),
+            (140, 'IDM_FILE_CLOSE', tr('Close') + '\tCtrl+F4', wx.ITEM_NORMAL, 'OnFileClose', tr('Closes an opened document.')),
+            (150, 'IDM_FILE_CLOSE_ALL', tr('Close All'), wx.ITEM_NORMAL, 'OnFileCloseAll', tr('Closes all document windows.')),
             (160, '', '-', wx.ITEM_SEPARATOR, None, ''),
-            (170, 'IDM_FILE_SAVE', tr('Save') + '\tE=Ctrl+S', wx.ITEM_NORMAL, 'OnFileSave', tr('Saves the current document.')),
-            (180, 'IDM_FILE_SAVEAS', tr('Save As...'), wx.ITEM_NORMAL, 'OnFileSaveAs', tr('Saves the current document to a new filename.')),
-            (190, 'IDM_FILE_SAVE_ALL', tr('Save All'), wx.ITEM_NORMAL, 'OnFileSaveAll', tr('Saves all the documents.')),
+            (170, 'IDM_FILE_SAVE', tr('Save') + '\tE=Ctrl+S', wx.ITEM_NORMAL, 'OnFileSave', tr('Saves an opened document using the same filename.')),
+            (180, 'IDM_FILE_SAVEAS', tr('Save As...'), wx.ITEM_NORMAL, 'OnFileSaveAs', tr('Saves an opened document to a specified file name.')),
+            (190, 'IDM_FILE_SAVE_ALL', tr('Save All'), wx.ITEM_NORMAL, 'OnFileSaveAll', tr('Saves all documents.')),
         ]),
     ])
 Mixin.setPlugin('mainframe', 'add_menu', add_mainframe_menu)
@@ -47,14 +47,14 @@ Mixin.setPlugin('mainframe', 'add_menu', add_mainframe_menu)
 def add_editctrl_menu(popmenulist):
     popmenulist.extend([ (None,
         [
-            (100, 'IDPM_CLOSE', tr('Close') + '\tCtrl+F4', wx.ITEM_NORMAL, 'OnPopUpMenu', tr('Closes the current document.')),
-            (110, 'IDPM_CLOSE_ALL', tr('Close All'), wx.ITEM_NORMAL, 'OnPopUpMenu', tr('Closes all the documents.')),
+            (100, 'IDPM_CLOSE', tr('Close') + '\tCtrl+F4', wx.ITEM_NORMAL, 'OnPopUpMenu', tr('Closes an opened document.')),
+            (110, 'IDPM_CLOSE_ALL', tr('Close All'), wx.ITEM_NORMAL, 'OnPopUpMenu', tr('Closes all document windows.')),
             (120, '', '-', wx.ITEM_SEPARATOR, None, ''),
-            (130, 'IDPM_SAVE', tr('Save') + '\tCtrl+S', wx.ITEM_NORMAL, 'OnPopUpMenu', tr('Saves the current document.')),
-            (140, 'IDPM_SAVEAS', tr('Save As...'), wx.ITEM_NORMAL, 'OnPopUpMenu', tr('Saves the current document to a new filename.')),
-            (150, 'IDPM_FILE_SAVE_ALL', tr('Save All'), wx.ITEM_NORMAL, 'OnPopUpMenu', tr('Saves all the documents.')),
+            (130, 'IDPM_SAVE', tr('Save') + '\tCtrl+S', wx.ITEM_NORMAL, 'OnPopUpMenu', tr('Saves an opened document using the same filename.')),
+            (140, 'IDPM_SAVEAS', tr('Save As...'), wx.ITEM_NORMAL, 'OnPopUpMenu', tr('Saves an opened document to a specified file name.')),
+            (150, 'IDPM_FILE_SAVE_ALL', tr('Save All'), wx.ITEM_NORMAL, 'OnPopUpMenu', tr('Saves all documents.')),
             (155, '', '-', wx.ITEM_SEPARATOR, None, ''),
-            (156, 'IDPM_FILE_COPY_FILENAME', tr('Copy Filename To Clipboard'), wx.ITEM_NORMAL, 'OnCopyFilenameToClipboard', tr('Copy the current document filename to clipboard.')),
+            (156, 'IDPM_FILE_COPY_FILENAME', tr('Copy Filename To Clipboard'), wx.ITEM_NORMAL, 'OnCopyFilenameToClipboard', tr('Copies the current document filename to clipboard.')),
             (160, '', '-', wx.ITEM_SEPARATOR, None, ''),
             (170, 'IDPM_OPEN_CMD_WINDOW', tr('Open Command Window Here'), wx.ITEM_NORMAL, 'OnOpenCmdWindow', ''),
             (180, 'IDPM_OPEN_CMD_EXPLORER', tr('Open Explorer Window Here'), wx.ITEM_NORMAL, 'OnOpenCmdExplorerWindow', ''),
@@ -102,7 +102,7 @@ def OnFileNew(win, event):
 Mixin.setMixin('mainframe', 'OnFileNew', OnFileNew)
 
 def OnFileOpen(win, event):
-    dlg = wx.FileDialog(win, tr("Choose A Document"), win.pref.last_dir, "", '|'.join(win.filewildchar), wx.OPEN|wx.HIDE_READONLY|wx.MULTIPLE)
+    dlg = wx.FileDialog(win, tr("Choose A File"), win.pref.last_dir, "", '|'.join(win.filewildchar), wx.OPEN|wx.HIDE_READONLY|wx.MULTIPLE)
     dlg.SetFilterIndex(getFilterIndex(win))
     if dlg.ShowModal() == wx.ID_OK:
         encoding = win.execplugin('getencoding', win, win)
@@ -226,7 +226,7 @@ def SaveFile(win, ctrl, issaveas=False):
     if issaveas or len(ctrl.filename)<=0:
         encoding = win.execplugin('getencoding', win, win)
         filename = get_suffix_filename(ctrl, ctrl.getFilename())
-        dlg = wx.FileDialog(win, tr("Save Document %s As...") % filename, win.pref.last_dir, filename, '|'.join(win.filewildchar), wx.SAVE|wx.OVERWRITE_PROMPT)
+        dlg = wx.FileDialog(win, tr("Save File %s As...") % filename, win.pref.last_dir, filename, '|'.join(win.filewildchar), wx.SAVE|wx.OVERWRITE_PROMPT)
         dlg.SetFilterIndex(getFilterIndex(win))
         if (dlg.ShowModal() == wx.ID_OK):
             filename = dlg.GetPath()
