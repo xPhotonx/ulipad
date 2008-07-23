@@ -80,6 +80,12 @@ def OnOpenRecentFiles(win, event=None):
     win.PopupMenu(menu)
 Mixin.setMixin('mainframe', 'OnOpenRecentFiles', OnOpenRecentFiles)
     
+def add_pref(preflist):
+    preflist.extend([
+        (tr('Document'), 200, 'num', 'recent_files_num', tr('Maximum number of recent files:'), None)
+    ])
+Mixin.setPlugin('preference', 'add_pref', add_pref)
+
 #def OnOpenRecentPaths(win, event=None):
 #    menu = wx.Menu()
 #    pref = win.pref
