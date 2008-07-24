@@ -985,7 +985,7 @@ def add_mainframe_menu(menulist):
             (130, 'wx.ID_BACKWARD', tr('Find Previous') + '\tE=Shift+F3', wx.ITEM_NORMAL, 'OnSearchFindPrev', tr('Find previous occurance of text.')),
             (140, 'wx.ID_FORWARD', tr('Find Next') + '\tE=F3', wx.ITEM_NORMAL, 'OnSearchFindNext', tr('Find next occurance of text.')),
             (150, '', '-', wx.ITEM_SEPARATOR, None, ''),
-            (160, 'IDM_SEARCH_GOTO_LINE', tr('Go To Line...') + '\tE=Ctrl+G', wx.ITEM_NORMAL, 'OnSearchGotoLine', tr('Goes to specified line in the active document.')),
+            (160, 'IDM_SEARCH_GOTO_LINE', tr('Go To Line...') + '\tE=Ctrl+G', wx.ITEM_NORMAL, 'OnSearchGotoLine', tr('Goes to specified line in the current document.')),
             (170, 'IDM_SEARCH_LAST_MODIFY', tr('Go To Last Modify') + '\tE=Ctrl+B', wx.ITEM_NORMAL, 'OnSearchLastModify', tr('Goes to the last modify position.')),
 
         ]),
@@ -1980,8 +1980,8 @@ def add_mainframe_menu(menulist):
         ]),
         ('IDM_DOCUMENT', #parent menu id
         [
-            (100, 'IDM_DOCUMENT_WORDWRAP', tr('Word Wrap'), wx.ITEM_NORMAL, 'OnDocumentWordWrap', tr('Toggles the word wrap feature of the active document.')),
-            (110, 'IDM_DOCUMENT_AUTOINDENT', tr('Autoindent'), wx.ITEM_CHECK, 'OnDocumentAutoIndent', tr('Toggles the auto-indent feature of the active document.')),
+            (100, 'IDM_DOCUMENT_WORDWRAP', tr('Word Wrap'), wx.ITEM_NORMAL, 'OnDocumentWordWrap', tr('Toggles the word wrap feature of the current document.')),
+            (110, 'IDM_DOCUMENT_AUTOINDENT', tr('Autoindent'), wx.ITEM_CHECK, 'OnDocumentAutoIndent', tr('Toggles the autoindent feature of the current document.')),
             (115, 'IDM_DOCUMENT_TABINDENT', tr('Switch To Space Indent'), wx.ITEM_NORMAL, 'OnDocumentTabIndent', tr('Uses tab as indent char or uses space as indent char.')),
         ]),
     ])
@@ -2022,7 +2022,7 @@ def add_tool_list(toollist, toolbaritems):
 
     #order, IDname, imagefile, short text, long text, func
     toolbaritems.update({
-        'wrap':(wx.ITEM_CHECK, 'IDM_DOCUMENT_WORDWRAP', 'images/wrap.gif', tr('Toggle Wrap Mode'), tr('Toggles the word wrap feature of the active document'), 'OnDocumentWordWrap'),
+        'wrap':(wx.ITEM_CHECK, 'IDM_DOCUMENT_WORDWRAP', 'images/wrap.gif', tr('Toggle Wrap Mode'), tr('Toggles the word wrap feature of the current document'), 'OnDocumentWordWrap'),
     })
 Mixin.setPlugin('mainframe', 'add_tool_list', add_tool_list)
 
@@ -2267,7 +2267,7 @@ def add_mainframe_menu(menulist):
         [
             (180, '', '-', wx.ITEM_SEPARATOR, None, ''),
             (190, 'IDM_SEARCH_BOOKMARK_TOGGLE', tr('Toggle Marker') + '\tE=F9', wx.ITEM_NORMAL, 'OnSearchBookmarkToggle', tr('Set and clear marker at current line.')),
-            (200, 'IDM_SEARCH_BOOKMARK_CLEARALL', tr('Clear All Markers') + '\tE=Ctrl+Shift+F9', wx.ITEM_NORMAL, 'OnSearchBookmarkClearAll', tr('Clears all markers from the active document.')),
+            (200, 'IDM_SEARCH_BOOKMARK_CLEARALL', tr('Clear All Markers') + '\tE=Ctrl+Shift+F9', wx.ITEM_NORMAL, 'OnSearchBookmarkClearAll', tr('Clears all markers from the current document.')),
             (210, 'IDM_SEARCH_BOOKMARK_PREVIOUS', tr('Previous Marker') + '\tE=Shift+F8', wx.ITEM_NORMAL, 'OnSearchBookmarkPrevious', tr('Goes to previous marker position.')),
             (220, 'IDM_SEARCH_BOOKMARK_NEXT', tr('Next Marker') + '\tE=F8', wx.ITEM_NORMAL, 'OnSearchBookmarkNext', tr('Goes to next marker position.')),
         ]),

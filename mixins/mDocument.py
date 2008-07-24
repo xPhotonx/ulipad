@@ -32,8 +32,8 @@ def add_mainframe_menu(menulist):
         ]),
         ('IDM_DOCUMENT', #parent menu id
         [
-            (100, 'IDM_DOCUMENT_WORDWRAP', tr('Word Wrap'), wx.ITEM_NORMAL, 'OnDocumentWordWrap', tr('Toggles the word wrap feature of the active document.')),
-            (110, 'IDM_DOCUMENT_AUTOINDENT', tr('Autoindent'), wx.ITEM_CHECK, 'OnDocumentAutoIndent', tr('Toggles the auto-indent feature of the active document.')),
+            (100, 'IDM_DOCUMENT_WORDWRAP', tr('Word Wrap'), wx.ITEM_NORMAL, 'OnDocumentWordWrap', tr('Toggles the word wrap feature of the current document.')),
+            (110, 'IDM_DOCUMENT_AUTOINDENT', tr('Autoindent'), wx.ITEM_CHECK, 'OnDocumentAutoIndent', tr('Toggles the autoindent feature of the current document.')),
             (115, 'IDM_DOCUMENT_TABINDENT', tr('Switch To Space Indent'), wx.ITEM_NORMAL, 'OnDocumentTabIndent', tr('Uses tab as indent char or uses space as indent char.')),
         ]),
     ])
@@ -74,7 +74,7 @@ def add_tool_list(toollist, toolbaritems):
 
     #order, IDname, imagefile, short text, long text, func
     toolbaritems.update({
-        'wrap':(wx.ITEM_CHECK, 'IDM_DOCUMENT_WORDWRAP', 'images/wrap.gif', tr('Toggle Wrap Mode'), tr('Toggles the word wrap feature of the active document'), 'OnDocumentWordWrap'),
+        'wrap':(wx.ITEM_CHECK, 'IDM_DOCUMENT_WORDWRAP', 'images/wrap.gif', tr('Toggle Wrap Mode'), tr('Toggles the word wrap feature of the current document'), 'OnDocumentWordWrap'),
     })
 Mixin.setPlugin('mainframe', 'add_tool_list', add_tool_list)
 
