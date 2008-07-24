@@ -82,12 +82,12 @@ class SyntaxCheckWindow(wx.Panel):
         self.mainframe = mainframe
 
         self.sizer = wx.BoxSizer(wx.VERTICAL)
-        self.chkPep8 = wx.CheckBox(self, -1, tr("Auto PEP8 style check with syntax check"))
+        self.chkPep8 = wx.CheckBox(self, -1, tr("Check syntax for PEP8-style at python program run"))
         self.chkPep8.SetValue(self.mainframe.pref.auto_py_pep8_check)
         self.sizer.Add(self.chkPep8, 0, wx.ALL, 2)
         self.list = EasyList.AutoWidthListCtrl(self, style=wx.LC_REPORT | wx.LC_SINGLE_SEL)
-        self.list.InsertColumn(0, tr("Filename"))
-        self.list.InsertColumn(1, tr("LineNo"))
+        self.list.InsertColumn(0, tr("File path"))
+        self.list.InsertColumn(1, tr("Line number"))
         self.list.InsertColumn(2, tr("Description"))
         self.list.SetColumnWidth(0, 400)
         self.list.SetColumnWidth(1, 60)
