@@ -1,7 +1,12 @@
-# (c) 2005 Divmod, Inc.  See LICENSE file for details
+# -*- test-case-name: pyflakes -*-
+# (c) 2005-2008 Divmod, Inc.
+# See LICENSE file for details
 
 import __builtin__
+from compiler import ast
+
 from pyflakes import messages
+
 
 class Binding(object):
     """
@@ -49,6 +54,8 @@ class Scope(dict):
 class ClassScope(Scope):
     pass
 
+
+
 class FunctionScope(Scope):
     """
     I represent a name scope for a function.
@@ -57,7 +64,9 @@ class FunctionScope(Scope):
     """
     def __init__(self):
         super(FunctionScope, self).__init__()
-        self.globals = set()
+        self.globals = {}
+
+
 
 class ModuleScope(Scope):
     pass
@@ -143,7 +152,8 @@ class Checker(object):
     SUBSCRIPT = AND = OR = TRYEXCEPT = RAISE = YIELD = DICT = LEFTSHIFT = \
     RIGHTSHIFT = KEYWORD = TRYFINALLY = WHILE = EXEC = MUL = DIV = POWER = \
     FLOORDIV = BITAND = BITOR = BITXOR = LISTCOMPFOR = LISTCOMPIF = \
-    AUGASSIGN = BACKQUOTE = UNARYADD = GENEXPR = GENEXPRFOR = GENEXPRIF = handleChildren
+    AUGASSIGN = BACKQUOTE = UNARYADD = GENEXPR = GENEXPRFOR = GENEXPRIF = \
+    IFEXP = handleChildren
 
     CONST = PASS = CONTINUE = BREAK = ELLIPSIS = ignore
 
@@ -179,12 +189,40 @@ class Checker(object):
             self.scope[value.name] = value
 
 
+    def WITH(self, node):
+        """
+        Handle C{with} by adding bindings for the name or tuple of names it
+        puts into scope and by continuing to process the suite within the
+        statement.
+        """
+        # for "with foo as bar", there is no AssName node for "bar".
+        # Instead, there is a Name node. If the "as" expression assigns to
+        # a tuple, it will instead be a AssTuple node of Name nodes.
+        #
+        # Of course these are assignments, not references, so we have to
+        # handle them as a special case here.
+
+        self.handleNode(node.expr)
+
+        if isinstance(node.vars, ast.AssTuple):
+            varNodes = node.vars.nodes
+        elif node.vars is not None:
+            varNodes = [node.vars]
+        else:
+            varNodes = []
+
+        for varNode in varNodes:
+            self.addBinding(varNode.lineno, Assignment(varNode.name, varNode))
+
+        self.handleChildren(node.body)
+
+
     def GLOBAL(self, node):
         """
         Keep track of globals declarations.
         """
         if isinstance(self.scope, FunctionScope):
-            self.scope.globals.update(node.names)
+            self.scope.globals.update(dict.fromkeys(node.names))
 
     def LISTCOMP(self, node):
         for qual in node.quals:
@@ -295,14 +333,14 @@ class Checker(object):
     def ASSNAME(self, node):
         if node.flags == 'OP_DELETE':
             if isinstance(self.scope, FunctionScope) and node.name in self.scope.globals:
-                self.scope.globals.remove(node.name)
+                del self.scope.globals[node.name]
             else:
                 self.addBinding(node.lineno, UnBinding(node.name, node))
         else:
             # if the name hasn't already been defined in the current scope
             if isinstance(self.scope, FunctionScope) and node.name not in self.scope:
                 # for each function or module scope above us
-                for scope in reversed(self.scopeStack[:-1]):
+                for scope in self.scopeStack[:-1]:
                     if not isinstance(scope, (FunctionScope, ModuleScope)):
                         continue
                     # if the name was defined in that scope, and the name has
