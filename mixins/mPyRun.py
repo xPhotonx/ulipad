@@ -235,7 +235,7 @@ def OnPythonDoctests(win, event):
         else:
             return
     
-    path = os.path.normcase(os.path.join(Globals.workpath, 'packages/cmd_doctest.py'))
+    path = os.path.normpath(os.path.join(Globals.workpath, 'packages/cmd_doctest.py'))
     filename = Globals.mainframe.editctrl.getCurDoc().filename
     interpreter = _get_python_exe(win)
     cmd = '%s %s %s' % (interpreter, path, filename)

@@ -103,7 +103,7 @@ def encode_string(string, encoding=None):
 def get_app_filename(mainframe, filename):
     """concatenate app.workpath and filename
     """
-    return decode_string(os.path.normcase(os.path.join(mainframe.app.workpath, filename)), defaultfilesystemencoding)
+    return decode_string(os.path.normpath(os.path.join(mainframe.app.workpath, filename)), defaultfilesystemencoding)
 
 def showerror(*args):
     """show error message dialog
@@ -200,7 +200,7 @@ def uni_prt(a, encoding=None):
 def getpngimage(filename):
     if isinstance(filename, (str, unicode)):
         if not os.path.exists(filename) and not os.path.isabs(filename):
-            filename = os.path.normcase(os.path.join(Globals.workpath, filename))
+            filename = os.path.normpath(os.path.join(Globals.workpath, filename))
         path, fname = os.path.split(filename)
         ini = get_config_file_obj()
         
@@ -239,7 +239,7 @@ def getProjectName(filename):
     path = getProjectHome(filename)
     #found _project
     from modules import dict4ini
-    ini = dict4ini.DictIni(os.path.normcase(os.path.join(path, '_project')))
+    ini = dict4ini.DictIni(os.path.normpath(os.path.join(path, '_project')))
     name = ini.default.get('projectname', [])
     if not isinstance(name, list):
         name = [name]
@@ -264,7 +264,7 @@ def getCurrentPathProjectHome(filename):
         path = filename
     if not os.path.exists(os.path.join(path, '_project')):
         path = ''
-    return os.path.normcase(path)
+    return os.path.normpath(path)
 
 def getProjectHome(filename):
     if not filename:
@@ -278,7 +278,7 @@ def getProjectHome(filename):
         if newpath == path: #not parent path, so not found _project
             return ''
         path = newpath
-    return os.path.normcase(path)
+    return os.path.normpath(path)
 
 def getProjectFile(filename):
     if not filename:
@@ -292,13 +292,13 @@ def getProjectFile(filename):
         if newpath == path: #not parent path, so not found _project
             return ''
         path = newpath
-    return os.path.normcase(os.path.join(path, '_project'))
+    return os.path.normpath(os.path.join(path, '_project'))
 
 def getConfigPathFile(f, prefix=''):
-    filename = os.path.normcase(os.path.join(Globals.workpath, prefix, f))
+    filename = os.path.normpath(os.path.join(Globals.workpath, prefix, f))
     if os.path.exists(filename):
         return filename
-    filename = os.path.normcase(os.path.join(Globals.confpath, prefix, f))
+    filename = os.path.normpath(os.path.join(Globals.confpath, prefix, f))
     if os.path.exists(filename):
         return filename
     return ''
@@ -310,7 +310,7 @@ def get_config_file():
     if not _config_file:
         _config_file = getConfigPathFile('config.ini')
         if not _config_file:
-            _config_file = os.path.normcase(os.path.join(Globals.workpath, 'config.ini'))
+            _config_file = os.path.normpath(os.path.join(Globals.workpath, 'config.ini'))
             
     return _config_file
 

@@ -11,6 +11,6 @@ for i in file(f):
         if flag.lower() == 'f':
             flist.write(path + '\n')
         else:
-            files = glob.glob(os.path.normcase(os.path.join(path, '*.py')))
+            files = glob.glob(os.path.normpath(os.path.join(path, '*.py')))
             flist.write('\n'.join(files) + '\n')
 flist.close()
