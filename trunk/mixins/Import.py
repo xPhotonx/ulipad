@@ -4327,7 +4327,7 @@ def OnPythonDoctests(win, event):
         else:
             return
 
-    path = os.path.normcase(os.path.join(Globals.workpath, 'packages/cmd_doctest.py'))
+    path = os.path.normpath(os.path.join(Globals.workpath, 'packages/cmd_doctest.py'))
     filename = Globals.mainframe.editctrl.getCurDoc().filename
     interpreter = _get_python_exe(win)
     cmd = '%s %s %s' % (interpreter, path, filename)
@@ -8332,7 +8332,7 @@ def OnPythonDebug(win, event):
         common.showerror(win, tr("You should install wxPython package to run the Debugger."))
         return
 
-    cmd = os.path.normcase('"%s" "%s/packages/winpdb/_winpdb.py" -t -c "%s"' % (interpreter, win.app.workpath, win.document.filename))
+    cmd = os.path.normpath('"%s" "%s/packages/winpdb/_winpdb.py" -t -c "%s"' % (interpreter, win.app.workpath, win.document.filename))
     wx.Execute(cmd)
 Mixin.setMixin('mainframe', 'OnPythonDebug', OnPythonDebug)
 

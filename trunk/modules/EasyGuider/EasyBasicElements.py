@@ -445,7 +445,7 @@ class EasyOpenFileElement(IElement):
         self.obj.SetValue(value)
 
     def getValue(self):
-        return os.path.normcase(self.obj.GetValue())
+        return os.path.normpath(self.obj.GetValue())
 
     def getAlignFlag(self, flag):
         flag |= wx.EXPAND
@@ -480,7 +480,7 @@ class EasySaveFileElement(IElement):
         self.obj.SetValue(value)
 
     def getValue(self):
-        return os.path.normcase(self.obj.GetValue())
+        return os.path.normpath(self.obj.GetValue())
 
     def getAlignFlag(self, flag):
         flag |= wx.EXPAND
@@ -515,7 +515,7 @@ class EasyDirElement(IElement):
         self.obj.SetValue(value)
 
     def getValue(self):
-        return os.path.normcase(self.obj.GetValue())
+        return os.path.normpath(self.obj.GetValue())
 
     def getAlignFlag(self, flag):
         flag |= wx.EXPAND
