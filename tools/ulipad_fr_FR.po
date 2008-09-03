@@ -6,7 +6,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: UliPad\n"
 "POT-Creation-Date: Tue Jun 24 22:06:24 2008\n"
-"PO-Revision-Date: 2008-07-28 22:19+0800\n"
+"PO-Revision-Date: 2008-09-03 09:22+0800\n"
 "Last-Translator: limodou <limoou@gmail.com>\n"
 "Language-Team: Gaël Barrachon <gael.barrachon@gmail.com>\n"
 "MIME-Version: 1.0\n"
@@ -72,48 +72,48 @@ msgstr "Coller avant"
 
 #: ..\mixins\CodeSnippet.py:230
 msgid "Expand All"
-msgstr ""
+msgstr "Déplier tout"
 
 #: ..\mixins\CodeSnippet.py:231
 msgid "Collapse All"
-msgstr ""
+msgstr "Plier tout"
 
 #: ..\mixins\CodeSnippet.py:233
 msgid "New Snippet File..."
-msgstr ""
+msgstr "Nouveau fichier Snippet..."
 
 #: ..\mixins\CodeSnippet.py:234
 msgid "Open Snippet File..."
-msgstr ""
+msgstr "Ouvrir un fichier Snippet..."
 
 #: ..\mixins\CodeSnippet.py:235
 msgid "Recent Snippet Files"
-msgstr ""
+msgstr "Fichiers Snippet récents"
 
 #: ..\mixins\CodeSnippet.py:236
 msgid "Save Snippet File"
-msgstr ""
+msgstr "Enregistrer fichier Snippet"
 
 #: ..\mixins\CodeSnippet.py:237
 msgid "Save All Snippet Files"
-msgstr ""
+msgstr "Enregistrer tous les fichiers Snippet"
 
 #: ..\mixins\CodeSnippet.py:238
 #: ..\mixins\CodeSnippet.py:718
 msgid "Save Snippet File As..."
-msgstr ""
+msgstr "Enregistrer fichier Snippet sous..."
 
 #: ..\mixins\CodeSnippet.py:239
 msgid "Close Snippet File"
-msgstr ""
+msgstr "Fermer fichier Snippet"
 
 #: ..\mixins\CodeSnippet.py:241
 msgid "Delete Folder or Node"
-msgstr ""
+msgstr "Supprimer dossier ou noeud"
 
 #: ..\mixins\CodeSnippet.py:242
 msgid "Edit Caption"
-msgstr ""
+msgstr "Renommer"
 
 #: ..\mixins\CodeSnippet.py:244
 #: ..\mixins\Import.py:55
@@ -140,7 +140,7 @@ msgstr "Préférences..."
 #: ..\mixins\mShellRun.py:44
 #: ..\mixins\mShellRun.py:72
 msgid "(Empty)"
-msgstr ""
+msgstr "(Vide)"
 
 #: ..\mixins\CodeSnippet.py:264
 msgid "Save"
@@ -174,53 +174,53 @@ msgstr ""
 
 #: ..\mixins\CodeSnippet.py:469
 msgid "Code Template"
-msgstr ""
+msgstr "Modèle de code"
 
 #: ..\mixins\CodeSnippet.py:511
 #: ..\mixins\CodeSnippet.py:520
 msgid "Add Sub Folder"
-msgstr ""
+msgstr "Ajouter un sous-dossier"
 
 #: ..\mixins\CodeSnippet.py:513
 #: ..\mixins\CodeSnippet.py:524
 msgid "Add Sub Node"
-msgstr ""
+msgstr "Ajouter un sous-noeud"
 
 #: ..\mixins\CodeSnippet.py:521
 #: ..\mixins\CodeSnippet.py:533
 msgid "Add Folder Before"
-msgstr ""
+msgstr "Ajouter un dossier avant"
 
 #: ..\mixins\CodeSnippet.py:522
 #: ..\mixins\CodeSnippet.py:534
 msgid "Add Folder After"
-msgstr ""
+msgstr "Ajouter un dossier après"
 
 #: ..\mixins\CodeSnippet.py:525
 #: ..\mixins\CodeSnippet.py:536
 msgid "Add Node Before"
-msgstr ""
+msgstr "Ajouter un noeud avant"
 
 #: ..\mixins\CodeSnippet.py:526
 #: ..\mixins\CodeSnippet.py:537
 msgid "Add Node After"
-msgstr ""
+msgstr "Ajouter un noeud après"
 
 #: ..\mixins\CodeSnippet.py:729
 msgid "The file %s has been existed, so please rename it."
-msgstr ""
+msgstr "Le fichier %s a déjà existé, veuillez le renommer."
 
 #: ..\mixins\CodeSnippet.py:736
 msgid "New Snippet File"
-msgstr ""
+msgstr "Nouveau fichier snippet"
 
 #: ..\mixins\CodeSnippet.py:761
 msgid "Open Snippet File"
-msgstr ""
+msgstr "Ouvrir un fichier snippet"
 
 #: ..\mixins\CodeSnippet.py:786
 msgid "Some changes have been made to the Code Snippets Window. Do you want to save them?"
-msgstr ""
+msgstr "Des modifications ont été apportées à la fenêtre Code Snippets. Voulez-vous les sauvegarder ?"
 
 #: ..\mixins\CodeSnippet.py:787
 #: ..\mixins\CodeSnippet.py:982
@@ -229,21 +229,21 @@ msgstr ""
 
 #: ..\mixins\CodeSnippet.py:871
 msgid "There are some errors as openning the Snippet file"
-msgstr ""
+msgstr "Des erreurs ont été rencontrées à l'ouverture du fichier Snippet"
 
 #: ..\mixins\CodeSnippet.py:902
 #: ..\mixins\Import.py:8702
 #: ..\mixins\mCodeSnippet.py:187
 msgid "Snippet"
-msgstr ""
+msgstr "Snippet"
 
 #: ..\mixins\CodeSnippet.py:974
 msgid "There is something wrong as saving the snippet file."
-msgstr ""
+msgstr "Il y a eu des erreurs lors de la sauvegarde du fichier Snippet."
 
 #: ..\mixins\CodeSnippet.py:982
 msgid "The snippet has been modified, do you want to save it ?"
-msgstr ""
+msgstr "Le fichier Snippet a été modifié. Voulez-vous le sauvegarder ?"
 
 #: ..\mixins\CodeSnippet.py:1088
 #: ..\mixins\CodeSnippet.py:1094
@@ -617,7 +617,7 @@ msgstr ""
 #: ..\mixins\mEditorCtrl.py:37
 #: ..\mixins\mEditorCtrl.py:50
 msgid "Close"
-msgstr ""
+msgstr "Fermer"
 
 #: ..\mixins\FindReplace.py:282
 #: ..\mixins\FindReplace.py:434
@@ -972,7 +972,7 @@ msgstr ""
 #: ..\mixins\FtpClass.py:820
 #: ..\mixins\FtpClass.py:867
 msgid "All file (*.*)|*.*"
-msgstr ""
+msgstr "Tous les fichiers (*.*)|*.*"
 
 #: ..\mixins\FtpClass.py:820
 #: ..\mixins\FtpClass.py:867
@@ -1115,7 +1115,7 @@ msgstr "Document"
 #: ..\mixins\mEditorCtrl.py:34
 #: ..\mixins\mToolbar.py:48
 msgid "Creates a new document."
-msgstr ""
+msgstr "Créer un nouveau document."
 
 #: ..\mixins\Import.py:123
 #: ..\mixins\Import.py:124
@@ -1129,7 +1129,7 @@ msgstr "Nouveau"
 #: ..\mixins\mEditorCtrl.py:35
 #: ..\mixins\mToolbar.py:49
 msgid "Opens an existing document."
-msgstr ""
+msgstr "Ouvre un document existant."
 
 #: ..\mixins\Import.py:125
 #: ..\mixins\mEditorCtrl.py:35
@@ -1139,7 +1139,7 @@ msgstr "Ouvrir un fichier..."
 #: ..\mixins\Import.py:126
 #: ..\mixins\mEditorCtrl.py:36
 msgid "Reopen"
-msgstr ""
+msgstr "Ouvrir de nouveau"
 
 #: ..\mixins\Import.py:126
 #: ..\mixins\mEditorCtrl.py:36
@@ -1151,21 +1151,21 @@ msgstr ""
 #: ..\mixins\mEditorCtrl.py:37
 #: ..\mixins\mEditorCtrl.py:50
 msgid "Closes an opened document."
-msgstr ""
+msgstr "Ferme un document ouvert."
 
 #: ..\mixins\Import.py:128
 #: ..\mixins\Import.py:141
 #: ..\mixins\mEditorCtrl.py:38
 #: ..\mixins\mEditorCtrl.py:51
 msgid "Close All"
-msgstr ""
+msgstr "Fermer tout"
 
 #: ..\mixins\Import.py:128
 #: ..\mixins\Import.py:141
 #: ..\mixins\mEditorCtrl.py:38
 #: ..\mixins\mEditorCtrl.py:51
 msgid "Closes all document windows."
-msgstr ""
+msgstr "Ferme tous les documents ouverts."
 
 #: ..\mixins\Import.py:130
 #: ..\mixins\Import.py:143
@@ -1181,7 +1181,7 @@ msgstr ""
 #: ..\mixins\mEditorCtrl.py:40
 #: ..\mixins\mEditorCtrl.py:53
 msgid "Save File..."
-msgstr ""
+msgstr "Enregistrer le fichier..."
 
 #: ..\mixins\Import.py:131
 #: ..\mixins\Import.py:144
@@ -1190,14 +1190,14 @@ msgstr ""
 #: ..\mixins\mEditorCtrl.py:54
 #: ..\mixins\mEditorCtrl.py:239
 msgid "Save As..."
-msgstr ""
+msgstr "Enregistrer sous..."
 
 #: ..\mixins\Import.py:131
 #: ..\mixins\Import.py:144
 #: ..\mixins\mEditorCtrl.py:41
 #: ..\mixins\mEditorCtrl.py:54
 msgid "Saves an opened document to a specified filename."
-msgstr ""
+msgstr "Enregistre un document ouvert sous ou nouveau nom."
 
 #: ..\mixins\Import.py:132
 #: ..\mixins\Import.py:145
@@ -1206,7 +1206,7 @@ msgstr ""
 #: ..\mixins\mEditorCtrl.py:55
 #: ..\mixins\mToolbar.py:51
 msgid "Saves all documents."
-msgstr ""
+msgstr "Enregistre tous les documents."
 
 #: ..\mixins\Import.py:147
 #: ..\mixins\mEditorCtrl.py:57
@@ -1225,7 +1225,7 @@ msgstr ""
 #: ..\mixins\mFtp.py:122
 #: ..\mixins\mSession.py:124
 msgid "Open"
-msgstr ""
+msgstr "Ouvrir"
 
 #: ..\mixins\Import.py:235
 #: ..\mixins\mEditorCtrl.py:145
@@ -1247,7 +1247,7 @@ msgstr ""
 #: ..\mixins\Import.py:277
 #: ..\mixins\mEditorCtrl.py:187
 msgid "Close File"
-msgstr ""
+msgstr "Fermer le fichier"
 
 #: ..\mixins\Import.py:319
 #: ..\mixins\mEditorCtrl.py:229
@@ -1285,7 +1285,7 @@ msgstr ""
 #: ..\mixins\mComEdit.py:90
 #: ..\mixins\mToolbar.py:55
 msgid "Undo"
-msgstr ""
+msgstr "Annuler"
 
 #: ..\mixins\Import.py:487
 #: ..\mixins\Import.py:545
@@ -1303,7 +1303,7 @@ msgstr ""
 #: ..\mixins\mComEdit.py:91
 #: ..\mixins\mToolbar.py:56
 msgid "Redo"
-msgstr ""
+msgstr "Refaire"
 
 #: ..\mixins\Import.py:488
 #: ..\mixins\Import.py:546
@@ -1344,35 +1344,35 @@ msgstr ""
 #: ..\mixins\mComEdit.py:39
 #: ..\mixins\mComEdit.py:97
 msgid "Selection"
-msgstr ""
+msgstr "Selection"
 
 #: ..\mixins\Import.py:499
 #: ..\mixins\Import.py:557
 #: ..\mixins\mComEdit.py:44
 #: ..\mixins\mComEdit.py:102
 msgid "Select Word"
-msgstr ""
+msgstr "Sélectionner mot"
 
 #: ..\mixins\Import.py:499
 #: ..\mixins\Import.py:557
 #: ..\mixins\mComEdit.py:44
 #: ..\mixins\mComEdit.py:102
 msgid "Selects current word."
-msgstr ""
+msgstr "Sélectionne le mot courant."
 
 #: ..\mixins\Import.py:500
 #: ..\mixins\Import.py:558
 #: ..\mixins\mComEdit.py:45
 #: ..\mixins\mComEdit.py:103
 msgid "Select Word Extend"
-msgstr ""
+msgstr "Sélectionner mot étendu"
 
 #: ..\mixins\Import.py:500
 #: ..\mixins\Import.py:558
 #: ..\mixins\mComEdit.py:45
 #: ..\mixins\mComEdit.py:103
 msgid "Selects current word include \".\"."
-msgstr ""
+msgstr "Sélectionne le mot courant incluant \".\"."
 
 #: ..\mixins\Import.py:501
 #: ..\mixins\Import.py:559
@@ -1407,28 +1407,28 @@ msgstr ""
 #: ..\mixins\mComEdit.py:48
 #: ..\mixins\mComEdit.py:106
 msgid "Enlarge Selection"
-msgstr ""
+msgstr "Agrandir la sélection"
 
 #: ..\mixins\Import.py:503
 #: ..\mixins\Import.py:561
 #: ..\mixins\mComEdit.py:48
 #: ..\mixins\mComEdit.py:106
 msgid "Enlarges selection."
-msgstr ""
+msgstr "Agrandit la sélection"
 
 #: ..\mixins\Import.py:504
 #: ..\mixins\Import.py:562
 #: ..\mixins\mComEdit.py:49
 #: ..\mixins\mComEdit.py:107
 msgid "Select Line"
-msgstr ""
+msgstr "Sélectionner la ligne"
 
 #: ..\mixins\Import.py:504
 #: ..\mixins\Import.py:562
 #: ..\mixins\mComEdit.py:49
 #: ..\mixins\mComEdit.py:107
 msgid "Select current phrase."
-msgstr ""
+msgstr "Sélectionne la ligne courante."
 
 #: ..\mixins\Import.py:505
 #: ..\mixins\Import.py:563
@@ -1437,14 +1437,14 @@ msgstr ""
 #: ..\mixins\mComEdit.py:50
 #: ..\mixins\mComEdit.py:108
 msgid "Select All"
-msgstr ""
+msgstr "Sélectionner tout"
 
 #: ..\mixins\Import.py:505
 #: ..\mixins\Import.py:563
 #: ..\mixins\mComEdit.py:50
 #: ..\mixins\mComEdit.py:108
 msgid "Selects the entire document."
-msgstr ""
+msgstr "Sélectionne tout le document."
 
 #: ..\mixins\Import.py:506
 #: ..\mixins\Import.py:564
@@ -1473,12 +1473,12 @@ msgstr ""
 #: ..\mixins\Import.py:564
 #: ..\mixins\mComEdit.py:109
 msgid "Select Begin"
-msgstr ""
+msgstr "Début de sélection"
 
 #: ..\mixins\Import.py:565
 #: ..\mixins\mComEdit.py:110
 msgid "Select End"
-msgstr ""
+msgstr "Fin de sélection"
 
 #: ..\mixins\Import.py:860
 #: ..\mixins\Import.py:5150
@@ -1487,17 +1487,17 @@ msgstr ""
 #: ..\mixins\mFtp.py:123
 #: ..\mixins\mToolbar.py:48
 msgid "New File"
-msgstr ""
+msgstr "Nouveau fichier"
 
 #: ..\mixins\Import.py:861
 #: ..\mixins\mToolbar.py:49
 msgid "Open File"
-msgstr ""
+msgstr "Ouvrir un fichier"
 
 #: ..\mixins\Import.py:863
 #: ..\mixins\mToolbar.py:51
 msgid "Save All Files"
-msgstr ""
+msgstr "Enregistrer tous les fichiers"
 
 #: ..\mixins\Import.py:867
 #: ..\mixins\mToolbar.py:55
@@ -1513,7 +1513,7 @@ msgstr ""
 #: ..\mixins\PrefDialog.py:124
 #: ..\mixins\mToolbar.py:57
 msgid "Preferences"
-msgstr ""
+msgstr "Préférences"
 
 #: ..\mixins\Import.py:869
 #: ..\mixins\mToolbar.py:57
@@ -1523,7 +1523,7 @@ msgstr ""
 #: ..\mixins\Import.py:905
 #: ..\mixins\mRecentFile.py:33
 msgid "Open Recent Files"
-msgstr ""
+msgstr "Fichier récents"
 
 #: ..\mixins\Import.py:972
 #: ..\mixins\mSearch.py:32
@@ -1634,7 +1634,7 @@ msgstr ""
 #: ..\mixins\mPosition.py:35
 #: ..\mixins\mPosition.py:41
 msgid "Line: %d"
-msgstr ""
+msgstr "Ligne : %d"
 
 #: ..\mixins\Import.py:1123
 #: ..\mixins\Import.py:1129
@@ -1643,7 +1643,7 @@ msgstr ""
 #: ..\mixins\mPosition.py:36
 #: ..\mixins\mPosition.py:42
 msgid "Column: %d"
-msgstr ""
+msgstr "Colonne : %d"
 
 #: ..\mixins\Import.py:1146
 #: ..\mixins\mLineending.py:28
@@ -2224,24 +2224,24 @@ msgstr ""
 #: ..\mixins\Import.py:2607
 #: ..\mixins\mSession.py:107
 msgid "Open Session"
-msgstr ""
+msgstr "Ouvrir une session"
 
 #: ..\mixins\Import.py:2607
 #: ..\mixins\mSession.py:107
 msgid "Opens a session."
-msgstr ""
+msgstr "Ouvre une session."
 
 #: ..\mixins\Import.py:2608
 #: ..\mixins\Import.py:2646
 #: ..\mixins\mSession.py:108
 #: ..\mixins\mSession.py:146
 msgid "Save Session"
-msgstr ""
+msgstr "Enregistrer la session"
 
 #: ..\mixins\Import.py:2608
 #: ..\mixins\mSession.py:108
 msgid "Saves the session."
-msgstr ""
+msgstr "Enregistre la session."
 
 #: ..\mixins\Import.py:2609
 #: ..\mixins\mSession.py:109
@@ -2870,7 +2870,7 @@ msgstr ""
 #: ..\mixins\mPrint.py:41
 #: ..\mixins\mPrint.py:59
 msgid "Print"
-msgstr ""
+msgstr "Imprimer"
 
 #: ..\mixins\Import.py:4764
 #: ..\mixins\mPrint.py:37
@@ -3369,7 +3369,7 @@ msgstr ""
 #: ..\mixins\mDirBrowser.py:56
 #: ..\mixins\mDirBrowser.py:64
 msgid "Directory Browser"
-msgstr ""
+msgstr "Explorateur de répertoires"
 
 #: ..\mixins\Import.py:6143
 #: ..\mixins\mDirBrowser.py:126
@@ -4446,7 +4446,7 @@ msgstr ""
 
 #: ..\mixins\ScriptDialog.py:234
 msgid "Python file (*.py)|*.py"
-msgstr ""
+msgstr "Fichier python (*.py)|*.py"
 
 #: ..\mixins\ScriptDialog.py:263
 msgid "Unicode convert error"
@@ -4462,11 +4462,11 @@ msgstr ""
 
 #: ..\mixins\SearchWin.py:54
 msgid "Function"
-msgstr ""
+msgstr "Fonction"
 
 #: ..\mixins\SearchWin.py:55
 msgid "ShortCuts"
-msgstr ""
+msgstr "Raccourcis"
 
 #: ..\mixins\SearchWin.py:56
 msgid "Impact"
@@ -4474,7 +4474,7 @@ msgstr ""
 
 #: ..\mixins\ShareWindow.py:38
 msgid "Add ..."
-msgstr ""
+msgstr "Ajouter..."
 
 #: ..\mixins\ShareWindow.py:285
 msgid "Do you realy want to delete current item?"
@@ -4506,7 +4506,7 @@ msgstr ""
 
 #: ..\mixins\ShellDialog.py:234
 msgid "All Files (*.*)|*.*"
-msgstr ""
+msgstr "Toues les fichiers (*.*)|*.*"
 
 #: ..\mixins\ShellWindow.py:44
 msgid "Deletes text from the shell window and moves it to the clipboard"
@@ -4530,7 +4530,7 @@ msgstr ""
 
 #: ..\mixins\ShellWindow.py:48
 msgid "Paste and Run"
-msgstr ""
+msgstr "Coller et exécuter"
 
 #: ..\mixins\ShellWindow.py:48
 msgid "Pastes text from the clipboard into the shell window and also run it"
@@ -4550,11 +4550,11 @@ msgstr ""
 
 #: ..\mixins\TodoWindow.py:58
 msgid "Important"
-msgstr ""
+msgstr "Important"
 
 #: ..\mixins\TodoWindow.py:59
 msgid "Line"
-msgstr ""
+msgstr "Ligne"
 
 #: ..\mixins\TodoWindow.py:60
 msgid "Due date"
@@ -4562,9 +4562,9 @@ msgstr ""
 
 #: ..\modules\common.py:518
 msgid "Line ending: "
-msgstr ""
+msgstr "Fin de ligne :"
 
 #: ..\modules\common.py:521
 msgid "Encoding: "
-msgstr ""
+msgstr "Format :"
 

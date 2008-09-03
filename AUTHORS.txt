@@ -1,4 +1,4 @@
-This is a contributing authors list. 
+﻿This is a contributing authors list. 
 
 Developer:
 
@@ -28,5 +28,6 @@ shmakes <shmakes@gmail.com>                     Good advices and code patch
 LP <liupengf12@gmail.com>                       Report bugs and commit Patch
 Kelie Feng                                      Create a great video about UliPad and put in ShowMeDo site, and other helps
 Chester Dunn <wxPythoner@gmail.com>             Report bugs and advices
-programmer.py <pyogrammer.py@gmail.com>		    Provide patch
+programmer.py <pyogrammer.py@gmail.com>		Provide patch
 Bob Gao <lulihummel@gmail.com>                  Provide patch
+Gaël Barrachon <gael.barrachon@gmail.com>	Commit French translation
