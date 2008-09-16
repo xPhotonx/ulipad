@@ -31,3 +31,4 @@ Chester Dunn <wxPythoner@gmail.com>             Report bugs and advices
 programmer.py <pyogrammer.py@gmail.com>		Provide patch
 Bob Gao <lulihummel@gmail.com>                  Provide patch
 Gaël Barrachon <gael.barrachon@gmail.com>	Commit French translation
+Jose Jachuf <jjachuf@gmail.com>			Fix Spanish translation
