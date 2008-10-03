@@ -49,11 +49,13 @@ Mixin.setMixin('dirbrowser', 'project_names', project_names)
 def set_project(ini, projectnames):
     if 'web2py' in projectnames:
         common.set_acp_highlight(ini, '.html', ['html.acp', 'web2py_html.acp'], 'web2pyview')
+        common.set_acp_highlight(ini, '.py', ['web2py_py.acp'], 'python')
 Mixin.setPlugin('dirbrowser', 'set_project', set_project)
 
 def remove_project(ini, projectnames):
     if 'web2py' in projectnames:
         common.remove_acp_highlight(ini, '.html', ['html.acp', 'web2py_html.acp'], 'web2pyview')
+        common.remove_acp_highlight(ini, '.py', ['web2py_py.acp'], 'python')
 Mixin.setPlugin('dirbrowser', 'remove_project', remove_project)
 
 def OnWeb2pyShell(dirwin, event):

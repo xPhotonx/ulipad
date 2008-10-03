@@ -6399,7 +6399,6 @@ def get_acp_files(win):
 
 def call_lexer(win, oldfilename, filename, language):
     i = get_inputassistant_obj(win)
-    i.install_acp(win, win.languagename)
 
     files = []
     objs = i.get_acp(win.languagename)
@@ -6425,6 +6424,8 @@ def call_lexer(win, oldfilename, filename, language):
             for acpf in afiles:
                 if os.path.basename(acpf) == f:
                     win.custom_assistant.append(i.get_assistant(acpf))
+
+    i.install_acp(win, win.languagename)
 Mixin.setPlugin('editor', 'call_lexer', call_lexer)
 
 def add_mainframe_menu(menulist):
