@@ -289,11 +289,12 @@ class FindPanel(wx.Panel):
         box2.add(box)
 
         #add find widgets
+
         box.add(ui.ComboBox, name='findtext').bind('enter', self.OnNext1)\
             .bind(wx.EVT_KEY_DOWN, self.OnKeyDown)
         btn = FlatButtons.FlatBitmapButton(self, -1, common.getpngimage('images/next.gif'))
         btn.SetToolTip(wx.ToolTip(tr("Next")))
-        box.add(btn).bind('click', self.OnNext)
+        box.add(btn, name='btn_next').bind('click', self.OnNext)
         btn = FlatButtons.FlatBitmapButton(self, -1, common.getpngimage('images/prev.gif'))
         btn.SetToolTip(wx.ToolTip(tr("Prev")))
         box.add(btn).bind('click', self.OnPrev)
@@ -307,7 +308,33 @@ class FindPanel(wx.Panel):
             self._create_replace()
             self.btnToggleReplace.SetToolTip(wx.ToolTip(tr("Hide Replace Pane")))
             
+        # last_controls tracks the control / controls that are last in
+        # navigation.
+        self.last_controls = []
+        self._navigation_hack()
 #        self.SetBackgroundColour('#FFFFE1')
+
+    def _navigation_hack(self):
+        'Provide a hack for keyboard navigation.'
+        def fix_focus(event):
+            self.findtext.SetFocus()
+            event.Skip()
+
+        # Unbind because _navigation_hack may be called again from reset.
+        for ctrl in self.last_controls:
+            ctrl.Unbind(wx.EVT_SET_FOCUS)
+            ctrl.Unbind(wx.EVT_KILL_FOCUS)
+
+        # The only time navigation is an issue is when the focus is on the last
+        # control in the panel.
+        if self.is_replace_show():
+            self.last_controls = [self.rdoSelection, self.rdoWhole]
+        else:
+            self.last_controls = [self.chkWrap]
+
+        # When the last control loses focus navigate accordingly.
+        for ctrl in self.last_controls:
+            ctrl.Bind(wx.EVT_KILL_FOCUS, lambda e: fix_focus(e))
 
     def _create_replace(self):
         if 'replace_sizer' not in self.sizer:
@@ -317,12 +344,11 @@ class FindPanel(wx.Panel):
 
             box.add(ui.ComboBox, name='replacetext').bind('enter', self.OnReplace1)\
                 .bind(wx.EVT_KEY_DOWN, self.OnKeyDown)
-            box.add(ui.Button(tr('Replace'))).bind('click', self.OnReplace)
+            box.add(ui.Button(tr('Replace')), name='replace_btn').bind('click', self.OnReplace)
             box.add(ui.Button(tr('Replace all'))).bind('click', self.OnReplaceAll)
             box.add(ui.Button(tr('Count'))).bind('click', self.OnCount)
             box.add(ui.Radio(False, tr('Whole file'), style=wx.RB_GROUP), name='rdoWhole')
             box.add(ui.Radio(False, tr('Selected text')), name='rdoSelection')
-
             self.parent.sizer.layout()
 
     def is_replace_show(self):
@@ -357,6 +383,7 @@ class FindPanel(wx.Panel):
 
         self.setValue()
         self.findtext.SetFocus()
+        self._navigation_hack()
 
     re_end = re.compile(r'\r\n|\r|\n', re.DOTALL)
     def _reset_replace(self):
@@ -383,6 +410,16 @@ class FindPanel(wx.Panel):
         key = event.GetKeyCode()
         if key == wx.WXK_ESCAPE:
             self.OnClose(None)
+        elif key == wx.WXK_TAB:
+            # Tab is pressed, set the focus appropriately.  This handles the
+            # key events from the combo controls.
+            if event.GetEventObject() == self.findtext:
+                if self.is_replace_show():
+                    self.replacetext.SetFocus()
+                else:
+                    self.btn_next.SetFocus()
+            elif event.GetEventObject() == self.replacetext:
+                self.replace_btn.SetFocus()
         else:
             event.Skip()
 

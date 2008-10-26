@@ -5,18 +5,22 @@ Developer:
 limodou <limodou@gmail.com>                     Main programmer
 ygao <ygao2004@gmail.com>                       Developer joined at 2007/01
 
-Also thanks a lot:
+Great thanks to:
 
 Claudio Grondi <claudio.grondi@freenet.de>      Give a good name 'UliPad'. and big help on Column Mode, Ruler functionality
 Dick Moores <rdmoores@gmail.com>                Proposal many suggestions
 Mario Lacunza <mlacunza@gmail.com>              Commit Spanish translation file and proposal many suggestions
 Ye Naiquan <Naiquan.Ye@marintek.sintef.no>      Commit Patch
+Kelie Feng                                      Create a great video about UliPad and put in ShowMeDo site, and other helps
+programmer.py <pyogrammer.py@gmail.com>		Provide patches, and many suggestions
+
+Also thanks a lot:
+
 Cheng XiaoSan <chengxiaosan@gmail.com>          Report bugs and proposal suggestions
 nmweizi <nmweizi@163.com>                       Report bugs and commit Patch
 Mkdir <ivan.pirog@gmail.com>                    Report bugs and commit Patch
 Aleksey <Kapkaev@yandex.ru>                     Report bugs and commit Patch
 yeyesho li <yeyesho@gmail.com>                  Give advice to NoteBook
-ygao <ygao2004@gmail.com>                       Commit many patches
 chaoweilun <chaoweilun@gmail.com>               Submit Traditional Chinese Translation File
 Tom Eubank <tom@afcon.com>                      Patches and documents
 Tyberius Prime <tyberius_prime@coonabibba.de>   Bug reporter and contribute plugin(dropfile)                             
@@ -26,9 +30,7 @@ mikem <mjmaher@iol.ie>                          Commit pylint_plugin
 Hawker                                          Linux memory display patch
 shmakes <shmakes@gmail.com>                     Good advices and code patch
 LP <liupengf12@gmail.com>                       Report bugs and commit Patch
-Kelie Feng                                      Create a great video about UliPad and put in ShowMeDo site, and other helps
 Chester Dunn <wxPythoner@gmail.com>             Report bugs and advices
-programmer.py <pyogrammer.py@gmail.com>		Provide patch
 Bob Gao <lulihummel@gmail.com>                  Provide patch
 Gaël Barrachon <gael.barrachon@gmail.com>	Commit French translation
 Jose Jachuf <jjachuf@gmail.com>			Fix Spanish translation
