@@ -7736,7 +7736,7 @@ from modules.Debug import error
 def add_mainframe_menu(menulist):
     menulist.extend([ ('IDM_SEARCH',
         [
-            (175, 'IDM_SEARCH_GOTO_DEF', tr('Jump To The Definition')+'\tE=Ctrl+I', wx.ITEM_NORMAL, 'OnSearchJumpDef', tr('Jumps to definition.')),
+            (175, 'IDM_SEARCH_GOTO_DEF', tr('Jump To The Definition')+'\tE=Ctrl+I', wx.ITEM_NORMAL, 'OnSearchJumpDef', tr('Jumps to head of line containing variable or function definition.')),
         ]),
     ])
 Mixin.setPlugin('mainframe', 'add_menu', add_mainframe_menu)
@@ -8061,7 +8061,7 @@ def add_mainframe_menu(menulist):
             [
                 (100, 'IDM_SEARCH_NAV_PREV', tr('Go To Previous File'), wx.ITEM_NORMAL, 'OnSmartNavPrev', tr('Goes to previous file.')),
                 (110, 'IDM_SEARCH_NAV_NEXT', tr('Go To Next File'), wx.ITEM_NORMAL, 'OnSmartNavNext', tr('Goes to next file.')),
-                (120, 'IDM_SEARCH_NAV_CLEAR', tr('Clear Files'), wx.ITEM_NORMAL, 'OnSmartNavClear', tr('Clears buffered files.')),
+                (120, 'IDM_SEARCH_NAV_CLEAR', tr('Clear Filenames'), wx.ITEM_NORMAL, 'OnSmartNavClear', tr('Clears buffered filenames.')),
             ]),
 
     ])
