@@ -31,7 +31,7 @@ from modules.Debug import error
 def add_mainframe_menu(menulist):
     menulist.extend([ ('IDM_SEARCH',
         [
-            (175, 'IDM_SEARCH_GOTO_DEF', tr('Jump To The Definition')+'\tE=Ctrl+I', wx.ITEM_NORMAL, 'OnSearchJumpDef', tr('Jumps to definition.')),
+            (175, 'IDM_SEARCH_GOTO_DEF', tr('Jump To The Definition')+'\tE=Ctrl+I', wx.ITEM_NORMAL, 'OnSearchJumpDef', tr('Jumps to head of line containing variable or function definition.')),
         ]),
     ])
 Mixin.setPlugin('mainframe', 'add_menu', add_mainframe_menu)
