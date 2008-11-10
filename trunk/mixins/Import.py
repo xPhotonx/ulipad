@@ -1181,9 +1181,9 @@ def add_mainframe_menu(menulist):
         ]),
         ('IDM_DOCUMENT_EOL_CONVERT',
         [
-            (100, 'IDM_DOCUMENT_EOL_CONVERT_PC', tr('Convert To Windows Format'), wx.ITEM_NORMAL, 'OnDocumentEolConvertWin', tr('Convert line ending to Windows format.')),
-            (200, 'IDM_DOCUMENT_EOL_CONVERT_UNIX', tr('Convert To Unix Format'), wx.ITEM_NORMAL, 'OnDocumentEolConvertUnix', tr('Convert line ending to Unix format.')),
-            (300, 'IDM_DOCUMENT_EOL_CONVERT_MAX', tr('Convert To Mac Format'), wx.ITEM_NORMAL, 'OnDocumentEolConvertMac', tr('Convert line ending to Mac format.')),
+            (100, 'IDM_DOCUMENT_EOL_CONVERT_PC', tr('Convert To Windows Format'), wx.ITEM_NORMAL, 'OnDocumentEolConvertWin', tr('Converts line ending to Windows format.')),
+            (200, 'IDM_DOCUMENT_EOL_CONVERT_UNIX', tr('Convert To Unix Format'), wx.ITEM_NORMAL, 'OnDocumentEolConvertUnix', tr('Converts line ending to Unix format.')),
+            (300, 'IDM_DOCUMENT_EOL_CONVERT_MAX', tr('Convert To Mac Format'), wx.ITEM_NORMAL, 'OnDocumentEolConvertMac', tr('Converts line ending to Mac format.')),
         ]),
     ])
 Mixin.setPlugin('mainframe', 'add_menu', add_mainframe_menu)
