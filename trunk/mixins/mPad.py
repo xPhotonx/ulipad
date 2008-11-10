@@ -37,7 +37,7 @@ def add_mainframe_menu(menulist):
     menulist.extend([('IDM_TOOL', #parent menu id
         [
             (140, '-', '', wx.ITEM_SEPARATOR, '', ''),
-            (150, 'IDM_TOOL_MEMO', tr('Easy Memo') + u'\tF12', wx.ITEM_CHECK, 'OnToolMemo', tr('Show Easy Memo windows, and you can write down everything what you want.')),
+            (150, 'IDM_TOOL_MEMO', tr('Easy Memo') + u'\tF12', wx.ITEM_CHECK, 'OnToolMemo', tr('Shows the window Easy Memo for writing notes.')),
         ]),
     ])
 Mixin.setPlugin('mainframe', 'add_menu', add_mainframe_menu)

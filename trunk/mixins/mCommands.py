@@ -32,11 +32,11 @@ buf = []
 def add_mainframe_menu(menulist):
     menulist.extend([ ('IDM_TOOL', #parent menu id
         [
-            (137, 'IDM_TOOL_SEARCHCMDS', tr('Commands Searching'), wx.ITEM_NORMAL, '', ''),
+            (137, 'IDM_TOOL_SEARCHCMDS', tr('Commands'), wx.ITEM_NORMAL, '', ''),
         ]),
         ('IDM_TOOL_SEARCHCMDS',
         [
-            (100, 'IDM_TOOL_SEARCHCMDS_SEARCH', tr('Searching...') +'\tCtrl+K', wx.ITEM_NORMAL, 'OnToolSearchCMDS', tr('Searchs commands.')),
+            (100, 'IDM_TOOL_SEARCHCMDS_SEARCH', tr('Searching...') +'\tCtrl+K', wx.ITEM_NORMAL, 'OnToolSearchCMDS', tr('Searches commands.')),
             (110, 'IDM_TOOL_SEARCHCMDS_IMPACT_MODE', tr('Switch Impact Mode') +'\tCtrl+Shift+K', wx.ITEM_CHECK, 'OnToolSearchCMDSImpactMode', tr('Switches commands searching impact mode.')),
         ]),
     ])
