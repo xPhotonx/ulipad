@@ -63,7 +63,7 @@ Mixin.setPlugin('mainframe', 'getencoding', getencoding)
 def add_mainframe_menu(menulist):
     menulist.extend([ ('IDM_DOCUMENT',
         [
-            (125, 'IDM_DOCUMENT_CHANGE_ENCODING', tr('Change Encoding...'), wx.ITEM_NORMAL, 'OnDocumentChangeEncoding', tr("Chanages current document's saving encoding.")),
+            (125, 'IDM_DOCUMENT_CHANGE_ENCODING', tr('Change Encoding...'), wx.ITEM_NORMAL, 'OnDocumentChangeEncoding', tr("Changes the current encoding of the document.")),
         ]),
     ])
 Mixin.setPlugin('mainframe', 'add_menu', add_mainframe_menu)
@@ -72,7 +72,7 @@ def add_editor_menu(popmenulist):
     popmenulist.extend([ (None, #parent menu id
         [
             (250, '', '-', wx.ITEM_SEPARATOR, None, ''),
-            (260, 'IDPM_CHANGE_ENCODING', tr('Change Encoding...'), wx.ITEM_NORMAL, 'OnEditorDocumentChangeEncoding', tr("Chanages current document's saving encoding.")),
+            (260, 'IDPM_CHANGE_ENCODING', tr('Change Encoding...'), wx.ITEM_NORMAL, 'OnEditorDocumentChangeEncoding', tr("Changes the current encoding of the document.")),
         ]),
     ])
 Mixin.setPlugin('editor', 'add_menu', add_editor_menu)

@@ -498,7 +498,7 @@ def add_editor_menu(popmenulist):
         [
             (100, 'IDPM_SELECTION_SELECT_WORD', tr('Select Word') + '\tCtrl+W', wx.ITEM_NORMAL, 'OnSelectionWord', tr('Selects current word.')),
             (200, 'IDPM_SELECTION_SELECT_WORD_EXTEND', tr('Select Word Extend') + '\tCtrl+Shift+W', wx.ITEM_NORMAL, 'OnSelectionWordExtend', tr('Selects current word include ".".')),
-            (300, 'IDPM_SELECTION_SELECT_PHRASE', tr('Match Select (Left First)') + '\tCtrl+E', wx.ITEM_NORMAL, 'OnSelectionMatchLeft', tr('Selects the text encluded by (){}[]<>""\'\', matching left first.')),
+            (300, 'IDPM_SELECTION_SELECT_PHRASE', tr('Match Select (Left First)') + '\tCtrl+E', wx.ITEM_NORMAL, 'OnSelectionMatchLeft', tr('Selects the text enclosed by () {} [] <>""\'\', matching left first.')),
             (400, 'IDPM_SELECTION_SELECT_PHRASE_RIGHT', tr('Match Select (Right First)') + '\tCtrl+Shift+E', wx.ITEM_NORMAL, 'OnSelectionMatchRight', tr('Selects the text encluded by (){}[]<>""\'\', matching right first.')),
             (500, 'IDPM_SELECTION_SELECT_ENLARGE', tr('Enlarge Selection') + '\tCtrl+Alt+E', wx.ITEM_NORMAL, 'OnSelectionEnlarge', tr('Enlarges selection.')),
             (600, 'IDPM_SELECTION_SELECT_LINE', tr('Select Line') + '\tCtrl+R', wx.ITEM_NORMAL, 'OnSelectionLine', tr('Select current phrase.')),
@@ -556,7 +556,7 @@ def add_mainframe_menu(menulist):
         [
             (100, 'IDM_EDIT_SELECTION_SELECT_WORD', tr('Select Word') + '\tE=Ctrl+W', wx.ITEM_NORMAL, 'OnEditSelectionWord', tr('Selects current word.')),
             (200, 'IDM_EDIT_SELECTION_SELECT_WORD_EXTEND', tr('Select Word Extend') + '\tE=Ctrl+Shift+W', wx.ITEM_NORMAL, 'OnEditSelectionWordExtend', tr('Selects current word include ".".')),
-            (300, 'IDM_EDIT_SELECTION_SELECT_PHRASE', tr('Match Select (Left First)') + '\tE=Ctrl+E', wx.ITEM_NORMAL, 'OnEditSelectionMatchLeft', tr('Selects the text encluded by (){}[]<>""\'\', matching left first.')),
+            (300, 'IDM_EDIT_SELECTION_SELECT_PHRASE', tr('Match Select (Left First)') + '\tE=Ctrl+E', wx.ITEM_NORMAL, 'OnEditSelectionMatchLeft', tr('Selects the text enclosed by () {} [] <>""\'\', matching left first.')),
             (400, 'IDM_EDIT_SELECTION_SELECT_PHRASE_RIGHT', tr('Match Select (Right First)') + '\tE=Ctrl+Shift+E', wx.ITEM_NORMAL, 'OnEditSelectionMatchRight', tr('Selects the text encluded by (){}[]<>""\'\', matching right first.')),
             (500, 'IDM_EDIT_SELECTION_SELECT_ENLARGE', tr('Enlarge Selection') + '\tE=Ctrl+Alt+E', wx.ITEM_NORMAL, 'OnEditSelectionEnlarge', tr('Enlarges selection.')),
             (600, 'IDM_EDIT_SELECTION_SELECT_LINE', tr('Select Line') + '\tE=Ctrl+R', wx.ITEM_NORMAL, 'OnEditSelectionLine', tr('Select current phrase.')),
@@ -980,10 +980,10 @@ def add_mainframe_menu(menulist):
         ('IDM_SEARCH', #parent menu id
         [
             (100, 'wx.ID_FIND', tr('Find...') + '\tE=Ctrl+F', wx.ITEM_NORMAL, 'OnSearchFind', tr('Find text.')),
-            (110, 'IDM_SEARCH_DIRECTFIND', tr('Directly Find') + '\tE=F4', wx.ITEM_NORMAL, 'OnSearchDirectFind', tr('Find selected text directly.')),
-            (120, 'wx.ID_REPLACE', tr('Find And Replace...') + '\tE=Ctrl+H', wx.ITEM_NORMAL, 'OnSearchReplace', tr('Find and replace text.')),
-            (130, 'wx.ID_BACKWARD', tr('Find Previous') + '\tE=Shift+F3', wx.ITEM_NORMAL, 'OnSearchFindPrev', tr('Find previous occurance of text.')),
-            (140, 'wx.ID_FORWARD', tr('Find Next') + '\tE=F3', wx.ITEM_NORMAL, 'OnSearchFindNext', tr('Find next occurance of text.')),
+            (110, 'IDM_SEARCH_DIRECTFIND', tr('Directly Find') + '\tE=F4', wx.ITEM_NORMAL, 'OnSearchDirectFind', tr('Finds selected text directly.')),
+            (120, 'wx.ID_REPLACE', tr('Find And Replace...') + '\tE=Ctrl+H', wx.ITEM_NORMAL, 'OnSearchReplace', tr('Finds and replace text.')),
+            (130, 'wx.ID_BACKWARD', tr('Find Previous') + '\tE=Shift+F3', wx.ITEM_NORMAL, 'OnSearchFindPrev', tr('Finds previous occurence of text.')),
+            (140, 'wx.ID_FORWARD', tr('Find Next') + '\tE=F3', wx.ITEM_NORMAL, 'OnSearchFindNext', tr('Finds next occurence of text.')),
             (150, '', '-', wx.ITEM_SEPARATOR, None, ''),
             (160, 'IDM_SEARCH_GOTO_LINE', tr('Go To Line...') + '\tE=Ctrl+G', wx.ITEM_NORMAL, 'OnSearchGotoLine', tr('Goes to specified line in the current document.')),
             (170, 'IDM_SEARCH_LAST_MODIFY', tr('Go To Last Modified') + '\tE=Ctrl+B', wx.ITEM_NORMAL, 'OnSearchLastModify', tr('Goes to the last modify position.')),
@@ -4509,7 +4509,7 @@ Mixin.setPlugin('mainframe', 'getencoding', getencoding)
 def add_mainframe_menu(menulist):
     menulist.extend([ ('IDM_DOCUMENT',
         [
-            (125, 'IDM_DOCUMENT_CHANGE_ENCODING', tr('Change Encoding...'), wx.ITEM_NORMAL, 'OnDocumentChangeEncoding', tr("Chanages current document's saving encoding.")),
+            (125, 'IDM_DOCUMENT_CHANGE_ENCODING', tr('Change Encoding...'), wx.ITEM_NORMAL, 'OnDocumentChangeEncoding', tr("Changes the current encoding of the document.")),
         ]),
     ])
 Mixin.setPlugin('mainframe', 'add_menu', add_mainframe_menu)
@@ -4518,7 +4518,7 @@ def add_editor_menu(popmenulist):
     popmenulist.extend([ (None, #parent menu id
         [
             (250, '', '-', wx.ITEM_SEPARATOR, None, ''),
-            (260, 'IDPM_CHANGE_ENCODING', tr('Change Encoding...'), wx.ITEM_NORMAL, 'OnEditorDocumentChangeEncoding', tr("Chanages current document's saving encoding.")),
+            (260, 'IDPM_CHANGE_ENCODING', tr('Change Encoding...'), wx.ITEM_NORMAL, 'OnEditorDocumentChangeEncoding', tr("Changes the current encoding of the document.")),
         ]),
     ])
 Mixin.setPlugin('editor', 'add_menu', add_editor_menu)
@@ -5440,8 +5440,8 @@ if wx.Platform == '__WXMSW__':
         menulist.extend([ ('IDM_TOOL',
             [
                 (890, '-', '', wx.ITEM_SEPARATOR, '', ''),
-                (900, 'IDM_TOOL_REGISTER', tr('Register To Explore'), wx.ITEM_NORMAL, 'OnToolRegister', tr('Registers to explore context menu.')),
-                (910, 'IDM_TOOL_UNREGISTER', tr('Unregister From Explore'), wx.ITEM_NORMAL, 'OnToolUnRegister', tr('Unregisters from explore context menu.')),
+                (900, 'IDM_TOOL_REGISTER', tr('Register To Explore'), wx.ITEM_NORMAL, 'OnToolRegister', tr('Registers UliPad to the context menu of Windows Explorer.')),
+                (910, 'IDM_TOOL_UNREGISTER', tr('Unregister From Explore'), wx.ITEM_NORMAL, 'OnToolUnRegister', tr('Unregisters UliPad from the context menu of Windows Explorer.')),
             ]),
         ])
     Mixin.setPlugin('mainframe', 'add_menu', add_mainframe_menu)
@@ -6319,12 +6319,12 @@ def _get(name):
 
 from modules import meide as ui
 
-mInputAssistant_ia = ui.Check(_get('input_assistant'), tr('Enable input assistant'))
-mInputAssistant_s1 = ui.Check(_get('inputass_calltip'), tr("Enable calltips"))
-mInputAssistant_s2 = ui.Check(_get('inputass_autocomplete'), tr("Enable autocompletion"))
-mInputAssistant_s3 = ui.Check(_get('inputass_identifier'), tr("Enable autoprompt identifiers"))
-mInputAssistant_s4 = ui.Check(_get('inputass_full_identifier'), tr("Enable full identifiers search"))
-mInputAssistant_s5 = ui.Check(_get('inputass_func_parameter_autocomplete'), tr("Enable function parameter autocomplete"))
+mInputAssistant_ia = ui.Check(_get('input_assistant'), tr('Enables input assistant'))
+mInputAssistant_s1 = ui.Check(_get('inputass_calltip'), tr("Enables calltips"))
+mInputAssistant_s2 = ui.Check(_get('inputass_autocomplete'), tr("Enables autocompletion"))
+mInputAssistant_s3 = ui.Check(_get('inputass_identifier'), tr("Enables autoprompt identifiers"))
+mInputAssistant_s4 = ui.Check(_get('inputass_full_identifier'), tr("Enables full identifiers search"))
+mInputAssistant_s5 = ui.Check(_get('inputass_func_parameter_autocomplete'), tr("Enables function parameter autocomplete"))
 
 def _toggle(event=None):
     ss = [mInputAssistant_s1, mInputAssistant_s2, mInputAssistant_s3, mInputAssistant_s4, mInputAssistant_s5]
@@ -6740,7 +6740,7 @@ def add_mainframe_menu(menulist):
     menulist.extend([('IDM_TOOL', #parent menu id
         [
             (140, '-', '', wx.ITEM_SEPARATOR, '', ''),
-            (150, 'IDM_TOOL_MEMO', tr('Easy Memo') + u'\tF12', wx.ITEM_CHECK, 'OnToolMemo', tr('Show Easy Memo windows, and you can write down everything what you want.')),
+            (150, 'IDM_TOOL_MEMO', tr('Easy Memo') + u'\tF12', wx.ITEM_CHECK, 'OnToolMemo', tr('Shows the window Easy Memo for writing notes.')),
         ]),
     ])
 Mixin.setPlugin('mainframe', 'add_menu', add_mainframe_menu)
@@ -7308,11 +7308,11 @@ buf = []
 def add_mainframe_menu(menulist):
     menulist.extend([ ('IDM_TOOL', #parent menu id
         [
-            (137, 'IDM_TOOL_SEARCHCMDS', tr('Commands Searching'), wx.ITEM_NORMAL, '', ''),
+            (137, 'IDM_TOOL_SEARCHCMDS', tr('Commands'), wx.ITEM_NORMAL, '', ''),
         ]),
         ('IDM_TOOL_SEARCHCMDS',
         [
-            (100, 'IDM_TOOL_SEARCHCMDS_SEARCH', tr('Searching...') +'\tCtrl+K', wx.ITEM_NORMAL, 'OnToolSearchCMDS', tr('Searchs commands.')),
+            (100, 'IDM_TOOL_SEARCHCMDS_SEARCH', tr('Searching...') +'\tCtrl+K', wx.ITEM_NORMAL, 'OnToolSearchCMDS', tr('Searches commands.')),
             (110, 'IDM_TOOL_SEARCHCMDS_IMPACT_MODE', tr('Switch Impact Mode') +'\tCtrl+Shift+K', wx.ITEM_CHECK, 'OnToolSearchCMDSImpactMode', tr('Switches commands searching impact mode.')),
         ]),
     ])

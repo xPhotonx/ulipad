@@ -155,12 +155,12 @@ def _get(name):
 
 from modules import meide as ui
 
-mInputAssistant_ia = ui.Check(_get('input_assistant'), tr('Enable input assistant'))
-mInputAssistant_s1 = ui.Check(_get('inputass_calltip'), tr("Enable calltips"))
-mInputAssistant_s2 = ui.Check(_get('inputass_autocomplete'), tr("Enable autocompletion"))
-mInputAssistant_s3 = ui.Check(_get('inputass_identifier'), tr("Enable autoprompt identifiers"))
-mInputAssistant_s4 = ui.Check(_get('inputass_full_identifier'), tr("Enable full identifiers search"))
-mInputAssistant_s5 = ui.Check(_get('inputass_func_parameter_autocomplete'), tr("Enable function parameter autocomplete"))
+mInputAssistant_ia = ui.Check(_get('input_assistant'), tr('Enables input assistant'))
+mInputAssistant_s1 = ui.Check(_get('inputass_calltip'), tr("Enables calltips"))
+mInputAssistant_s2 = ui.Check(_get('inputass_autocomplete'), tr("Enables autocompletion"))
+mInputAssistant_s3 = ui.Check(_get('inputass_identifier'), tr("Enables autoprompt identifiers"))
+mInputAssistant_s4 = ui.Check(_get('inputass_full_identifier'), tr("Enables full identifiers search"))
+mInputAssistant_s5 = ui.Check(_get('inputass_func_parameter_autocomplete'), tr("Enables function parameter autocomplete"))
 
 def _toggle(event=None):
     ss = [mInputAssistant_s1, mInputAssistant_s2, mInputAssistant_s3, mInputAssistant_s4, mInputAssistant_s5]
