@@ -12,7 +12,7 @@ Dick Moores <rdmoores@gmail.com>                Proposal many suggestions
 Mario Lacunza <mlacunza@gmail.com>              Commit Spanish translation file and proposal many suggestions
 Ye Naiquan <Naiquan.Ye@marintek.sintef.no>      Commit Patch
 Kelie Feng                                      Create a great video about UliPad and put in ShowMeDo site, and other helps
-programmer.py <pyogrammer.py@gmail.com>		Provide patches, and many suggestions
+Jaime Wyant <pyogrammer.py@gmail.com>		Provide patches, plugins, and many suggestions
 
 Also thanks a lot:
 
