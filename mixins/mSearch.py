@@ -143,7 +143,7 @@ def OnSearchGotoLine(win, event):
     document = win.document
 
     line = document.GetCurrentLine() + 1
-    dlg = Entry.MyTextEntry(win, tr("Go To Line..."), tr("Enter the Line Number:"), str(line))
+    dlg = Entry.MyTextEntry(win, tr("Go To Line..."), tr("Enter the line number:"), str(line))
     answer = dlg.ShowModal()
     if answer == wx.ID_OK:
         try:

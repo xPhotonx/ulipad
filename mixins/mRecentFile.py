@@ -30,7 +30,7 @@ from modules import Globals
 def add_mainframe_menu(menulist):
     menulist.extend([('IDM_FILE',
         [
-            (130, 'IDM_FILE_RECENTFILES', tr('Recent Files...')+'\tAlt+R', wx.ITEM_NORMAL, 'OnOpenRecentFiles', 'Opens last documents you closed.'),
+            (130, 'IDM_FILE_RECENTFILES', tr('Recent Files...')+'\tAlt+R', wx.ITEM_NORMAL, 'OnOpenRecentFiles', 'Shows the recently closed files pop-up.'),
 #            (135, 'IDM_FILE_RECENTPATHS', tr('Open Recent Paths'), wx.ITEM_NORMAL, 'OnOpenRecentPaths', 'Opens recent paths.'),
         ]),
     ])
@@ -106,7 +106,7 @@ def open_recent_files(win, index):
         f = file(filename)
         f.close()
     except:
-        common.showerror(win, tr("Can't open the file [%s]!") % filename)
+        common.showerror(win, tr("Can't open the file [%s].") % filename)
         del win.pref.recent_files[index]
         win.pref.save()
         return

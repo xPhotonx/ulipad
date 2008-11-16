@@ -32,7 +32,7 @@ from modules import Globals
 
 def add_pref(preflist):
     preflist.extend([
-        (tr('Document')+'/'+tr('Back-End'), 110, 'check', 'auto_check', tr('Autocheck if opened files were modified by others'), None),
+        (tr('Document')+'/'+tr('Back-End'), 110, 'check', 'auto_check', tr('Autocheck if opened documents were modified by others'), None),
         (tr('Document')+'/'+tr('Back-End'), 120, 'check', 'auto_check_confirm', tr('Confirm file reload'), None)
     ])
 Mixin.setPlugin('preference', 'add_pref', add_pref)
@@ -82,7 +82,7 @@ def _check(win):
                         def fn():
                             answer = wx.ID_NO
                             if win.pref.auto_check_confirm:
-                                dlg = wx.MessageDialog(win, tr("Another application has modified [%s].\nReload it?") % document.filename, tr("Check"), wx.YES_NO | wx.ICON_QUESTION)
+                                dlg = wx.MessageDialog(win, tr("Another application has modified [%s].\nDo you want to reopen it?") % document.filename, tr("Check"), wx.YES_NO | wx.ICON_QUESTION)
                                 answer = dlg.ShowModal()
                             if answer == wx.ID_YES or not win.pref.auto_check_confirm:
                                 state = document.save_state()
@@ -124,7 +124,7 @@ def checkFilename(win, document):
     if not document.needcheck():
         return True
     if not os.path.exists(document.filename) and win.editctrl.filetimes[document.filename] != 'NO':
-        dlg = wx.MessageDialog(win, tr("This file [%s] has been removed by others,\nDo you like save it?") % document.filename, tr("Check"), wx.YES_NO | wx.ICON_QUESTION)
+        dlg = wx.MessageDialog(win, tr("The file [%s] has been removed by others.\nDo you want to save it?") % document.filename, tr("Check"), wx.YES_NO | wx.ICON_QUESTION)
         answer = dlg.ShowModal()
         if answer == wx.ID_YES:
             document.savefile(document.filename, document.locale)

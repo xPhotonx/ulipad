@@ -42,7 +42,7 @@ def add_mainframe_menu(menulist):
             (150, 'IDM_EDIT_FORMAT_UNINDENT', tr('Decrease Indent'), wx.ITEM_NORMAL, 'OnEditFormatUnindent', tr('Decreases the indentation of current line or selected block.')),
             (160, '', '-', wx.ITEM_SEPARATOR, None, ''),
             (170, 'IDM_EDIT_FORMAT_COMMENT', tr('Line Comment...') + '\tE=Ctrl+/', wx.ITEM_NORMAL, 'OnEditFormatComment', tr('Inserts comment sign at the beginning of line.')),
-            (180, 'IDM_EDIT_FORMAT_UNCOMMENT', tr('Line Uncomment...') + '\tE=Ctrl+\\', wx.ITEM_NORMAL, 'OnEditFormatUncomment', tr('Removes comment sign at the beginning of line.')),
+            (180, 'IDM_EDIT_FORMAT_UNCOMMENT', tr('Line Uncomment...') + '\tE=Ctrl+\\', wx.ITEM_NORMAL, 'OnEditFormatUncomment', tr('Removes comment sign from the beginning of line.')),
             (190, '', '-', wx.ITEM_SEPARATOR, None, ''),
             (200, 'IDM_EDIT_FORMAT_QUOTE', tr('Text Quote...') + '\tE=Ctrl+\'', wx.ITEM_NORMAL, 'OnEditFormatQuote', tr('Quote selected text.')),
             (210, 'IDM_EDIT_FORMAT_UNQUOTE', tr('Text Unquote...') + '\tE=Ctrl+Shift+\'', wx.ITEM_NORMAL, 'OnEditFormatUnquote', tr('Unquote selected text.')),
@@ -66,7 +66,7 @@ def add_editor_menu(popmenulist):
             (150, 'IDPM_FORMAT_UNINDENT', tr('Decrease Indent'), wx.ITEM_NORMAL, 'OnFormatUnindent', tr('Decreases the indentation of current line or selected block.')),
             (160, '', '-', wx.ITEM_SEPARATOR, None, ''),
             (170, 'IDPM_FORMAT_COMMENT', tr('Line Comment...') + '\tCtrl+/', wx.ITEM_NORMAL, 'OnFormatComment', tr('Inserts comment sign at the beginning of line.')),
-            (180, 'IDPM_FORMAT_UNCOMMENT', tr('Line Uncomment...') + '\tCtrl+\\', wx.ITEM_NORMAL, 'OnFormatUncomment', tr('Removes comment sign at the beginning of line.')),
+            (180, 'IDPM_FORMAT_UNCOMMENT', tr('Line Uncomment...') + '\tCtrl+\\', wx.ITEM_NORMAL, 'OnFormatUncomment', tr('Removes comment sign from the beginning of line.')),
             (190, '', '-', wx.ITEM_SEPARATOR, None, ''),
             (200, 'IDPM_FORMAT_QUOTE', tr('Text Quote...') + '\tCtrl+\'', wx.ITEM_NORMAL, 'OnFormatQuote', tr('Quote selected text.')),
             (210, 'IDPM_FORMAT_UNQUOTE', tr('Text Unquote...') + '\tCtrl+Shift+\'', wx.ITEM_NORMAL, 'OnFormatUnquote', tr('Unquote selected text.')),
@@ -122,7 +122,7 @@ tab_edit = tr('Document')+'/'+tr('Edit')
 def add_pref(preflist):
     preflist.extend([
         (tr('Document'), 110, 'num', 'tabwidth', tr('Tab width in spaces:'), None),
-        (tab_edit, 160, 'check', 'show_comment_chars_dialog', tr('Show comment character dialog when adding comment'), None),
+        (tab_edit, 160, 'check', 'show_comment_chars_dialog', tr('Show comment character dialog when adding a comment'), None),
     ])
 Mixin.setPlugin('preference', 'add_pref', add_pref)
 

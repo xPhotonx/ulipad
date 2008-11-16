@@ -29,7 +29,7 @@ def add_mainframe_menu(menulist):
         ('IDM_EDIT',
         [
             (300, '-', '', wx.ITEM_SEPARATOR, '', ''),
-            (310, 'wx.ID_PREFERENCES', tr('Preferences...'), wx.ITEM_NORMAL, 'OnOptionPreference', tr('Setup program preferences')),
+            (310, 'wx.ID_PREFERENCES', tr('Preferences...'), wx.ITEM_NORMAL, 'OnOptionPreference', tr('Opens the Preferences window.')),
         ]),
     ])
 Mixin.setPlugin('mainframe', 'add_menu', add_mainframe_menu)

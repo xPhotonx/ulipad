@@ -33,7 +33,7 @@ def add_tool_list(toollist, toolbaritems):
 
     #order, IDname, imagefile, short text, long text, func
     toolbaritems.update({
-        'dir':(wx.ITEM_CHECK, 'IDM_WINDOW_DIRBROWSER', 'images/dir.gif', tr('Open Directory Browser Window'), tr('Opens directory browser window.'), 'OnWindowDirBrowser'),
+        'dir':(wx.ITEM_CHECK, 'IDM_WINDOW_DIRBROWSER', 'images/dir.gif', tr('Directory Browser'), tr('Shows the Directory Browser pane.'), 'OnWindowDirBrowser'),
     })
 Mixin.setPlugin('mainframe', 'add_tool_list', add_tool_list)
 
@@ -53,7 +53,7 @@ Mixin.setPlugin('mainframe', 'on_update_ui', on_mainframe_updateui)
 def add_mainframe_menu(menulist):
     menulist.extend([('IDM_FILE',
         [
-            (138, 'IDM_WINDOW_DIRBROWSER', tr('Directory Browser')+'\tF2', wx.ITEM_CHECK, 'OnWindowDirBrowser', tr('Opens the Directory Browser window.'))
+            (138, 'IDM_WINDOW_DIRBROWSER', tr('Directory Browser')+'\tF2', wx.ITEM_CHECK, 'OnWindowDirBrowser', tr('Shows the Directory Browser pane.'))
         ]),
     ])
 Mixin.setPlugin('mainframe', 'add_menu', add_mainframe_menu)
@@ -61,7 +61,7 @@ Mixin.setPlugin('mainframe', 'add_menu', add_mainframe_menu)
 def add_notebook_menu(popmenulist):
     popmenulist.extend([(None,
         [
-            (170, 'IDPM_DIRBROWSERWINDOW', tr('Directory Browser'), wx.ITEM_NORMAL, 'OnDirBrowserWindow', tr('Opens directory browser window.')),
+            (170, 'IDPM_DIRBROWSERWINDOW', tr('Directory Browser'), wx.ITEM_NORMAL, 'OnDirBrowserWindow', tr('Shows the Directory Browser pane.')),
         ]),
     ])
 Mixin.setPlugin('notebook', 'add_menu', add_notebook_menu)
@@ -134,8 +134,8 @@ def add_pref(preflist):
     preflist.extend([
 #        (tr('General'), 100, 'num', 'recent_dir_paths_num', tr('Max number of recent browse directories:'), None),
         (tr('General'), 150, 'check', 'open_last_dir_as_startup', tr('Open last directory at startup'), None),
-        (tr('General'), 151, 'check', 'open_project_setting_dlg', tr('Automatically open Project Settings dialog when adding directory to Directory Browser window'), None),
-        (tr('General'), 160, 'openfile', 'command_line', tr('Command line of Open Command Window Here'), {'span':True}),
+        (tr('General'), 151, 'check', 'open_project_setting_dlg', tr('Automatically open Project Settings dialog when adding a directory to Directory Browser window'), None),
+        (tr('General'), 160, 'openfile', 'command_line', tr('Path to command-line:'), {'span':True}),
     ])
 Mixin.setPlugin('preference', 'add_pref', add_pref)
 
