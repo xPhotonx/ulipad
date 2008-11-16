@@ -52,7 +52,7 @@ def add_mainframe_menu(menulist):
         ('IDM_EDIT',
         [
             (300, '-', '', wx.ITEM_SEPARATOR, '', ''),
-            (310, 'wx.ID_PREFERENCES', tr('Preferences...'), wx.ITEM_NORMAL, 'OnOptionPreference', tr('Setup program preferences')),
+            (310, 'wx.ID_PREFERENCES', tr('Preferences...'), wx.ITEM_NORMAL, 'OnOptionPreference', tr('Opens the Preferences window.')),
         ]),
     ])
 Mixin.setPlugin('mainframe', 'add_menu', add_mainframe_menu)
@@ -123,7 +123,7 @@ def add_mainframe_menu(menulist):
             (100, 'IDM_FILE_NEW', tr('New') + '\tCtrl+N', wx.ITEM_NORMAL, 'OnFileNew', tr('Creates a new document.')),
             (105, 'IDM_FILE_NEWMORE', tr('New') + '...', wx.ITEM_NORMAL, None, tr('Creates a new type document.')),
             (110, 'IDM_FILE_OPEN', tr('Open...') + '\tCtrl+O', wx.ITEM_NORMAL, 'OnFileOpen', tr('Opens an existing document.')),
-            (120, 'IDM_FILE_REOPEN', tr('Reopen') + '\tE=Ctrl+Shift+O', wx.ITEM_NORMAL, 'OnFileReOpen', tr('Reopens the current document again.')),
+            (120, 'IDM_FILE_REOPEN', tr('Reopen') + '\tE=Ctrl+Shift+O', wx.ITEM_NORMAL, 'OnFileReOpen', tr('Reopens the current document.')),
             (140, 'IDM_FILE_CLOSE', tr('Close') + '\tCtrl+F4', wx.ITEM_NORMAL, 'OnFileClose', tr('Closes an opened document.')),
             (150, 'IDM_FILE_CLOSE_ALL', tr('Close All'), wx.ITEM_NORMAL, 'OnFileCloseAll', tr('Closes all document windows.')),
             (160, '', '-', wx.ITEM_SEPARATOR, None, ''),
@@ -144,7 +144,7 @@ def add_editctrl_menu(popmenulist):
             (140, 'IDPM_SAVEAS', tr('Save As...'), wx.ITEM_NORMAL, 'OnPopUpMenu', tr('Saves an opened document to a specified file name.')),
             (150, 'IDPM_FILE_SAVE_ALL', tr('Save All'), wx.ITEM_NORMAL, 'OnPopUpMenu', tr('Saves all documents.')),
             (155, '', '-', wx.ITEM_SEPARATOR, None, ''),
-            (156, 'IDPM_FILE_COPY_FILENAME', tr('Copy Filename To Clipboard'), wx.ITEM_NORMAL, 'OnCopyFilenameToClipboard', tr('Copies the current document filename to clipboard.')),
+            (156, 'IDPM_FILE_COPY_FILENAME', tr('Copy Filename To Clipboard'), wx.ITEM_NORMAL, 'OnCopyFilenameToClipboard', tr('Copies the filename of the current document to the clipboard.')),
             (160, '', '-', wx.ITEM_SEPARATOR, None, ''),
             (170, 'IDPM_OPEN_CMD_WINDOW', tr('Open Command Window Here'), wx.ITEM_NORMAL, 'OnOpenCmdWindow', ''),
             (180, 'IDPM_OPEN_CMD_EXPLORER', tr('Open Explorer Window Here'), wx.ITEM_NORMAL, 'OnOpenCmdExplorerWindow', ''),
@@ -232,7 +232,7 @@ Mixin.setMixin('mainframe', 'getFilterIndex', getFilterIndex)
 def OnFileReOpen(win, event):
     if win.document.isModified():
         document = findDocument(win.document)
-        dlg = wx.MessageDialog(win, tr("This document has been modified,\ndo you really want to reload the file?"), tr("Reopen file..."), wx.YES_NO|wx.ICON_QUESTION)
+        dlg = wx.MessageDialog(win, tr("This document has been modified.\nDo you really want to reopen it?"), tr("Reopen Confirmation"), wx.YES_NO|wx.ICON_QUESTION)
         answer = dlg.ShowModal()
         dlg.Destroy()
         if answer != wx.ID_YES:
@@ -273,7 +273,7 @@ Mixin.setMixin('mainframe', 'OnFileCloseAll', OnFileCloseAll)
 def CloseFile(win, document, checkonly = False):
     answer = wx.ID_YES
     if document.isModified():
-        d = wx.MessageDialog(win, tr("Would you like to save %s ?") % document.getFilename(),
+        d = wx.MessageDialog(win, tr("Would you like to save %s?") % document.getFilename(),
             tr("Close File"), wx.YES_NO | wx.CANCEL | wx.ICON_QUESTION)
         answer = d.ShowModal()
         d.Destroy()
@@ -315,8 +315,7 @@ def SaveFile(win, ctrl, issaveas=False):
 
     if issaveas or len(ctrl.filename)<=0:
         encoding = win.execplugin('getencoding', win, win)
-        filename = get_suffix_filename(ctrl, ctrl.getFilename())
-        dlg = wx.FileDialog(win, tr("Save File %s As...") % filename, win.pref.last_dir, filename, '|'.join(win.filewildchar), wx.SAVE|wx.OVERWRITE_PROMPT)
+        dlg = wx.FileDialog(win, tr("Save File As..."), win.pref.last_dir, filename, '|'.join(win.filewildchar), wx.SAVE|wx.OVERWRITE_PROMPT)
         dlg.SetFilterIndex(getFilterIndex(win))
         if (dlg.ShowModal() == wx.ID_OK):
             filename = dlg.GetPath()
@@ -325,8 +324,8 @@ def SaveFile(win, ctrl, issaveas=False):
             #check if the filename has been opened, if opened then fail
             for document in win.editctrl.getDocuments():
                 if (not ctrl is document ) and (filename == document.filename):
-                    wx.MessageDialog(win, tr("Ths file %s has been opened!\nCan't save new file to it.") % document.getFilename(),
-                        tr("Save As..."), wx.OK|wx.ICON_INFORMATION).ShowModal()
+                    wx.MessageDialog(win, tr("The document %s is already opened.\nCan't save new document to it.") % document.getFilename(),
+                        tr("Error"), wx.OK|wx.ICON_EXCLAMATION).ShowModal()
                     return False
         else:
             return True
@@ -866,7 +865,7 @@ def add_tool_list(toollist, toolbaritems):
         'paste':(wx.ITEM_NORMAL, 'IDM_EDIT_PASTE', 'images/paste.gif', tr('Paste'), tr('Pastes text from the clipboard into the document.'), 'DoSTCBuildIn'),
         'undo':(wx.ITEM_NORMAL, 'IDM_EDIT_UNDO', 'images/undo.gif', tr('Undo'), tr('Reverse previous editing operation.'), 'DoSTCBuildIn'),
         'redo':(wx.ITEM_NORMAL, 'IDM_EDIT_REDO', 'images/redo.gif', tr('Redo'), tr('Reverse previous undo operation.'), 'DoSTCBuildIn'),
-        'preference':(wx.ITEM_NORMAL, 'wx.ID_PREFERENCES', 'images/prop.gif', tr('Preferences'), tr('Setup program preferences.'), 'OnOptionPreference'),
+        'preference':(wx.ITEM_NORMAL, 'wx.ID_PREFERENCES', 'images/prop.gif', tr('Preferences'), tr('Opens the Preferences window.'), 'OnOptionPreference'),
     })
 Mixin.setPlugin('mainframe', 'add_tool_list', add_tool_list)
 
@@ -902,7 +901,7 @@ from modules import Globals
 def add_mainframe_menu(menulist):
     menulist.extend([('IDM_FILE',
         [
-            (130, 'IDM_FILE_RECENTFILES', tr('Recent Files...')+'\tAlt+R', wx.ITEM_NORMAL, 'OnOpenRecentFiles', 'Opens last documents you closed.'),
+            (130, 'IDM_FILE_RECENTFILES', tr('Recent Files...')+'\tAlt+R', wx.ITEM_NORMAL, 'OnOpenRecentFiles', 'Shows the recently closed files pop-up.'),
         ]),
     ])
 Mixin.setPlugin('mainframe', 'add_menu', add_mainframe_menu)
@@ -956,7 +955,7 @@ def open_recent_files(win, index):
         f = file(filename)
         f.close()
     except:
-        common.showerror(win, tr("Can't open the file [%s]!") % filename)
+        common.showerror(win, tr("Can't open the file [%s].") % filename)
         del win.pref.recent_files[index]
         win.pref.save()
         return
@@ -1084,7 +1083,7 @@ def OnSearchGotoLine(win, event):
     document = win.document
 
     line = document.GetCurrentLine() + 1
-    dlg = Entry.MyTextEntry(win, tr("Go To Line..."), tr("Enter the Line Number:"), str(line))
+    dlg = Entry.MyTextEntry(win, tr("Go To Line..."), tr("Enter the line number:"), str(line))
     answer = dlg.ShowModal()
     if answer == wx.ID_OK:
         try:
@@ -1315,9 +1314,9 @@ def add_mainframe_menu(menulist):
         [
             (100, 'IDM_VIEW_TAB', tr('Tabs And Spaces'), wx.ITEM_CHECK, 'OnViewTab', tr('Shows or hides space and tab marks.')),
             (110, 'IDM_VIEW_INDENTATION_GUIDES', tr('Indentation Guides'), wx.ITEM_CHECK, 'OnViewIndentationGuides', tr('Shows or hides indentation guides.')),
-            (120, 'IDM_VIEW_RIGHT_EDGE', tr('Long-Line Indicator'), wx.ITEM_CHECK, 'OnViewRightEdge', tr('Shows or hides long line indicator.')),
+            (120, 'IDM_VIEW_RIGHT_EDGE', tr('Long-Line Indicator'), wx.ITEM_CHECK, 'OnViewRightEdge', tr('Shows or hides the long-line indicator.')),
             (130, 'IDM_VIEW_LINE_NUMBER', tr('Line Numbers'), wx.ITEM_CHECK, 'OnViewLineNumber', tr('Shows or hides line numbers.')),
-            (131, 'IDM_VIEW_ENDOFLINE_MARK', tr('End-Of-Line Marker'), wx.ITEM_CHECK, 'OnViewEndOfLineMark', tr('Shows or hides end-of-line marker.')),
+            (131, 'IDM_VIEW_ENDOFLINE_MARK', tr('End-Of-Line Marker'), wx.ITEM_CHECK, 'OnViewEndOfLineMark', tr('Shows or hides the end-of-line marker.')),
         ]),
     ])
 Mixin.setPlugin('mainframe', 'add_menu', add_mainframe_menu)
@@ -1496,7 +1495,7 @@ def add_mainframe_menu(menulist):
             (150, 'IDM_EDIT_FORMAT_UNINDENT', tr('Decrease Indent'), wx.ITEM_NORMAL, 'OnEditFormatUnindent', tr('Decreases the indentation of current line or selected block.')),
             (160, '', '-', wx.ITEM_SEPARATOR, None, ''),
             (170, 'IDM_EDIT_FORMAT_COMMENT', tr('Line Comment...') + '\tE=Ctrl+/', wx.ITEM_NORMAL, 'OnEditFormatComment', tr('Inserts comment sign at the beginning of line.')),
-            (180, 'IDM_EDIT_FORMAT_UNCOMMENT', tr('Line Uncomment...') + '\tE=Ctrl+\\', wx.ITEM_NORMAL, 'OnEditFormatUncomment', tr('Removes comment sign at the beginning of line.')),
+            (180, 'IDM_EDIT_FORMAT_UNCOMMENT', tr('Line Uncomment...') + '\tE=Ctrl+\\', wx.ITEM_NORMAL, 'OnEditFormatUncomment', tr('Removes comment sign from the beginning of line.')),
             (190, '', '-', wx.ITEM_SEPARATOR, None, ''),
             (200, 'IDM_EDIT_FORMAT_QUOTE', tr('Text Quote...') + '\tE=Ctrl+\'', wx.ITEM_NORMAL, 'OnEditFormatQuote', tr('Quote selected text.')),
             (210, 'IDM_EDIT_FORMAT_UNQUOTE', tr('Text Unquote...') + '\tE=Ctrl+Shift+\'', wx.ITEM_NORMAL, 'OnEditFormatUnquote', tr('Unquote selected text.')),
@@ -1520,7 +1519,7 @@ def add_editor_menu(popmenulist):
             (150, 'IDPM_FORMAT_UNINDENT', tr('Decrease Indent'), wx.ITEM_NORMAL, 'OnFormatUnindent', tr('Decreases the indentation of current line or selected block.')),
             (160, '', '-', wx.ITEM_SEPARATOR, None, ''),
             (170, 'IDPM_FORMAT_COMMENT', tr('Line Comment...') + '\tCtrl+/', wx.ITEM_NORMAL, 'OnFormatComment', tr('Inserts comment sign at the beginning of line.')),
-            (180, 'IDPM_FORMAT_UNCOMMENT', tr('Line Uncomment...') + '\tCtrl+\\', wx.ITEM_NORMAL, 'OnFormatUncomment', tr('Removes comment sign at the beginning of line.')),
+            (180, 'IDPM_FORMAT_UNCOMMENT', tr('Line Uncomment...') + '\tCtrl+\\', wx.ITEM_NORMAL, 'OnFormatUncomment', tr('Removes comment sign from the beginning of line.')),
             (190, '', '-', wx.ITEM_SEPARATOR, None, ''),
             (200, 'IDPM_FORMAT_QUOTE', tr('Text Quote...') + '\tCtrl+\'', wx.ITEM_NORMAL, 'OnFormatQuote', tr('Quote selected text.')),
             (210, 'IDPM_FORMAT_UNQUOTE', tr('Text Unquote...') + '\tCtrl+Shift+\'', wx.ITEM_NORMAL, 'OnFormatUnquote', tr('Unquote selected text.')),
@@ -1576,7 +1575,7 @@ tab_edit = tr('Document')+'/'+tr('Edit')
 def add_pref(preflist):
     preflist.extend([
         (tr('Document'), 110, 'num', 'tabwidth', tr('Tab width in spaces:'), None),
-        (tab_edit, 160, 'check', 'show_comment_chars_dialog', tr('Show comment character dialog when adding comment'), None),
+        (tab_edit, 160, 'check', 'show_comment_chars_dialog', tr('Show comment character dialog when adding a comment'), None),
     ])
 Mixin.setPlugin('preference', 'add_pref', add_pref)
 
@@ -4014,7 +4013,7 @@ from modules import Globals
 
 def add_pref(preflist):
     preflist.extend([
-        (tr('Document')+'/'+tr('Back-End'), 110, 'check', 'auto_check', tr('Autocheck if opened files were modified by others'), None),
+        (tr('Document')+'/'+tr('Back-End'), 110, 'check', 'auto_check', tr('Autocheck if opened documents were modified by others'), None),
         (tr('Document')+'/'+tr('Back-End'), 120, 'check', 'auto_check_confirm', tr('Confirm file reload'), None)
     ])
 Mixin.setPlugin('preference', 'add_pref', add_pref)
@@ -4038,7 +4037,7 @@ def _check(win):
                         def fn():
                             answer = wx.ID_NO
                             if win.pref.auto_check_confirm:
-                                dlg = wx.MessageDialog(win, tr("Another application has modified [%s].\nReload it?") % document.filename, tr("Check"), wx.YES_NO | wx.ICON_QUESTION)
+                                dlg = wx.MessageDialog(win, tr("Another application has modified [%s].\nDo you want to reopen it?") % document.filename, tr("Check"), wx.YES_NO | wx.ICON_QUESTION)
                                 answer = dlg.ShowModal()
                             if answer == wx.ID_YES or not win.pref.auto_check_confirm:
                                 state = document.save_state()
@@ -4080,7 +4079,7 @@ def checkFilename(win, document):
     if not document.needcheck():
         return True
     if not os.path.exists(document.filename) and win.editctrl.filetimes[document.filename] != 'NO':
-        dlg = wx.MessageDialog(win, tr("This file [%s] has been removed by others,\nDo you like save it?") % document.filename, tr("Check"), wx.YES_NO | wx.ICON_QUESTION)
+        dlg = wx.MessageDialog(win, tr("The file [%s] has been removed by others.\nDo you want to save it?") % document.filename, tr("Check"), wx.YES_NO | wx.ICON_QUESTION)
         answer = dlg.ShowModal()
         if answer == wx.ID_YES:
             document.savefile(document.filename, document.locale)
@@ -4164,10 +4163,10 @@ def add_pyftype_menu(menulist):
     menulist.extend([('IDM_PYTHON', #parent menu id
         [
             (120, '', '-', wx.ITEM_SEPARATOR, None, ''),
-            (130, 'IDM_PYTHON_RUN', tr('Run')+u'\tE=F5', wx.ITEM_NORMAL, 'OnPythonRun', tr('Run Python program.')),
-            (140, 'IDM_PYTHON_SETARGS', tr('Set Arguments...'), wx.ITEM_NORMAL, 'OnPythonSetArgs', tr('Set Python program command line arugments.')),
-            (150, 'IDM_PYTHON_END', tr('Stop Program'), wx.ITEM_NORMAL, 'OnPythonEnd', tr('Stop current Python program.')),
-            (155, 'IDM_PYTHON_DOCTEST', tr('Run Doctest'), wx.ITEM_NORMAL, 'OnPythonDoctests', tr('Run doctest in current document.')),
+            (130, 'IDM_PYTHON_RUN', tr('Run')+u'\tE=F5', wx.ITEM_NORMAL, 'OnPythonRun', tr('Runs the Python program.')),
+            (140, 'IDM_PYTHON_SETARGS', tr('Set Arguments...'), wx.ITEM_NORMAL, 'OnPythonSetArgs', tr('Sets the Python program command-line arguments.')),
+            (150, 'IDM_PYTHON_END', tr('Stop Program'), wx.ITEM_NORMAL, 'OnPythonEnd', tr('Stops the current Python program.')),
+            (155, 'IDM_PYTHON_DOCTEST', tr('Run Doctest'), wx.ITEM_NORMAL, 'OnPythonDoctests', tr('Runs doctest in the current document.')),
         ]),
     ])
 Mixin.setPlugin('pythonfiletype', 'add_menu', add_pyftype_menu)
@@ -4208,7 +4207,7 @@ def _get_python_exe(win):
                 value = s[0][0]
 
         if not value:
-            common.showerror(win, tr("You didn't setup python interpreter, \nplease setup it first in Preference dialog"))
+            common.showerror(win, tr("You didn't set the Python interpreter.\nPlease set it up first in the preferences."))
 
         interpreter = dict(s).get(value, '')
         win.pref.default_interpreter = value
@@ -4225,7 +4224,7 @@ def OnPythonRun(win, event):
         if win.pref.python_save_before_run:
             win.OnFileSave(event)
         else:
-            d = wx.MessageDialog(win, tr("The file has not been saved, and it would not be run.\nWould you like to save the file?"), tr("Run"), wx.YES_NO | wx.ICON_QUESTION)
+            d = wx.MessageDialog(win, tr("The file has not been saved and it would not be run.\nWould you like to save the file?"), tr("Run"), wx.YES_NO | wx.ICON_QUESTION)
             answer = d.ShowModal()
             d.Destroy()
             if answer == wx.ID_YES:
@@ -4319,7 +4318,7 @@ def OnPythonDoctests(win, event):
 
     doc = win.editctrl.getCurDoc()
     if doc.isModified() or doc.filename == '':
-        d = wx.MessageDialog(win, tr("The file has not been saved, and it would not be run.\nWould you like to save the file?"), tr("Run"), wx.YES_NO | wx.ICON_QUESTION)
+        d = wx.MessageDialog(win, tr("The file has not been saved and it would not be run.\nWould you like to save the file?"), tr("Run"), wx.YES_NO | wx.ICON_QUESTION)
         answer = d.ShowModal()
         d.Destroy()
         if answer == wx.ID_YES:
@@ -6063,7 +6062,7 @@ def add_tool_list(toollist, toolbaritems):
 
     #order, IDname, imagefile, short text, long text, func
     toolbaritems.update({
-        'dir':(wx.ITEM_CHECK, 'IDM_WINDOW_DIRBROWSER', 'images/dir.gif', tr('Open Directory Browser Window'), tr('Opens directory browser window.'), 'OnWindowDirBrowser'),
+        'dir':(wx.ITEM_CHECK, 'IDM_WINDOW_DIRBROWSER', 'images/dir.gif', tr('Directory Browser'), tr('Shows the Directory Browser pane.'), 'OnWindowDirBrowser'),
     })
 Mixin.setPlugin('mainframe', 'add_tool_list', add_tool_list)
 
@@ -6083,7 +6082,7 @@ Mixin.setPlugin('mainframe', 'on_update_ui', on_mainframe_updateui)
 def add_mainframe_menu(menulist):
     menulist.extend([('IDM_FILE',
         [
-            (138, 'IDM_WINDOW_DIRBROWSER', tr('Directory Browser')+'\tF2', wx.ITEM_CHECK, 'OnWindowDirBrowser', tr('Opens the Directory Browser window.'))
+            (138, 'IDM_WINDOW_DIRBROWSER', tr('Directory Browser')+'\tF2', wx.ITEM_CHECK, 'OnWindowDirBrowser', tr('Shows the Directory Browser pane.'))
         ]),
     ])
 Mixin.setPlugin('mainframe', 'add_menu', add_mainframe_menu)
@@ -6091,7 +6090,7 @@ Mixin.setPlugin('mainframe', 'add_menu', add_mainframe_menu)
 def add_notebook_menu(popmenulist):
     popmenulist.extend([(None,
         [
-            (170, 'IDPM_DIRBROWSERWINDOW', tr('Directory Browser'), wx.ITEM_NORMAL, 'OnDirBrowserWindow', tr('Opens directory browser window.')),
+            (170, 'IDPM_DIRBROWSERWINDOW', tr('Directory Browser'), wx.ITEM_NORMAL, 'OnDirBrowserWindow', tr('Shows the Directory Browser pane.')),
         ]),
     ])
 Mixin.setPlugin('notebook', 'add_menu', add_notebook_menu)
@@ -6163,8 +6162,8 @@ Mixin.setPlugin('preference', 'init', pref_init)
 def add_pref(preflist):
     preflist.extend([
         (tr('General'), 150, 'check', 'open_last_dir_as_startup', tr('Open last directory at startup'), None),
-        (tr('General'), 151, 'check', 'open_project_setting_dlg', tr('Automatically open Project Settings dialog when adding directory to Directory Browser window'), None),
-        (tr('General'), 160, 'openfile', 'command_line', tr('Command line of Open Command Window Here'), {'span':True}),
+        (tr('General'), 151, 'check', 'open_project_setting_dlg', tr('Automatically open Project Settings dialog when adding a directory to Directory Browser window'), None),
+        (tr('General'), 160, 'openfile', 'command_line', tr('Path to command-line:'), {'span':True}),
     ])
 Mixin.setPlugin('preference', 'add_pref', add_pref)
 

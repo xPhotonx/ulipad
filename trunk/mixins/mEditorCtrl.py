@@ -33,7 +33,7 @@ def add_mainframe_menu(menulist):
             (100, 'IDM_FILE_NEW', tr('New') + '\tCtrl+N', wx.ITEM_NORMAL, 'OnFileNew', tr('Creates a new document.')),
             (105, 'IDM_FILE_NEWMORE', tr('New') + '...', wx.ITEM_NORMAL, None, tr('Creates a new type document.')),
             (110, 'IDM_FILE_OPEN', tr('Open...') + '\tCtrl+O', wx.ITEM_NORMAL, 'OnFileOpen', tr('Opens an existing document.')),
-            (120, 'IDM_FILE_REOPEN', tr('Reopen') + '\tE=Ctrl+Shift+O', wx.ITEM_NORMAL, 'OnFileReOpen', tr('Reopens the current document again.')),
+            (120, 'IDM_FILE_REOPEN', tr('Reopen') + '\tE=Ctrl+Shift+O', wx.ITEM_NORMAL, 'OnFileReOpen', tr('Reopens the current document.')),
             (140, 'IDM_FILE_CLOSE', tr('Close') + '\tCtrl+F4', wx.ITEM_NORMAL, 'OnFileClose', tr('Closes an opened document.')),
             (150, 'IDM_FILE_CLOSE_ALL', tr('Close All'), wx.ITEM_NORMAL, 'OnFileCloseAll', tr('Closes all document windows.')),
             (160, '', '-', wx.ITEM_SEPARATOR, None, ''),
@@ -54,7 +54,7 @@ def add_editctrl_menu(popmenulist):
             (140, 'IDPM_SAVEAS', tr('Save As...'), wx.ITEM_NORMAL, 'OnPopUpMenu', tr('Saves an opened document to a specified file name.')),
             (150, 'IDPM_FILE_SAVE_ALL', tr('Save All'), wx.ITEM_NORMAL, 'OnPopUpMenu', tr('Saves all documents.')),
             (155, '', '-', wx.ITEM_SEPARATOR, None, ''),
-            (156, 'IDPM_FILE_COPY_FILENAME', tr('Copy Filename To Clipboard'), wx.ITEM_NORMAL, 'OnCopyFilenameToClipboard', tr('Copies the current document filename to clipboard.')),
+            (156, 'IDPM_FILE_COPY_FILENAME', tr('Copy Filename To Clipboard'), wx.ITEM_NORMAL, 'OnCopyFilenameToClipboard', tr('Copies the filename of the current document to the clipboard.')),
             (160, '', '-', wx.ITEM_SEPARATOR, None, ''),
             (170, 'IDPM_OPEN_CMD_WINDOW', tr('Open Command Window Here'), wx.ITEM_NORMAL, 'OnOpenCmdWindow', ''),
             (180, 'IDPM_OPEN_CMD_EXPLORER', tr('Open Explorer Window Here'), wx.ITEM_NORMAL, 'OnOpenCmdExplorerWindow', ''),
@@ -142,7 +142,7 @@ Mixin.setMixin('mainframe', 'getFilterIndex', getFilterIndex)
 def OnFileReOpen(win, event):
     if win.document.isModified():
         document = findDocument(win.document)
-        dlg = wx.MessageDialog(win, tr("This document has been modified,\ndo you really want to reload the file?"), tr("Reopen file..."), wx.YES_NO|wx.ICON_QUESTION)
+        dlg = wx.MessageDialog(win, tr("This document has been modified.\nDo you really want to reopen it?"), tr("Reopen Confirmation"), wx.YES_NO|wx.ICON_QUESTION)
         answer = dlg.ShowModal()
         dlg.Destroy()
         if answer != wx.ID_YES:
@@ -183,7 +183,7 @@ Mixin.setMixin('mainframe', 'OnFileCloseAll', OnFileCloseAll)
 def CloseFile(win, document, checkonly = False):
     answer = wx.ID_YES
     if document.isModified():
-        d = wx.MessageDialog(win, tr("Would you like to save %s ?") % document.getFilename(),
+        d = wx.MessageDialog(win, tr("Would you like to save %s?") % document.getFilename(),
             tr("Close File"), wx.YES_NO | wx.CANCEL | wx.ICON_QUESTION)
         answer = d.ShowModal()
         d.Destroy()
@@ -225,8 +225,7 @@ def SaveFile(win, ctrl, issaveas=False):
 
     if issaveas or len(ctrl.filename)<=0:
         encoding = win.execplugin('getencoding', win, win)
-        filename = get_suffix_filename(ctrl, ctrl.getFilename())
-        dlg = wx.FileDialog(win, tr("Save File %s As...") % filename, win.pref.last_dir, filename, '|'.join(win.filewildchar), wx.SAVE|wx.OVERWRITE_PROMPT)
+        dlg = wx.FileDialog(win, tr("Save File As..."), win.pref.last_dir, filename, '|'.join(win.filewildchar), wx.SAVE|wx.OVERWRITE_PROMPT)
         dlg.SetFilterIndex(getFilterIndex(win))
         if (dlg.ShowModal() == wx.ID_OK):
             filename = dlg.GetPath()
@@ -235,8 +234,8 @@ def SaveFile(win, ctrl, issaveas=False):
             #check if the filename has been opened, if opened then fail
             for document in win.editctrl.getDocuments():
                 if (not ctrl is document ) and (filename == document.filename):
-                    wx.MessageDialog(win, tr("Ths file %s has been opened!\nCan't save new file to it.") % document.getFilename(),
-                        tr("Save As..."), wx.OK|wx.ICON_INFORMATION).ShowModal()
+                    wx.MessageDialog(win, tr("The document %s is already opened.\nCan't save new document to it.") % document.getFilename(),
+                        tr("Error"), wx.OK|wx.ICON_EXCLAMATION).ShowModal()
                     return False
         else:
             return True

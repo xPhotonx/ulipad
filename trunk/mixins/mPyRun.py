@@ -72,10 +72,10 @@ def add_pyftype_menu(menulist):
     menulist.extend([('IDM_PYTHON', #parent menu id
         [
             (120, '', '-', wx.ITEM_SEPARATOR, None, ''),
-            (130, 'IDM_PYTHON_RUN', tr('Run')+u'\tE=F5', wx.ITEM_NORMAL, 'OnPythonRun', tr('Run Python program.')),
-            (140, 'IDM_PYTHON_SETARGS', tr('Set Arguments...'), wx.ITEM_NORMAL, 'OnPythonSetArgs', tr('Set Python program command line arugments.')),
-            (150, 'IDM_PYTHON_END', tr('Stop Program'), wx.ITEM_NORMAL, 'OnPythonEnd', tr('Stop current Python program.')),
-            (155, 'IDM_PYTHON_DOCTEST', tr('Run Doctest'), wx.ITEM_NORMAL, 'OnPythonDoctests', tr('Run doctest in current document.')),
+            (130, 'IDM_PYTHON_RUN', tr('Run')+u'\tE=F5', wx.ITEM_NORMAL, 'OnPythonRun', tr('Runs the Python program.')),
+            (140, 'IDM_PYTHON_SETARGS', tr('Set Arguments...'), wx.ITEM_NORMAL, 'OnPythonSetArgs', tr('Sets the Python program command-line arguments.')),
+            (150, 'IDM_PYTHON_END', tr('Stop Program'), wx.ITEM_NORMAL, 'OnPythonEnd', tr('Stops the current Python program.')),
+            (155, 'IDM_PYTHON_DOCTEST', tr('Run Doctest'), wx.ITEM_NORMAL, 'OnPythonDoctests', tr('Runs doctest in the current document.')),
         ]),
     ])
 Mixin.setPlugin('pythonfiletype', 'add_menu', add_pyftype_menu)
@@ -116,7 +116,7 @@ def _get_python_exe(win):
                 value = s[0][0]
                 
         if not value:
-            common.showerror(win, tr("You didn't setup python interpreter, \nplease setup it first in Preference dialog"))
+            common.showerror(win, tr("You didn't set the Python interpreter.\nPlease set it up first in the preferences."))
         
         interpreter = dict(s).get(value, '')
         win.pref.default_interpreter = value
@@ -133,7 +133,7 @@ def OnPythonRun(win, event):
         if win.pref.python_save_before_run:
             win.OnFileSave(event)
         else:
-            d = wx.MessageDialog(win, tr("The file has not been saved, and it would not be run.\nWould you like to save the file?"), tr("Run"), wx.YES_NO | wx.ICON_QUESTION)
+            d = wx.MessageDialog(win, tr("The file has not been saved and it would not be run.\nWould you like to save the file?"), tr("Run"), wx.YES_NO | wx.ICON_QUESTION)
             answer = d.ShowModal()
             d.Destroy()
             if answer == wx.ID_YES:
@@ -227,7 +227,7 @@ def OnPythonDoctests(win, event):
         
     doc = win.editctrl.getCurDoc()
     if doc.isModified() or doc.filename == '':
-        d = wx.MessageDialog(win, tr("The file has not been saved, and it would not be run.\nWould you like to save the file?"), tr("Run"), wx.YES_NO | wx.ICON_QUESTION)
+        d = wx.MessageDialog(win, tr("The file has not been saved and it would not be run.\nWould you like to save the file?"), tr("Run"), wx.YES_NO | wx.ICON_QUESTION)
         answer = d.ShowModal()
         d.Destroy()
         if answer == wx.ID_YES:
