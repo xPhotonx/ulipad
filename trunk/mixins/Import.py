@@ -315,6 +315,7 @@ def SaveFile(win, ctrl, issaveas=False):
 
     if issaveas or len(ctrl.filename)<=0:
         encoding = win.execplugin('getencoding', win, win)
+	filename = get_suffix_filename(ctrl, ctrl.getFilename())
         dlg = wx.FileDialog(win, tr("Save File As..."), win.pref.last_dir, filename, '|'.join(win.filewildchar), wx.SAVE|wx.OVERWRITE_PROMPT)
         dlg.SetFilterIndex(getFilterIndex(win))
         if (dlg.ShowModal() == wx.ID_OK):
@@ -6163,7 +6164,7 @@ def add_pref(preflist):
     preflist.extend([
         (tr('General'), 150, 'check', 'open_last_dir_as_startup', tr('Open last directory at startup'), None),
         (tr('General'), 151, 'check', 'open_project_setting_dlg', tr('Automatically open Project Settings dialog when adding a directory to Directory Browser window'), None),
-        (tr('General'), 160, 'openfile', 'command_line', tr('Path to command-line:'), {'span':True}),
+        (tr('General'), 160, 'openfile', 'command_line', tr('Command line of Open Command Window Here:'), {'span':True}),
     ])
 Mixin.setPlugin('preference', 'add_pref', add_pref)
 
