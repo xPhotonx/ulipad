@@ -59,7 +59,7 @@ color_theme = {
         'STC_STYLE_ATTRNAME' : "fore:#F0804F",
         'STC_STYLE_ATTRVALUE' : "fore:#156EB2",
         'STC_STYLE_CLASSNAME' : "fore:#BBFF4F",
-        'STC_STYLE_DEFNAME' : "fore:#4179C5",
+        'STC_STYLE_DEFNAME' : "fore:#8DAF57",
         'STC_STYLE_LINK' : "fore:#FEFF8F,underline",
         'STC_STYLE_STRINGEOL' : "fore:#FF6F82,back:#E0C0E0,eol",
         'STC_STYLE_TRIPLE' : "fore:#00FF80",
