@@ -184,7 +184,7 @@ def CloseFile(win, document, checkonly = False):
     answer = wx.ID_YES
     if document.isModified():
         d = wx.MessageDialog(win, tr("Would you like to save %s?") % document.getFilename(),
-            tr("Close File"), wx.YES_NO | wx.CANCEL | wx.ICON_QUESTION)
+            tr("Save Confirmation"), wx.YES_NO | wx.CANCEL | wx.ICON_QUESTION)
         answer = d.ShowModal()
         d.Destroy()
         if answer == wx.ID_YES:

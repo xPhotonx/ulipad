@@ -85,7 +85,7 @@ def OnViewIndentationGuides(win, event):
 Mixin.setMixin('mainframe', 'OnViewIndentationGuides', OnViewIndentationGuides)
 
 def pref_init(pref):
-    pref.edge_column_width = 80
+    pref.edge_column_width = 79
     pref.startup_show_tabs = False
     pref.startup_show_indent_guide = False
     pref.startup_show_longline = True
