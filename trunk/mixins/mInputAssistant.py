@@ -22,7 +22,11 @@
 #   $Id$
 
 import wx
-import sets
+try:
+    set
+except:
+    from sets import Set as set
+
 import os
 import glob
 from modules import Mixin
@@ -210,7 +214,7 @@ def get_acp_files(win):
         files = [obj.filename for obj in objs]
 
     b = glob.glob(os.path.join(Globals.workpath, '*.acp')) + glob.glob(os.path.join(Globals.confpath, '*.acp'))
-    afiles = sets.Set(b)
+    afiles = set(b)
     afiles.difference_update(files)
     afiles = list(afiles)
     afiles.sort()
@@ -243,7 +247,7 @@ def call_lexer(win, oldfilename, filename, language):
         files = [obj.filename for obj in objs]
 
     b = glob.glob(os.path.join(Globals.workpath, '*.acp')) + glob.glob(os.path.join(Globals.confpath, '*.acp'))
-    afiles = sets.Set(b)
+    afiles = set(b)
     afiles.difference_update(files)
     afiles = list(afiles)
     afiles.sort()

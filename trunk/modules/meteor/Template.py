@@ -23,7 +23,11 @@
 
 
 import re
-import sets
+try:
+    set
+except:
+    from sets import Set as set
+
 import types
 import os
 import os.path
@@ -107,7 +111,7 @@ class Preprocessor:
         """get relation nodes set"""
         re_node = re.compile(self.getPattern())
 
-        return list(sets.Set(re_node.findall(s)))
+        return list(set(re_node.findall(s)))
 
     def get_default_target(self):
         keys = self.vars.keys()
