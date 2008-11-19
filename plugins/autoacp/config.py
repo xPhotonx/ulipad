@@ -1,5 +1,4 @@
 import wx
-import sets
 import glob
 import os
 from modules import Globals

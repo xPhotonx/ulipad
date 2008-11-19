@@ -76,7 +76,7 @@ class SashPanel(wx.Panel):
         self.bottom.SetOrientation(wx.LAYOUT_HORIZONTAL)
         self.bottom.SetAlignment(wx.LAYOUT_BOTTOM)
         self.bottom.SetSashVisible(wx.SASH_TOP, True)
-        self.bottom.SetSashBorder(wx.SASH_TOP, True)
+#        self.bottom.SetSashBorder(wx.SASH_TOP, True)
 
         self.left = wx.SashLayoutWindow(self, self.ID_LEFT, wx.DefaultPosition, wx.DefaultSize, wx.NO_BORDER)
 
@@ -84,7 +84,7 @@ class SashPanel(wx.Panel):
         self.left.SetOrientation(wx.LAYOUT_VERTICAL)
         self.left.SetAlignment(wx.LAYOUT_LEFT)
         self.left.SetSashVisible(wx.SASH_RIGHT, True)
-        self.left.SetSashBorder(wx.SASH_RIGHT, True)
+#        self.left.SetSashBorder(wx.SASH_RIGHT, True)
 
         self.right = wx.SashLayoutWindow(self, self.ID_RIGHT, wx.DefaultPosition, wx.DefaultSize, wx.NO_BORDER)
 
@@ -92,7 +92,7 @@ class SashPanel(wx.Panel):
         self.right.SetOrientation(wx.LAYOUT_VERTICAL)
         self.right.SetAlignment(wx.LAYOUT_RIGHT)
         self.right.SetSashVisible(wx.SASH_LEFT, True)
-        self.right.SetSashBorder(wx.SASH_LEFT, True)
+#        self.right.SetSashBorder(wx.SASH_LEFT, True)
 
         wx.EVT_SIZE(self, self.OnSize)
 
