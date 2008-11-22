@@ -192,7 +192,7 @@ def OnFileNew(win, event):
 Mixin.setMixin('mainframe', 'OnFileNew', OnFileNew)
 
 def OnFileOpen(win, event):
-    dlg = wx.FileDialog(win, tr("Choose A File"), win.pref.last_dir, "", '|'.join(win.filewildchar), wx.OPEN|wx.HIDE_READONLY|wx.MULTIPLE)
+    dlg = wx.FileDialog(win, tr("File List"), win.pref.last_dir, "", '|'.join(win.filewildchar), wx.OPEN|wx.HIDE_READONLY|wx.MULTIPLE)
     dlg.SetFilterIndex(getFilterIndex(win))
     if dlg.ShowModal() == wx.ID_OK:
         encoding = win.execplugin('getencoding', win, win)
@@ -857,10 +857,10 @@ def add_tool_list(toollist, toolbaritems):
 
     #order, IDname, imagefile, short text, long text, func
     toolbaritems.update({
-        'new':(wx.ITEM_NORMAL, 'IDM_FILE_NEW', 'images/new.gif', tr('New File'), tr('Creates a new document.'), 'OnFileNew'),
-        'open':(wx.ITEM_NORMAL, 'IDM_FILE_OPEN', 'images/open.gif', tr('Open File'), tr('Opens an existing document.'), 'OnFileOpen'),
-        'save':(wx.ITEM_NORMAL, 'IDM_FILE_SAVE', 'images/save.gif', tr('Save File'), tr('Saves an opened document using the same filename.'), 'OnFileSave'),
-        'saveall':(wx.ITEM_NORMAL, 'IDM_FILE_SAVE_ALL', 'images/saveall.gif', tr('Save All Files'), tr('Saves all documents.'), 'OnFileSaveAll'),
+        'new':(wx.ITEM_NORMAL, 'IDM_FILE_NEW', 'images/new.gif', tr('New Document'), tr('Creates a new document.'), 'OnFileNew'),
+        'open':(wx.ITEM_NORMAL, 'IDM_FILE_OPEN', 'images/open.gif', tr('Open Document'), tr('Opens an existing document.'), 'OnFileOpen'),
+        'save':(wx.ITEM_NORMAL, 'IDM_FILE_SAVE', 'images/save.gif', tr('Save Document'), tr('Saves an opened document using the same filename.'), 'OnFileSave'),
+        'saveall':(wx.ITEM_NORMAL, 'IDM_FILE_SAVE_ALL', 'images/saveall.gif', tr('Save All Documents'), tr('Saves all documents.'), 'OnFileSaveAll'),
         'cut':(wx.ITEM_NORMAL, 'IDM_EDIT_CUT', 'images/cut.gif', tr('Cut'), tr('Deletes text from the document and moves it to the clipboard.'), 'DoSTCBuildIn'),
         'copy':(wx.ITEM_NORMAL, 'IDM_EDIT_COPY', 'images/copy.gif', tr('Copy'), tr('Copies text from the document to the clipboard.'), 'DoSTCBuildIn'),
         'paste':(wx.ITEM_NORMAL, 'IDM_EDIT_PASTE', 'images/paste.gif', tr('Paste'), tr('Pastes text from the clipboard into the document.'), 'DoSTCBuildIn'),
@@ -902,7 +902,7 @@ from modules import Globals
 def add_mainframe_menu(menulist):
     menulist.extend([('IDM_FILE',
         [
-            (130, 'IDM_FILE_RECENTFILES', tr('Recent Files...')+'\tAlt+R', wx.ITEM_NORMAL, 'OnOpenRecentFiles', 'Shows the recently closed files pop-up.'),
+            (130, 'IDM_FILE_RECENTFILES', tr('Recent Documents...')+'\tAlt+R', wx.ITEM_NORMAL, 'OnOpenRecentFiles', 'Shows the recently closed documents pop-up.'),
         ]),
     ])
 Mixin.setPlugin('mainframe', 'add_menu', add_mainframe_menu)
@@ -945,7 +945,7 @@ Mixin.setMixin('mainframe', 'OnOpenRecentFiles', OnOpenRecentFiles)
 
 def add_pref(preflist):
     preflist.extend([
-        (tr('Document'), 200, 'num', 'recent_files_num', tr('Maximum number of recent files:'), None)
+        (tr('Document'), 200, 'num', 'recent_files_num', tr('Maximum number of recent documents:'), None)
     ])
 Mixin.setPlugin('preference', 'add_pref', add_pref)
 
@@ -979,14 +979,14 @@ def add_mainframe_menu(menulist):
         ]),
         ('IDM_SEARCH', #parent menu id
         [
-            (100, 'wx.ID_FIND', tr('Find...') + '\tE=Ctrl+F', wx.ITEM_NORMAL, 'OnSearchFind', tr('Opens Find pane.')),
+            (100, 'wx.ID_FIND', tr('Find...') + '\tE=Ctrl+F', wx.ITEM_NORMAL, 'OnSearchFind', tr('Shows the Find pane.')),
             (110, 'IDM_SEARCH_DIRECTFIND', tr('Directly Find') + '\tE=F4', wx.ITEM_NORMAL, 'OnSearchDirectFind', tr('Jumps to the next occurrence of selected text.')),
-            (120, 'wx.ID_REPLACE', tr('Find And Replace...') + '\tE=Ctrl+H', wx.ITEM_NORMAL, 'OnSearchReplace', tr('Opens Finds and Replace pane.')),
-            (130, 'wx.ID_BACKWARD', tr('Find Previous') + '\tE=Shift+F3', wx.ITEM_NORMAL, 'OnSearchFindPrev', tr('Finds previous occurence of text.')),
-            (140, 'wx.ID_FORWARD', tr('Find Next') + '\tE=F3', wx.ITEM_NORMAL, 'OnSearchFindNext', tr('Finds next occurence of text.')),
+            (120, 'wx.ID_REPLACE', tr('Find And Replace...') + '\tE=Ctrl+H', wx.ITEM_NORMAL, 'OnSearchReplace', tr('Shows the Find And Replace pane.')),
+            (130, 'wx.ID_BACKWARD', tr('Find Previous') + '\tE=Shift+F3', wx.ITEM_NORMAL, 'OnSearchFindPrev', tr('Finds the previous occurence of text.')),
+            (140, 'wx.ID_FORWARD', tr('Find Next') + '\tE=F3', wx.ITEM_NORMAL, 'OnSearchFindNext', tr('Finds the next occurence of text.')),
             (150, '', '-', wx.ITEM_SEPARATOR, None, ''),
-            (160, 'IDM_SEARCH_GOTO_LINE', tr('Go To Line...') + '\tE=Ctrl+G', wx.ITEM_NORMAL, 'OnSearchGotoLine', tr('Jumps to specified line in the current document.')),
-            (170, 'IDM_SEARCH_LAST_MODIFY', tr('Go To Last Modified') + '\tE=Ctrl+B', wx.ITEM_NORMAL, 'OnSearchLastModify', tr('Jumps to the position of the last modification.')),
+            (160, 'IDM_SEARCH_GOTO_LINE', tr('Go To Line...') + '\tE=Ctrl+G', wx.ITEM_NORMAL, 'OnSearchGotoLine', tr('Jumps to the specified line in the current document.')),
+            (170, 'IDM_SEARCH_LAST_MODIFY', tr('Go To Last Modification') + '\tE=Ctrl+B', wx.ITEM_NORMAL, 'OnSearchLastModify', tr('Jumps to the position of the last modification.')),
 
         ]),
     ])
@@ -1008,8 +1008,8 @@ def add_tool_list(toollist, toolbaritems):
     ])
 
     toolbaritems.update({
-        'find':(wx.ITEM_NORMAL, 'wx.ID_FIND', 'images/find.gif', tr('Open Find Window'), tr('Find Text'), 'OnSearchFind'),
-        'replace':(wx.ITEM_NORMAL, 'wx.ID_REPLACE', 'images/replace.gif', tr('Open Find And Replace Window'), tr('Find and replace text'), 'OnSearchReplace'),
+        'find':(wx.ITEM_NORMAL, 'wx.ID_FIND', 'images/find.gif', tr('Find'), tr('Shows the Find pane.'), 'OnSearchFind'),
+        'replace':(wx.ITEM_NORMAL, 'wx.ID_REPLACE', 'images/replace.gif', tr('Find And Replace'), tr('Shows the Find And Replace pane.'), 'OnSearchReplace'),
     })
 Mixin.setPlugin('mainframe', 'add_tool_list', add_tool_list)
 
@@ -1084,7 +1084,7 @@ def OnSearchGotoLine(win, event):
     document = win.document
 
     line = document.GetCurrentLine() + 1
-    dlg = Entry.MyTextEntry(win, tr("Go To Line..."), tr("Enter the line number:"), str(line))
+    dlg = Entry.MyTextEntry(win, tr("Go To Line"), tr("Enter the line number:"), str(line))
     answer = dlg.ShowModal()
     if answer == wx.ID_OK:
         try:
@@ -1163,7 +1163,7 @@ Mixin.setPlugin('editor', 'init', beforeinit)
 
 def add_pref(preflist):
     preflist.extend([
-        (tr('Document'), 140, 'choice', 'default_eol_mode', tr('Default line ending used in document:'), eolmess)
+        (tr('Document'), 140, 'choice', 'default_eol_mode', tr('Default line ending used in the document:'), eolmess)
     ])
 Mixin.setPlugin('preference', 'add_pref', add_pref)
 
@@ -1236,7 +1236,7 @@ Mixin.setPlugin('editor', 'openfiletext', fileopentext)
 def confirm_eol(win):
     eolmodestr = "MIX"
     d = wx.MessageDialog(win,
-        tr('%s is currently Mixed.\nWould you like to change it to the default?\nThe Default is: %s')
+        tr('%s is currently mixed.\nWould you like to change it to default?\nThe default is: %s')
         % (win.filename, win.eolmess[win.pref.default_eol_mode]),
         tr("Mixed Line Ending"), wx.YES_NO | wx.ICON_QUESTION)
     if d.ShowModal() == wx.ID_YES:
@@ -1487,7 +1487,7 @@ def add_mainframe_menu(menulist):
         ]),
         ('IDM_EDIT_FORMAT',
         [
-            (100, 'IDM_EDIT_FORMAT_CHOP', tr('Trim Trailing Spaces'), wx.ITEM_NORMAL, 'OnEditFormatChop', tr('Trims trailing white spaces.')),
+            (100, 'IDM_EDIT_FORMAT_CHOP', tr('Trim Trailing Whitespace'), wx.ITEM_NORMAL, 'OnEditFormatChop', tr('Trims the trailing whitespace.')),
             (110, 'IDM_EDIT_FORMAT_SPACETOTAB', tr('Leading Spaces To Tabs'), wx.ITEM_NORMAL, 'OnEditFormatSpaceToTab', tr('Converts leading spaces to tabs.')),
             (120, 'IDM_EDIT_FORMAT_TABTOSPACE', tr('Leading Tabs To Spaces'), wx.ITEM_NORMAL, 'OnEditFormatTabToSpace', tr('Converts leading tabs to spaces.')),
             (125, 'IDM_EDIT_FORMAT_ALLTABTOSPACE', tr('All Tabs To Spaces'), wx.ITEM_NORMAL, 'OnEditFormatAllTabToSpace', tr('Converts all tabs to spaces.')),
@@ -1511,7 +1511,7 @@ def add_editor_menu(popmenulist):
         ]),
         ('IDPM_FORMAT',
         [
-            (100, 'IDPM_FORMAT_CHOP', tr('Trim Trailing Spaces'), wx.ITEM_NORMAL, 'OnFormatChop', tr('Trims trailing white spaces.')),
+            (100, 'IDPM_FORMAT_CHOP', tr('Trim Trailing Whitespace'), wx.ITEM_NORMAL, 'OnFormatChop', tr('Trims the trailing whitespace.')),
             (110, 'IDPM_FORMAT_SPACETOTAB', tr('Convert Leading Spaces To Tabs'), wx.ITEM_NORMAL, 'OnFormatSpaceToTab', tr('Converts leading spaces to tabs.')),
             (120, 'IDPM_FORMAT_TABTOSPACE', tr('Convert Leading Tabs To Spaces'), wx.ITEM_NORMAL, 'OnFormatTabToSpace', tr('Converts leading tabs to spaces.')),
             (125, 'IDPM_FORMAT_ALLTABTOSPACE', tr('Convert All Tabs To Spaces'), wx.ITEM_NORMAL, 'OnFormatAllTabToSpace', tr('Converts all tabs to spaces.')),
@@ -1655,7 +1655,7 @@ def OnEditFormatComment(win, event):
     if win.pref.show_comment_chars_dialog:
         from modules import Entry
 
-        dlg = Entry.MyTextEntry(win, tr("Comment..."), tr("Comment Char:"), get_document_comment_chars(win.document))
+        dlg = Entry.MyTextEntry(win, tr("Comment Writer"), tr("Comment:"), get_document_comment_chars(win.document))
         answer = dlg.ShowModal()
         if answer == wx.ID_OK:
             commentchar = dlg.GetValue()

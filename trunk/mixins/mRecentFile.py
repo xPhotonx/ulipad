@@ -30,7 +30,7 @@ from modules import Globals
 def add_mainframe_menu(menulist):
     menulist.extend([('IDM_FILE',
         [
-            (130, 'IDM_FILE_RECENTFILES', tr('Recent Files...')+'\tAlt+R', wx.ITEM_NORMAL, 'OnOpenRecentFiles', 'Shows the recently closed files pop-up.'),
+            (130, 'IDM_FILE_RECENTFILES', tr('Recent Documents...')+'\tAlt+R', wx.ITEM_NORMAL, 'OnOpenRecentFiles', 'Shows the recently closed documents pop-up.'),
 #            (135, 'IDM_FILE_RECENTPATHS', tr('Open Recent Paths'), wx.ITEM_NORMAL, 'OnOpenRecentPaths', 'Opens recent paths.'),
         ]),
     ])
@@ -82,7 +82,7 @@ Mixin.setMixin('mainframe', 'OnOpenRecentFiles', OnOpenRecentFiles)
     
 def add_pref(preflist):
     preflist.extend([
-        (tr('Document'), 200, 'num', 'recent_files_num', tr('Maximum number of recent files:'), None)
+        (tr('Document'), 200, 'num', 'recent_files_num', tr('Maximum number of recent documents:'), None)
     ])
 Mixin.setPlugin('preference', 'add_pref', add_pref)
 
