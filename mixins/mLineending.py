@@ -40,7 +40,7 @@ Mixin.setPlugin('editor', 'init', beforeinit)
 
 def add_pref(preflist):
     preflist.extend([
-        (tr('Document'), 140, 'choice', 'default_eol_mode', tr('Default line ending used in document:'), eolmess)
+        (tr('Document'), 140, 'choice', 'default_eol_mode', tr('Default line ending used in the document:'), eolmess)
     ])
 Mixin.setPlugin('preference', 'add_pref', add_pref)
 
@@ -113,7 +113,7 @@ Mixin.setPlugin('editor', 'openfiletext', fileopentext)
 def confirm_eol(win):
     eolmodestr = "MIX"
     d = wx.MessageDialog(win,
-        tr('%s is currently Mixed.\nWould you like to change it to the default?\nThe Default is: %s')
+        tr('%s is currently mixed.\nWould you like to change it to default?\nThe default is: %s')
         % (win.filename, win.eolmess[win.pref.default_eol_mode]),
         tr("Mixed Line Ending"), wx.YES_NO | wx.ICON_QUESTION)
     if d.ShowModal() == wx.ID_YES:

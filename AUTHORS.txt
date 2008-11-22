@@ -13,6 +13,7 @@ Mario Lacunza <mlacunza@gmail.com>              Commit Spanish translation file 
 Ye Naiquan <Naiquan.Ye@marintek.sintef.no>      Commit Patch
 Kelie Feng                                      Create a great video about UliPad and put in ShowMeDo site, and other helps
 Jaime Wyant <pyogrammer.py@gmail.com>		Provide patches, plugins, and many suggestions
+vinetouu <vinetouu@gmail.com>			Fix typos and provide patches
 
 Also thanks a lot:
 
@@ -35,4 +36,3 @@ Bob Gao <lulihummel@gmail.com>                  Provide patch
 Gaël Barrachon <gael.barrachon@gmail.com>	Commit French translation
 Jose Jachuf <jjachuf@gmail.com>			Fix Spanish translation
 xw_max <xw_max@163.com>				Provide patch about passing parameters to winpdb
-vinetouu <vinetouu@gmail.com>			Fix typos and provide patches

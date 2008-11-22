@@ -33,7 +33,7 @@ def add_mainframe_menu(menulist):
         ]),
         ('IDM_EDIT_FORMAT',
         [
-            (100, 'IDM_EDIT_FORMAT_CHOP', tr('Trim Trailing Spaces'), wx.ITEM_NORMAL, 'OnEditFormatChop', tr('Trims trailing white spaces.')),
+            (100, 'IDM_EDIT_FORMAT_CHOP', tr('Trim Trailing Whitespace'), wx.ITEM_NORMAL, 'OnEditFormatChop', tr('Trims the trailing whitespace.')),
             (110, 'IDM_EDIT_FORMAT_SPACETOTAB', tr('Leading Spaces To Tabs'), wx.ITEM_NORMAL, 'OnEditFormatSpaceToTab', tr('Converts leading spaces to tabs.')),
             (120, 'IDM_EDIT_FORMAT_TABTOSPACE', tr('Leading Tabs To Spaces'), wx.ITEM_NORMAL, 'OnEditFormatTabToSpace', tr('Converts leading tabs to spaces.')),
             (125, 'IDM_EDIT_FORMAT_ALLTABTOSPACE', tr('All Tabs To Spaces'), wx.ITEM_NORMAL, 'OnEditFormatAllTabToSpace', tr('Converts all tabs to spaces.')),
@@ -57,7 +57,7 @@ def add_editor_menu(popmenulist):
         ]),
         ('IDPM_FORMAT',
         [
-            (100, 'IDPM_FORMAT_CHOP', tr('Trim Trailing Spaces'), wx.ITEM_NORMAL, 'OnFormatChop', tr('Trims trailing white spaces.')),
+            (100, 'IDPM_FORMAT_CHOP', tr('Trim Trailing Whitespace'), wx.ITEM_NORMAL, 'OnFormatChop', tr('Trims the trailing whitespace.')),
             (110, 'IDPM_FORMAT_SPACETOTAB', tr('Convert Leading Spaces To Tabs'), wx.ITEM_NORMAL, 'OnFormatSpaceToTab', tr('Converts leading spaces to tabs.')),
             (120, 'IDPM_FORMAT_TABTOSPACE', tr('Convert Leading Tabs To Spaces'), wx.ITEM_NORMAL, 'OnFormatTabToSpace', tr('Converts leading tabs to spaces.')),
             (125, 'IDPM_FORMAT_ALLTABTOSPACE', tr('Convert All Tabs To Spaces'), wx.ITEM_NORMAL, 'OnFormatAllTabToSpace', tr('Converts all tabs to spaces.')),
@@ -201,7 +201,7 @@ def OnEditFormatComment(win, event):
     if win.pref.show_comment_chars_dialog:
         from modules import Entry
 
-        dlg = Entry.MyTextEntry(win, tr("Comment..."), tr("Comment Char:"), get_document_comment_chars(win.document))
+        dlg = Entry.MyTextEntry(win, tr("Comment Writer"), tr("Comment:"), get_document_comment_chars(win.document))
         answer = dlg.ShowModal()
         if answer == wx.ID_OK:
             commentchar = dlg.GetValue()
