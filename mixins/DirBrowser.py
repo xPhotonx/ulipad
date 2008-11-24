@@ -67,10 +67,10 @@ class DirBrowser(wx.Panel, Mixin.Mixin):
         ('IDPM_ADD',
         [
             (100, 'IDPM_ADD_NEWDIR', tr('Open New Directory'), wx.ITEM_NORMAL, 'OnAddNewPath', ''),
-            (110, 'IDPM_ADD_ULIPADWORK', tr('Open UliPad Work Path'), wx.ITEM_NORMAL, 'OnAddUliPadWorkPath', ''),
-            (120, 'IDPM_ADD_ULIPADUSER', tr('Open UliPad User Path'), wx.ITEM_NORMAL, 'OnAddUliPadUserPath', ''),
+#            (110, 'IDPM_ADD_ULIPADWORK', tr('Open UliPad Work Path'), wx.ITEM_NORMAL, 'OnAddUliPadWorkPath', ''),
+#            (120, 'IDPM_ADD_ULIPADUSER', tr('Open UliPad User Path'), wx.ITEM_NORMAL, 'OnAddUliPadUserPath', ''),
             (130, '', '-', wx.ITEM_SEPARATOR, None, ''),
-            (140, 'IDPM_ADD_CLEAN', tr('Clean Recently Directoris'), wx.ITEM_NORMAL, 'OnCleanDirectories', ''),
+            (140, 'IDPM_ADD_CLEAN', tr('Clear Recent Directoris'), wx.ITEM_NORMAL, 'OnCleanDirectories', ''),
             (150, '', '-', wx.ITEM_SEPARATOR, None, ''),
             (160, 'IDPM_ADD_DIRS', tr('(Empty)'), wx.ITEM_NORMAL, '', ''),
         ]),
