@@ -7635,6 +7635,8 @@ def html_fragment(content):
 from mixins import HtmlPage
 import tempfile
 import os
+_tmp_rst_files_ = []
+
 class RestHtmlView(wx.Panel):
     def __init__(self, parent, content, document):
         wx.Panel.__init__(self, parent, -1)
@@ -7674,6 +7676,7 @@ class RestHtmlView(wx.Panel):
             fd, self.tmpfilename = tempfile.mkstemp('.html', dir=path)
             os.write(fd, content)
             os.close(fd)
+            _tmp_rst_files_.append(self.tmpfilename)
         else:
             file(self.tmpfilename, 'w').write(content)
 
@@ -7694,6 +7697,7 @@ class RestHtmlView(wx.Panel):
     def OnClose(self, win):
         if self.tmpfilename:
             try:
+                _tmp_rst_files_.remove(self.tmpfilename)
                 os.unlink(self.tmpfilename)
             except:
                 pass
@@ -7725,6 +7729,14 @@ def on_modified(win):
             break
 Mixin.setPlugin('editor', 'on_modified', on_modified)
 
+def on_close(win, event):
+    for i in _tmp_rst_files_:
+        if os.path.exists(i):
+            try:
+                os.unlink(i)
+            except:
+                pass
+Mixin.setPlugin('mainframe','on_close', on_close)
 
 
 
