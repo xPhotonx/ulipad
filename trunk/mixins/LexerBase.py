@@ -47,7 +47,7 @@ color_theme = {
         'STC_STYLE_LINENUMBER' : "fore:#FFFFFF,back:#1F4661,face:%(mono)s,size:%(lnsize)d",
         'STC_STYLE_CONTROLCHAR' : "fore:#FFFFFF",
         'STC_STYLE_BRACELIGHT' : "bold,fore:#FF0000",
-        'STC_STYLE_BRACEBAD' : "bold,fore:#0000FF",
+        'STC_STYLE_BRACEBAD' : "bold,fore:#FFFFFF",
         'STC_STYLE_CARET_FORE' : "fore:#FF0000",
         'STC_STYLE_CARETLINE_BACK' : "back:#413FFF",
         'STC_STYLE_SELECTION_BACK' : "back:#2E9F27",

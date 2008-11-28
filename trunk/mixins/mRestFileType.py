@@ -86,7 +86,7 @@ def createRestHtmlViewWindow(win, side, document):
 
     if not obj:
         if win.document.documenttype == 'texteditor':
-            text = html_fragment(document.GetText().encode('utf-8'))
+            text = html_fragment(document.GetText().encode('utf-8'), os.path.dirname(win.document.filename))
             if text:
                 page = RestHtmlView(win.panel.createNotebook(side), text, document)
                 win.panel.addPage(side, page, dispname)
@@ -113,11 +113,11 @@ def OnRestHtmlViewBottom(win, event=None):
     win.mainframe.OnRestViewHtmlInBottom(None)
 Mixin.setMixin('editctrl', 'OnRestHtmlViewBottom', OnRestHtmlViewBottom)
 
-def html_fragment(content):
+def html_fragment(content, path=''):
     from docutils.core import publish_string
     
     try:
-        return publish_string(content, writer_name = 'html' )
+        return publish_string(content, writer_name = 'html', source_path=path)
     except:
         error.traceback()
         return None
@@ -142,8 +142,11 @@ class RestHtmlView(wx.Panel):
             import wx.lib.iewin as iewin
             
             self.html = HtmlPage.IEHtmlWindow(self)
-            self.html.ie.Bind(iewin.EVT_DocumentComplete, self.OnDocumentComplete, self.html.ie)
-            self.html.ie.Bind(iewin.EVT_ProgressChange, self.OnDocumentComplete, self.html.ie)
+            if wx.version() < '2.8.8.1':
+                self.html.ie.Bind(iewin.EVT_DocumentComplete, self.OnDocumentComplete, self.html.ie)
+            else:
+                self.html.ie.AddEventSink(self)
+#            self.html.ie.Bind(iewin.EVT_ProgressChange, self.OnDocumentComplete, self.html.ie)
         else:
             self.html = HtmlPage.DefaultHtmlWindow(self)
             self.html.SetRelatedFrame(mainframe, mainframe.app.appname + " - Browser [%s]")
@@ -192,7 +195,13 @@ class RestHtmlView(wx.Panel):
             except:
                 pass
     
+    #for version lower than 2.8.8.1
     def OnDocumentComplete(self, evt):
+        if self.FindFocus() is not self.document:
+            self.document.SetFocus()
+            
+    #for version higher or equal 2.8.8.1
+    def DocumentComplete(self, this, pDisp, URL):
         if self.FindFocus() is not self.document:
             self.document.SetFocus()
     
@@ -210,7 +219,7 @@ def on_modified(win):
             
             def f():
                 try:
-                    text = html_fragment(win.GetText().encode('utf-8'))
+                    text = html_fragment(win.GetText().encode('utf-8'), os.path.dirname(win.filename))
                     page.refresh(text)
                 finally:
                     page.rendering = False
