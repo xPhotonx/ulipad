@@ -142,7 +142,7 @@ class RestHtmlView(wx.Panel):
             import wx.lib.iewin as iewin
             
             self.html = HtmlPage.IEHtmlWindow(self)
-            if wx.version() < '2.8.8.1':
+            if wx.version() < '2.8.8.0':
                 self.html.ie.Bind(iewin.EVT_DocumentComplete, self.OnDocumentComplete, self.html.ie)
             else:
                 self.html.ie.AddEventSink(self)
@@ -195,12 +195,12 @@ class RestHtmlView(wx.Panel):
             except:
                 pass
     
-    #for version lower than 2.8.8.1
+    #for version lower than 2.8.8.0
     def OnDocumentComplete(self, evt):
         if self.FindFocus() is not self.document:
             self.document.SetFocus()
             
-    #for version higher or equal 2.8.8.1
+    #for version higher or equal 2.8.8.0
     def DocumentComplete(self, this, pDisp, URL):
         if self.FindFocus() is not self.document:
             self.document.SetFocus()
