@@ -86,7 +86,7 @@ def createRestHtmlViewWindow(win, side, document):
 
     if not obj:
         if win.document.documenttype == 'texteditor':
-            text = html_fragment(document.GetText().encode('utf-8'), os.path.dirname(win.document.filename))
+            text = html_fragment(document.GetText().encode('utf-8'), win.document.filename)
             if text:
                 page = RestHtmlView(win.panel.createNotebook(side), text, document)
                 win.panel.addPage(side, page, dispname)
@@ -219,7 +219,7 @@ def on_modified(win):
             
             def f():
                 try:
-                    text = html_fragment(win.GetText().encode('utf-8'), os.path.dirname(win.filename))
+                    text = html_fragment(win.GetText().encode('utf-8'), win.filename)
                     page.refresh(text)
                 finally:
                     page.rendering = False
