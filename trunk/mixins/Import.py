@@ -4240,7 +4240,7 @@ def OnPythonRun(win, event):
     args = doc.args.replace('$path', os.path.dirname(doc.filename))
     args = args.replace('$file', doc.filename)
     ext = os.path.splitext(doc.filename)[1].lower()
-    command = u'"%s" -u "%s" %s' % (interpreter, doc.filename, args)
+    command = u'"%s" "%s" %s' % (interpreter, doc.filename, args)
     #chanage current path to filename's dirname
     path = os.path.dirname(doc.filename)
     os.chdir(common.encode_string(path))
