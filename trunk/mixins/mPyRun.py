@@ -133,7 +133,7 @@ def OnPythonRun(win, event):
         if win.pref.python_save_before_run:
             win.OnFileSave(event)
         else:
-            d = wx.MessageDialog(win, tr("The file has not been saved and it would not be run.\nWould you like to save the file?"), tr("Run"), wx.YES_NO | wx.ICON_QUESTION)
+            d = wx.MessageDialog(win, tr("The script can't run because the document has not been saved.\nWould you like to save it?"), tr("Run"), wx.YES_NO | wx.ICON_QUESTION)
             answer = d.ShowModal()
             d.Destroy()
             if answer == wx.ID_YES:
@@ -160,7 +160,7 @@ def get_python_args(win):
     from InterpreterDialog import PythonArgsDialog
     
     dlg = PythonArgsDialog(win, win.pref, tr('Python Arguments Manager'),
-        tr("Enter the command line arguments:\n$file will be replaced by current document filename\n$path will be replaced by current document filename's directory"),
+        tr("Enter command-line arguments:\n$file will be replaced with the filename of the current document\n$path will be replaced with the filename's directory of the current document"),
         win.document.args, win.document.redirect)
     answer = dlg.ShowModal()
     dlg.Destroy()
@@ -253,7 +253,7 @@ def add_tool_list(toollist, toolbaritems):
     #order, IDname, imagefile, short text, long text, func
     toolbaritems.update({
         'run':(wx.ITEM_NORMAL, 'IDM_PYTHON_RUN', 'images/run.gif', tr('Run'), tr('Run python program'), 'OnPythonRun'),
-        'setargs':(wx.ITEM_NORMAL, 'IDM_PYTHON_SETARGS', 'images/setargs.gif', tr('Set Arguments'), tr('Set python program command line arugments'), 'OnPythonSetArgs'),
+        'setargs':(wx.ITEM_NORMAL, 'IDM_PYTHON_SETARGS', 'images/setargs.gif', tr('Set Arguments'), tr('Sets the command-line arguments for a Python program.'), 'OnPythonSetArgs'),
         'stop':(wx.ITEM_NORMAL, 'IDM_PYTHON_END', 'images/stop.gif', tr('Stop Program'), tr('Stop current python program.'), 'OnPythonEnd'),
     })
 Mixin.setPlugin('pythonfiletype', 'add_tool_list', add_tool_list)

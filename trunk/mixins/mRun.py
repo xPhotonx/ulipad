@@ -66,7 +66,7 @@ def RunCommand(win, command, redirect=True, hide=False, input_decorator=None,
 
     #test if there is already a running process
     if hasattr(win, 'messagewindow') and win.messagewindow and win.messagewindow.process:
-        common.showmessage(win, tr("The last command has not finished, please try later."))
+        common.showmessage(win, tr("The last process has not finished yet. Please stop it and try again."))
         return
     if input_decorator:
         input_appendtext = input_decorator(appendtext)

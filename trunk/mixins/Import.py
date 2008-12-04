@@ -128,7 +128,7 @@ def add_mainframe_menu(menulist):
             (150, 'IDM_FILE_CLOSE_ALL', tr('Close All'), wx.ITEM_NORMAL, 'OnFileCloseAll', tr('Closes all document windows.')),
             (160, '', '-', wx.ITEM_SEPARATOR, None, ''),
             (170, 'IDM_FILE_SAVE', tr('Save') + '\tE=Ctrl+S', wx.ITEM_NORMAL, 'OnFileSave', tr('Saves an opened document using the same filename.')),
-            (180, 'IDM_FILE_SAVEAS', tr('Save As...'), wx.ITEM_NORMAL, 'OnFileSaveAs', tr('Saves an opened document to a specified file name.')),
+            (180, 'IDM_FILE_SAVEAS', tr('Save As...'), wx.ITEM_NORMAL, 'OnFileSaveAs', tr('Saves an opened document to a specified filename.')),
             (190, 'IDM_FILE_SAVE_ALL', tr('Save All'), wx.ITEM_NORMAL, 'OnFileSaveAll', tr('Saves all documents.')),
         ]),
     ])
@@ -3506,7 +3506,7 @@ def RunCommand(win, command, redirect=True, hide=False, input_decorator=None,
 
     #test if there is already a running process
     if hasattr(win, 'messagewindow') and win.messagewindow and win.messagewindow.process:
-        common.showmessage(win, tr("The last command has not finished, please try later."))
+        common.showmessage(win, tr("The last process has not finished yet. Please stop it and try again."))
         return
     if input_decorator:
         input_appendtext = input_decorator(appendtext)
@@ -4225,7 +4225,7 @@ def OnPythonRun(win, event):
         if win.pref.python_save_before_run:
             win.OnFileSave(event)
         else:
-            d = wx.MessageDialog(win, tr("The file has not been saved and it would not be run.\nWould you like to save the file?"), tr("Run"), wx.YES_NO | wx.ICON_QUESTION)
+            d = wx.MessageDialog(win, tr("The script can't run because the document has not been saved.\nWould you like to save it?"), tr("Run"), wx.YES_NO | wx.ICON_QUESTION)
             answer = d.ShowModal()
             d.Destroy()
             if answer == wx.ID_YES:
@@ -4252,7 +4252,7 @@ def get_python_args(win):
     from InterpreterDialog import PythonArgsDialog
 
     dlg = PythonArgsDialog(win, win.pref, tr('Python Arguments Manager'),
-        tr("Enter the command line arguments:\n$file will be replaced by current document filename\n$path will be replaced by current document filename's directory"),
+        tr("Enter command-line arguments:\n$file will be replaced with the filename of the current document\n$path will be replaced with the filename's directory of the current document"),
         win.document.args, win.document.redirect)
     answer = dlg.ShowModal()
     dlg.Destroy()
@@ -4345,7 +4345,7 @@ def add_tool_list(toollist, toolbaritems):
     #order, IDname, imagefile, short text, long text, func
     toolbaritems.update({
         'run':(wx.ITEM_NORMAL, 'IDM_PYTHON_RUN', 'images/run.gif', tr('Run'), tr('Run python program'), 'OnPythonRun'),
-        'setargs':(wx.ITEM_NORMAL, 'IDM_PYTHON_SETARGS', 'images/setargs.gif', tr('Set Arguments'), tr('Set python program command line arugments'), 'OnPythonSetArgs'),
+        'setargs':(wx.ITEM_NORMAL, 'IDM_PYTHON_SETARGS', 'images/setargs.gif', tr('Set Arguments'), tr('Sets the command-line arguments for a Python program.'), 'OnPythonSetArgs'),
         'stop':(wx.ITEM_NORMAL, 'IDM_PYTHON_END', 'images/stop.gif', tr('Stop Program'), tr('Stop current python program.'), 'OnPythonEnd'),
     })
 Mixin.setPlugin('pythonfiletype', 'add_tool_list', add_tool_list)
@@ -6163,7 +6163,7 @@ Mixin.setPlugin('preference', 'init', pref_init)
 def add_pref(preflist):
     preflist.extend([
         (tr('General'), 150, 'check', 'open_last_dir_as_startup', tr('Open last directory at startup'), None),
-        (tr('General'), 151, 'check', 'open_project_setting_dlg', tr('Automatically open Project Settings dialog when adding a directory to Directory Browser window'), None),
+        (tr('General'), 151, 'check', 'open_project_setting_dlg', tr('Automatically open the Project Settings dialog if a directory is added into the Directory Browser pane'), None),
         (tr('General'), 160, 'openfile', 'command_line', tr('Command line of Open Command Window Here:'), {'span':True}),
     ])
 Mixin.setPlugin('preference', 'add_pref', add_pref)
