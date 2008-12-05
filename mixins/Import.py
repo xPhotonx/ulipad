@@ -7654,6 +7654,7 @@ class RestHtmlView(wx.Panel):
             self.html = HtmlPage.IEHtmlWindow(self)
             if wx.version() < '2.8.8.0':
                 self.html.ie.Bind(iewin.EVT_DocumentComplete, self.OnDocumentComplete, self.html.ie)
+                self.html.ie.Bind(iewin.EVT_ProgressChange, self.OnDocumentComplete, self.html.ie)
             else:
                 self.html.ie.AddEventSink(self)
         else:

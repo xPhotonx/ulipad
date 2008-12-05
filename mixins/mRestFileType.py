@@ -144,9 +144,9 @@ class RestHtmlView(wx.Panel):
             self.html = HtmlPage.IEHtmlWindow(self)
             if wx.version() < '2.8.8.0':
                 self.html.ie.Bind(iewin.EVT_DocumentComplete, self.OnDocumentComplete, self.html.ie)
+                self.html.ie.Bind(iewin.EVT_ProgressChange, self.OnDocumentComplete, self.html.ie)
             else:
                 self.html.ie.AddEventSink(self)
-#            self.html.ie.Bind(iewin.EVT_ProgressChange, self.OnDocumentComplete, self.html.ie)
         else:
             self.html = HtmlPage.DefaultHtmlWindow(self)
             self.html.SetRelatedFrame(mainframe, mainframe.app.appname + " - Browser [%s]")
@@ -204,7 +204,7 @@ class RestHtmlView(wx.Panel):
     def DocumentComplete(self, this, pDisp, URL):
         if self.FindFocus() is not self.document:
             self.document.SetFocus()
-    
+            
 def is_resthtmlview(page, document):
     if hasattr(page, 'resthtmlview') and page.resthtmlview and page.document is document:
         return True
