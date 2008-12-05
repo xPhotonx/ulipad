@@ -66,7 +66,7 @@ def RunCommand(win, command, redirect=True, hide=False, input_decorator=None,
 
     #test if there is already a running process
     if hasattr(win, 'messagewindow') and win.messagewindow and win.messagewindow.process:
-        common.showmessage(win, tr("The last process has not finished yet. Please stop it and try again."))
+        common.showmessage(win, tr("The last process didn't stop yet. Please stop it and try again."))
         return
     if input_decorator:
         input_appendtext = input_decorator(appendtext)
@@ -100,8 +100,8 @@ def RunCommand(win, command, redirect=True, hide=False, input_decorator=None,
             win.messagewindow.errorstream = win.messagewindow.process.GetErrorStream()
         except:
             win.messagewindow.process = None
-            dlg = wx.MessageDialog(win, tr("There are some problems when running the program!\nPlease run it in shell.") ,
-                "Stop running", wx.OK | wx.ICON_INFORMATION)
+            dlg = wx.MessageDialog(win, tr("There are some issues with running the program.\nPlease run it in the shell.") ,
+                "Error", wx.OK | wx.ICON_EXCLAMATION)
             dlg.ShowModal()
     else:
         wx.Execute(command, wx.EXEC_ASYNC)

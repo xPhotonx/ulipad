@@ -3506,7 +3506,7 @@ def RunCommand(win, command, redirect=True, hide=False, input_decorator=None,
 
     #test if there is already a running process
     if hasattr(win, 'messagewindow') and win.messagewindow and win.messagewindow.process:
-        common.showmessage(win, tr("The last process has not finished yet. Please stop it and try again."))
+        common.showmessage(win, tr("The last process didn't stop yet. Please stop it and try again."))
         return
     if input_decorator:
         input_appendtext = input_decorator(appendtext)
@@ -3540,8 +3540,8 @@ def RunCommand(win, command, redirect=True, hide=False, input_decorator=None,
             win.messagewindow.errorstream = win.messagewindow.process.GetErrorStream()
         except:
             win.messagewindow.process = None
-            dlg = wx.MessageDialog(win, tr("There are some problems when running the program!\nPlease run it in shell.") ,
-                "Stop running", wx.OK | wx.ICON_INFORMATION)
+            dlg = wx.MessageDialog(win, tr("There are some issues with running the program.\nPlease run it in the shell.") ,
+                "Error", wx.OK | wx.ICON_EXCLAMATION)
             dlg.ShowModal()
     else:
         wx.Execute(command, wx.EXEC_ASYNC)
@@ -4155,8 +4155,8 @@ Mixin.setMixin('prefdialog', 'OnSetInterpreter', OnSetInterpreter)
 def add_pref(preflist):
     preflist.extend([
         ('Python', 150, 'button', 'python_interpreter', tr('Setup Python interpreter...'), 'OnSetInterpreter'),
-        ('Python', 155, 'check', 'python_show_args', tr('Show arguments dialog at Python program run'), None),
-        ('Python', 156, 'check', 'python_save_before_run', tr('Save modified file at Python program run'), None),
+        ('Python', 155, 'check', 'python_show_args', tr('Show the Select Arguments dialog at Python program run'), None),
+        ('Python', 156, 'check', 'python_save_before_run', tr('Save the modified document at Python program run'), None),
     ])
 Mixin.setPlugin('preference', 'add_pref', add_pref)
 
@@ -4165,7 +4165,7 @@ def add_pyftype_menu(menulist):
         [
             (120, '', '-', wx.ITEM_SEPARATOR, None, ''),
             (130, 'IDM_PYTHON_RUN', tr('Run')+u'\tE=F5', wx.ITEM_NORMAL, 'OnPythonRun', tr('Runs the Python program.')),
-            (140, 'IDM_PYTHON_SETARGS', tr('Set Arguments...'), wx.ITEM_NORMAL, 'OnPythonSetArgs', tr('Sets the Python program command-line arguments.')),
+            (140, 'IDM_PYTHON_SETARGS', tr('Set Arguments...'), wx.ITEM_NORMAL, 'OnPythonSetArgs', tr('Sets the command-line arguments for a Python program.')),
             (150, 'IDM_PYTHON_END', tr('Stop Program'), wx.ITEM_NORMAL, 'OnPythonEnd', tr('Stops the current Python program.')),
             (155, 'IDM_PYTHON_DOCTEST', tr('Run Doctest'), wx.ITEM_NORMAL, 'OnPythonDoctests', tr('Runs doctest in the current document.')),
         ]),
@@ -4319,7 +4319,7 @@ def OnPythonDoctests(win, event):
 
     doc = win.editctrl.getCurDoc()
     if doc.isModified() or doc.filename == '':
-        d = wx.MessageDialog(win, tr("The file has not been saved and it would not be run.\nWould you like to save the file?"), tr("Run"), wx.YES_NO | wx.ICON_QUESTION)
+        d = wx.MessageDialog(win, tr("The script can't run because the document has not been saved.\nWould you like to save it?"), tr("Run"), wx.YES_NO | wx.ICON_QUESTION)
         answer = d.ShowModal()
         d.Destroy()
         if answer == wx.ID_YES:
@@ -4344,9 +4344,9 @@ def add_tool_list(toollist, toolbaritems):
 
     #order, IDname, imagefile, short text, long text, func
     toolbaritems.update({
-        'run':(wx.ITEM_NORMAL, 'IDM_PYTHON_RUN', 'images/run.gif', tr('Run'), tr('Run python program'), 'OnPythonRun'),
+        'run':(wx.ITEM_NORMAL, 'IDM_PYTHON_RUN', 'images/run.gif', tr('Run'), tr('Runs the Python program.'), 'OnPythonRun'),
         'setargs':(wx.ITEM_NORMAL, 'IDM_PYTHON_SETARGS', 'images/setargs.gif', tr('Set Arguments'), tr('Sets the command-line arguments for a Python program.'), 'OnPythonSetArgs'),
-        'stop':(wx.ITEM_NORMAL, 'IDM_PYTHON_END', 'images/stop.gif', tr('Stop Program'), tr('Stop current python program.'), 'OnPythonEnd'),
+        'stop':(wx.ITEM_NORMAL, 'IDM_PYTHON_END', 'images/stop.gif', tr('Stop Program'), tr('Stops the current Python program.'), 'OnPythonEnd'),
     })
 Mixin.setPlugin('pythonfiletype', 'add_tool_list', add_tool_list)
 
@@ -4381,7 +4381,7 @@ from modules import meide as ui
 class SelectInterpreter(ui.SimpleDialog):
     def __init__(self, parent, value, interpreters):
         box = ui.VBox(namebinding='element')
-        box.add(ui.Label(tr('Which python interpreter do you want to use?')))
+        box.add(ui.Label(tr('Which Python interpreter do you want to use?')))
         box.add(ui.ComboBox(value, choices=interpreters, style=wx.CB_READONLY), name='interpreter')
         super(SelectInterpreter, self).__init__(parent, box, title=tr('Select Python Interpreter'), fit=2)
 
