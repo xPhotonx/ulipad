@@ -81,7 +81,7 @@ class Finder:
             if self.rewind:
                 pos = self.win.FindText(0, start, self.findtext, self.getFlags())
             if pos == -1:
-                common.note(tr("Can't find the text !"))
+                common.note(tr("Can't find the text."))
                 return None
 
         return (pos, pos + length)
@@ -105,7 +105,7 @@ class Finder:
             if self.rewind:
                 pos = self.win.FindText(self.win.GetLength(), start, self.findtext, self.getFlags())
             if pos == -1:
-                common.note(tr("Can't find the text !"))
+                common.note(tr("Can't find the text."))
                 return None
 
         return (pos, pos + length)
@@ -123,7 +123,7 @@ class Finder:
             if self.rewind:
                 result = self.regularSearch(0, start)
             if result == None:
-                common.note(tr("Can't find the text !"))
+                common.note(tr("Can't find the text."))
                 return None
 
         return result
@@ -219,9 +219,9 @@ class Finder:
         self.win.EndUndoAction()
 
         if count == 0:
-            common.note(tr("Can't find the text !"))
+            common.note(tr("Can't find the text."))
         else:
-            common.note(tr("Total replaced %d places!") % count)
+            common.note(tr("Totally replaced %d places.") % count)
 
     def regularReplace(self, text):
         return re.sub(self.findtext, self.replacetext, text)
@@ -426,7 +426,7 @@ class FindPanel(wx.Panel):
     def _find(self, flag):
         self.getValue()
         if not self.finder.findtext:
-            common.warn(tr("Target text can't be empty!"))
+            common.warn(tr("Target text can't be empty."))
             return
         self.addFindString(self.finder.findtext)
         self.finder.find(flag)
@@ -516,7 +516,7 @@ class FindPanel(wx.Panel):
     def OnReplace1(self, event):
         self.getValue()
         if not self.finder.findtext:
-            common.warn(tr("Target text can't be empty!"))
+            common.warn(tr("Target text can't be empty."))
             return
         self.addFindString(self.finder.findtext)
         self.addReplaceString(self.finder.replacetext)
@@ -529,7 +529,7 @@ class FindPanel(wx.Panel):
     def OnReplaceAll(self, event):
         self.getValue()
         if not self.finder.findtext:
-            common.warn(tr("Target text can't be empty!"))
+            common.warn(tr("Target text can't be empty."))
             return
         self.addFindString(self.finder.findtext)
         self.addReplaceString(self.finder.replacetext)
@@ -539,11 +539,11 @@ class FindPanel(wx.Panel):
     def OnCount(self, event):
         self.getValue()
         if not self.finder.findtext:
-            common.warn(tr("Target text can't be empty!"))
+            common.warn(tr("Target text can't be empty."))
             return
         self.addFindString(self.finder.findtext)
         count = self.finder.count(int(self.rdoSelection.GetValue()))
         if count == 0:
-            common.note(tr("Can't find the text !"))
+            common.note(tr("Can't find the text."))
         else:
-            common.note(tr("Total %d places!") % count)
+            common.note(tr("Totally replaced %d places.") % count)
