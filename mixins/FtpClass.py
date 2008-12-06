@@ -141,7 +141,7 @@ class Ftp(wx.Panel, Mixin):
                     self.alive = False
                     self.running = False
                     return
-                common.setmessage(self.mainframe, tr('Loginning'))
+                common.setmessage(self.mainframe, tr('Logging in...'))
                 self.ftp.login(user, password)
             except socket.error, msg:
                 error.traceback()
@@ -356,7 +356,7 @@ class Ftp(wx.Panel, Mixin):
 
     def newfile(self):
         filename = ''
-        dlg = MyTextEntry(self, tr("Input Filename"), tr('Input new file name:'), '')
+        dlg = MyTextEntry(self, tr("Input Filename"), tr('Input new filename:'), '')
         answer = dlg.ShowModal()
         if answer == wx.ID_OK:
             filename = dlg.GetValue()
@@ -365,7 +365,7 @@ class Ftp(wx.Panel, Mixin):
             #check if the new name has existed
             index = self.list.FindItem(-1, filename)
             if index > -1:
-                common.showerror(self, tr('The filename has been existed!\nPlease try another.'))
+                common.showerror(self, tr('The filename already exists.\nPlease input another filename.'))
                 return
             from StringIO import StringIO
             f = StringIO('')
@@ -391,7 +391,7 @@ class Ftp(wx.Panel, Mixin):
             #check if the new name has existed
             index = self.list.FindItem(-1, dirname)
             if index > -1:
-                common.showerror(self, tr('The directory name has been existed!\nPlease try another.'))
+                common.showerror(self, tr('The directory name already exists.\nPlease input another name.'))
                 return
             try:
                 self.ftp.mkd(common.decode_string(dirname))
@@ -465,7 +465,7 @@ class Ftp(wx.Panel, Mixin):
             #check if the new name has existed
             index = self.list.FindItem(-1, newfile)
             if index > -1:
-                dlg = wx.MessageDialog(self, tr("The file is existed! Do you want to overwrite it?"), tr("Upload File"), wx.YES_NO | wx.ICON_QUESTION)
+                dlg = wx.MessageDialog(self, tr("The file already exists. Do you want to overwrite it?"), tr("Upload File"), wx.YES_NO | wx.ICON_QUESTION)
                 answer = dlg.ShowModal()
                 if answer == wx.ID_NO:
                     return
@@ -563,7 +563,7 @@ def getuserpassword(mainframe, siteno):
 
 def readfile(mainframe, filename, siteno, user=None, password=None):
     if siteno >= len(mainframe.pref.ftp_sites):
-        common.showerror(mainframe, tr("Can't find the ftp site entry."))
+        common.showerror(mainframe, tr("Can't find the FTP site entry."))
         return
 
     site = mainframe.pref.sites_info[mainframe.pref.ftp_sites[siteno]]
@@ -596,7 +596,7 @@ def readfile(mainframe, filename, siteno, user=None, password=None):
 
 def writefile(mainframe, filename, siteno, text, user=None, password=None):
     if siteno >= len(mainframe.pref.ftp_sites):
-        common.showerror(mainframe, tr("Can't find the ftp site entry."))
+        common.showerror(mainframe, tr("Can't find the FTP site entry."))
         return
 
     site = mainframe.pref.sites_info[mainframe.pref.ftp_sites[siteno]]
@@ -607,7 +607,7 @@ def writefile(mainframe, filename, siteno, text, user=None, password=None):
 
     flag, user, password = getuserpassword(mainframe, siteno)
     if not flag:
-        common.setmessage(mainframe, tr('Connect canceled'))
+        common.setmessage(mainframe, tr('Connection canceled'))
         return
 
     ftp = FTP()
@@ -678,7 +678,7 @@ class FtpManageDialog(wx.Dialog):
     def OnAdd(self, event):
         site = self.getSite()
         if site['name'] in self.pref.ftp_sites:
-            wx.MessageDialog(self, tr("The site name is duplicated! Try another."), tr("Add FTP Site"), wx.OK | wx.ICON_INFORMATION).ShowModal()
+            wx.MessageDialog(self, tr("The site name already exists. Choose a different site name."), tr("Error"), wx.OK | wx.ICON_EXCLAMATION).ShowModal()
         else:
             self.pref.ftp_sites.append(site['name'])
             self.pref.sites_info[site['name']] = site
@@ -776,10 +776,10 @@ class UserDialog(wx.Dialog):
 
 class UploadFileEntry(wx.Dialog):
     def __init__(self, parent):
-        wx.Dialog.__init__(self, parent, -1, style = wx.DEFAULT_DIALOG_STYLE, title = tr('Upload file'))
+        wx.Dialog.__init__(self, parent, -1, style = wx.DEFAULT_DIALOG_STYLE, title = tr('File Upload Client'))
 
         box = wx.BoxSizer(wx.VERTICAL)
-        t = wx.StaticText(self, -1, label=tr('Upload filename:'))
+        t = wx.StaticText(self, -1, label=tr('Upload file:'))
         box.Add(t, 0, wx.ALIGN_LEFT|wx.ALL, 3)
         box1 = wx.BoxSizer(wx.HORIZONTAL)
         self.text = wx.TextCtrl(self, -1, '', size=(200, 20))
@@ -826,12 +826,12 @@ class UploadFileEntry(wx.Dialog):
 
 class DownloadFileEntry(wx.Dialog):
     def __init__(self, parent, filename=''):
-        wx.Dialog.__init__(self, parent, -1, style = wx.DEFAULT_DIALOG_STYLE, title = tr('Download file'))
+        wx.Dialog.__init__(self, parent, -1, style = wx.DEFAULT_DIALOG_STYLE, title = tr('File Download Client'))
 
         self.filename = filename
 
         box = wx.BoxSizer(wx.VERTICAL)
-        t = wx.StaticText(self, -1, label=tr('Download filename:'))
+        t = wx.StaticText(self, -1, label=tr('Download file:'))
         box.Add(t, 0, wx.ALIGN_LEFT|wx.ALL, 3)
         box1 = wx.BoxSizer(wx.HORIZONTAL)
         self.text = wx.TextCtrl(self, -1, self.filename, size=(200, 20))
@@ -864,7 +864,7 @@ class DownloadFileEntry(wx.Dialog):
         return self.text.GetValue(), self.chkBin.GetValue()
 
     def OnBrowser(self, event):
-        dlg = wx.FileDialog(self, tr("Select A File"), "", self.filename, tr("All file (*.*)|*.*"), wx.SAVE|wx.HIDE_READONLY)
+        dlg = wx.FileDialog(self, tr("File List"), "", self.filename, tr("All Files (*.*)|*.*"), wx.SAVE|wx.HIDE_READONLY)
         if dlg.ShowModal() == wx.ID_OK:
             filename = dlg.GetPath()
             self.text.SetValue(filename)

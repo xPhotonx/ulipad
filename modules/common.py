@@ -117,7 +117,7 @@ def showerror(*args):
         message = args[0]
     if not isinstance(message, types.StringTypes):
         message = str(message)
-    wx.MessageDialog(win, message, tr("Error"), wx.OK | wx.ICON_INFORMATION).ShowModal()
+    wx.MessageDialog(win, message, tr("Error"), wx.OK | wx.ICON_EXCLAMATION).ShowModal()
 
 def showmessage(*args):
     """show message dialog
