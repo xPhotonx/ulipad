@@ -264,7 +264,7 @@ class AddScriptDialog(wx.Dialog):
                     error.traceback()
                     return
                 except:
-                    common.showerror(self, tr("Can't open the file [%s]!") % filename)
+                    common.showerror(self, tr("Can't open the file %s.") % filename)
                     error.traceback()
                     return
                 self.text.SetValue(name)
