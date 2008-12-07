@@ -902,7 +902,7 @@ from modules import Globals
 def add_mainframe_menu(menulist):
     menulist.extend([('IDM_FILE',
         [
-            (130, 'IDM_FILE_RECENTFILES', tr('Recent Documents...')+'\tAlt+R', wx.ITEM_NORMAL, 'OnOpenRecentFiles', 'Shows the recently closed documents pop-up.'),
+            (130, 'IDM_FILE_RECENTFILES', tr('Recent Files...')+'\tAlt+R', wx.ITEM_NORMAL, 'OnOpenRecentFiles', 'Shows recently closed files in a pop-up menu.'),
         ]),
     ])
 Mixin.setPlugin('mainframe', 'add_menu', add_mainframe_menu)
@@ -945,7 +945,7 @@ Mixin.setMixin('mainframe', 'OnOpenRecentFiles', OnOpenRecentFiles)
 
 def add_pref(preflist):
     preflist.extend([
-        (tr('Document'), 200, 'num', 'recent_files_num', tr('Maximum number of recent documents:'), None)
+        (tr('Document'), 200, 'num', 'recent_files_num', tr('Maximum number of recent files:'), None)
     ])
 Mixin.setPlugin('preference', 'add_pref', add_pref)
 
@@ -2022,7 +2022,7 @@ def add_tool_list(toollist, toolbaritems):
 
     #order, IDname, imagefile, short text, long text, func
     toolbaritems.update({
-        'wrap':(wx.ITEM_CHECK, 'IDM_DOCUMENT_WORDWRAP', 'images/wrap.gif', tr('Toggle Wrap Mode'), tr('Toggles the word wrap feature of the current document'), 'OnDocumentWordWrap'),
+        'wrap':(wx.ITEM_CHECK, 'IDM_DOCUMENT_WORDWRAP', 'images/wrap.gif', tr('Toggle Wrap Mode'), tr('Toggles the word wrap feature of the current document.'), 'OnDocumentWordWrap'),
     })
 Mixin.setPlugin('mainframe', 'add_tool_list', add_tool_list)
 
@@ -2697,7 +2697,7 @@ def OnOpenRecentSession(win, event):
         f = file(filename)
         f.close()
     except:
-        common.showerror(win, tr("Can't open the file [%s]!") % filename)
+        common.showerror(win, tr("Can't open the file %s.") % filename)
         del win.pref.recent_sessions[index]
         win.pref.save()
         create_recent_session_menu(win)
@@ -3771,7 +3771,7 @@ def OnScriptItems(win, event):
     try:
         scripttext = open(common.encode_path(filename), 'rU').read()
     except:
-        common.showerror(win, tr("Can't open the file [%s]!") % filename)
+        common.showerror(win, tr("Can't open the file %s.") % filename)
         return
 
     try:
@@ -4080,7 +4080,7 @@ def checkFilename(win, document):
     if not document.needcheck():
         return True
     if not os.path.exists(document.filename) and win.editctrl.filetimes[document.filename] != 'NO':
-        dlg = wx.MessageDialog(win, tr("The file [%s] has been removed by others.\nDo you want to save it?") % document.filename, tr("Check"), wx.YES_NO | wx.ICON_QUESTION)
+        dlg = wx.MessageDialog(win, tr("The file %s has been removed by others.\nDo you want to save it?") % document.filename, tr("Check"), wx.YES_NO | wx.ICON_QUESTION)
         answer = dlg.ShowModal()
         if answer == wx.ID_YES:
             document.savefile(document.filename, document.locale)
