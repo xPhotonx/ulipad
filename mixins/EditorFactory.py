@@ -136,7 +136,7 @@ class EditorFactory(FNB.FlatNotebook, Mixin.Mixin):
                 except:
                     error.traceback()
                     filename = document.filename
-                    common.showerror(self, tr("Can't open the file [%s]!") % common.uni_file(filename))
+                    common.showerror(self, tr("Can't open the file %s.") % common.uni_file(filename))
                     wx.CallAfter(self.closefile, document)
                     return
             self._changeDocument(document)
@@ -191,7 +191,7 @@ class EditorFactory(FNB.FlatNotebook, Mixin.Mixin):
                         doc = self.document
                     except:
                         error.traceback()
-                        common.showerror(self, tr("Can't open the file [%s]!") % filename)
+                        common.showerror(self, tr("Can't open the file %s.") % filename)
                         doc = self.document
                     else:
                         self.switch(self.document, delay)
@@ -228,7 +228,7 @@ class EditorFactory(FNB.FlatNotebook, Mixin.Mixin):
             error.traceback()
             if panel:
                 panel.Destroy()
-            common.showerror(self, tr("Can't open the file [%s]!") % filename)
+            common.showerror(self, tr("Can't open the file %s.") % filename)
             return None
 
         self.AddPage(panel, document.getShortFilename(), select=False)

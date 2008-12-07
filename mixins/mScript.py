@@ -101,7 +101,7 @@ def OnScriptItems(win, event):
     try:
         scripttext = open(common.encode_path(filename), 'rU').read()
     except:
-        common.showerror(win, tr("Can't open the file [%s]!") % filename)
+        common.showerror(win, tr("Can't open the file %s.") % filename)
         return
 
     try:

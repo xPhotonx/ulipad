@@ -956,7 +956,7 @@ def open_recent_files(win, index):
         f = file(filename)
         f.close()
     except:
-        common.showerror(win, tr("Can't open the file [%s].") % filename)
+        common.showerror(win, tr("Can't open the file %s.") % filename)
         del win.pref.recent_files[index]
         win.pref.save()
         return

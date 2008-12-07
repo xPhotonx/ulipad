@@ -13,7 +13,7 @@ Mario Lacunza <mlacunza@gmail.com>              Commit Spanish translation file 
 Ye Naiquan <Naiquan.Ye@marintek.sintef.no>      Commit Patch
 Kelie Feng                                      Create a great video about UliPad and put in ShowMeDo site, and other helps
 Jaime Wyant <pyogrammer.py@gmail.com>		Provide patches, plugins, and many suggestions
-vinetouu <vinetouu@gmail.com>			Fix typos and provide patches
+Boštjan Mejak <vinetouu@gmail.com>		Fix typos and provide patches
 
 Also thanks a lot:
 
@@ -31,7 +31,6 @@ mikem <mjmaher@iol.ie>                          Commit pylint_plugin
 Hawker                                          Linux memory display patch
 shmakes <shmakes@gmail.com>                     Good advices and code patch
 LP <liupengf12@gmail.com>                       Report bugs and commit Patch
-Chester Dunn <wxPythoner@gmail.com>             Report bugs and advices
 Bob Gao <lulihummel@gmail.com>                  Provide patch
 Gaël Barrachon <gael.barrachon@gmail.com>	Commit French translation
 Jose Jachuf <jjachuf@gmail.com>			Fix Spanish translation

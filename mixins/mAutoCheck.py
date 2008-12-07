@@ -124,7 +124,7 @@ def checkFilename(win, document):
     if not document.needcheck():
         return True
     if not os.path.exists(document.filename) and win.editctrl.filetimes[document.filename] != 'NO':
-        dlg = wx.MessageDialog(win, tr("The file [%s] has been removed by others.\nDo you want to save it?") % document.filename, tr("Check"), wx.YES_NO | wx.ICON_QUESTION)
+        dlg = wx.MessageDialog(win, tr("The file %s has been removed by others.\nDo you want to save it?") % document.filename, tr("Check"), wx.YES_NO | wx.ICON_QUESTION)
         answer = dlg.ShowModal()
         if answer == wx.ID_YES:
             document.savefile(document.filename, document.locale)

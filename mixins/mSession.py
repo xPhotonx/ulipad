@@ -191,7 +191,7 @@ def OnOpenRecentSession(win, event):
         f = file(filename)
         f.close()
     except:
-        common.showerror(win, tr("Can't open the file [%s]!") % filename)
+        common.showerror(win, tr("Can't open the file %s.") % filename)
         del win.pref.recent_sessions[index]
         win.pref.save()
         create_recent_session_menu(win)
