@@ -5296,9 +5296,6 @@ Mixin.setMixin('mainframe', 'OnWindowLeft', OnWindowLeft)
 
 def OnWindowBottom(win, event):
     flag = not win.panel.BottomIsVisible
-    if flag:
-        if not win.panel.bottombook or win.panel.bottombook.GetPageCount() == 0:
-            win.createShellWindow()
 
     win.panel.showWindow('bottom', flag)
     if flag:
@@ -5315,9 +5312,9 @@ def on_mainframe_updateui(win, event):
     elif eid == win.IDM_WINDOW_BOTTOM:
         event.Check(win.panel.BottomIsVisible)
     elif eid == win.IDM_WINDOW_SHELL:
-        event.Check(bool(win.panel.getPage(_shell_page_name)) and win.panel.BottomIsVisible)
+        event.Check(bool(win.panel.getPage(_shell_page_name)))
     elif eid == win.IDM_WINDOW_MESSAGE:
-        event.Check(bool(win.panel.getPage(_message_page_name)) and win.panel.BottomIsVisible)
+        event.Check(bool(win.panel.getPage(_message_page_name)))
 Mixin.setPlugin('mainframe', 'on_update_ui', on_mainframe_updateui)
 
 def afterinit(win):
@@ -5346,21 +5343,24 @@ def add_tool_list(toollist, toolbaritems):
     toollist.extend([
         (450, 'left'),
         (500, 'bottom'),
+        (510, 'shell'),
     ])
 
     #order, IDname, imagefile, short text, long text, func
     toolbaritems.update({
         'left':(wx.ITEM_CHECK, 'IDM_WINDOW_LEFT', 'images/left.gif', tr('Toggle Left Window'), tr('Shows or hides the left Window.'), 'OnWindowLeft'),
         'bottom':(wx.ITEM_CHECK, 'IDM_WINDOW_BOTTOM', 'images/bottom.gif', tr('Toggle Bottom Window'), tr('Shows or hides the bottom Window.'), 'OnWindowBottom'),
+        'shell':(wx.ITEM_CHECK, 'IDM_WINDOW_SHELL', 'images/shell.gif', tr('Toggle Shell Window'), tr('Shows or hides the shell Window.'), 'OnWindowShell'),
     })
 Mixin.setPlugin('mainframe', 'add_tool_list', add_tool_list)
 
 def createShellWindow(win):
+    side = Globals.pref.shell_window_side
     if not win.panel.getPage(_shell_page_name):
         from ShellWindow import ShellWindow
 
-        page = ShellWindow(win.panel.createNotebook('bottom'), win)
-        win.panel.addPage('bottom', page, _shell_page_name)
+        page = ShellWindow(win.panel.createNotebook(side), win)
+        win.panel.addPage(side, page, _shell_page_name)
     win.shellwindow = win.panel.getPage(_shell_page_name)
 Mixin.setMixin('mainframe', 'createShellWindow', createShellWindow)
 
@@ -5420,6 +5420,17 @@ def OnEditClearShell(win, event):
         shellwin.clear()
         shellwin.prompt()
 Mixin.setMixin('mainframe', 'OnEditClearShell', OnEditClearShell)
+
+def add_pref(preflist):
+    preflist.extend([
+        (tr('Python'), 180, 'choice', 'shell_window_side', tr('Select side bar which you want shell window opened:'),
+            [('Left', 'left'), ('Bottom', 'bottom')])
+    ])
+Mixin.setPlugin('preference', 'add_pref', add_pref)
+
+def pref_init(pref):
+    pref.shell_window_side = 'bottom'
+Mixin.setPlugin('preference', 'init', pref_init)
 
 
 
