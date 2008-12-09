@@ -5423,7 +5423,7 @@ Mixin.setMixin('mainframe', 'OnEditClearShell', OnEditClearShell)
 
 def add_pref(preflist):
     preflist.extend([
-        (tr('Python'), 180, 'choice', 'shell_window_side', tr('Select side bar which you want shell window opened:'),
+        (tr('Python'), 180, 'choice', 'shell_window_side', tr('Select side bar which you want shell window opened in:'),
             [('Left', 'left'), ('Bottom', 'bottom')])
     ])
 Mixin.setPlugin('preference', 'add_pref', add_pref)
