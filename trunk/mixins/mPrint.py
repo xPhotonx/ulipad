@@ -109,7 +109,7 @@ Mixin.setMixin('mainframe', 'OnFilePageSetup', OnFilePageSetup)
 
 def OnFilePrint(win, event):
     if get_printer(win):
-        win.printer.PrintText(win.document.GetText(), win.document.filename)
+        win.printer.Print(win.document.GetText(), win.document.filename)
 Mixin.setMixin('mainframe', 'OnFilePrint', OnFilePrint)
 
 def OnFilePrintPreview(win, event):
@@ -128,5 +128,5 @@ Mixin.setMixin('mainframe', 'OnFileHtmlPreview', OnFileHtmlPreview)
 
 def OnFileHtmlPrint(win, event):
     if get_printer(win, 'html'):
-        win.printer.PrintText(win.document.GetText(), win.document.filename)
+        win.printer.Print(win.document.GetText(), win.document.filename)
 Mixin.setMixin('mainframe', 'OnFileHtmlPrint', OnFileHtmlPrint)
