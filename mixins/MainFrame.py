@@ -181,3 +181,13 @@ class MainFrame(wx.Frame, Mixin.Mixin):
         self.editorkeycodes = {}
         Accelerator.getkeycodes(self.editoraccellist, self.editorkeycodes)
         Accelerator.initaccelerator(self, MainFrame.accellist)
+
+    def printAccel(self):
+        s = []
+        for idname, value in MainFrame.accellist.items() + MainFrame.editoraccellist.items():
+            keys, func = value
+            if keys:
+                s.append((keys, idname))
+        for k, v in sorted(s):
+            print k, '\t', v
+        
