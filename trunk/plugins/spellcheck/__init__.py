@@ -38,7 +38,7 @@ Mixin.setMixin('mainframe', 'createSpellCheckWindow', createSpellCheckWindow)
 def add_mainframe_menu(menulist):
     menulist.extend([('IDM_TOOL', #parent menu id
         [
-            (160, 'IDM_TOOL_SPELLCHECK', tr('Spell Check'), wx.ITEM_NORMAL, 'OnToolSpellCheck', tr('Spell check for current document.')),
+            (160, 'IDM_TOOL_SPELLCHECK', tr('Spell Check') + '\tF7', wx.ITEM_NORMAL, 'OnToolSpellCheck', tr('Spell check for current document.')),
         ]),
     ])
 Mixin.setPlugin('mainframe', 'add_menu', add_mainframe_menu)
