@@ -202,7 +202,7 @@ def add_tool_list(toollist, toolbaritems):
 
     #order, IDname, imagefile, short text, long text, func
     toolbaritems.update({
-        'ftp':(wx.ITEM_CHECK, 'IDM_FILE_FTP', 'images/ftp.gif', tr('Open FTP Window'), tr('Opens FTP window.'), 'OnWindowFtp'),
+        'ftp':(wx.ITEM_CHECK, 'IDM_WINDOW_FTP', 'images/ftp.gif', tr('Open FTP Window'), tr('Opens FTP window.'), 'OnWindowFtp'),
     })
 Mixin.setPlugin('mainframe', 'add_tool_list', add_tool_list)
 
