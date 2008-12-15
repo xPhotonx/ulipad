@@ -24,6 +24,8 @@
 import wx
 from modules import Entry
 from modules import common
+from modules import meide as ui
+from modules import Globals
 
 class InterpreterDialog(wx.Dialog):
     def __init__(self, parent, pref):
@@ -142,57 +144,45 @@ class InterpreterDialog(wx.Dialog):
         self.btnModify.Enable(False)
 
 class PythonArgsDialog(wx.Dialog):
-    def __init__(self, parent, pref, title, message, defaultvalue, defaultchkvalue):
+    def __init__(self, parent, title, defaultvalue, defaultchkvalue):
         wx.Dialog.__init__(self, parent, -1, style = wx.DEFAULT_DIALOG_STYLE, title = title)
-        self.pref = pref
-
-        box = wx.BoxSizer(wx.VERTICAL)
-        stext = wx.StaticText(self, -1, label=message)
-        box.Add(stext, 0, wx.ALIGN_LEFT|wx.ALL, 2)
-        box1 = wx.BoxSizer(wx.HORIZONTAL)
-        self.text = wx.TextCtrl(self, -1, defaultvalue)
-        self.text.SetSelection(-1, -1)
-        box1.Add(self.text, 1, wx.EXPAND|wx.ALL, 2)
-        box.Add(box1, 0, wx.EXPAND)
-
+        
+        self.pref = Globals.pref
+        
+        self.sizer = sizer = ui.VBox(namebinding='widget').create(self).auto_layout()
+        box = sizer.add(ui.VGroup(tr('Python interpreter')))
+        h = box.add(ui.HBox())
+        h.add(ui.Label(tr('Select:')))
+        
         interpreters = dict(self.pref.python_interpreter)
         default_interpreter = self.pref.default_interpreter
         if not default_interpreter in interpreters:
-            default_interpreter = 'default'
-
-        box1 = wx.BoxSizer(wx.HORIZONTAL)
-        stext = wx.StaticText(self, -1, label=tr('Select Python interpreter:'))
-        box1.Add(stext, 0, wx.ALIGN_LEFT|wx.ALIGN_CENTER_VERTICAL|wx.ALL, 2)
-        self.ID_INTER = wx.NewId()
-        self.cb = wx.ComboBox(self, self.ID_INTER, default_interpreter, choices = interpreters.keys(), style = wx.CB_DROPDOWN|wx.CB_READONLY )
-        box1.Add(self.cb, 1, wx.EXPAND|wx.ALL, 2)
-        box.Add(box1, 0, wx.EXPAND)
-
-        self.chkDirect = wx.CheckBox(self, -1, tr('Redirect input and output'))
-        self.chkDirect.SetValue(defaultchkvalue)
-        box.Add(self.chkDirect, 0, wx.ALIGN_LEFT|wx.LEFT|wx.BOTTOM, 2)
-
-        box1 = wx.BoxSizer(wx.HORIZONTAL)
-        btnOK = wx.Button(self, wx.ID_OK, tr("OK"))
-        btnOK.SetDefault()
-        box1.Add(btnOK, 0, wx.ALL, 2)
-        btnCancel = wx.Button(self, wx.ID_CANCEL, tr("Cancel"))
-        box1.Add(btnCancel, 0, wx.ALL, 2)
-        box.Add(box1, 0, wx.ALIGN_CENTER)
-
-        self.SetSizer(box)
-        self.SetAutoLayout(True)
-        box.Fit(self)
-
-        self.value = defaultvalue
-        wx.EVT_COMBOBOX(self.cb, self.ID_INTER, self.OnChanged)
-
+            default_interpreter = self.pref.python_interpreter[0][0]
+        
+        h.add(ui.SingleChoice(default_interpreter, sorted(interpreters.keys())), name='interpreter').bind(wx.EVT_COMBOBOX, self.OnChanged)
+        h.add(ui.Label(tr('Parameters:')))
+        h.add(ui.Text(self.pref.python_default_paramters[default_interpreter]), name='parameter')
+        
+        h = self.sizer.add(ui.HBox())
+        h.add(ui.Label(tr('Parameters of script:')))
+        h.add(ui.Text(defaultvalue), name='command_line').tooltip("$file will be replaced with the filename of the current document\n"
+            "$path will be replaced with the filename's directory of the current document")
+        self.sizer.add(ui.Check(defaultchkvalue, tr('Redirect input and output')), name='redirect')
+        
+        sizer.add(ui.simple_buttons(), flag=wx.ALIGN_CENTER|wx.BOTTOM)
+        self.sizer.bind('btnOk', 'click', self.OnOK)
+        self.btnOk.SetDefault()
+        
+        sizer.auto_fit(1)
+        
     def GetValue(self):
-        return self.text.GetValue()
-
-    def GetRedirect(self):
-        return self.chkDirect.GetValue()
+        return self.sizer.GetValue()
+    
+    def OnOK(self, event):
+        self.pref.default_interpreter = self.interpreter.GetValue()
+        self.pref.python_default_paramters[self.pref.default_interpreter] = self.parameter.GetValue()
+        self.pref.save()
+        event.Skip()
 
     def OnChanged(self, event):
-        self.pref.default_interpreter = self.cb.GetStringSelection()
-        self.pref.save()
+        self.parameter.SetValue(self.pref.python_default_paramters[self.interpreter.GetValue()])

@@ -89,6 +89,7 @@ def OnIdle(win, event):
                         text = ''
                         win.commandlen -= len(text)
                 appendtext(win, text)
+                print repr(text)
                 win.writeposition = win.GetLength()
                 win.editpoint = win.GetLength()
         if win.errorstream:
