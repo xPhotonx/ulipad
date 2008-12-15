@@ -94,18 +94,12 @@ class MessageWindow(wx.stc.StyledTextCtrl, Mixin.Mixin):
             f = MessageWindow.imagelist[key]
             MessageWindow.imagelist[key] = common.getpngimage(f)
 
-        self.popmenu = makemenu.makepopmenu(self, MessageWindow.popmenulist, MessageWindow.imagelist)
+        self.popmenu = makemenu.makepopmenu(self, self.popmenulist, self.imagelist)
 
         wx.stc.EVT_STC_MODIFIED(self, self.GetId(), self.OnModified)
         wx.EVT_RIGHT_DOWN(self, self.OnPopUp)
 
-        wx.EVT_UPDATE_UI(self, self.IDPM_UNDO, self.OnUpdateUI)
-        wx.EVT_UPDATE_UI(self, self.IDPM_REDO, self.OnUpdateUI)
-        wx.EVT_UPDATE_UI(self, self.IDPM_CUT, self.OnUpdateUI)
-        wx.EVT_UPDATE_UI(self, self.IDPM_COPY, self.OnUpdateUI)
-        wx.EVT_UPDATE_UI(self, self.IDPM_PASTE, self.OnUpdateUI)
-        wx.EVT_UPDATE_UI(self, self.IDPM_WRAP, self.OnUpdateUI)
-        wx.EVT_UPDATE_UI(self, self.IDPM_AUTO_CLEAR, self.OnUpdateUI)
+        self.init_update_ui()
 
 #        self.SetCaretForeground(')
         if x.default.has_key('message_caretlineback'):
@@ -121,6 +115,13 @@ class MessageWindow(wx.stc.StyledTextCtrl, Mixin.Mixin):
 
         self.callplugin('init', self)
 
+    def init_update_ui(self):
+        x, menu = self.popmenulist[0]
+        for v in menu:
+            _id = v[1]
+            if _id:
+                wx.EVT_UPDATE_UI(self, getattr(self, _id), self.OnUpdateUI)
+                
     def SetText(self, text):
         ro = self.GetReadOnly()
         self.SetReadOnly(0)
@@ -161,9 +162,9 @@ class MessageWindow(wx.stc.StyledTextCtrl, Mixin.Mixin):
         self.callplugin('other_popup_menu', self, other_menus)
         import copy
         if other_menus:
-            pop_menus = copy.deepcopy(MessageWindow.popmenulist + other_menus)
+            pop_menus = copy.deepcopy(self.popmenulist + other_menus)
         else:
-            pop_menus = copy.deepcopy(MessageWindow.popmenulist)
+            pop_menus = copy.deepcopy(self.popmenulist)
         self.popmenu = pop_menus = makemenu.makepopmenu(self, pop_menus, MessageWindow.imagelist)
 
         self.PopupMenu(self.popmenu, event.GetPosition())

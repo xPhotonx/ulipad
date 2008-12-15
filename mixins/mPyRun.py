@@ -26,6 +26,7 @@ import os
 import sys
 from modules import common
 from modules import Mixin
+from modules import Globals
 
 def check_python():
     interpreters = []
@@ -52,6 +53,9 @@ def pref_init(pref):
         pref.default_interpreter = 'noexist'
     pref.python_show_args = False
     pref.python_save_before_run = False
+    pref.python_default_paramters = {}
+    for i in s:
+        pref.python_default_paramters[i[0]] = '-u'
 Mixin.setPlugin('preference', 'init', pref_init)
 
 def OnSetInterpreter(win, event):
@@ -148,7 +152,8 @@ def OnPythonRun(win, event):
     args = doc.args.replace('$path', os.path.dirname(doc.filename))
     args = args.replace('$file', doc.filename)
     ext = os.path.splitext(doc.filename)[1].lower()
-    command = u'"%s" "%s" %s' % (interpreter, doc.filename, args)
+    parameter = Globals.pref.python_default_paramters[Globals.pref.default_interpreter]
+    command = u'"%s" %s "%s" %s' % (interpreter, parameter, doc.filename, args)
     #chanage current path to filename's dirname
     path = os.path.dirname(doc.filename)
     os.chdir(common.encode_string(path))
@@ -157,16 +162,20 @@ def OnPythonRun(win, event):
 Mixin.setMixin('mainframe', 'OnPythonRun', OnPythonRun)
 
 def get_python_args(win):
+    if not Globals.pref.python_interpreter:
+        common.showerror(win, tr("You didn't set the Python interpreter.\nPlease set it up first in the preferences."))
+        return False
+    
     from InterpreterDialog import PythonArgsDialog
     
-    dlg = PythonArgsDialog(win, win.pref, tr('Python Arguments Manager'),
-        tr("Enter command-line arguments:\n$file will be replaced with the filename of the current document\n$path will be replaced with the filename's directory of the current document"),
+    dlg = PythonArgsDialog(win, tr('Python Arguments Manager'),
         win.document.args, win.document.redirect)
     answer = dlg.ShowModal()
+    value = dlg.GetValue()
     dlg.Destroy()
     if answer == wx.ID_OK:
-        win.document.args = dlg.GetValue()
-        win.document.redirect = dlg.GetRedirect()
+        win.document.args = value['command_line']
+        win.document.redirect = value['redirect']
         return True
     else:
         return False
@@ -238,7 +247,8 @@ def OnPythonDoctests(win, event):
     path = os.path.normpath(os.path.join(Globals.workpath, 'packages/cmd_doctest.py'))
     filename = Globals.mainframe.editctrl.getCurDoc().filename
     interpreter = _get_python_exe(win)
-    cmd = '%s %s %s' % (interpreter, path, filename)
+    parameter = Globals.pref.python_default_paramters[Globals.pref.default_interpreter]
+    cmd = u'"%s" %s "%s" "%s"' % (interpreter, parameter, path, filename)
     pipe_command(cmd, f)
 Mixin.setMixin('mainframe', 'OnPythonDoctests', OnPythonDoctests)
 
