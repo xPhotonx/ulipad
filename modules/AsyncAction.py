@@ -58,6 +58,8 @@ class AsyncAction(threading.Thread):
                 obj = self.q.get_nowait()
             except:
                 break
+        while not self.is_stop and self.last:
+            time.sleep(0.1)
         
     def run(self):
         try:

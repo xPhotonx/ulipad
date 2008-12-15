@@ -6529,6 +6529,7 @@ def leaveopenfile(win, filename):
     if win.pref.input_assistant:
         i = get_inputassistant_obj(win)
         i.install_acp(win, win.languagename)
+        win.mainframe.auto_routin_analysis.clear()
         win.mainframe.auto_routin_analysis.put(win)
 Mixin.setPlugin('editor', 'leaveopenfile', leaveopenfile)
 
