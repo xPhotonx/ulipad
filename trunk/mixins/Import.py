@@ -1459,7 +1459,7 @@ def add_tool_list(toollist, toolbaritems):
 
     #order, IDname, imagefile, short text, long text, func
     toolbaritems.update({
-        'viewtab':(wx.ITEM_CHECK, 'IDM_VIEW_TAB', 'images/format.gif', tr('Toggle White Space'), tr('Shows or hides space and tab marks'), 'OnViewTab'),
+        'viewtab':(wx.ITEM_CHECK, 'IDM_VIEW_TAB', 'images/format.gif', tr('Toggle White Space'), tr('Shows or hides space and tab marks.'), 'OnViewTab'),
     })
 Mixin.setPlugin('mainframe', 'add_tool_list', add_tool_list)
 
@@ -5079,7 +5079,7 @@ from modules import common
 def add_mainframe_menu(menulist):
     menulist.extend([ ('IDM_WINDOW',
         [
-            (160, 'IDM_WINDOW_FTP', tr('FTP Window'), wx.ITEM_CHECK, 'OnWindowFtp', tr('Opens FTP window.')),
+            (160, 'IDM_WINDOW_FTP', tr('FTP Window'), wx.ITEM_CHECK, 'OnWindowFtp', tr('Shows the FTP pane.')),
         ]),
     ])
 Mixin.setPlugin('mainframe', 'add_menu', add_mainframe_menu)
@@ -5117,7 +5117,7 @@ Mixin.setPlugin('notebook', 'init', init)
 def add_editor_menu(popmenulist):
     popmenulist.extend([ (None,
         [
-            (150, 'IDPM_FTPWINDOW', tr('FTP Window'), wx.ITEM_CHECK, 'OnFtpWindow', tr('Opens FTP window.')),
+            (150, 'IDPM_FTPWINDOW', tr('FTP Window'), wx.ITEM_CHECK, 'OnFtpWindow', tr('Shows the FTP pane.')),
         ]),
     ])
 Mixin.setPlugin('notebook', 'add_menu', add_editor_menu)
@@ -5166,16 +5166,16 @@ Mixin.setPlugin('mainframe', 'afterclosewindow', afterclosewindow)
 def add_ftp_menu(popmenulist):
     popmenulist.extend([ (None, #parent menu id
         [
-            (100, 'IDPM_OPEN', tr('Open'), wx.ITEM_NORMAL, 'OnOpen', tr('Open an file or directory.')),
-            (110, 'IDPM_NEWFILE', tr('New File'), wx.ITEM_NORMAL, 'OnNewFile', tr('Create an new file.')),
-            (120, 'IDPM_NEWDIR', tr('New Directory'), wx.ITEM_NORMAL, 'OnNewDir', tr('Create an new directory.')),
-            (130, 'IDPM_DELETE', tr('Delete'), wx.ITEM_NORMAL, 'OnDelete', tr('Delete selected file or directory.')),
-            (140, 'IDPM_RENAME', tr('Rename'), wx.ITEM_NORMAL, 'OnRename', tr('Rename selected file or directory.')),
+            (100, 'IDPM_OPEN', tr('Open'), wx.ITEM_NORMAL, 'OnOpen', tr('Opens a file or a directory.')),
+            (110, 'IDPM_NEWFILE', tr('New File'), wx.ITEM_NORMAL, 'OnNewFile', tr('Creates a new file.')),
+            (120, 'IDPM_NEWDIR', tr('New Directory'), wx.ITEM_NORMAL, 'OnNewDir', tr('Creates a new directory.')),
+            (130, 'IDPM_DELETE', tr('Delete'), wx.ITEM_NORMAL, 'OnDelete', tr('Deletes the selected file or a directory.')),
+            (140, 'IDPM_RENAME', tr('Rename'), wx.ITEM_NORMAL, 'OnRename', tr('Renames the selected file or a directory.')),
             (150, '-', '', wx.ITEM_SEPARATOR, '', ''),
-            (160, 'IDPM_REFRESH', tr('Refresh'), wx.ITEM_NORMAL, 'OnRefresh', tr('Refresh current directory.')),
+            (160, 'IDPM_REFRESH', tr('Refresh'), wx.ITEM_NORMAL, 'OnRefresh', tr('Refreshes the current directory.')),
             (170, '-', '', wx.ITEM_SEPARATOR, '', ''),
-            (180, 'IDPM_UPLOAD', tr('Upload'), wx.ITEM_NORMAL, 'OnUpload', tr('Upload files.')),
-            (190, 'IDPM_DOWNLOAD', tr('Download'), wx.ITEM_NORMAL, 'OnDownload', tr('Download files.')),
+            (180, 'IDPM_UPLOAD', tr('Upload'), wx.ITEM_NORMAL, 'OnUpload', tr('Uploads a file.')),
+            (190, 'IDPM_DOWNLOAD', tr('Download'), wx.ITEM_NORMAL, 'OnDownload', tr('Downloads a file.')),
         ]),
     ])
 Mixin.setPlugin('ftpclass', 'add_menu', add_ftp_menu)
@@ -5249,7 +5249,7 @@ def add_tool_list(toollist, toolbaritems):
 
     #order, IDname, imagefile, short text, long text, func
     toolbaritems.update({
-        'ftp':(wx.ITEM_CHECK, 'IDM_WINDOW_FTP', 'images/ftp.gif', tr('Open FTP Window'), tr('Opens FTP window.'), 'OnWindowFtp'),
+        'ftp':(wx.ITEM_CHECK, 'IDM_WINDOW_FTP', 'images/ftp.gif', tr('FTP'), tr('Shows the FTP pane.'), 'OnWindowFtp'),
     })
 Mixin.setPlugin('mainframe', 'add_tool_list', add_tool_list)
 
