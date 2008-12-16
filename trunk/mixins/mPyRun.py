@@ -137,7 +137,7 @@ def OnPythonRun(win, event):
         if win.pref.python_save_before_run:
             win.OnFileSave(event)
         else:
-            d = wx.MessageDialog(win, tr("The script can't run because the document has not been saved.\nWould you like to save it?"), tr("Run"), wx.YES_NO | wx.ICON_QUESTION)
+            d = wx.MessageDialog(win, tr("The script can't run because the document hasn't been saved.\nWould you like to save it?"), tr("Run"), wx.YES_NO | wx.ICON_QUESTION)
             answer = d.ShowModal()
             d.Destroy()
             if answer == wx.ID_YES:
@@ -236,7 +236,7 @@ def OnPythonDoctests(win, event):
         
     doc = win.editctrl.getCurDoc()
     if doc.isModified() or doc.filename == '':
-        d = wx.MessageDialog(win, tr("The script can't run because the document has not been saved.\nWould you like to save it?"), tr("Run"), wx.YES_NO | wx.ICON_QUESTION)
+        d = wx.MessageDialog(win, tr("The script can't run because the document hasn't been saved.\nWould you like to save it?"), tr("Run"), wx.YES_NO | wx.ICON_QUESTION)
         answer = d.ShowModal()
         d.Destroy()
         if answer == wx.ID_YES:
@@ -302,7 +302,7 @@ class SelectInterpreter(ui.SimpleDialog):
         box = ui.VBox(namebinding='element')
         box.add(ui.Label(tr('Which Python interpreter do you want to use?')))
         box.add(ui.ComboBox(value, choices=interpreters, style=wx.CB_READONLY), name='interpreter')
-        super(SelectInterpreter, self).__init__(parent, box, title=tr('Select Python Interpreter'), fit=2)
+        super(SelectInterpreter, self).__init__(parent, box, title=tr('Python Interpreters List'), fit=2)
         
         self.layout.SetFocus()
 

@@ -32,16 +32,16 @@ def add_mainframe_menu(menulist):
         ]),
         ('IDM_WINDOW',
         [
-            (100, 'IDM_WINDOW_LEFT', tr('Left Window')+'\tAlt+Z', wx.ITEM_CHECK, 'OnWindowLeft', tr('Shows or hides the left Window.')),
-            (110, 'IDM_WINDOW_BOTTOM', tr('Bottom Window')+'\tAlt+X', wx.ITEM_CHECK, 'OnWindowBottom', tr('Shows or hides the bottom Window.')),
+            (100, 'IDM_WINDOW_LEFT', tr('Left Window')+'\tAlt+Z', wx.ITEM_CHECK, 'OnWindowLeft', tr('Shows the left pane.')),
+            (110, 'IDM_WINDOW_BOTTOM', tr('Bottom Window')+'\tAlt+X', wx.ITEM_CHECK, 'OnWindowBottom', tr('Shows the bottom pane.')),
             (120, '-', '', wx.ITEM_SEPARATOR, '', ''),
-            (130, 'IDM_WINDOW_SHELL', tr('Shell Window'), wx.ITEM_CHECK, 'OnWindowShell', tr('Opens shell window.')),
-            (140, 'IDM_WINDOW_MESSAGE', tr('Messages Window'), wx.ITEM_CHECK, 'OnWindowMessage', tr('Opens messages window.')),
+            (130, 'IDM_WINDOW_SHELL', tr('Shell Window'), wx.ITEM_CHECK, 'OnWindowShell', tr('Shows the Shell pane.')),
+            (140, 'IDM_WINDOW_MESSAGE', tr('Messages Window'), wx.ITEM_CHECK, 'OnWindowMessage', tr('Shows the Messages pane.')),
         ]),
         ('IDM_EDIT',
         [
             (280, '-', '', wx.ITEM_SEPARATOR, '', ''),
-            (290, 'IDM_EDIT_CLEARSHELL', tr('Clear Shell Window') + '\tCtrl+Alt+R', wx.ITEM_NORMAL, 'OnEditClearShell', tr('Clears content of shell window.')),
+            (290, 'IDM_EDIT_CLEARSHELL', tr('Clear Shell Contents') + '\tCtrl+Alt+R', wx.ITEM_NORMAL, 'OnEditClearShell', tr('Clears the contents of the shell.')),
         ]),
     ])
 Mixin.setPlugin('mainframe', 'add_menu', add_mainframe_menu)
@@ -113,9 +113,9 @@ def add_tool_list(toollist, toolbaritems):
 
     #order, IDname, imagefile, short text, long text, func
     toolbaritems.update({
-        'left':(wx.ITEM_CHECK, 'IDM_WINDOW_LEFT', 'images/left.gif', tr('Toggle Left Window'), tr('Shows or hides the left Window.'), 'OnWindowLeft'),
-        'bottom':(wx.ITEM_CHECK, 'IDM_WINDOW_BOTTOM', 'images/bottom.gif', tr('Toggle Bottom Window'), tr('Shows or hides the bottom Window.'), 'OnWindowBottom'),
-        'shell':(wx.ITEM_CHECK, 'IDM_WINDOW_SHELL', 'images/shell.gif', tr('Toggle Shell Window'), tr('Shows or hides the shell Window.'), 'OnWindowShell'),
+        'left':(wx.ITEM_CHECK, 'IDM_WINDOW_LEFT', 'images/left.gif', tr('Toggle Left Pane'), tr('Shows or hides the left pane.'), 'OnWindowLeft'),
+        'bottom':(wx.ITEM_CHECK, 'IDM_WINDOW_BOTTOM', 'images/bottom.gif', tr('Toggle Bottom Pane'), tr('Shows or hides the bottom pane.'), 'OnWindowBottom'),
+        'shell':(wx.ITEM_CHECK, 'IDM_WINDOW_SHELL', 'images/shell.gif', tr('Toggle Shell Pane'), tr('Shows or hides the Shell pane.'), 'OnWindowShell'),
     })
 Mixin.setPlugin('mainframe', 'add_tool_list', add_tool_list)
 
@@ -157,8 +157,8 @@ Mixin.setMixin('mainframe', 'OnWindowMessage', OnWindowMessage)
 def add_editor_menu(popmenulist):
     popmenulist.extend([ (None,
         [
-            (120, 'IDPM_SHELLWINDOW', tr('Shell Window'), wx.ITEM_CHECK, 'OnShellWindow', tr('Opens shell window.')),
-            (130, 'IDPM_MESSAGEWINDOW', tr('Messages Window'), wx.ITEM_CHECK, 'OnMessageWindow', tr('Opens messages window.')),
+            (120, 'IDPM_SHELLWINDOW', tr('Shell Pane'), wx.ITEM_CHECK, 'OnShellWindow', tr('Shows the Shell pane.')),
+            (130, 'IDPM_MESSAGEWINDOW', tr('Messages Pane'), wx.ITEM_CHECK, 'OnMessageWindow', tr('Shows the Messages pane.')),
         ]),
     ])
 Mixin.setPlugin('notebook', 'add_menu', add_editor_menu)
@@ -189,7 +189,7 @@ Mixin.setMixin('mainframe', 'OnEditClearShell', OnEditClearShell)
 #add open shell window on side bar support
 def add_pref(preflist):
     preflist.extend([
-        (tr('Python'), 180, 'choice', 'shell_window_side', tr('Select side bar which you want shell window opened in:'), 
+        (tr('Python'), 180, 'choice', 'shell_window_side', tr('Placement of the Shell pane is:'), 
             [('Left', 'left'), ('Bottom', 'bottom')])
     ])
 Mixin.setPlugin('preference', 'add_pref', add_pref)

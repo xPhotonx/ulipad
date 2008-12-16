@@ -1313,7 +1313,7 @@ def add_mainframe_menu(menulist):
         ]),
         ('IDM_VIEW', #parent menu id
         [
-            (100, 'IDM_VIEW_TAB', tr('Tabs And Spaces'), wx.ITEM_CHECK, 'OnViewTab', tr('Shows or hides space and tab marks.')),
+            (100, 'IDM_VIEW_TAB', tr('Tabs And Spaces'), wx.ITEM_CHECK, 'OnViewTab', tr('Shows or hides whitespace indicators.')),
             (110, 'IDM_VIEW_INDENTATION_GUIDES', tr('Indentation Guides'), wx.ITEM_CHECK, 'OnViewIndentationGuides', tr('Shows or hides indentation guides.')),
             (120, 'IDM_VIEW_RIGHT_EDGE', tr('Long-Line Indicator'), wx.ITEM_CHECK, 'OnViewRightEdge', tr('Shows or hides the long-line indicator.')),
             (130, 'IDM_VIEW_LINE_NUMBER', tr('Line Numbers'), wx.ITEM_CHECK, 'OnViewLineNumber', tr('Shows or hides line numbers.')),
@@ -1459,7 +1459,7 @@ def add_tool_list(toollist, toolbaritems):
 
     #order, IDname, imagefile, short text, long text, func
     toolbaritems.update({
-        'viewtab':(wx.ITEM_CHECK, 'IDM_VIEW_TAB', 'images/format.gif', tr('Toggle White Space'), tr('Shows or hides space and tab marks.'), 'OnViewTab'),
+        'viewtab':(wx.ITEM_CHECK, 'IDM_VIEW_TAB', 'images/format.gif', tr('Toggle Whitespace'), tr('Shows or hides whitespace indicators.'), 'OnViewTab'),
     })
 Mixin.setPlugin('mainframe', 'add_tool_list', add_tool_list)
 
@@ -4229,7 +4229,7 @@ def OnPythonRun(win, event):
         if win.pref.python_save_before_run:
             win.OnFileSave(event)
         else:
-            d = wx.MessageDialog(win, tr("The script can't run because the document has not been saved.\nWould you like to save it?"), tr("Run"), wx.YES_NO | wx.ICON_QUESTION)
+            d = wx.MessageDialog(win, tr("The script can't run because the document hasn't been saved.\nWould you like to save it?"), tr("Run"), wx.YES_NO | wx.ICON_QUESTION)
             answer = d.ShowModal()
             d.Destroy()
             if answer == wx.ID_YES:
@@ -4328,7 +4328,7 @@ def OnPythonDoctests(win, event):
 
     doc = win.editctrl.getCurDoc()
     if doc.isModified() or doc.filename == '':
-        d = wx.MessageDialog(win, tr("The script can't run because the document has not been saved.\nWould you like to save it?"), tr("Run"), wx.YES_NO | wx.ICON_QUESTION)
+        d = wx.MessageDialog(win, tr("The script can't run because the document hasn't been saved.\nWould you like to save it?"), tr("Run"), wx.YES_NO | wx.ICON_QUESTION)
         answer = d.ShowModal()
         d.Destroy()
         if answer == wx.ID_YES:
@@ -4393,7 +4393,7 @@ class SelectInterpreter(ui.SimpleDialog):
         box = ui.VBox(namebinding='element')
         box.add(ui.Label(tr('Which Python interpreter do you want to use?')))
         box.add(ui.ComboBox(value, choices=interpreters, style=wx.CB_READONLY), name='interpreter')
-        super(SelectInterpreter, self).__init__(parent, box, title=tr('Select Python Interpreter'), fit=2)
+        super(SelectInterpreter, self).__init__(parent, box, title=tr('Python Interpreters List'), fit=2)
 
         self.layout.SetFocus()
 
@@ -5283,16 +5283,16 @@ def add_mainframe_menu(menulist):
         ]),
         ('IDM_WINDOW',
         [
-            (100, 'IDM_WINDOW_LEFT', tr('Left Window')+'\tAlt+Z', wx.ITEM_CHECK, 'OnWindowLeft', tr('Shows or hides the left Window.')),
-            (110, 'IDM_WINDOW_BOTTOM', tr('Bottom Window')+'\tAlt+X', wx.ITEM_CHECK, 'OnWindowBottom', tr('Shows or hides the bottom Window.')),
+            (100, 'IDM_WINDOW_LEFT', tr('Left Window')+'\tAlt+Z', wx.ITEM_CHECK, 'OnWindowLeft', tr('Shows the left pane.')),
+            (110, 'IDM_WINDOW_BOTTOM', tr('Bottom Window')+'\tAlt+X', wx.ITEM_CHECK, 'OnWindowBottom', tr('Shows the bottom pane.')),
             (120, '-', '', wx.ITEM_SEPARATOR, '', ''),
-            (130, 'IDM_WINDOW_SHELL', tr('Shell Window'), wx.ITEM_CHECK, 'OnWindowShell', tr('Opens shell window.')),
-            (140, 'IDM_WINDOW_MESSAGE', tr('Messages Window'), wx.ITEM_CHECK, 'OnWindowMessage', tr('Opens messages window.')),
+            (130, 'IDM_WINDOW_SHELL', tr('Shell Window'), wx.ITEM_CHECK, 'OnWindowShell', tr('Shows the Shell pane.')),
+            (140, 'IDM_WINDOW_MESSAGE', tr('Messages Window'), wx.ITEM_CHECK, 'OnWindowMessage', tr('Shows the Messages pane.')),
         ]),
         ('IDM_EDIT',
         [
             (280, '-', '', wx.ITEM_SEPARATOR, '', ''),
-            (290, 'IDM_EDIT_CLEARSHELL', tr('Clear Shell Window') + '\tCtrl+Alt+R', wx.ITEM_NORMAL, 'OnEditClearShell', tr('Clears content of shell window.')),
+            (290, 'IDM_EDIT_CLEARSHELL', tr('Clear Shell Contents') + '\tCtrl+Alt+R', wx.ITEM_NORMAL, 'OnEditClearShell', tr('Clears the contents of the shell.')),
         ]),
     ])
 Mixin.setPlugin('mainframe', 'add_menu', add_mainframe_menu)
@@ -5358,9 +5358,9 @@ def add_tool_list(toollist, toolbaritems):
 
     #order, IDname, imagefile, short text, long text, func
     toolbaritems.update({
-        'left':(wx.ITEM_CHECK, 'IDM_WINDOW_LEFT', 'images/left.gif', tr('Toggle Left Window'), tr('Shows or hides the left Window.'), 'OnWindowLeft'),
-        'bottom':(wx.ITEM_CHECK, 'IDM_WINDOW_BOTTOM', 'images/bottom.gif', tr('Toggle Bottom Window'), tr('Shows or hides the bottom Window.'), 'OnWindowBottom'),
-        'shell':(wx.ITEM_CHECK, 'IDM_WINDOW_SHELL', 'images/shell.gif', tr('Toggle Shell Window'), tr('Shows or hides the shell Window.'), 'OnWindowShell'),
+        'left':(wx.ITEM_CHECK, 'IDM_WINDOW_LEFT', 'images/left.gif', tr('Toggle Left Pane'), tr('Shows or hides the left pane.'), 'OnWindowLeft'),
+        'bottom':(wx.ITEM_CHECK, 'IDM_WINDOW_BOTTOM', 'images/bottom.gif', tr('Toggle Bottom Pane'), tr('Shows or hides the bottom pane.'), 'OnWindowBottom'),
+        'shell':(wx.ITEM_CHECK, 'IDM_WINDOW_SHELL', 'images/shell.gif', tr('Toggle Shell Pane'), tr('Shows or hides the Shell pane.'), 'OnWindowShell'),
     })
 Mixin.setPlugin('mainframe', 'add_tool_list', add_tool_list)
 
@@ -5402,8 +5402,8 @@ Mixin.setMixin('mainframe', 'OnWindowMessage', OnWindowMessage)
 def add_editor_menu(popmenulist):
     popmenulist.extend([ (None,
         [
-            (120, 'IDPM_SHELLWINDOW', tr('Shell Window'), wx.ITEM_CHECK, 'OnShellWindow', tr('Opens shell window.')),
-            (130, 'IDPM_MESSAGEWINDOW', tr('Messages Window'), wx.ITEM_CHECK, 'OnMessageWindow', tr('Opens messages window.')),
+            (120, 'IDPM_SHELLWINDOW', tr('Shell Pane'), wx.ITEM_CHECK, 'OnShellWindow', tr('Shows the Shell pane.')),
+            (130, 'IDPM_MESSAGEWINDOW', tr('Messages Pane'), wx.ITEM_CHECK, 'OnMessageWindow', tr('Shows the Messages pane.')),
         ]),
     ])
 Mixin.setPlugin('notebook', 'add_menu', add_editor_menu)
@@ -5433,7 +5433,7 @@ Mixin.setMixin('mainframe', 'OnEditClearShell', OnEditClearShell)
 
 def add_pref(preflist):
     preflist.extend([
-        (tr('Python'), 180, 'choice', 'shell_window_side', tr('Select side bar which you want shell window opened in:'),
+        (tr('Python'), 180, 'choice', 'shell_window_side', tr('Placement of the Shell pane is:'),
             [('Left', 'left'), ('Bottom', 'bottom')])
     ])
 Mixin.setPlugin('preference', 'add_pref', add_pref)
@@ -5461,8 +5461,8 @@ if wx.Platform == '__WXMSW__':
         menulist.extend([ ('IDM_TOOL',
             [
                 (890, '-', '', wx.ITEM_SEPARATOR, '', ''),
-                (900, 'IDM_TOOL_REGISTER', tr('Register To Explore'), wx.ITEM_NORMAL, 'OnToolRegister', tr('Registers UliPad to the context menu of Windows Explorer.')),
-                (910, 'IDM_TOOL_UNREGISTER', tr('Unregister From Explore'), wx.ITEM_NORMAL, 'OnToolUnRegister', tr('Unregisters UliPad from the context menu of Windows Explorer.')),
+                (900, 'IDM_TOOL_REGISTER', tr('Register To Windows Explorer'), wx.ITEM_NORMAL, 'OnToolRegister', tr('Registers UliPad to the context menu of Windows Explorer.')),
+                (910, 'IDM_TOOL_UNREGISTER', tr('Unregister From Windows Explorer'), wx.ITEM_NORMAL, 'OnToolUnRegister', tr('Unregisters UliPad from the context menu of Windows Explorer.')),
             ]),
         ])
     Mixin.setPlugin('mainframe', 'add_menu', add_mainframe_menu)
@@ -5479,10 +5479,10 @@ if wx.Platform == '__WXMSW__':
                 execute = sys.executable.replace('python.exe', 'pythonw.exe')
                 command = '"%s" "%s" "%%L"' % (execute, path)
             _winreg.SetValue(key, 'shell\\UliPad\\command', _winreg.REG_SZ, common.encode_string(command, common.defaultfilesystemencoding))
-            common.note(tr('Successful!'))
+            common.note(tr('Done'))
         except:
             error.traceback()
-            wx.MessageDialog(win, tr('Register to explore context menu failed!'), tr("Error"), wx.OK | wx.ICON_INFORMATION).ShowModal()
+            wx.MessageDialog(win, tr('Registering UliPad to the context menu of Windows Explorer failed.'), tr("Error"), wx.OK | wx.ICON_EXCLAMATION).ShowModal()
     Mixin.setMixin('mainframe', 'OnToolRegister', OnToolRegister)
 
     def OnToolUnRegister(win, event):
@@ -5493,7 +5493,7 @@ if wx.Platform == '__WXMSW__':
             common.note(tr('Successful!'))
         except:
             error.traceback()
-            wx.MessageDialog(win, tr('Unregister from explore context menu failed!'), tr("Error"), wx.OK | wx.ICON_INFORMATION).ShowModal()
+            wx.MessageDialog(win, tr('Unregistering UliPad from the context menu of Windows Explorer failed.'), tr("Error"), wx.OK | wx.ICON_EXCLAMATION).ShowModal()
     Mixin.setMixin('mainframe', 'OnToolUnRegister', OnToolUnRegister)
 
 

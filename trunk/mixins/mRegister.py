@@ -36,8 +36,8 @@ if wx.Platform == '__WXMSW__':
         menulist.extend([ ('IDM_TOOL',
             [
                 (890, '-', '', wx.ITEM_SEPARATOR, '', ''),
-                (900, 'IDM_TOOL_REGISTER', tr('Register To Explore'), wx.ITEM_NORMAL, 'OnToolRegister', tr('Registers UliPad to the context menu of Windows Explorer.')),
-                (910, 'IDM_TOOL_UNREGISTER', tr('Unregister From Explore'), wx.ITEM_NORMAL, 'OnToolUnRegister', tr('Unregisters UliPad from the context menu of Windows Explorer.')),
+                (900, 'IDM_TOOL_REGISTER', tr('Register To Windows Explorer'), wx.ITEM_NORMAL, 'OnToolRegister', tr('Registers UliPad to the context menu of Windows Explorer.')),
+                (910, 'IDM_TOOL_UNREGISTER', tr('Unregister From Windows Explorer'), wx.ITEM_NORMAL, 'OnToolUnRegister', tr('Unregisters UliPad from the context menu of Windows Explorer.')),
             ]),
         ])
     Mixin.setPlugin('mainframe', 'add_menu', add_mainframe_menu)
@@ -54,10 +54,10 @@ if wx.Platform == '__WXMSW__':
                 execute = sys.executable.replace('python.exe', 'pythonw.exe')
                 command = '"%s" "%s" "%%L"' % (execute, path)
             _winreg.SetValue(key, 'shell\\UliPad\\command', _winreg.REG_SZ, common.encode_string(command, common.defaultfilesystemencoding))
-            common.note(tr('Successful!'))
+            common.note(tr('Done'))
         except:
             error.traceback()
-            wx.MessageDialog(win, tr('Register to explore context menu failed!'), tr("Error"), wx.OK | wx.ICON_INFORMATION).ShowModal()
+            wx.MessageDialog(win, tr('Registering UliPad to the context menu of Windows Explorer failed.'), tr("Error"), wx.OK | wx.ICON_EXCLAMATION).ShowModal()
     Mixin.setMixin('mainframe', 'OnToolRegister', OnToolRegister)
 
     def OnToolUnRegister(win, event):
@@ -68,5 +68,5 @@ if wx.Platform == '__WXMSW__':
             common.note(tr('Successful!'))
         except:
             error.traceback()
-            wx.MessageDialog(win, tr('Unregister from explore context menu failed!'), tr("Error"), wx.OK | wx.ICON_INFORMATION).ShowModal()
+            wx.MessageDialog(win, tr('Unregistering UliPad from the context menu of Windows Explorer failed.'), tr("Error"), wx.OK | wx.ICON_EXCLAMATION).ShowModal()
     Mixin.setMixin('mainframe', 'OnToolUnRegister', OnToolUnRegister)
