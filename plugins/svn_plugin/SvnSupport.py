@@ -140,7 +140,7 @@ class Command(object):
     def list(self, callback=None):
         self._begin()
         def f():
-            client = self.get_client([])
+            client = self.get_client()
             r = client.list(self.path)
             s = []
             fmt = "%(path)-60s %(last_author)-20s %(size)-10s"
@@ -373,7 +373,7 @@ class Command(object):
 def show_in_message_win(text, clear=True, goto_end=False):
     win = Globals.mainframe
     win.createMessageWindow()
-    win.panel.showPage(tr('Message'))
+    win.panel.showPage(tr('Messages'))
     ro = win.messagewindow.GetReadOnly()
     win.messagewindow.SetReadOnly(0)
     if clear:

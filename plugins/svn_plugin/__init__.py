@@ -202,7 +202,7 @@ def aftersavefile(editor, filename):
     m = Globals.mainframe
 
     #get dirbrowser instance
-    dirwin = m.panel.getPage(tr('Dir Browser'))
+    dirwin = m.panel.getPage(tr('Directory Browser'))
     if not dirwin: return
 
     def get_node(tree, parent):
