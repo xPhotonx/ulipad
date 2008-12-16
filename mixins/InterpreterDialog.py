@@ -161,7 +161,7 @@ class PythonArgsDialog(wx.Dialog):
         
         h.add(ui.SingleChoice(default_interpreter, sorted(interpreters.keys())), name='interpreter').bind(wx.EVT_COMBOBOX, self.OnChanged)
         h.add(ui.Label(tr('Parameters:')))
-        h.add(ui.Text(self.pref.python_default_paramters[default_interpreter]), name='parameter')
+        h.add(ui.Text(self.pref.python_default_paramters.get(default_interpreter, '')), name='parameter')
         
         h = self.sizer.add(ui.HBox())
         h.add(ui.Label(tr('Parameters of script:')))
