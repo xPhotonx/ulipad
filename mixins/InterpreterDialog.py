@@ -185,4 +185,4 @@ class PythonArgsDialog(wx.Dialog):
         event.Skip()
 
     def OnChanged(self, event):
-        self.parameter.SetValue(self.pref.python_default_paramters[self.interpreter.GetValue()])
+        self.parameter.SetValue(self.pref.python_default_paramters.get(self.interpreter.GetValue(), ''))
