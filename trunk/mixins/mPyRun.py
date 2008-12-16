@@ -152,7 +152,7 @@ def OnPythonRun(win, event):
     args = doc.args.replace('$path', os.path.dirname(doc.filename))
     args = args.replace('$file', doc.filename)
     ext = os.path.splitext(doc.filename)[1].lower()
-    parameter = Globals.pref.python_default_paramters[Globals.pref.default_interpreter]
+    parameter = Globals.pref.python_default_paramters.get(Globals.pref.default_interpreter, '')
     command = u'"%s" %s "%s" %s' % (interpreter, parameter, doc.filename, args)
     #chanage current path to filename's dirname
     path = os.path.dirname(doc.filename)
@@ -247,7 +247,7 @@ def OnPythonDoctests(win, event):
     path = os.path.normpath(os.path.join(Globals.workpath, 'packages/cmd_doctest.py'))
     filename = Globals.mainframe.editctrl.getCurDoc().filename
     interpreter = _get_python_exe(win)
-    parameter = Globals.pref.python_default_paramters[Globals.pref.default_interpreter]
+    parameter = Globals.pref.python_default_paramters.get(Globals.pref.default_interpreter, '')
     cmd = u'"%s" %s "%s" "%s"' % (interpreter, parameter, path, filename)
     pipe_command(cmd, f)
 Mixin.setMixin('mainframe', 'OnPythonDoctests', OnPythonDoctests)
