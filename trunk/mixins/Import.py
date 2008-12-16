@@ -6533,6 +6533,10 @@ def leaveopenfile(win, filename):
         win.mainframe.auto_routin_analysis.put(win)
 Mixin.setPlugin('editor', 'leaveopenfile', leaveopenfile)
 
+def beforeclosefile(editctrl, doc):
+    Globals.mainframe.auto_routin_analysis.clear()
+Mixin.setPlugin('editctrl', 'beforeclosefile', beforeclosefile)
+
 def on_modified(win):
     win.mainframe.auto_routin_analysis.put(win)
 Mixin.setPlugin('editor', 'on_modified', on_modified)
