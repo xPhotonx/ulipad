@@ -31,7 +31,7 @@ def add_mainframe_menu(menulist):
     menulist.extend([ ('IDM_FILE',
         [
             (100, 'IDM_FILE_NEW', tr('New') + '\tCtrl+N', wx.ITEM_NORMAL, 'OnFileNew', tr('Creates a new document.')),
-            (105, 'IDM_FILE_NEWMORE', tr('New') + '...', wx.ITEM_NORMAL, None, tr('Creates a new type document.')),
+            (105, 'IDM_FILE_NEWMORE', tr('New') + '...', wx.ITEM_NORMAL, None, None),
             (110, 'IDM_FILE_OPEN', tr('Open...') + '\tCtrl+O', wx.ITEM_NORMAL, 'OnFileOpen', tr('Opens an existing document.')),
             (120, 'IDM_FILE_REOPEN', tr('Reopen') + '\tE=Ctrl+Shift+O', wx.ITEM_NORMAL, 'OnFileReOpen', tr('Reopens the current document.')),
             (140, 'IDM_FILE_CLOSE', tr('Close') + '\tCtrl+F4', wx.ITEM_NORMAL, 'OnFileClose', tr('Closes an opened document.')),
@@ -142,7 +142,7 @@ Mixin.setMixin('mainframe', 'getFilterIndex', getFilterIndex)
 def OnFileReOpen(win, event):
     if win.document.isModified():
         document = findDocument(win.document)
-        dlg = wx.MessageDialog(win, tr("This document has been modified.\nDo you really want to reopen it?"), tr("Reopen Confirmation"), wx.YES_NO|wx.ICON_QUESTION)
+        dlg = wx.MessageDialog(win, tr("The document has been modified.\nDo you really want to reopen it and discard the modification?"), tr("Reopening Confirmation"), wx.YES_NO|wx.ICON_QUESTION)
         answer = dlg.ShowModal()
         dlg.Destroy()
         if answer != wx.ID_YES:
@@ -184,7 +184,7 @@ def CloseFile(win, document, checkonly = False):
     answer = wx.ID_YES
     if document.isModified():
         d = wx.MessageDialog(win, tr("Would you like to save %s?") % document.getFilename(),
-            tr("Save Confirmation"), wx.YES_NO | wx.CANCEL | wx.ICON_QUESTION)
+            tr("Saving Confirmation"), wx.YES_NO | wx.CANCEL | wx.ICON_QUESTION)
         answer = d.ShowModal()
         d.Destroy()
         if answer == wx.ID_YES:
@@ -235,7 +235,7 @@ def SaveFile(win, ctrl, issaveas=False):
             #check if the filename has been opened, if opened then fail
             for document in win.editctrl.getDocuments():
                 if (not ctrl is document ) and (filename == document.filename):
-                    wx.MessageDialog(win, tr("The document %s is already opened.\nCan't save new document to it.") % document.getFilename(),
+                    wx.MessageDialog(win, tr("The document %s is already opened.\nPlease choose a different name for the document.") % document.getFilename(),
                         tr("Error"), wx.OK|wx.ICON_EXCLAMATION).ShowModal()
                     return False
         else:
@@ -268,7 +268,7 @@ Mixin.setPlugin('preference', 'init', pref_init)
 
 def add_pref(preflist):
     preflist.extend([
-        (tr('Document'), 170, 'choice', 'notebook_direction', tr('Document tabs direction:'), [tr('Top'), tr('Bottom')])
+        (tr('Document'), 170, 'choice', 'notebook_direction', tr('Document tabs placement:'), [tr('Top'), tr('Bottom')])
     ])
 Mixin.setPlugin('preference', 'add_pref', add_pref)
 
