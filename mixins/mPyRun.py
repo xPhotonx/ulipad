@@ -153,6 +153,7 @@ def OnPythonRun(win, event):
     args = args.replace('$file', doc.filename)
     ext = os.path.splitext(doc.filename)[1].lower()
     parameter = Globals.pref.python_default_paramters.get(Globals.pref.default_interpreter, '')
+    interpreter = dict(Globals.pref.python_interpreter).get(Globals.pref.default_interpreter, '')
     command = u'"%s" %s "%s" %s' % (interpreter, parameter, doc.filename, args)
     #chanage current path to filename's dirname
     path = os.path.dirname(doc.filename)
