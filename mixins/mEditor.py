@@ -23,6 +23,7 @@
 
 from modules import Mixin
 import wx
+from modules import Globals
 
 def add_panel_list(panellist):
     from TextPanel import TextPanel
@@ -37,8 +38,10 @@ def on_first_keydown(win, event):
     if ctrl and key == wx.WXK_TAB:
         if not shift:
             win.editctrl.Navigation(True)
+            wx.CallAfter(Globals.mainframe.editctrl.getCurDoc().SetFocus)
         else:
             win.editctrl.Navigation(False)
+            wx.CallAfter(Globals.mainframe.editctrl.getCurDoc().SetFocus)
 Mixin.setPlugin('editor', 'on_first_keydown', on_first_keydown)
 
 def on_modified_routin(win):
