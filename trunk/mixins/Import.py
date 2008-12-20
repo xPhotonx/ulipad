@@ -2214,7 +2214,7 @@ def savefileencoding(win, stext, encoding):
         encoding = win.locale
 
     if win.languagename == 'python':
-        r = re.compile(r'coding[=:]\s*([-\w.]+)')
+        r = re.compile(r'\s*coding\s*[=:]\s*([-\w.]+)')
 
         buf = StringIO.StringIO(text)
         while 1:
