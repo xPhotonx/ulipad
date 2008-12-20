@@ -168,6 +168,7 @@ class PythonArgsDialog(wx.Dialog):
         h.add(ui.Text(defaultvalue), name='command_line').tooltip("$file will be replaced with the filename of the current document\n"
             "$path will be replaced with the filename's directory of the current document")
         self.sizer.add(ui.Check(defaultchkvalue, tr('Redirect input and output')), name='redirect')
+        self.sizer.add(ui.Check(self.pref.python_show_args, tr('Show the Select Arguments dialog at Python program run')), name='show_args')
         
         sizer.add(ui.simple_buttons(), flag=wx.ALIGN_CENTER|wx.BOTTOM)
         self.sizer.bind('btnOk', 'click', self.OnOK)
@@ -181,6 +182,7 @@ class PythonArgsDialog(wx.Dialog):
     def OnOK(self, event):
         self.pref.default_interpreter = self.interpreter.GetValue()
         self.pref.python_default_paramters[self.pref.default_interpreter] = self.parameter.GetValue()
+        self.pref.python_show_args = self.show_args.GetValue()
         self.pref.save()
         event.Skip()
 
