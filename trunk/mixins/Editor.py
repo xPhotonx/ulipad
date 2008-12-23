@@ -439,6 +439,10 @@ class TextEditor(wx.stc.StyledTextCtrl, Mixin.Mixin, DocumentBase.DocumentBase):
 #        self.ProcessEvent(event)
 #
     def OnChar(self, event):
+        if event.GetKeyCode() == wx.stc.STC_KEY_BACK:
+            self.CmdKeyExecute(wx.stc.STC_CMD_DELETEBACK)
+            return
+        
         # for calltip
         self.have_focus = True
         if self.execplugin('on_first_char', self, event):
@@ -530,7 +534,7 @@ class TextEditor(wx.stc.StyledTextCtrl, Mixin.Mixin, DocumentBase.DocumentBase):
            ('Ctrl+X', wx.stc.STC_CMD_CUT),
            ('Shift+Del', wx.stc.STC_CMD_CUT),
 #       wxSTC_CMD_DELETEBACK Delete the selection or if no selection, the character before the caret
-            ('Back', wx.stc.STC_CMD_DELETEBACK),
+#            ('Back', wx.stc.STC_CMD_DELETEBACK),
 #       wxSTC_CMD_DELETEBACKNOTLINE Delete the selection or if no selection, the character before the caret. Will not delete the character before at the start of a line.
 #       wxSTC_CMD_DELWORDLEFT Delete the word to the left of the caret
             ('Ctrl+Back', wx.stc.STC_CMD_DELWORDLEFT),
