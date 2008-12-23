@@ -35,3 +35,4 @@ Bob Gao <lulihummel@gmail.com>                  Provide patch
 Gaël Barrachon <gael.barrachon@gmail.com>	Commit French translation
 Jose Jachuf <jjachuf@gmail.com>			Fix Spanish translation
 xw_max <xw_max@163.com>				Provide patch about passing parameters to winpdb
+cjacker						Provide a patch #179
