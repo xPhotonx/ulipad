@@ -53,7 +53,7 @@ color_theme = {
         'STC_STYLE_SELECTION_BACK' : "back:#2E9F27",
         'STC_STYLE_FOLDER' : "back:#3476A3",
         'STC_STYLE_MARKER' : "fore:#F0804F,back:#FFFFFF",
-        'STC_STYLE_TAG' : "fore:#15852B",
+        'STC_STYLE_TAG' : "fore:#F56FFF",
         'STC_STYLE_TAG1' : "fore:#2CEF50",
         'STC_STYLE_TAGKEY' : "fore:#FFFF00",
         'STC_STYLE_ATTRNAME' : "fore:#F0804F",
