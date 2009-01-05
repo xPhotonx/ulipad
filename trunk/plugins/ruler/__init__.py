@@ -51,18 +51,19 @@ def cal_column(win):
     return s
 
 def on_char(win, event):
-    char = event.GetKeyCode()
-    win.ruler.setoffset(cal_offset(win))
-    col = cal_column(win)
-    if (31 <char < 127) or char > wx.WXK_PAGEDOWN:
-        if char < 127:
-            col += 1
-        else:
-            if unicodedata.east_asian_width(unichr(char)) != 'Na':
-                col += 2
-            else:
+    if win.edittype == 'edit' and hasattr(win, 'ruler'):
+        char = event.GetKeyCode()
+        win.ruler.setoffset(cal_offset(win))
+        col = cal_column(win)
+        if (31 <char < 127) or char > wx.WXK_PAGEDOWN:
+            if char < 127:
                 col += 1
-    win.ruler.position(col)
+            else:
+                if unicodedata.east_asian_width(unichr(char)) != 'Na':
+                    col += 2
+                else:
+                    col += 1
+        win.ruler.position(col)
 Mixin.setPlugin('editor', 'on_char', on_char, nice=5)
 
 def on_mouse_down(win, event):
