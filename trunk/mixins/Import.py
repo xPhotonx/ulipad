@@ -4326,6 +4326,8 @@ def OnPythonDoctests(win, event):
         try:
             win.createMessageWindow()
             win.panel.showPage(tr('Messages'))
+            if not text:
+                text = 'Doctest for %s is successful!' % doc.filename
             appendtext(win.messagewindow, text)
         except:
             error.traceback()
@@ -4343,8 +4345,7 @@ def OnPythonDoctests(win, event):
     path = os.path.normpath(os.path.join(Globals.workpath, 'packages/cmd_doctest.py'))
     filename = Globals.mainframe.editctrl.getCurDoc().filename
     interpreter = _get_python_exe(win)
-    parameter = Globals.pref.python_default_paramters.get(Globals.pref.default_interpreter, '')
-    cmd = u'"%s" %s "%s" "%s"' % (interpreter, parameter, path, filename)
+    cmd = u'%s "%s" "%s"' % (interpreter, path, filename)
     pipe_command(cmd, f)
 Mixin.setMixin('mainframe', 'OnPythonDoctests', OnPythonDoctests)
 
@@ -4353,6 +4354,7 @@ def add_tool_list(toollist, toolbaritems):
         (2100, 'run'),
         (2110, 'setargs'),
         (2120, 'stop'),
+        (2130, 'doctest'),
         (2150, '|'),
     ])
 
@@ -4361,6 +4363,7 @@ def add_tool_list(toollist, toolbaritems):
         'run':(wx.ITEM_NORMAL, 'IDM_PYTHON_RUN', 'images/run.gif', tr('Run'), tr('Runs the Python program.'), 'OnPythonRun'),
         'setargs':(wx.ITEM_NORMAL, 'IDM_PYTHON_SETARGS', 'images/setargs.gif', tr('Set Arguments'), tr('Sets the command-line arguments for a Python program.'), 'OnPythonSetArgs'),
         'stop':(wx.ITEM_NORMAL, 'IDM_PYTHON_END', 'images/stop.gif', tr('Stop Program'), tr('Stops the current Python program.'), 'OnPythonEnd'),
+        'doctest':(wx.ITEM_NORMAL, 'IDM_PYTHON_DOCTEST', 'images/doctest.png', tr('Run Doctest'), tr('Runs dotest in the current document.'), 'OnPythonDoctests'),
     })
 Mixin.setPlugin('pythonfiletype', 'add_tool_list', add_tool_list)
 
@@ -4387,6 +4390,7 @@ Mixin.setPlugin('pythonfiletype', 'on_enter', on_enter)
 def on_leave(mainframe, filename, languagename):
     ret = mainframe.Disconnect(mainframe.IDM_PYTHON_RUN, -1, wx.wxEVT_UPDATE_UI)
     ret = mainframe.Disconnect(mainframe.IDM_PYTHON_SETARGS, -1, wx.wxEVT_UPDATE_UI)
+    ret = mainframe.Disconnect(mainframe.IDM_PYTHON_END, -1, wx.wxEVT_UPDATE_UI)
 Mixin.setPlugin('pythonfiletype', 'on_leave', on_leave)
 
 
