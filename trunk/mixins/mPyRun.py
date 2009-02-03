@@ -218,9 +218,9 @@ def OnPythonDoctests(win, event):
         
         def _run(cmd):
             try:
-                o = os.popen(cmd)
+                sin, sout, serr = os.popen3(cmd)
                 if callback:
-                    wx.CallAfter(callback, o.read())
+                    wx.CallAfter(callback, sout.read()+serr.read())
             except:
                 error.traceback()
                 
