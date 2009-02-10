@@ -1,4 +1,4 @@
-﻿This is a contributing authors list. 
+This is a contributing authors list. 
 
 Developer:
 
@@ -12,8 +12,8 @@ Dick Moores <rdmoores@gmail.com>                Proposal many suggestions
 Mario Lacunza <mlacunza@gmail.com>              Commit Spanish translation file and proposal many suggestions
 Ye Naiquan <Naiquan.Ye@marintek.sintef.no>      Commit Patch
 Kelie Feng                                      Create a great video about UliPad and put in ShowMeDo site, and other helps
-Jaime Wyant <pyogrammer.py@gmail.com>		Provide patches, plugins, and many suggestions
-Boštjan Mejak <vinetouu@gmail.com>		Fix typos and provide patches
+Jaime Wyant <pyogrammer.py@gmail.com>           Provide patches, plugins, and many suggestions
+Boštjan Mejak <vinetouu@gmail.com>              Fix typos and provide patches
 
 Also thanks a lot:
 
@@ -32,7 +32,8 @@ Hawker                                          Linux memory display patch
 shmakes <shmakes@gmail.com>                     Good advices and code patch
 LP <liupengf12@gmail.com>                       Report bugs and commit Patch
 Bob Gao <lulihummel@gmail.com>                  Provide patch
-Gaël Barrachon <gael.barrachon@gmail.com>	Commit French translation
-Jose Jachuf <jjachuf@gmail.com>			Fix Spanish translation
-xw_max <xw_max@163.com>				Provide patch about passing parameters to winpdb
-cjacker						Provide a patch #179
+Gaël Barrachon <gael.barrachon@gmail.com>       Commit French translation
+Jose Jachuf <jjachuf@gmail.com>                 Fix Spanish translation
+xw_max <xw_max@163.com>                         Provide patch about passing parameters to winpdb
+Wang Eric <glitch.wang@gmail.com>               Improve UliPad announcement, and provide patch=======
+cjacker                                         Provide a patch #179
