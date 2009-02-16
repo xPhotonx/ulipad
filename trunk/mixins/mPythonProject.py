@@ -34,14 +34,15 @@ def add_project(project_names):
 Mixin.setPlugin('dirbrowser', 'add_project', add_project)
 
 def project_begin(dirwin, project_names, path):
-    if 'python' in project_names:
+    if 'python' in project_names and path not in sys.path:
         sys.path.insert(0, path)
 Mixin.setPlugin('dirbrowser', 'project_begin', project_begin)
 
 def project_end(dirwin, project_names, path):
     if 'python' in project_names:
         try:
-            sys.path.remove(path)
+            if path in sys.path:
+                sys.path.remove(path)
         except:
             error.traceback()
 Mixin.setPlugin('dirbrowser', 'project_end', project_end)
