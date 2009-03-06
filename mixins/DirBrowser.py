@@ -360,7 +360,7 @@ class DirBrowser(wx.Panel, Mixin.Mixin):
                     obj = self.insertnode(parent, node, path, filename, self.close_image, self.open_image, self.getid(), self.DIR_NODE)
                     self.tree.SetItemHasChildren(obj, True)
                 else:
-                    obj = self.addnode(node, path, filename, self.close_image, self.open_image, self.getid(), self.DIR_NODE)
+                    obj = self.addnode(parent, path, filename, self.close_image, self.open_image, self.getid(), self.DIR_NODE)
                     self.tree.SetItemHasChildren(obj, True)
 
     def get_file_image(self, filename):
