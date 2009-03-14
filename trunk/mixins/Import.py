@@ -1639,6 +1639,8 @@ def get_document_comment_chars(editor):
         'perl':'#',
         'java':'//',
         'js':'//',
+        'html':'//',
+        'css':'//',
         'default':'#',
     }
     lang = editor.languagename
