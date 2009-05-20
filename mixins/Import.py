@@ -3678,6 +3678,11 @@ def appendtext(win, text):
                     return x
             text = ''.join(map(f, text))
     win.SetReadOnly(0)
+    if Globals.pref.msgwin_max_lines>0:
+        lines = (win.GetText().splitlines() + text.splitlines())[-1*Globals.pref.msgwin_max_lines:]
+        eol = ['\n', '\r\n', '\r']
+        win.SetText('')
+        text = eol[win.GetEOLMode()].join(lines)
     flag = win.GetCurrentLine() == win.GetLineCount() - 1
     win.AppendText(text)
     if flag:
@@ -3691,6 +3696,16 @@ def RunCheck(win, event):
     else:
         win.SetReadOnly(0)
 Mixin.setMixin('messagewindow', 'RunCheck', RunCheck)
+
+def pref_init(pref):
+    pref.msgwin_max_lines = 0
+Mixin.setPlugin('preference', 'init', pref_init)
+
+def add_pref(preflist):
+    preflist.extend([
+        (tr('General'), 190, 'num', 'msgwin_max_lines', tr('Maxmize message window lines(0 no limited)'), None),
+    ])
+Mixin.setPlugin('preference', 'add_pref', add_pref)
 
 
 
