@@ -34,7 +34,7 @@ extension = u"*.py;*.pyw"
 previewcode = "#Comment Blocks!\\nclass MyClass(MyParent):\\n    \"\"\" Class example \"\"\"\\n    def __init__(self):\\n        ''' Triple quotes '''\\n        # Do something silly\\n        a = ('Py' + \"thon\") * 100\\n        b = 'EOL unclosed string\\n        c = [Matched braces]\\n        d = {Unmatched brace"
 
 [keywords]
-keywords = "and as assert break class continue def del elif else except exec finally for from global if import in is lambda not or pass print raise return try while with yield self None True False as",
+keywords = "and as assert break class continue def del elif else except exec finally for from global if import in is lambda not or pass print raise return try while with yield self None True False",
 }}}
 
 If you want to change the default font, you can change the "default" style font name "Courier New" to anyone you like. "foldercolor" only has background color, and you can change the folder margin color. "margincolor" can be used for setting the margin foreground and background color.
