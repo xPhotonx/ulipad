@@ -166,7 +166,7 @@ class SyntaxDialog(wx.Dialog):
 
     def StrToRGB(self, string):
         if string:
-            return int(string[5:7], 16), int(string[3:5], 16), int(string[1:3], 16)
+            return int(string[1:3], 16), int(string[3:5], 16), int(string[5:7], 16)
         return 0, 0, 0
 
     def RGBToStr(self, rgb):
