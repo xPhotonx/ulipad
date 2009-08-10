@@ -771,7 +771,13 @@ class DirBrowser(wx.Panel, Mixin.Mixin):
                 self.tree.Collapse(item)
             self.tree.Thaw()
         else:
-            event.Skip()
+            if self.isFile(item):
+                event.Skip()
+            else:
+                if self.tree.IsExpanded(item):
+                    self.tree.Collapse(item)
+                else:
+                    self.tree.Expand(item)
 
     def getTopObjects(self):
         objs = []
