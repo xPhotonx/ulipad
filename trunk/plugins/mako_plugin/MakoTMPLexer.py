@@ -30,7 +30,7 @@ class MakoTmpLexer(CustomLexer):
     casesensitive = True
 
     keywords = ['include', 'def', 'namespace', 'inherit', 'call', 'doc',
-            'text', 'page']
+            'text', 'page', 'if', 'for']
 
     preview_code = """Hello there ${username}, how are ya.  Lets see what your account says:
 
