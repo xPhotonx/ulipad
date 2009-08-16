@@ -371,7 +371,8 @@ class EditorFactory(FNB.FlatNotebook, Mixin.Mixin):
     def OnClose(self, event):
         if not self.skip_closing:
             event.Veto()
-            wx.CallAfter(self.mainframe.CloseFile, self.document)
+            document = self.getDoc(event.GetSelection())
+            wx.CallAfter(self.mainframe.CloseFile, document)
         else:
             event.Skip()
         self.skip_closing = False
