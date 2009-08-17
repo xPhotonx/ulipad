@@ -343,16 +343,28 @@ class EditorFactory(FNB.FlatNotebook, Mixin.Mixin):
         except:
             return
         self.callplugin('beforeclosefile', self, document)
+        selected = self.GetSelection()
         self.skip_closing = True
         self.skip_page_change = True
         self.DeletePage(index)
-        if index >= len(self.getDocuments()):
-            index = len(self.getDocuments())-1
-        if index >= 0:
-            self.switch(self.getDoc(index))
-        else:
-            self.new()
+#        if index >= len(self.getDocuments()):
+#            index = len(self.getDocuments())-1
+#        if index >= 0:
+#            self.switch(self.getDoc(index))
+#        else:
+#            self.new()
+#        self.document.SetFocus()
+        #if the page to close is not selected, no need to switch page
+        if index == selected: 
+            if index > 0:
+                if index >= len(self.getDocuments()):
+                    index = len(self.getDocuments())-1
+                # only swith page when there is a page to switch to
+                self.switch(self.getDoc(index))
+            else:
+              self.new()
         self.document.SetFocus()
+
         self.callplugin('afterclosefile', self)
 
     def savefile(self, document, filename, encoding):
