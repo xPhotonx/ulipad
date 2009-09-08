@@ -28,7 +28,7 @@ from modules import Mixin
 
 def pref_init(pref):
     pref.save_current_status = True
-    pref.status_position = (0, 0)
+    pref.status_position = wx.DefaultPosition
     pref.status_size = (600, 400)
     pref.status = 3     #1 Iconized 2 Maximized 3 normal
     pref.status_panels = {'left':20, 'right':10, 'bottom':20}
