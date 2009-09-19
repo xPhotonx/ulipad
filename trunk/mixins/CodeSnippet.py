@@ -435,7 +435,7 @@ Description:
 #                self.tree.SelectItem(self.tree.GetSelection(), False)
 #                wx.CallAfter(self.tree.SelectItem, item, True)
             if event.ControlDown():
-                self.node_paste(item)
+                wx.CallAfter(self.node_paste, item)
         event.Skip()
 
     def OnSelected(self, event):
@@ -477,8 +477,23 @@ Description:
                     else:
                         return
                     
+                start = doc.GetCurrentPos()
                 if not self.mainframe.Indent_paste(doc, text):
                     doc.AddText(text)
+                end = doc.GetCurrentPos()
+                
+                def f():
+                    #add snippet process
+                    if doc.snippet:
+                        snippet = doc.snippet
+                    else:
+                        import SnipMixin
+
+                        snippet = doc.snippet = SnipMixin.SnipMixin(doc)
+                    snippet.start(text, start, end)
+#                    wx.CallAfter(doc.SetFocus)
+                    wx.FutureCall(1000, doc.SetFocus)
+                wx.CallAfter(f)
                 
             wx.CallAfter(doc.SetFocus)
             
