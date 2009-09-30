@@ -261,7 +261,7 @@ def output_text(mainframe, text, mode=-1):
         HtmlDialog(win, tr('Html Convertion'), ot).ShowModal()
     elif mode == 1:
         win.createMessageWindow()
-        win.panel.showPage(tr('Message'))
+        win.panel.showPage(tr('Messages'))
         win.messagewindow.SetText(text)
     elif mode == 2:
         win.document.ReplaceSelection(text)

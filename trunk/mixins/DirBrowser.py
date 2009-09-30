@@ -53,6 +53,7 @@ class DirBrowser(wx.Panel, Mixin.Mixin):
             (115, 'IDPM_SETPROJ', tr('Set Project'), wx.ITEM_NORMAL, 'OnSetProject', ''),
             (116, 'IDPM_SEARCHDIR', tr('Search Directory'), wx.ITEM_NORMAL, 'OnSearchDir', ''),
             (117, 'IDPM_COMMANDLINE', tr('Open Command Window Here'), wx.ITEM_NORMAL, 'OnCommandWindow', ''),
+            (119, 'IDPM_PRINTDIR', tr('Print Directory Tree'), wx.ITEM_NORMAL, 'OnPrintDir', ''),
             (120, '', '-', wx.ITEM_SEPARATOR, None, ''),
             (125, 'IDPM_OPENDEFAULT', tr('Open with Default Editor'), wx.ITEM_NORMAL, 'OnOpenDefault', ''),
             (130, 'IDPM_ADDPATH', tr('Create Sub Directory'), wx.ITEM_NORMAL, 'OnAddSubDir', ''),
@@ -160,6 +161,7 @@ class DirBrowser(wx.Panel, Mixin.Mixin):
         wx.EVT_UPDATE_UI(self, self.IDPM_OPENDEFAULT, self.OnUpdateUI)
         wx.EVT_UPDATE_UI(self, self.IDPM_SETPROJ, self.OnUpdateUI)
         wx.EVT_UPDATE_UI(self, self.IDPM_COMMANDLINE, self.OnUpdateUI)
+        wx.EVT_UPDATE_UI(self, self.IDPM_PRINTDIR, self.OnUpdateUI)
 
         self.popmenus = None
 
@@ -186,29 +188,18 @@ class DirBrowser(wx.Panel, Mixin.Mixin):
                 event.Enable(False)
         elif eid in [self.IDPM_ADDFILE, self.IDPM_ADDPATH]:
             event.Enable(self.is_ok(item))
-        elif eid in [self.IDPM_COMMANDLINE]:
+        elif eid in [self.IDPM_COMMANDLINE, self.IDPM_PRINTDIR]:
             filename = self.get_node_filename(item)
             if os.path.isdir(filename):
                 event.Enable(True)
             else:
                 event.Enable(False)
-        elif eid in [self.IDPM_DELETE, self.IDPM_RENAME]:
+        elif eid in [self.IDPM_DELETE, self.IDPM_RENAME, self.IDPM_IGNORETHIS]:
             if self.is_first_node(item):
                 event.Enable(False)
             else:
                 event.Enable(True)
-        elif eid == self.IDPM_IGNORETHIS:
-            if self.is_first_node(item):
-                event.Enable(False)
-            else:
-                event.Enable(True)
-        elif eid == self.IDPM_IGNORETHISTYPE:
-            filename = self.get_node_filename(item)
-            if os.path.isdir(filename):
-                event.Enable(False)
-            else:
-                event.Enable(True)
-        elif eid == self.IDPM_OPENDEFAULT:
+        elif eid in [self.IDPM_IGNORETHISTYPE, self.IDPM_OPENDEFAULT]:
             filename = self.get_node_filename(item)
             if os.path.isdir(filename):
                 event.Enable(False)
@@ -964,6 +955,19 @@ class DirBrowser(wx.Panel, Mixin.Mixin):
             wx.CallAfter(self.OnRefresh, None)
         else:
             event.Skip()
+            
+    def OnPrintDir(self, event):
+        item = self.tree.GetSelection()
+        if not self.is_ok(item): return
+        
+        path = self.get_node_filename(item)
+        from modules import print_dir
+        
+        text = print_dir.walk(path)
+        
+        Globals.mainframe.createMessageWindow()
+        Globals.mainframe.panel.showPage(tr('Messages'))
+        Globals.mainframe.messagewindow.SetText('\n'.join(text))
 
 def my_copytree(src, dst):
     """Recursively copy a directory tree using copy2().
