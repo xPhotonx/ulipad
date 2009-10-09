@@ -661,7 +661,10 @@ class TextEditor(wx.stc.StyledTextCtrl, Mixin.Mixin, DocumentBase.DocumentBase):
         return f, ikey
 
     def execute_key(self, keydef):
-        cmd = self.keydefs.get(keydef.upper(), None)
+        if isinstance(keydef, str):
+            cmd = self.keydefs.get(keydef.upper(), None)
+        else:
+            cmd = keydef
         if cmd:
             self.CmdKeyExecute(cmd)
 
