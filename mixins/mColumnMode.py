@@ -114,11 +114,12 @@ def ColumnEditAction(win, event, col, begin, end, in_key_down=False):
                 f = func
             elif char == wx.WXK_BACK:
                 def func(win, line):
-                    if win.GetColumn(win.GetCurrentPos()) == 0:
-                        if win.GetColumn(win.GetLineEndPosition(line)) > 0:
+                    col = win.GetCurrentPos() - win.PositionFromLine(line)
+                    if col == 0:
+                        if win.GetLineEndPosition(line) > 0:
                             win.execute_key('DEL')
                     else:
-                        win.execute_key('BACK')
+                        win.execute_key(wx.stc.STC_CMD_DELETEBACK)
                 f = func
             else:
                 return False
@@ -165,7 +166,7 @@ def on_key_down(win, event):
     shift = event.ShiftDown()
     lastpos = win.GetCurrentPos()
     if win.column_mode and win.InColumnModeRegion(win.GetCurrentLine()):
-        col = win.GetColumn(win.GetCurrentPos())
+        col = lastpos - win.PositionFromLine(win.GetCurrentLine())
         return ColumnEditAction(win, event, col, win.columnmode_lines[0], win.columnmode_lines[1], True)
     elif ctrl and key == wx.WXK_DELETE:
         if win.GetSelectedText():
