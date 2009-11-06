@@ -142,7 +142,7 @@ class RestHtmlView(wx.Panel):
             import wx.lib.iewin as iewin
             
             self.html = HtmlPage.IEHtmlWindow(self)
-            if wx.version() < '2.8.8.0':
+            if wx.VERSION < (2, 8, 8, 0):
                 self.html.ie.Bind(iewin.EVT_DocumentComplete, self.OnDocumentComplete, self.html.ie)
                 self.html.ie.Bind(iewin.EVT_ProgressChange, self.OnDocumentComplete, self.html.ie)
             else:
