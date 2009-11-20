@@ -52,3 +52,7 @@ def OnToolSpellCheck(win, event):
     p = win.createSpellCheckWindow()
     win.panel.showPage(p)
 Mixin.setMixin('mainframe', 'OnToolSpellCheck', OnToolSpellCheck)
+
+def pref_init(pref):
+    pref.default_spellcheck_dict = ''
+Mixin.setPlugin('preference', 'init', pref_init)

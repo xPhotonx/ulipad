@@ -21,6 +21,7 @@
 #
 #   $Id$
 
+import locale
 import wx
 import re
 import enchant
@@ -33,15 +34,19 @@ class SpellCheck(wx.Panel):
     def __init__(self, parent):
         self.parent = parent
         wx.Panel.__init__(self, parent, -1)
+        
+        self.pref = Globals.pref
 
         self.sizer = sizer = ui.VBox(padding=0, namebinding='widget').create(self).auto_layout()
         h = sizer.add(ui.HBox)
+        h.add(ui.Label(tr("Replace with") + ':'))
         h.add(ui.Text('', size=(150, -1)), name='text')
         h.add(ui.Button(tr('Start')), name='btnRun').bind('click', self.OnRun)
         h.add(ui.Button(tr('Replace')), name='btnReplace').bind('click', self.OnReplace)
         h.add(ui.Button(tr('Replace All')), name='btnReplaceAll').bind('click', self.OnReplaceAll)
         h.add(ui.Button(tr('Ignore')), name='btnIgnore').bind('click', self.OnIgnore)
         h.add(ui.Button(tr('Ignore All')), name='btnIgnoreAll').bind('click', self.OnIgnoreAll)
+        h.add(ui.Button(tr('Add')), name='btnAdd').bind('click', self.OnAdd)
 
         h = sizer.add(ui.HBox, proportion=1)
         h.add(ui.Label(tr("Suggest") + ':'))
@@ -61,11 +66,22 @@ class SpellCheck(wx.Panel):
         self._DisableButtons()
 
     def init(self):
-        #todo add multi dict support
-        self.chkr = SpellChecker("en_US")
-        index = self.dict_list.FindString("en_US")
+        defLoc = locale.getdefaultlocale()[0]
+        if self.pref.default_spellcheck_dict:
+            defLoc = self.pref.default_spellcheck_dict
+            
+        index = self.dict_list.FindString(defLoc)
         if index > -1:
             self.dict_list.SetSelection(index)
+        else:
+            defLoc = 'en_US'
+            
+        self.pref.default_spellcheck_dict = defLoc
+        self.pref.save()
+        
+        #todo add multi dict support
+        self.chkr = SpellChecker(defLoc)
+
         self.mainframe = Globals.mainframe
         self._buttonsEnabled = True
         self.running = False
@@ -81,10 +97,11 @@ class SpellCheck(wx.Panel):
                 common.showerror(self, tr("This document can't be spell checked"))
                 return
             self.begin_line = 0
-            self.end_line = self.document.GetLineCount()
             self.begin_pos = 0
             self.last_line_pos = 0
+            self.last_col = 0
             self.ignore_list = []
+            self.new = True
             self._Advance()
 
     def _Advance(self):
@@ -96,20 +113,26 @@ class SpellCheck(wx.Panel):
         # Advance to next error, disable if not available
         while 1:
             try:
-                line = self.document.getLineText(self.begin_line).encode('utf-8')
-                self.begin_pos = self.document.PositionFromLine(self.begin_line)
-                if self.last_line_pos < line:
-                    self.chkr.set_text(line[self.last_line_pos:])
+                if self.new:
+                    self.begin_pos = self.document.PositionFromLine(self.begin_line)
+                    line = self.document.getLineText(self.begin_line)
+                    line_len = self.document.GetLineEndPosition(self.begin_line) - self.begin_pos
+                    new = False
+                if self.last_line_pos < line_len:
+                    self.chkr.set_text(line[self.last_col:])
                 self.chkr.next()
-                while self.chkr.word in self.ignore_list:
-                    self.chkr.next()
-                    pass
-                self.last_line_pos += self.chkr.wordpos
+#                while self.chkr.word in self.ignore_list:
+#                    self.chkr.next()
+#                    pass
+                self.last_col += self.chkr.wordpos
+                self.last_line_pos = len(line[:self.last_col].encode('utf-8'))
                 break
             except StopIteration:
-                if self.begin_line < self.end_line:
+                if self.begin_line < self.document.GetLineCount():
                     self.begin_line += 1
                     self.last_line_pos = 0
+                    self.last_col = 0
+                    self.new = True
                 else:
                     self._DisableButtons()
                     self.list.Clear()
@@ -118,7 +141,7 @@ class SpellCheck(wx.Panel):
                     return
         self._EnableButtons()
         self.document.SetSelectionStart(self.begin_pos + self.last_line_pos)
-        self.document.SetSelectionEnd(self.begin_pos + self.last_line_pos + len(self.chkr.word))
+        self.document.SetSelectionEnd(self.begin_pos + self.last_line_pos + len(self.chkr.word.encode('utf-8')))
         self.document.EnsureCaretVisible()
 
         suggs = self.chkr.suggest()
@@ -134,13 +157,13 @@ class SpellCheck(wx.Panel):
         """Callback for the "ignore" button.
         This simply advances to the next error.
         """
-        self.last_line_pos += len(self.chkr.word)
+        self.last_col += len(self.chkr.word)
         self._Advance()
 
     def OnIgnoreAll(self, evnt=None):
         """Callback for the "ignore all" button."""
-#        self.chkr.ignore_always()
-        self.ignore_list.append(self.chkr.word)
+        self.chkr.ignore_always()
+#        self.ignore_list.append(self.chkr.word)
 #        self._Advance()
         self.OnIgnore()
 
@@ -149,7 +172,7 @@ class SpellCheck(wx.Panel):
         repl = self._GetRepl()
         self.document.ReplaceSelection(repl)
         self.document.EnsureCaretVisible()
-        self.last_line_pos += len(repl)
+        self.last_col += len(repl.encode('utf-8'))
         self._Advance()
 
     def OnReplaceAll(self, evnt=None):
@@ -158,11 +181,11 @@ class SpellCheck(wx.Panel):
         status = self.document.save_state()
         content = self.document.getRawText()
         text = content[self.begin_pos + self.last_line_pos:]
-        r = re.compile(r'\b%s\b' % self.chkr.word)
-        text = content[:self.begin_pos + self.last_line_pos] + r.sub(repl, text)
-        self.document.SetText(text)
+        r = re.compile(r'\b%s\b' % self.chkr.word.encode('utf-8'))
+        text = content[:self.begin_pos + self.last_line_pos] + r.sub(repl.encode('utf-8'), text)
+        self.document.SetText(unicode(text, 'utf-8'))
         self.document.restore_state(status)
-        self.last_line_pos += len(repl)
+        self.last_col += len(repl)
 
 #        self.chkr.replace_always(repl)
         self._Advance()
@@ -181,6 +204,9 @@ class SpellCheck(wx.Panel):
             return
         opt = self.dict_list.GetString(sel)
         self.chkr = SpellChecker(str(opt))
+        
+        self.pref.default_spellcheck_dict = str(opt)
+        self.pref.save()
 
     def _GetRepl(self):
         """Get the chosen replacement string."""
@@ -198,6 +224,7 @@ class SpellCheck(wx.Panel):
         self.btnIgnoreAll.Enable(True)
         self.btnReplace.Enable(True)
         self.btnReplaceAll.Enable(True)
+        self.btnAdd.Enable(True)
         self.list.Enable()
         self.dict_list.Disable()
         self.btnRun.SetLabel(tr("Stop"))
@@ -212,7 +239,15 @@ class SpellCheck(wx.Panel):
         self.btnIgnoreAll.Disable()
         self.btnReplace.Disable()
         self.btnReplaceAll.Disable()
+        self.btnAdd.Disable()
         self.list.Disable()
         self.dict_list.Enable()
         self.btnRun.SetLabel(tr("Start"))
         self._buttonsEnabled = False
+
+    def OnAdd(self, event=None):
+        """
+        Callback for the "add" button.
+        """
+        self.chkr.add()
+        self._Advance()
