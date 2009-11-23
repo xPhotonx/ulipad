@@ -121,7 +121,7 @@ class InnoScript:
         print >> ofi, "AppVerName=%s" % self.name + ' ' + self.version
         print >> ofi, "AppPublisher=Limodou"
         print >> ofi, "AppPublisherURL=http://code.google.com/p/ulipad/"
-        print >> ofi, "AppSupportURL=http://www.donews.net/limodou"
+        print >> ofi, "AppSupportURL=http://hi.baidu.com/limodou"
         print >> ofi, "AppUpdatesURL=http://code.google.com/p/ulipad/"
         print >> ofi, "DefaultDirName={pf}\%s" % self.name
         print >> ofi, "DefaultGroupName=%s" % self.name
