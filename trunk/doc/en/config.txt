@@ -106,6 +106,11 @@ And you can also change the caret-line background color::
 
     [default]
     message_caretlineback = #FF0000
+    
+You can also change the tab control color of documents area::
+
+    [default]
+    editor_tab_color = #98FB98
 
 Here the color is represented using hexidecimal ``#XXXXXX``. I think you can also
 use ``red``, ``green``, etc.
@@ -118,6 +123,7 @@ example you can define a blue theme with::
     STC_STYLE_NUMBER = u"fore:#FF00FF"
     STC_STYLE_STRING = u"fore:#00FF80"
     STC_STYLE_COMMENT = u"italic,fore:#008040"
+    STC_STYLE_COMMENTBLOCK = u"italic,fore:#008040"
     STC_STYLE_KEYWORD1 = u"fore:#FFFF00"
     STC_STYLE_KEYWORD2 = u"fore:#AFFFEE"
     STC_STYLE_IDENTIFIER = u"fore:#8DB0D3"
@@ -131,7 +137,7 @@ example you can define a blue theme with::
     STC_STYLE_BRACEBAD = u"bold,fore:#0000FF"
     STC_STYLE_CARET_FORE = u"fore:#FF0000"
     STC_STYLE_CARETLINE_BACK = u"back:#5F0054"
-    STC_STYLE_SELECTION_BACK = u"back:#000080"
+    STC_STYLE_SELECTION_BACK = u"back:#2E9F27"
     STC_STYLE_FOLDER = u"back:#3476A3"
     STC_STYLE_MARKER = u"fore:#F0804F,back:#FFFFFF"
     STC_STYLE_TAG = u"fore:#15852B"
@@ -143,6 +149,7 @@ example you can define a blue theme with::
     STC_STYLE_DEFNAME = u"fore:#4179C5"
     STC_STYLE_LINK = u"fore:#FEFF8F,underline"
     STC_STYLE_STRINGEOL = u"fore:#FF6F82,back:#E0C0E0,eol"
+    STC_STYLE_TRIPLE = "fore:#00FF80"
 
 And this will effect all language syntax color theme. Because almost all syntax
 theme reference these color, but not all of them. Some of them are special::

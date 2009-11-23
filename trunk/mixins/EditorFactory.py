@@ -98,7 +98,9 @@ class EditorFactory(FNB.FlatNotebook, Mixin.Mixin):
         self.last_side_panel_status = None
 
         #set FlatNotebook style
-        self.SetActiveTabColour('#98FB98')
+        x = common.get_config_file_obj()
+        tab_color = x.default.get('editor_tab_color', '#98FB98')
+        self.SetActiveTabColour(tab_color)
 #        self.SetActiveTabTextColour('white')
 #        self.SetNonActiveTabTextColour('black')
 #        self.SetAllPagesShapeAngle(15)
