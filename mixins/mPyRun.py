@@ -32,7 +32,7 @@ def check_python():
     interpreters = []
     if wx.Platform == '__WXMSW__':
         from modules import winreg
-        for v in ('2.3', '2.4', '2.5', '2.6', '3.0'):
+        for v in ('2.3', '2.4', '2.5', '2.6', '3.0', '3.1'):
             try:
                 key = winreg.Key(winreg.HKLM, r'SOFTWARE\Python\Pythoncore\%s\InstallPath' % v)
                 interpreters.append((v+' console', os.path.join(key.value, 'python.exe')))
