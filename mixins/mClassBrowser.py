@@ -31,6 +31,7 @@ def pref_init(pref):
     pref.python_classbrowser_refresh_as_save = True
     pref.python_classbrowser_show_docstring = False
     pref.python_classbrowser_sort = True
+    pref.python_classbrowser_show_side = 'RIGHT'
 Mixin.setPlugin('preference', 'init', pref_init)
 
 def add_pref(preflist):
@@ -39,6 +40,7 @@ def add_pref(preflist):
         ('Python', 105, 'check', 'python_classbrowser_refresh_as_save', tr('Refresh class browser window when saving python source file'), None),
         ('Python', 106, 'check', 'python_classbrowser_show_docstring', tr('Show docstring when cursor moving on a node of class browser tree'), None),
 #        ('Python', 107, 'check', 'python_classbrowser_sort', tr('Sort identifiers by alphabet in class browser'), None),
+        ('Python', 108, 'choice', 'python_classbrowser_show_side', tr('Show class browser in side:'), [('Left', 'LEFT'), ('Right', 'RIGHT')]),
     ])
 Mixin.setPlugin('preference', 'add_pref', add_pref)
 
@@ -58,8 +60,8 @@ Mixin.setPlugin('editor', 'init', editor_init)
 
 def OnPythonClassBrowser(win, event):
     win.document.class_browser = not win.document.class_browser
-    win.document.panel.showWindow('RIGHT', win.document.class_browser)
-    if win.document.panel.RightIsVisible:
+    win.document.panel.showWindow(win.pref.python_classbrowser_show_side, win.document.class_browser)
+    if win.document.panel.visible(win.pref.python_classbrowser_show_side):
         if win.document.init_class_browser == False:
             win.document.init_class_browser = True
             win.document.outlinebrowser.show()
@@ -80,7 +82,7 @@ Mixin.setMixin('mainframe', 'OnPythonClassBrowserRefresh', OnPythonClassBrowserR
 def OnPythonUpdateUI(win, event):
     eid = event.GetId()
     if eid == win.IDM_PYTHON_CLASSBROWSER and hasattr(win, 'document') and win.document and not win.document.multiview:
-        event.Check(win.document.panel.RightIsVisible and getattr(win.document, 'init_class_browser', False))
+        event.Check(win.document.panel.visible(win.pref.python_classbrowser_show_side) and getattr(win.document, 'init_class_browser', False))
 Mixin.setMixin('mainframe', 'OnPythonUpdateUI', OnPythonUpdateUI)
 
 def on_enter(mainframe, document):
@@ -92,8 +94,8 @@ def on_document_enter(mainframe, document):
         return
     if mainframe.pref.python_classbrowser_show and document.init_class_browser == False:
         document.class_browser = not document.class_browser
-        document.panel.showWindow('RIGHT', document.class_browser)
-        if document.panel.RightIsVisible:
+        document.panel.showWindow(mainframe.pref.python_classbrowser_show_side, document.class_browser)
+        if document.panel.visible(mainframe.pref.python_classbrowser_show_side):
             if document.init_class_browser == False:
                 document.init_class_browser = True
                 document.outlinebrowser.show()
@@ -225,7 +227,8 @@ def addlocals(win, root, node, treenode):
     
 def new_window(win, document, panel):
     from OutlineBrowser import OutlineBrowser
-    document.outlinebrowser = OutlineBrowser(panel.right, document, autoexpand=False)
+    parent = panel.getSide(Globals.pref.python_classbrowser_show_side)
+    document.outlinebrowser = OutlineBrowser(parent, document, autoexpand=False)
     document.outlinebrowser.set_tooltip_func(on_get_tool_tip)
 Mixin.setPlugin('textpanel', 'new_window', new_window)
 
@@ -245,7 +248,7 @@ Mixin.setPlugin('pythonfiletype', 'add_tool_list', add_tool_list)
 
 def afterclosewindow(win):
     if hasattr(win.document, 'panel') and hasattr(win.document.panel, 'showWindow'):
-        win.document.panel.showWindow('LEFT', False)
+        win.document.panel.showWindow(win.pref.python_classbrowser_show_side, False)
 Mixin.setPlugin('mainframe', 'afterclosewindow', afterclosewindow)
 
 #add identifier jump
@@ -302,4 +305,16 @@ def remove_leading_spaces(win, text):
     lines = [x[minspace:] for x in contentlines[index:]]
         
     return '\n'.join(lines)
-    
+ 
+def savepreferencevalues(old_values):
+    pref = Globals.pref
+    side = old_values['python_classbrowser_show_side']
+    if side.lower() != pref.python_classbrowser_show_side.lower():
+        for document in Globals.mainframe.editctrl.getDocuments():
+            if document.panel.visible(side):
+                document.outlinebrowser.Destroy()
+                document.panel.showWindow(side, False)
+                new_window(document.panel.parent, document, document.panel)
+                document.panel.showWindow(pref.python_classbrowser_show_side, True)
+                document.outlinebrowser.show()
+Mixin.setPlugin('prefdialog', 'savepreferencevalues', savepreferencevalues)
