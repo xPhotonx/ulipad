@@ -275,6 +275,15 @@ class SashPanel(wx.Panel):
             return self.rightbook
         elif name == 'bottom':
             return self.bottombook
+        
+    def getSide(self, sidename):
+        sidename = sidename.lower()
+        if sidename == 'left':
+            return self.left
+        elif sidename == 'right':
+            return self.right
+        elif sidename == 'bottom':
+            return self.bottom
 
     def delNotebook(self, name):
         name = name.lower()
@@ -399,6 +408,15 @@ class SashPanel(wx.Panel):
                 self.BottomIsVisible = False
             wx.CallAfter(self.OnSize, None)
             wx.CallAfter(self.Refresh)
+            
+    def visible(self, sidename):
+        sidename = sidename.lower()
+        if sidename == 'left':
+            return self.LeftIsVisible
+        elif sidename == 'right':
+            return self.RightIsVisible
+        elif sidename == 'bottom':
+            return self.BottomIsVisible
 
 from modules.wxctrl import FlatNotebook as FNB
 class Notebook(FNB.FlatNotebook, Mixin.Mixin):
