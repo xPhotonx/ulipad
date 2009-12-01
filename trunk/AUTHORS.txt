@@ -1,4 +1,4 @@
-This is a contributing authors list. 
+﻿This is a contributing authors list. 
 
 Developer:
 
@@ -38,3 +38,4 @@ xw_max <xw_max@163.com>                         Provide patch about passing para
 Wang Eric <glitch.wang@gmail.com>               Improve UliPad announcement, and provide patch=======
 cjacker                                         Provide a patch #179
 d4ljoyn <d4ljoyn@gmail.com>                     Provide a patch
+sunyin51					Provide patches #218, and answer questions
