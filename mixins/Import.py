@@ -8429,7 +8429,7 @@ def OnPythonDebug(win, event):
         common.showerror(win, tr("You should install wxPython package to run the Debugger."))
         return
 
-    cmd = os.path.normpath('"%s" "%s/packages/winpdb/_winpdb.py" -t -c "%s" "%s"' % (interpreter, win.app.workpath, win.document.filename, win.document.args))
+    cmd = os.path.normpath('"%s" "%s/packages/winpdb/winpdb.py" -t -c "%s" "%s"' % (interpreter, win.app.workpath, win.document.filename, win.document.args))
     wx.Execute(cmd)
 Mixin.setMixin('mainframe', 'OnPythonDebug', OnPythonDebug)
 

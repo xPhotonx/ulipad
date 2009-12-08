@@ -5,7 +5,7 @@
 
     A GUI for rpdb2.py
 
-    Copyright (C) 2005-2008 Nir Aides
+    Copyright (C) 2005-2009 Nir Aides
 
     This program is free software; you can redistribute it and/or modify it 
     under the terms of the GNU General Public License as published by the 
@@ -26,7 +26,7 @@ ABOUT_NOTICE = """Winpdb is a platform independent GPL Python debugger with supp
 multiple threads, namespace modification, embedded debugging, 
 encrypted communication and is up to 20 times faster than pdb.
 
-Copyright (C) 2005-2008 Nir Aides
+Copyright (C) 2005-2009 Nir Aides
 
 This program is free software; you can redistribute it and/or modify it 
 under the terms of the GNU General Public License as published by the 
@@ -40,7 +40,7 @@ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
 See the GNU General Public License for more details.
 
 Credits:
-Jurjen N.E. Bos - Compatibility with OS X."""
+This project is waiting for your contribution and support."""
 
 LICENSE_NOTICE = """
 This program is free software; you can redistribute it and/or modify it 
@@ -458,6 +458,11 @@ between the debugger console and the debuggee.
 Debuggees with un-matching passwords will not 
 appear in the attach query list."""
 
+STATIC_ATTACH_DESC = """Attach to a script (that has the debugger engine running) on local or remote machine:"""
+STATIC_ATTACH_DESC_SPLIT = """Attach to a script (that has the debugger engine 
+running) on local or remote machine:"""
+
+STATIC_LAUNCH_DESC = """Start a new debugging session:"""
 STATIC_LAUNCH_ENV = """To set environment variables for the new script use the 'env' console command."""
 STATIC_LAUNCH_ENV_SPLIT = """To set environment variables for the new script use the 'env' 
 console command."""
@@ -490,9 +495,9 @@ TLC_HEADER_NAME = "Name"
 TLC_HEADER_REPR = "Repr"
 TLC_HEADER_TYPE = "Type"
 
-WINPDB_TITLE = "Winpdb 1.3.8 - Tychod"
-WINPDB_VERSION = "WINPDB_1_3.8"
-VERSION = (1, 3, 8, 0, '')
+VERSION = (1, 4, 6, 0, 'Tychod')
+WINPDB_TITLE = "Winpdb 1.4.6 - Tychod"
+WINPDB_VERSION = "WINPDB_1_4_6"
 
 WINPDB_SIZE = "winpdb_size"
 WINPDB_MAXIMIZE = "winpdb_maximize"
@@ -861,8 +866,6 @@ class CMenuBar:
 
         self.m_menubar = wx.MenuBar()
 
-        self.SetMenuBar(self.m_menubar)
-
         self.m_cascades = {ML_ROOT: self.m_menubar}
         
         k = resource.keys()
@@ -903,6 +906,13 @@ class CMenuBar:
             self.Bind(wx.EVT_MENU, command, item)
 
             self.m_encapsulating_menu_items[item_label] = parent 
+
+        #
+        # Must be done after menu is added to menu bar.
+        #
+        self.SetMenuBar(self.m_menubar)
+        if 'wxMac' in wx.PlatformInfo:
+             wx.GetApp().SetMacHelpMenuTitleName("&Help")
 
     def set_menu_items_state(self, state_label_dict):
         for state, label_list in state_label_dict.items():
@@ -2219,13 +2229,19 @@ class CCaptionManager:
         self.m_n_focus -= 1
         if self.m_n_focus > 0:
             return
-            
-        self.m_caption.SetBackgroundColour(wx.SystemSettings_GetColour(wx.SYS_COLOUR_INACTIVECAPTION))
-        self.m_caption.Refresh()
+
+        #
+        # Event may get sent after the object has been deleted.
+        #
+        try:
+            self.m_caption.SetBackgroundColour(wx.SystemSettings_GetColour(wx.SYS_COLOUR_INACTIVECAPTION))
+            self.m_caption.Refresh()
+        except wx.PyDeadObjectError:
+            pass
+
         event.Skip()
 
-        
-    
+
 class CStyledViewer(stc.StyledTextCtrl):
     def __init__(self, *args, **kwargs):
         self.m_margin_command = kwargs.pop('margin_command', None)
@@ -3924,6 +3940,15 @@ class CAttachDialog(wx.Dialog, CJobs):
         self.m_index = None
                         
         sizerv = wx.BoxSizer(wx.VERTICAL)
+
+        label = wx.StaticText(self, -1, STATIC_ATTACH_DESC, size = (350, -1))
+        try:
+            label.Wrap(350)
+        except:
+            label.SetLabel(STATIC_ATTACH_DESC_SPLIT)
+
+        sizerv.Add(label, 0, wx.ALIGN_LEFT | wx.ALL, 5)
+
         sizerh = wx.BoxSizer(wx.HORIZONTAL)
         sizerv.Add(sizerh, 0, wx.ALIGN_CENTRE | wx.ALL, 5)
 
@@ -4003,7 +4028,7 @@ class CAttachDialog(wx.Dialog, CJobs):
 
     def OnCloseWindow(self, event):
         self.shutdown_jobs()
-        self.Destroy()
+        event.Skip()
 
 
     def get_server(self):
@@ -4470,6 +4495,10 @@ class CLaunchDialog(wx.Dialog):
         wx.Dialog.__init__(self, parent, -1, DLG_LAUNCH_TITLE)
         
         sizerv = wx.BoxSizer(wx.VERTICAL)
+
+        label = wx.StaticText(self, -1, STATIC_LAUNCH_DESC)
+        sizerv.Add(label, 0, wx.ALIGN_LEFT | wx.ALL, 5)
+
         sizerh = wx.BoxSizer(wx.HORIZONTAL)
         sizerv.Add(sizerh, 0, wx.ALIGN_CENTRE | wx.ALL, 5)
 
@@ -4534,7 +4563,7 @@ class CLaunchDialog(wx.Dialog):
         (_path, filename, args) = rpdb2.split_command_line_path_filename_args(command_line)
         _abs_path = os.path.abspath(_path)
 
-        cwd = os.getcwdu()
+        cwd = rpdb2.getcwdu()
             
         dlg = wx.FileDialog(self, defaultDir = _abs_path, defaultFile = filename, wildcard = WINPDB_WILDCARD, style = wx.OPEN | wx.CHANGE_DIR)
         r = dlg.ShowModal()
@@ -4621,11 +4650,11 @@ def StartClient(command_line, fAttach, fchdir, pwd, fAllowUnencrypted, fRemote, 
 
 
 def main():
-    if rpdb2.get_version() != "RPDB_2_3_8":
-        rpdb2._print(STR_ERROR_INTERFACE_COMPATIBILITY % ("RPDB_2_3_8", rpdb2.get_version()))
+    if rpdb2.get_version() != "RPDB_2_4_6":
+        rpdb2._print(STR_ERROR_INTERFACE_COMPATIBILITY % ("RPDB_2_4_6", rpdb2.get_version()))
         return
         
-    return rpdb2.main(StartClient)
+    return rpdb2.main(StartClient, WINPDB_TITLE)
 
 
 

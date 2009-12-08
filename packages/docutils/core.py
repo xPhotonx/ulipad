@@ -1,7 +1,5 @@
-# Authors: David Goodger
-# Contact: goodger@python.org
-# Revision: $Revision: 4208 $
-# Date: $Date: 2005-12-14 03:12:00 +0100 (Wed, 14 Dec 2005) $
+# $Id: core.py 6119 2009-09-09 09:21:59Z milde $
+# Author: David Goodger <goodger@python.org>
 # Copyright: This module has been placed in the public domain.
 
 """
@@ -18,7 +16,6 @@ __docformat__ = 'reStructuredText'
 
 import sys
 import pprint
-from types import StringType
 from docutils import __version__, __version_details__, SettingsSpec
 from docutils import frontend, io, utils, readers, writers
 from docutils.frontend import OptionParser
@@ -55,9 +52,11 @@ class Publisher:
         """A `docutils.writers.Writer` instance."""
 
         for component in 'reader', 'parser', 'writer':
-            assert not isinstance(getattr(self, component), StringType), \
-                   ('passed string as "%s" parameter; use "%s_name" instead'
-                    % (getattr(self, component), component, component))
+            assert not isinstance(getattr(self, component), str), (
+                'passed string "%s" as "%s" parameter; pass an instance, '
+                'or use the "%s_name" parameter instead (in '
+                'docutils.core.publish_* convenience functions).'
+                % (getattr(self, component), component, component))
 
         self.source = source
         """The source of input data, a `docutils.io.Input` instance."""
@@ -252,7 +251,7 @@ class Publisher:
     def report_Exception(self, error):
         if isinstance(error, utils.SystemMessage):
             self.report_SystemMessage(error)
-        elif isinstance(error, UnicodeError):
+        elif isinstance(error, UnicodeEncodeError):
             self.report_UnicodeError(error)
         else:
             print >>sys.stderr, '%s: %s' % (error.__class__.__name__, error)
@@ -306,7 +305,9 @@ command line used.""" % (__version__, __version_details__,
 
 default_usage = '%prog [options] [<source> [<destination>]]'
 default_description = ('Reads from <source> (default is stdin) and writes to '
-                       '<destination> (default is stdout).')
+                       '<destination> (default is stdout).  See '
+                       '<http://docutils.sf.net/docs/user/config.html> for '
+                       'the full reference.')
 
 def publish_cmdline(reader=None, reader_name='standalone',
                     parser=None, parser_name='restructuredtext',
@@ -468,9 +469,9 @@ def publish_from_doctree(document, destination_path=None,
                          settings_overrides=None, config_section=None,
                          enable_exit_status=None):
     """
-    Set up & run a `Publisher` to render from an existing document tree data
-    structure, for programmatic use with string I/O.  Return a pair of encoded
-    string output and document parts.
+    Set up & run a `Publisher` to render from an existing document
+    tree data structure, for programmatic use with string I/O.  Return
+    the encoded string output.
 
     Note that document.settings is overridden; if you want to use the settings
     of the original `document`, pass settings=document.settings.
@@ -500,6 +501,39 @@ def publish_from_doctree(document, destination_path=None,
         settings_spec, settings_overrides, config_section)
     pub.set_destination(None, destination_path)
     return pub.publish(enable_exit_status=enable_exit_status)
+
+def publish_cmdline_to_binary(reader=None, reader_name='standalone',
+                    parser=None, parser_name='restructuredtext',
+                    writer=None, writer_name='pseudoxml',
+                    settings=None, settings_spec=None,
+                    settings_overrides=None, config_section=None,
+                    enable_exit_status=1, argv=None,
+                    usage=default_usage, description=default_description,
+                    destination=None, destination_class=io.BinaryFileOutput
+                    ):
+    """
+    Set up & run a `Publisher` for command-line-based file I/O (input and
+    output file paths taken automatically from the command line).  Return the
+    encoded string output also.
+
+    This is just like publish_cmdline, except that it uses
+    io.BinaryFileOutput instead of io.FileOutput.
+
+    Parameters: see `publish_programmatically` for the remainder.
+
+    - `argv`: Command-line argument list to use instead of ``sys.argv[1:]``.
+    - `usage`: Usage string, output if there's a problem parsing the command
+      line.
+    - `description`: Program description, output for the "--help" option
+      (along with command-line option descriptions).
+    """
+    pub = Publisher(reader, parser, writer, settings=settings,
+        destination_class=destination_class)
+    pub.set_components(reader_name, parser_name, writer_name)
+    output = pub.publish(
+        argv, usage, description, settings_spec, settings_overrides,
+        config_section=config_section, enable_exit_status=enable_exit_status)
+    return output
 
 def publish_programmatically(source_class, source, source_path,
                              destination_class, destination, destination_path,

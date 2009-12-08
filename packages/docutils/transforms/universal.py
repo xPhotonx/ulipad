@@ -1,7 +1,5 @@
-# Authors: David Goodger, Ueli Schlaepfer
-# Contact: goodger@users.sourceforge.net
-# Revision: $Revision: 4183 $
-# Date: $Date: 2005-12-12 05:12:02 +0100 (Mon, 12 Dec 2005) $
+# $Id: universal.py 6112 2009-09-03 07:27:59Z milde $
+# Authors: David Goodger <goodger@python.org>; Ueli Schlaepfer
 # Copyright: This module has been placed in the public domain.
 
 """
@@ -88,11 +86,11 @@ class ExposeInternals(Transform):
     """
 
     default_priority = 840
-    
+
     def not_Text(self, node):
         return not isinstance(node, nodes.Text)
 
-    def apply(self): 
+    def apply(self):
         if self.document.settings.expose_internals:
             for node in self.document.traverse(self.not_Text):
                 for att in self.document.settings.expose_internals:
@@ -169,3 +167,37 @@ class StripComments(Transform):
         if self.document.settings.strip_comments:
             for node in self.document.traverse(nodes.comment):
                 node.parent.remove(node)
+
+
+class StripClassesAndElements(Transform):
+
+    """
+    Remove from the document tree all elements with classes in
+    `self.document.settings.strip_elements_with_classes` and all "classes"
+    attribute values in `self.document.settings.strip_classes`.
+    """
+
+    default_priority = 420
+
+    def apply(self):
+        if not (self.document.settings.strip_elements_with_classes
+                or self.document.settings.strip_classes):
+            return
+        # prepare dicts for lookup (not sets, for Python 2.2 compatibility):
+        self.strip_elements = dict(
+            [(key, None)
+             for key in (self.document.settings.strip_elements_with_classes
+                         or [])])
+        self.strip_classes = dict(
+            [(key, None) for key in (self.document.settings.strip_classes
+                                     or [])])
+        for node in self.document.traverse(self.check_classes):
+            node.parent.remove(node)
+
+    def check_classes(self, node):
+        if isinstance(node, nodes.Element):
+            for class_value in node['classes'][:]:
+                if class_value in self.strip_classes:
+                    node['classes'].remove(class_value)
+                if class_value in self.strip_elements:
+                    return 1

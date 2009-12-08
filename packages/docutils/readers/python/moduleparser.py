@@ -1,11 +1,9 @@
-# Author: David Goodger
-# Contact: goodger@users.sourceforge.net
-# Revision: $Revision: 4242 $
-# Date: $Date: 2006-01-06 00:28:53 +0100 (Fri, 06 Jan 2006) $
+# $Id: moduleparser.py 5738 2008-11-30 08:59:04Z grubert $
+# Author: David Goodger <goodger@python.org>
 # Copyright: This module has been placed in the public domain.
 
 """
-Parser for Python modules.  Requires Python 2.2 or higher.
+Parser for Python modules.
 
 The `parse_module()` function takes a module's text and file name,
 runs it through the module parser (using compiler.py and tokenize.py)
@@ -55,78 +53,78 @@ The module parser will produce this module documentation tree::
         <docstring lineno="5">
             Additional docstring
         <attribute lineno="7">
-	    <object_name>
-	        __docformat__
+        <object_name>
+            __docformat__
             <expression_value lineno="7">
                 'reStructuredText'
         <attribute lineno="9">
-	    <object_name>
-	        a
+        <object_name>
+            a
             <expression_value lineno="9">
                 1
             <docstring lineno="10">
                 Attribute docstring
         <class_section lineno="12">
-	    <object_name>
-	        C
+        <object_name>
+            C
             <class_base>
-	        Super
+            Super
             <docstring lineno="12">
                 C's docstring
             <attribute lineno="16">
-	        <object_name>
-		    class_attribute
+            <object_name>
+            class_attribute
                 <expression_value lineno="16">
                     1
                 <docstring lineno="17">
                     class_attribute's docstring
             <method_section lineno="19">
-	        <object_name>
-		    __init__
+            <object_name>
+            __init__
                 <docstring lineno="19">
                     __init__'s docstring
                 <parameter_list lineno="19">
                     <parameter lineno="19">
-		        <object_name>
-			    self
+                <object_name>
+                self
                     <parameter lineno="19">
-		        <object_name>
-			    text
+                <object_name>
+                text
                         <parameter_default lineno="19">
                             None
                 <attribute lineno="22">
-		    <object_name>
-		        self.instance_attribute
+            <object_name>
+                self.instance_attribute
                     <expression_value lineno="22">
                         (text * 7 + ' whaddyaknow')
                     <docstring lineno="24">
                         instance_attribute's docstring
         <function_section lineno="27">
-	    <object_name>
-	        f
+        <object_name>
+            f
             <docstring lineno="27">
                 f's docstring
             <parameter_list lineno="27">
                 <parameter lineno="27">
-		    <object_name>
-		        x
+            <object_name>
+                x
                     <comment>
                         # parameter x
                 <parameter lineno="27">
-		    <object_name>
-		        y
+            <object_name>
+                y
                     <parameter_default lineno="27">
                         a * 5
                     <comment>
                         # parameter y
                 <parameter excess_positional="1" lineno="27">
-		    <object_name>
-		        args
+            <object_name>
+                args
                     <comment>
                         # parameter args
         <attribute lineno="33">
-	    <object_name>
-	        f.function_attribute
+        <object_name>
+            f.function_attribute
             <expression_value lineno="33">
                 1
             <docstring lineno="34">
@@ -216,7 +214,6 @@ import tokenize
 import token
 from compiler.consts import OP_ASSIGN
 from compiler.visitor import ASTVisitor
-from types import StringType, UnicodeType, TupleType
 from docutils.readers.python import pynodes
 from docutils.nodes import Text
 
@@ -255,7 +252,7 @@ class DocstringVisitor(BaseVisitor):
 
     def visitConst(self, node):
         if self.documentable:
-            if type(node.value) in (StringType, UnicodeType):
+            if type(node.value) in (str, unicode):
                 self.documentable.append(make_docstring(node.value, node.lineno))
             else:
                 self.documentable = None
@@ -400,7 +397,7 @@ class FunctionVisitor(DocstringVisitor):
             node.lineno)
         #print >>sys.stderr, function_parameters
         for argname, default in zip(argnames, defaults):
-            if type(argname) is TupleType:
+            if type(argname) is tuple:
                 parameter = pynodes.parameter_tuple()
                 for tuplearg in argname:
                     parameter.append(make_parameter(tuplearg))
@@ -527,14 +524,14 @@ class TokenParser:
     def note_token(self):
         if self.type == tokenize.NL:
             return
-        del_ws = self.del_ws_prefix.has_key(self.string)
-        append_ws = not self.no_ws_suffix.has_key(self.string)
-        if self.openers.has_key(self.string):
+        del_ws = self.string in self.del_ws_prefix
+        append_ws = self.string not in self.no_ws_suffix
+        if self.string in self.openers:
             self.stack.append(self.string)
             if (self._type == token.NAME
-                or self.closers.has_key(self._string)):
+                or self._string in self.closers):
                 del_ws = 1
-        elif self.closers.has_key(self.string):
+        elif self.string in self.closers:
             assert self.stack[-1] == self.closers[self.string]
             self.stack.pop()
         elif self.string == '`':
@@ -617,7 +614,7 @@ class TokenParser:
                     self._backquote = 0
                     self.note_token()
                 else:                   # ignore these tokens:
-                    assert (self.string in ('*', '**', '\n') 
+                    assert (self.string in ('*', '**', '\n')
                             or self.type == tokenize.COMMENT), (
                         'token=%r' % (self.token,))
             else:
@@ -739,7 +736,7 @@ def normalize_parameter_name(name):
     """
     Converts a tuple like ``('a', ('b', 'c'), 'd')`` into ``'(a, (b, c), d)'``
     """
-    if type(name) is TupleType:
+    if type(name) is tuple:
         return '(%s)' % ', '.join([normalize_parameter_name(n) for n in name])
     else:
         return name

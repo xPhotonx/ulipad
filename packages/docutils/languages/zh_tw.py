@@ -1,8 +1,6 @@
 # -*- coding: utf-8 -*-
-# Author: Joe YS Jaw
-# Contact: joeysj@users.sourceforge.net
-# Revision: $Revision: 3968 $
-# Date: $Date: 2005-10-29 14:28:44 +0200 (Sat, 29 Oct 2005) $
+# $Id: zh_tw.py 4564 2006-05-21 20:44:42Z wiemann $
+# Author: Joe YS Jaw <joeysj@users.sourceforge.net>
 # Copyright: This module has been placed in the public domain.
 
 # New language mappings are welcome.  Before doing a new translation, please

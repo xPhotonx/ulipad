@@ -1,7 +1,5 @@
-# Author: David Goodger
-# Contact: goodger@users.sourceforge.net
-# Revision: $Revision: 4152 $
-# Date: $Date: 2005-12-08 00:46:30 +0100 (Thu, 08 Dec 2005) $
+# $Id: utils.py 6120 2009-09-10 11:02:27Z milde $
+# Author: David Goodger <goodger@python.org>
 # Copyright: This module has been placed in the public domain.
 
 """
@@ -13,12 +11,11 @@ __docformat__ = 'reStructuredText'
 import sys
 import os
 import os.path
-import types
 import warnings
 import unicodedata
-from types import StringType, UnicodeType
 from docutils import ApplicationError, DataError
-from docutils import frontend, nodes
+from docutils import nodes
+from docutils._compat import b
 
 
 class SystemMessage(ApplicationError):
@@ -65,8 +62,15 @@ class Reporter:
     levels = 'DEBUG INFO WARNING ERROR SEVERE'.split()
     """List of names for system message levels, indexed by level."""
 
+    # system message level constants:
+    (DEBUG_LEVEL,
+     INFO_LEVEL,
+     WARNING_LEVEL,
+     ERROR_LEVEL,
+     SEVERE_LEVEL) = range(5)
+
     def __init__(self, source, report_level, halt_level, stream=None,
-                 debug=0, encoding='ascii', error_handler='replace'):
+                 debug=0, encoding=None, error_handler='replace'):
         """
         :Parameters:
             - `source`: The path to or description of the source data.
@@ -79,15 +83,12 @@ class Reporter:
               ``.write`` method), a string (file name, opened for writing),
               '' (empty string, for discarding all stream messages) or
               `None` (implies `sys.stderr`; default).
-            - `encoding`: The encoding for stderr output.
+            - `encoding`: The output encoding.
             - `error_handler`: The error handler for stderr output encoding.
         """
 
         self.source = source
         """The path to or description of the source data."""
-
-        self.encoding = encoding
-        """The character encoding for the stderr output."""
 
         self.error_handler = error_handler
         """The character encoding error handler."""
@@ -105,16 +106,25 @@ class Reporter:
 
         if stream is None:
             stream = sys.stderr
-        elif type(stream) in (StringType, UnicodeType):
+        elif type(stream) in (str, unicode):
             # Leave stream untouched if it's ''.
             if stream != '':
-                if type(stream) == StringType:
+                if type(stream) == str:
                     stream = open(stream, 'w')
-                elif type(stream) == UnicodeType:
+                elif type(stream) == unicode:
                     stream = open(stream.encode(), 'w')
 
         self.stream = stream
         """Where warning output is sent."""
+
+        if encoding is None:
+            try:
+                encoding = stream.encoding
+            except AttributeError:
+                pass
+
+        self.encoding = encoding or 'ascii'
+        """The output character encoding."""
 
         self.observers = []
         """List of bound methods or functions to call with each system_message
@@ -156,7 +166,7 @@ class Reporter:
         Raise an exception or generate a warning if appropriate.
         """
         attributes = kwargs.copy()
-        if kwargs.has_key('base_node'):
+        if 'base_node' in kwargs:
             source, line = get_source_line(kwargs['base_node'])
             del attributes['base_node']
             if source is not None:
@@ -168,12 +178,14 @@ class Reporter:
                                    type=self.levels[level],
                                    *children, **attributes)
         if self.stream and (level >= self.report_level
-                            or self.debug_flag and level == 0):
+                            or self.debug_flag and level == self.DEBUG_LEVEL
+                            or level >= self.halt_level):
             msgtext = msg.astext().encode(self.encoding, self.error_handler)
-            print >>self.stream, msgtext
+            self.stream.write(msgtext)
+            self.stream.write(b('\n'))
         if level >= self.halt_level:
             raise SystemMessage(msg, level)
-        if level > 0 or self.debug_flag:
+        if level > self.DEBUG_LEVEL or self.debug_flag:
             self.notify_observers(msg)
         self.max_level = max(level, self.max_level)
         return msg
@@ -185,28 +197,28 @@ class Reporter:
         separately from the others.
         """
         if self.debug_flag:
-            return self.system_message(0, *args, **kwargs)
+            return self.system_message(self.DEBUG_LEVEL, *args, **kwargs)
 
     def info(self, *args, **kwargs):
         """
         Level-1, "INFO": a minor issue that can be ignored. Typically there is
         no effect on processing, and level-1 system messages are not reported.
         """
-        return self.system_message(1, *args, **kwargs)
+        return self.system_message(self.INFO_LEVEL, *args, **kwargs)
 
     def warning(self, *args, **kwargs):
         """
         Level-2, "WARNING": an issue that should be addressed. If ignored,
         there may be unpredictable problems with the output.
         """
-        return self.system_message(2, *args, **kwargs)
+        return self.system_message(self.WARNING_LEVEL, *args, **kwargs)
 
     def error(self, *args, **kwargs):
         """
         Level-3, "ERROR": an error that should be addressed. If ignored, the
         output will contain errors.
         """
-        return self.system_message(3, *args, **kwargs)
+        return self.system_message(self.ERROR_LEVEL, *args, **kwargs)
 
     def severe(self, *args, **kwargs):
         """
@@ -214,7 +226,7 @@ class Reporter:
         the output will contain severe errors. Typically level-4 system
         messages are turned into exceptions which halt processing.
         """
-        return self.system_message(4, *args, **kwargs)
+        return self.system_message(self.SEVERE_LEVEL, *args, **kwargs)
 
 
 class ExtensionOptionError(DataError): pass
@@ -303,7 +315,7 @@ def assemble_option_dict(option_list, options_spec):
         convertor = options_spec[name]  # raises KeyError if unknown
         if convertor is None:
             raise KeyError(name)        # or if explicitly disabled
-        if options.has_key(name):
+        if name in options:
             raise DuplicateOptionError('duplicate option "%s"' % name)
         try:
             options[name] = convertor(value)
@@ -314,6 +326,25 @@ def assemble_option_dict(option_list, options_spec):
 
 
 class NameValueError(DataError): pass
+
+
+def decode_path(path):
+    """
+    Decode file/path string. Return `nodes.reprunicode` object.
+
+    Provides a conversion to unicode without the UnicodeDecode error of the
+    implicit 'ascii:strict' decoding.
+    """
+    # see also http://article.gmane.org/gmane.text.docutils.user/2905
+    try:
+        path = path.decode(sys.getfilesystemencoding(), 'strict')
+    except UnicodeDecodeError:
+        path = path.decode('utf-8', 'strict')
+        try:
+            path = path.decode(sys.getfilesystemencoding(), 'strict')
+        except UnicodeDecodeError:
+            path = path.decode('ascii', 'replace')
+    return nodes.reprunicode(path)
 
 
 def extract_name_value(line):
@@ -382,13 +413,15 @@ def new_document(source_path, settings=None):
     Return a new empty document object.
 
     :Parameters:
-        `source` : string
+        `source_path` : string
             The path to or description of the source text of the document.
         `settings` : optparse.Values object
             Runtime settings.  If none provided, a default set will be used.
     """
+    from docutils import frontend
     if settings is None:
         settings = frontend.OptionParser().get_default_values()
+    source_path = decode_path(source_path)
     reporter = new_reporter(source_path, settings)
     document = nodes.document(settings, reporter, source=source_path)
     document.note_source(source_path, -1)
@@ -398,9 +431,9 @@ def clean_rcs_keywords(paragraph, keyword_substitutions):
     if len(paragraph) == 1 and isinstance(paragraph[0], nodes.Text):
         textnode = paragraph[0]
         for pattern, substitution in keyword_substitutions:
-            match = pattern.search(textnode.data)
+            match = pattern.search(textnode)
             if match:
-                textnode.data = pattern.sub(substitution, textnode.data)
+                paragraph[0] = nodes.Text(pattern.sub(substitution, textnode))
                 return
 
 def relative_path(source, target):
@@ -430,15 +463,42 @@ def relative_path(source, target):
 def get_stylesheet_reference(settings, relative_to=None):
     """
     Retrieve a stylesheet reference from the settings object.
+
+    Deprecated. Use get_stylesheet_reference_list() instead to
+    enable specification of multiple stylesheets as a comma-separated
+    list.
     """
     if settings.stylesheet_path:
-        assert not settings.stylesheet, \
-               'stylesheet and stylesheet_path are mutually exclusive.'
+        assert not settings.stylesheet, (
+            'stylesheet and stylesheet_path are mutually exclusive.')
         if relative_to == None:
             relative_to = settings._destination
         return relative_path(relative_to, settings.stylesheet_path)
     else:
         return settings.stylesheet
+
+# Return 'stylesheet' or 'stylesheet_path' arguments as list.
+#
+# The original settings arguments are kept unchanged: you can test
+# with e.g. ``if settings.stylesheet_path:``
+#
+# Differences to ``get_stylesheet_reference``:
+# * return value is a list
+# * no re-writing of the path (and therefore no optional argument)
+#   (if required, use ``utils.relative_path(source, target)``
+#   in the calling script)
+def get_stylesheet_list(settings):
+    """
+    Retrieve list of stylesheet references from the settings object.
+    """
+    if settings.stylesheet_path:
+        assert not settings.stylesheet, (
+               'stylesheet and stylesheet_path are mutually exclusive.')
+        return settings.stylesheet_path.split(",")
+    elif settings.stylesheet:
+        return settings.stylesheet.split(",")
+    else:
+        return []
 
 def get_trim_footnote_ref_space(settings):
     """
@@ -502,7 +562,7 @@ east_asian_widths = {'W': 2,   # Wide
 column widths."""
 
 def east_asian_column_width(text):
-    if isinstance(text, types.UnicodeType):
+    if isinstance(text, unicode):
         total = 0
         for c in text:
             total += east_asian_widths[unicodedata.east_asian_width(c)]
@@ -514,6 +574,13 @@ if hasattr(unicodedata, 'east_asian_width'):
     column_width = east_asian_column_width
 else:
     column_width = len
+
+def uniq(L):
+     r = []
+     for item in L:
+         if not item in r:
+             r.append(item)
+     return r
 
 
 class DependencyList:
@@ -554,16 +621,17 @@ class DependencyList:
         else:
             self.file = None
 
-    def add(self, filename):
+    def add(self, *filenames):
         """
         If the dependency `filename` has not already been added,
         append it to self.list and print it to self.file if self.file
         is not None.
         """
-        if not filename in self.list:
-            self.list.append(filename)
-            if self.file is not None:
-                print >>self.file, filename
+        for filename in filenames:
+            if not filename in self.list:
+                self.list.append(filename)
+                if self.file is not None:
+                    print >>self.file, filename
 
     def close(self):
         """

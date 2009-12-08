@@ -1,11 +1,11 @@
 #! /usr/bin/env python
 
 """
-    rpdb2.py - version 2.3.8
+    rpdb2.py - version 2.4.6
 
     A remote Python debugger for CPython
 
-    Copyright (C) 2005-2008 Nir Aides
+    Copyright (C) 2005-2009 Nir Aides
 
     This program is free software; you can redistribute it and/or modify it 
     under the terms of the GNU General Public License as published by the 
@@ -22,9 +22,9 @@
     51 Franklin Street, Fifth Floor, Boston, MA 02111-1307 USA    
 """
 
-COPYRIGHT_NOTICE = """Copyright (C) 2005-2008 Nir Aides"""
+COPYRIGHT_NOTICE = """Copyright (C) 2005-2009 Nir Aides"""
 
-CREDITS_NOTICE = """Jurjen N.E. Bos - Compatibility with OS X."""
+CREDITS_NOTICE = """This project is waiting for your contribution and support."""
 
 LICENSE_NOTICE = """
 This program is free software; you can redistribute it and/or modify it 
@@ -262,28 +262,22 @@ if '.' in __name__:
     raise ImportError('rpdb2 must not be imported as part of a package!')
 
 
-    
-import SimpleXMLRPCServer 
-import SocketServer
-import xmlrpclib
+
+import subprocess
 import threading
 import traceback
 import zipimport
-import commands
 import tempfile
 import __main__
-import copy_reg
 import platform
 import operator
 import weakref
-import httplib
 import os.path
 import zipfile
 import pickle
 import socket
 import getopt
 import string
-import thread
 import random
 import base64
 import atexit
@@ -333,6 +327,32 @@ try:
 except ImportError:
     pass
 
+try:    
+    import SimpleXMLRPCServer 
+    import xmlrpclib
+    import SocketServer
+    import commands
+    import copy_reg
+    import httplib
+    import thread
+
+except:
+    #
+    # The above modules were renamed in Python 3 so try to import them 'as'
+    #
+    import xmlrpc.server as SimpleXMLRPCServer
+    import xmlrpc.client as xmlrpclib
+    import socketserver as SocketServer
+    import subprocess as commands
+    import copyreg as copy_reg
+    import http.client as httplib
+    import _thread as thread
+
+    #
+    # Needed in py3k path.
+    #
+    import numbers
+
 
 
 #
@@ -373,7 +393,8 @@ def start_embedded_debugger(
             fAllowRemote = False, 
             timeout = TIMEOUT_FIVE_MINUTES, 
             source_provider = None, 
-            fDebug = False
+            fDebug = False,
+            depth = 0
             ):
 
     """
@@ -406,6 +427,10 @@ def start_embedded_debugger(
 
     fDebug - debug output.
 
+    depth - Depth of the frame in which the debugger should be started. This
+        defaults to '0' so the top of stack will be in the code where
+        start_embedded_debugger is called.
+    
     IMPORTNAT SECURITY NOTE:
     USING A HARDCODED PASSWORD MAY BE UNSECURE SINCE ANYONE WITH READ
     PERMISSION TO THE SCRIPT WILL BE ABLE TO READ THE PASSWORD AND CONNECT TO 
@@ -420,7 +445,8 @@ def start_embedded_debugger(
                         fAllowRemote, 
                         timeout, 
                         source_provider,
-                        fDebug
+                        fDebug,
+                        depth + 2
                         )
     
 
@@ -432,7 +458,8 @@ def start_embedded_debugger_interactive_password(
                 source_provider = None,
                 fDebug = False, 
                 stdin = sys.stdin, 
-                stdout = sys.stdout
+                stdout = sys.stdout,
+                depth = 0
                 ):
                 
     if g_server is not None:
@@ -452,7 +479,8 @@ def start_embedded_debugger_interactive_password(
                                 fAllowRemote, 
                                 timeout, 
                                 source_provider,
-                                fDebug
+                                fDebug,
+                                depth + 2
                                 )
 
         except BadArgument:
@@ -476,12 +504,12 @@ def settrace():
 
 
 
-def setbreak():
+def setbreak(depth = 0):
     """
     Pause the script for inspection at next script statement.
     """
 
-    return __setbreak()
+    return __setbreak(depth + 2)
 
 
 
@@ -511,9 +539,10 @@ def set_temp_breakpoint(path, scopename = '', lineno = 1):
 
 
 
-VERSION = (2, 3, 8, 0, '')
-RPDB_VERSION = "RPDB_2_3_8"
-RPDB_COMPATIBILITY_VERSION = "RPDB_2_3_8"
+VERSION = (2, 4, 6, 0, 'Tychod')
+RPDB_TITLE = "RPDB 2.4.6 - Tychod"
+RPDB_VERSION = "RPDB_2_4_6"
+RPDB_COMPATIBILITY_VERSION = "RPDB_2_4_0"
 
 
 
@@ -1095,7 +1124,7 @@ class CSessionManager:
         filter_level - 0, 1, or 2. Filter out methods and functions from
             classes and objects. (0 - None, 1 - Medium, 2 - Maximum).
 
-        repr_limit - Length limit (approximated) to be imposed repr() of 
+        repr_limit - Length limit (approximated) to be imposed on repr() of 
              returned items.
         
         examples of expression lists: 
@@ -1812,7 +1841,7 @@ CONSOLE_WRAP_INDEX = 78
 CONSOLE_PROMPT = '\n> '
 CONSOLE_PROMPT_ANALYZE = '\nAnalayze> '
 CONSOLE_INTRO = ("""RPDB2 - The Remote Python Debugger, version %s,
-Copyright (C) 2005-2008 Nir Aides.
+Copyright (C) 2005-2009 Nir Aides.
 Type "help", "copyright", "license", "credits" for more information.""" % (RPDB_VERSION))
 
 PRINT_NOTICE_PROMPT = "Hit Return for more, or q (and Return) to quit:"
@@ -2204,7 +2233,7 @@ def send_job(tid, timeout, foo, *args, **kwargs):
     
     try:
         lock.acquire()
-        lock.notifyAll()
+        lock_notify_all(lock)
     finally:
         lock.release()
 
@@ -2260,6 +2289,90 @@ def safe_wait(lock, timeout = None):
 # The following code is related to the ability of the debugger
 # to work both on Python 2.5 and 3.0.
 #
+
+def lock_notify_all(lock):
+    try:
+        if is_py3k():
+            return lock.notify_all()
+
+    except AttributeError:
+        pass
+
+    return lock.notifyAll()
+
+
+
+def event_is_set(event):
+    try:
+        if is_py3k():
+            return event.is_set()
+
+    except AttributeError:
+        pass
+
+    return event.isSet()
+
+
+
+def thread_set_daemon(thread, fdaemon):
+    try:
+        if is_py3k():
+            return thread.set_daemon(fdaemon)
+
+    except AttributeError:
+        pass
+
+    return thread.setDaemon(fdaemon)
+
+
+
+def thread_is_alive(thread):
+    try:
+        if is_py3k():
+            return thread.is_alive()
+
+    except AttributeError:
+        pass
+
+    return thread.isAlive()
+
+
+
+def thread_set_name(thread, name):
+    try:
+        if is_py3k():
+            return thread.set_name(name)
+
+    except AttributeError:
+        pass
+
+    return thread.setName(name)
+
+
+
+def thread_get_name(thread):
+    try:
+        if is_py3k():
+            return thread.get_name()
+
+    except AttributeError:
+        pass
+
+    return thread.getName()
+
+
+
+def current_thread():
+    try:
+        if is_py3k():
+            return threading.current_thread()
+
+    except AttributeError:
+        pass
+
+    return threading.currentThread()
+
+
 
 class _stub_type:
     pass
@@ -2364,6 +2477,7 @@ def detect_locale():
     try:
         codecs.lookup(encoding)
         return encoding
+
 
     except:
         pass
@@ -2991,13 +3105,13 @@ def my_abspath1(path):
             pass
     else:
         try:
-            path = os.getcwd()
+            path = getcwd()
 
         except UnicodeDecodeError:
             #
             # This exception can be raised in py3k (alpha) on nt.
             #
-            path = os.getcwdu()
+            path = getcwdu()
         
     np = os.path.normpath(path)
 
@@ -3154,6 +3268,24 @@ def FindFileAsModule(filename):
 
 
 
+def getcwd():
+    try:
+        return os.getcwd()
+
+    except UnicodeDecodeError:
+        print_debug_exception(True)
+        raise
+
+
+
+def getcwdu():
+    if hasattr(os, 'getcwdu'):
+        return os.getcwdu()
+
+    return getcwd()
+
+
+
 def FindFile(
         filename, 
         sources_paths = [], 
@@ -3237,15 +3369,15 @@ def FindFile(
                 return _l
 
     scriptname = CalcScriptName(filename, fAllowAnyExt)
-    
+       
     try:
-        cwd = [os.getcwd(), os.getcwdu()]
+        cwd = [getcwd(), getcwdu()]
     
     except UnicodeDecodeError:
         #
         # This exception can be raised in py3k (alpha) on nt.
         #
-        cwd = [os.getcwdu()]
+        cwd = [getcwdu()]
 
     env_path = os.environ['PATH']
     paths = sources_paths + cwd + g_initial_cwd + sys.path + env_path.split(os.pathsep)
@@ -4075,7 +4207,10 @@ def sort(s):
 
 
 def sort_key(e):
-    if operator.isNumberType(e):
+    if is_py3k() and isinstance(e, numbers.Number):
+        return (0, e)
+
+    if not is_py3k() and operator.isNumberType(e):
         return (0, e)
 
     return (1, repr_ltd(e, 256, encoding = ENCODING_RAW_I))
@@ -4178,9 +4313,13 @@ def my_extract_tb(tb):
 
 
 
-def get_traceback(frame):
-    if frame.f_exc_traceback != None:
-        return frame.f_exc_traceback
+def get_traceback(frame, ctx):
+    if is_py3k():
+        if ctx.get_exc_info() != None:
+            return ctx.get_exc_info()[2]
+    else:
+        if frame.f_exc_traceback != None:
+            return frame.f_exc_traceback
 
     locals = copy.copy(frame.f_locals)
     if not 'traceback' in locals:
@@ -4222,15 +4361,15 @@ class CFirewallTest:
             # it means they are blocked by a firewall. Return False.
             #
             server = CFirewallTest.m_thread_server
-            if server != None and server.isAlive():
+            if server != None and thread_is_alive(server):
                 server.join(self.m_timeout * 1.5)
-                if server.isAlive():
+                if thread_is_alive(server):
                     return False
 
             client = CFirewallTest.m_thread_client
-            if client != None and client.isAlive():
+            if client != None and thread_is_alive(client):
                 client.join(self.m_timeout * 1.5)
-                if client.isAlive():
+                if thread_is_alive(client):
                     return False
 
             CFirewallTest.m_port = None
@@ -4245,13 +4384,13 @@ class CFirewallTest:
             # If server exited or failed to setup after a timeout 
             # it means it was blocked by a firewall.
             #
-            while CFirewallTest.m_port == None and server.isAlive():
+            while CFirewallTest.m_port == None and thread_is_alive(server):
                 if time.time() - t0 > self.m_timeout * 1.5:
                     return False
 
                 time.sleep(0.1)
 
-            if not server.isAlive():
+            if not thread_is_alive(server):
                 return False
 
             t0 = time.time()
@@ -4259,7 +4398,7 @@ class CFirewallTest:
             client.start()
             CFirewallTest.m_thread_client = client
 
-            while self.m_result == None and client.isAlive():
+            while self.m_result == None and thread_is_alive(client):
                 if time.time() - t0 > self.m_timeout * 1.5:
                     return False
 
@@ -4398,7 +4537,7 @@ class CThread (threading.Thread):
 
 
     def __del__(self):
-        #print_debug('Destructor called for ' + self.getName())
+        #print_debug('Destructor called for ' + thread_get_name(self))
         
         #threading.Thread.__del__(self)
 
@@ -4454,7 +4593,7 @@ class CThread (threading.Thread):
                 continue
 
             try:
-                #print_debug('Calling shutdown of thread %s.' % t.getName())
+                #print_debug('Calling shutdown of thread %s.' % thread_get_name(t))
                 t.shutdown()
             except:
                 pass
@@ -4773,7 +4912,7 @@ class CEvent(object):
     """
     Base class for events.
     """
-   
+  
     def __reduce__(self):
         rv = (copy_reg.__newobj__, (type(self), ), vars(self), None, None)
         return rv
@@ -4997,8 +5136,8 @@ class CEventThreads(CEvent):
     State of threads.
     """
     
-    def __init__(self, current_thread, thread_list):
-        self.m_current_thread = current_thread
+    def __init__(self, _current_thread, thread_list):
+        self.m_current_thread = _current_thread
         self.m_thread_list = thread_list
 
 
@@ -5271,7 +5410,7 @@ class CEventQueue:
                 self.m_event_list.pop(0)
                 
             self.m_event_index += 1    
-            self.m_event_lock.notifyAll()
+            lock_notify_all(self.m_event_lock)
 
         finally:
             self.m_event_lock.release()
@@ -5423,7 +5562,7 @@ class CStateManager:
                 
             self.__add_state(state)            
 
-            self.m_state_lock.notifyAll()
+            lock_notify_all(self.m_state_lock)
 
         finally:    
             if fLock:
@@ -6260,7 +6399,44 @@ class CDebuggerCoreThread:
         self.m_frame_lock = threading.Condition()
         self.m_frame_external_references = 0
 
+        self.m_exc_info = None
+
+        self.m_depth = 0
+        self.set_depth(frame) 
+       
+
+    def set_depth(self, frame):
+        self.m_depth = 0
+        while frame is not None:
+            self.m_depth += 1
+            frame = frame.f_back
         
+
+    def profile_recursion(self, frame, event, arg):
+        if event == 'call':
+            if self.m_depth > g_recursionlimit:
+                print_debug('Exceeded recursion limit and caught in profile function.')
+
+                try:
+                    #
+                    # The allowed recursion limit was exceeded. 
+                    # To view the offending script frame, go two frames 
+                    # down the stack with the 'down' console command.
+                    #
+                    raise RuntimeError('maximum recursion depth exceeded')
+
+                except:
+                    #
+                    # Schedule the debugger to re-enable the profile hook.
+                    #
+                    self.set_tracers(fsignal_exception = True)
+                    raise
+
+        elif event == 'return':
+            return self.profile(frame, event, arg)
+
+
+ 
     def profile(self, frame, event, arg): 
         """
         Profiler method.
@@ -6269,7 +6445,10 @@ class CDebuggerCoreThread:
         life time of the frame structure.
         """
         #print_debug('profile: %s, %s, %s, %s, %s' % (repr(frame), event, frame.f_code.co_name, frame.f_code.co_filename, repr(arg)[:40])) 
-        if event == 'return':  
+
+        if event == 'return':
+            self.m_depth -= 1
+
             if sys.excepthook != g_excepthook:
                 set_excepthook()
 
@@ -6289,7 +6468,7 @@ class CDebuggerCoreThread:
                     
                     self.m_uef_lineno = self.m_ue_lineno
                     
-                    self.m_fUnhandledException = True                    
+                    self.m_fUnhandledException = True 
                     self.m_core._break(self, frame, event, arg)
                     
                     self.m_uef_lineno = None 
@@ -6364,7 +6543,7 @@ class CDebuggerCoreThread:
         """
         
         if fException:
-            tb = get_traceback(base_frame)
+            tb = get_traceback(base_frame, self)
             if tb is None:
                 raise NoExceptionFound
                 
@@ -6395,7 +6574,7 @@ class CDebuggerCoreThread:
             lineno = f.f_lineno
             
         if fException:
-            tb = get_traceback(base_frame)
+            tb = get_traceback(base_frame, self)
             while tb is not None:
                 if tb.tb_frame == f:
                     lineno = tb.tb_lineno
@@ -6583,7 +6762,7 @@ class CDebuggerCoreThread:
 
         if event == 'exception':
             self.set_exc_info(arg)
-            
+
         self.m_event = event
 
         if frame in self.m_locals_copy:
@@ -6605,6 +6784,10 @@ class CDebuggerCoreThread:
         
         if not self.m_core.m_ftrace:
             return self.trace_dispatch_stop(frame, event, arg)
+       
+        self.m_depth += 1
+        if self.m_depth > g_recursionlimit:
+            sys.setprofile(self.profile_recursion)
         
         self.m_frame = frame
 
@@ -6675,7 +6858,7 @@ class CDebuggerCoreThread:
                 self.update_locals()
                 self.set_local_trace(frame)
 
-            if not frame.f_exc_traceback is arg[2]:
+            if not is_py3k() and not frame.f_exc_traceback is arg[2]:
                 (frame.f_exc_type, frame.f_exc_value, frame.f_exc_traceback) = arg
 
             return frame.f_trace     
@@ -6743,7 +6926,9 @@ class CDebuggerCoreThread:
                 self.update_locals()
                 self.set_local_trace(frame)
 
-            if not frame.f_exc_traceback is arg[2]:
+            if is_py3k():
+                self.set_exc_info(arg)
+            elif not frame.f_exc_traceback is arg[2]:
                 (frame.f_exc_type, frame.f_exc_value, frame.f_exc_traceback) = arg
 
             return frame.f_trace     
@@ -6755,6 +6940,7 @@ class CDebuggerCoreThread:
         #print_debug('*** trace_dispatch_signal %s, %s, %s' % (frame.f_lineno, event, repr(arg)))
         self.set_exc_info(arg)
         self.set_tracers()
+        self.set_depth(frame)
         sys.setprofile(self.profile)
 
         return self.trace_dispatch_trap(frame, event, arg)
@@ -6762,9 +6948,16 @@ class CDebuggerCoreThread:
         
     def set_exc_info(self, arg):
         """
-        Set exception information in frames of stack.
+        Set exception information.
         """
-        
+
+        if arg == None:
+            return
+
+        if is_py3k():
+            self.m_exc_info = arg
+            return
+
         (t, v, tb) = arg
 
         while tb is not None:
@@ -6774,6 +6967,14 @@ class CDebuggerCoreThread:
             f.f_exc_traceback = tb
 
             tb = tb.tb_next
+
+
+    def get_exc_info(self):
+        return self.m_exc_info
+
+
+    def reset_exc_info(self):
+        self.m_exc_info = None
 
 
     def is_breakpoint(self):
@@ -7110,8 +7311,8 @@ class CDebuggerCore:
         self.set_exception_trap_frame(frame)
 
         try:
-            t = threading.currentThread()
-            name = t.getName()
+            t = current_thread()
+            name = thread_get_name(t)
         except:
             name = ''
        
@@ -7318,12 +7519,15 @@ class CDebuggerCore:
                 except:
                     g_module_main = None
 
-            if not frame.f_exc_traceback is None:
+            if not is_py3k() and not frame.f_exc_traceback is None:
                 ctx.set_exc_info((frame.f_exc_type, frame.f_exc_value, frame.f_exc_traceback))
 
+            if is_py3k() and ctx.get_exc_info() == None and sys.exc_info()[2] != None:
+                ctx.set_exc_info(sys.exc_info())
+
             try:
-                t = threading.currentThread()
-                ctx.m_thread_name = t.getName()
+                t = current_thread()
+                ctx.m_thread_name = thread_get_name(t)
             except:
                 pass
             
@@ -7390,12 +7594,13 @@ class CDebuggerCore:
         ctx.m_fUnhandledException = False
         ctx.m_fBroken = False 
         ctx.set_tracers()
+        ctx.reset_exc_info()
 
         if g_fos_exit:
             g_fos_exit = False
             self.send_event_exit()
-            
             time.sleep(1.0)
+            self.stoptrace()
 
 
     def is_auto_fork_first_stage(self, tid):
@@ -8049,7 +8254,7 @@ class CDebuggerEngine(CDebuggerCore):
                 
             stack_depth = len(s)
 
-            tb = get_traceback(f)
+            tb = get_traceback(f, ctx)
             if tb == None:
                 stack_depth_exception = None
 
@@ -8137,7 +8342,7 @@ class CDebuggerEngine(CDebuggerCore):
                 return None
 
             if fException: 
-                tb = get_traceback(f)
+                tb = get_traceback(f, ctx)
                 if tb == None:
                     raise NoExceptionFound
 
@@ -8624,6 +8829,16 @@ class CDebuggerEngine(CDebuggerCore):
 
     def get_exception(self, frame_index, fException):
         ctx = self.get_current_ctx()
+        
+        if is_py3k():
+            exc_info = ctx.get_exc_info()
+            if exc_info == None:
+                return {'type': None, 'value': None, 'traceback': None}
+
+            type, value, traceback = exc_info
+            e = {'type': type, 'value': value, 'traceback': traceback}
+        
+            return e
 
         try:
             f = None
@@ -9052,7 +9267,7 @@ class CWorkQueue:
 
     def __create_thread(self): 
         t = CThread(name = '__worker_target', target = self.__worker_target, shutdown = self.shutdown)
-        #t.setDaemon(True)
+        #thread_set_daemon(t, True)
         t.start()
 
 
@@ -9068,7 +9283,7 @@ class CWorkQueue:
 
         self.m_lock.acquire()
         self.m_f_shutdown = True
-        self.m_lock.notifyAll()
+        lock_notify_all(self.m_lock)
 
         t0 = time.time()
 
@@ -9119,14 +9334,14 @@ class CWorkQueue:
                     print_debug('Creating an extra worker thread.')
                     self.__create_thread()
                     
-                threading.currentThread().setName('__worker_target - ' + name)
+                thread_set_name(current_thread(), '__worker_target - ' + name)
 
                 try:
                     target(*args)
                 except:
                     print_debug_exception()
 
-                threading.currentThread().setName('__worker_target')
+                thread_set_name(current_thread(), '__worker_target')
 
                 self.m_lock.acquire()
                 self.m_n_available += 1
@@ -9136,7 +9351,7 @@ class CWorkQueue:
                     
             self.m_n_threads -= 1
             self.m_n_available -= 1 
-            self.m_lock.notifyAll()
+            lock_notify_all(self.m_lock)
             
         finally:
             self.m_lock.release()
@@ -9377,7 +9592,7 @@ class CIOServer:
     
     def start(self):
         self.m_thread = CThread(name = 'ioserver', target = self.run, shutdown = self.shutdown)
-        self.m_thread.setDaemon(True)
+        thread_set_daemon(self.m_thread, True)
         self.m_thread.start()
 
 
@@ -9394,7 +9609,7 @@ class CIOServer:
 
         self.m_stop = True
 
-        while self.m_thread.isAlive():
+        while thread_is_alive(self.m_thread):
             try:
                 proxy = CPwdServerProxy(self.m_crypto, calcURL(LOOPBACK, self.m_port), CLocalTimeoutTransport())
                 proxy.null()
@@ -10016,7 +10231,7 @@ class CSession:
 
     def ConnectAsync(self):
         t = threading.Thread(target = self.ConnectNoThrow)
-        #t.setDaemon(True)
+        #thread_set_daemon(t, True)
         t.start()
         return t
 
@@ -10408,7 +10623,7 @@ class CSessionManagerInternal:
             command = osSpawn[name] % {'exec': python_exec, 'options': options}
 
         if name == DARWIN:
-            s = 'cd "%s" ; %s' % (os.getcwdu(), command)
+            s = 'cd "%s" ; %s' % (getcwdu(), command)
             command = CalcMacTerminalCommand(s)
 
         print_debug('Terminal open string: %s' % repr(command))
@@ -10418,7 +10633,7 @@ class CSessionManagerInternal:
         if name == MAC:
             terminalcommand.run(command)
         else:
-            os.popen(command)
+            subprocess.Popen(command, shell=True)
 
     
     def attach(self, key, name = None, fsupress_pwd_warning = False, fsetenv = False, ffirewall_test = True, server = None, fload_breakpoints = True):
@@ -10572,7 +10787,7 @@ class CSessionManagerInternal:
     def __start_event_monitor(self):        
         self.m_fStop = False
         self.m_worker_thread = threading.Thread(target = self.__event_monitor_proc)
-        #self.m_worker_thread.setDaemon(True)
+        #thread_set_daemon(self.m_worker_thread, True)
         self.m_worker_thread.start()
 
         
@@ -11393,7 +11608,7 @@ class CConsoleInternal(cmd.Cmd, threading.Thread):
         if fSplit:
             self.intro += '\n'
         
-        #self.setDaemon(True)
+        #thread_set_daemon(self, True)
         
         self.m_session_manager = session_manager
         self.m_session_manager.set_printer(self.printer)
@@ -11442,7 +11657,7 @@ class CConsoleInternal(cmd.Cmd, threading.Thread):
         line = as_unicode(line, self.m_encoding)
 
         self.m_fAddPromptBeforeMsg = True
-        if not self.m_eInLoop.isSet():
+        if not event_is_set(self.m_eInLoop):
             self.m_eInLoop.set()
             time.sleep(0.01)
 
@@ -11601,7 +11816,7 @@ class CConsoleInternal(cmd.Cmd, threading.Thread):
 
     def complete_eval(self, text, line = None, begidx = None, endidx = None):
         t = self.m_completion_thread
-        if t != None and t.isAlive():
+        if t != None and thread_is_alive(t):
             return []
 
         self.m_completion_thread = None
@@ -11614,7 +11829,7 @@ class CConsoleInternal(cmd.Cmd, threading.Thread):
         t.start()
         t.join(PING_TIMEOUT)
 
-        if t.isAlive():
+        if thread_is_alive(t):
             self.m_completion_thread = t
             return []
 
@@ -11663,7 +11878,7 @@ class CConsoleInternal(cmd.Cmd, threading.Thread):
 
             
     def printer(self, _str):
-        if not self.m_eInLoop.isSet():
+        if not event_is_set(self.m_eInLoop):
             self.m_eInLoop.wait()
 
         fAPBM = self.m_fAddPromptBeforeMsg    
@@ -12329,7 +12544,7 @@ class CConsoleInternal(cmd.Cmd, threading.Thread):
 
             _print(value, self.m_stdout)
 
-            if sync_event.isSet():
+            if event_is_set(sync_event):
                 _print(self.prompt, self.m_stdout, feol = False)
 
             return
@@ -12356,7 +12571,7 @@ class CConsoleInternal(cmd.Cmd, threading.Thread):
         t.start()
         t.join(WAIT_FOR_BREAK_TIMEOUT)
 
-        if t.isAlive():
+        if thread_is_alive(t):
             _print(STR_OUTPUT_WARNING_ASYNC, self.m_stdout)
             sync_event.set()
                         
@@ -12373,7 +12588,7 @@ class CConsoleInternal(cmd.Cmd, threading.Thread):
             if error:
                 _print(error + '\n', self.m_stdout)
 
-            if sync_event.isSet():
+            if event_is_set(sync_event):
                 _print(self.prompt, self.m_stdout, feol = False) 
 
             return    
@@ -12402,7 +12617,7 @@ class CConsoleInternal(cmd.Cmd, threading.Thread):
         t.start()
         t.join(WAIT_FOR_BREAK_TIMEOUT)
 
-        if t.isAlive():
+        if thread_is_alive(t):
             _print(STR_OUTPUT_WARNING_ASYNC, self.m_stdout)
             sync_event.set()
         
@@ -13356,6 +13571,30 @@ if __name__ == 'rpdb2' and 'exc_info' in dir(sys) and sys.exc_info != __exc_info
 
 
 
+def __setrecursionlimit(rl):
+    global g_recursionlimit
+
+    print_debug('rl = %d' % rl)
+
+    g_recursionlimit = max(rl, 64)
+
+    rl = g_recursionlimit
+    if sys.version_info[:2] == (2, 6):
+        rl *= 3
+
+    return g_sys_setrecursionlimit(rl + 64)
+
+
+
+g_sys_setrecursionlimit = None
+
+if __name__ == 'rpdb2' and 'setrecursionlimit' in dir(sys) and sys.setrecursionlimit != __setrecursionlimit:
+    g_sys_setrecursionlimit = sys.setrecursionlimit
+    sys.setrecursionlimit = __setrecursionlimit
+    __setrecursionlimit(sys.getrecursionlimit())
+
+
+
 def __find_debugger_frame():
     frame = None
 
@@ -13497,7 +13736,7 @@ def __setprofile(foo):
     print_debug('*** setprofile to %s' % repr(foo))
     traceback.print_stack(file = sys.__stderr__)
 
-    if threading.currentThread().getName() == 'MainThread':
+    if thread_get_name(current_thread()) == 'MainThread':
         g_profile = foo
 
     g_sys_setprofile(foo)
@@ -13569,6 +13808,68 @@ g_os_exit = None
 if __name__ == 'rpdb2' and '_exit' in dir(os) and os._exit != __exit:
     g_os_exit = os._exit
     os._exit = __exit
+
+
+
+def __close(fd):
+    global g_fos_exit
+
+    try:
+        if fd == g_server.m_server.socket._sock.fileno():
+            g_fos_exit = (setbreak() != None)
+    except:
+        pass
+
+    #
+    # os.close(fd) has been called by the debugged script to close 
+    # the debugger communication channel. 
+    #
+    # This can normally happen if it is trying to spawn a new process
+    # in its place.
+    #
+    # Stepping on from this point will result in termination of the
+    # debugging session.
+    #
+    return g_os_close(fd)
+
+
+
+g_os_close = None
+
+if __name__ == 'rpdb2' and 'close' in dir(os) and os.close != __close:
+    g_os_close = os.close
+    os.close = __close
+
+
+
+def __dup2(fd, fd2):
+    global g_fos_exit
+
+    try:
+        if fd2 == g_server.m_server.socket._sock.fileno():
+            g_fos_exit = (setbreak() != None)
+    except:
+        pass
+
+    #
+    # os.dup2(fd, fd2) has been called by the debugged script to close 
+    # the debugger communication channel. 
+    #
+    # This can normally happen if it is trying to spawn a new process
+    # in its place.
+    #
+    # Stepping on from this point will result in termination of the
+    # debugging session.
+    #
+    return g_os_dup2(fd, fd2)
+
+
+
+g_os_dup2 = None
+
+if __name__ == 'rpdb2' and 'dup2' in dir(os) and os.dup2 != __dup2:
+    g_os_dup2 = os.dup2
+    os.dup2 = __dup2
 
 
 
@@ -13721,11 +14022,11 @@ def __settrace(depth = 2):
 
     
 
-def __setbreak():
+def __setbreak(depth = 2):
     if g_debugger is None:
         return
         
-    f = sys._getframe(2)
+    f = sys._getframe(depth)
     g_debugger.setbreak(f)
 
     return thread.get_ident()
@@ -13767,14 +14068,18 @@ def _atexit(fabort = False):
 
 
 def my_pickle_import(*args, **kwargs):
-    if len(args) != 1 or len(kwargs) != 0:
-        return __import__(*args, **kwargs)
+    name = ''
+    
+    if len(args) > 0:
+        name = args[0]
 
-    name = args[0]
-    if name in sys.modules:
+    if 'name' in kwargs:
+        name = kwargs['name']
+
+    if name == 'rpdb2':
         return
 
-    return __import__(name)
+    return __import__(*args, **kwargs)
 
 
 
@@ -13782,14 +14087,18 @@ def my_pickle_import(*args, **kwargs):
 # MOD
 #
 def workaround_import_deadlock():
+    if is_py3k() and hasattr(pickle, '_Pickler'):
+        pickle.Pickler = pickle._Pickler
+
     xmlrpclib.loads(XML_DATA)
-    s = as_bytes('(S\'\\xb3\\x95\\xf9\\x1d\\x105c\\xc6\\xe2t\\x9a\\xa5_`\\xa59\'\np0\nS"(I0\\nI1\\nS\'5657827\'\\np0\\n(S\'server_info\'\\np1\\n(tI0\\ntp2\\ntp3\\n."\np1\ntp2\n.0000000')
+    s = as_bytes("(S'hello'\np0\nS'world'\np1\ntp2\n.")
+    #s = as_bytes('(S\'\\xb3\\x95\\xf9\\x1d\\x105c\\xc6\\xe2t\\x9a\\xa5_`\\xa59\'\np0\nS"(I0\\nI1\\nS\'5657827\'\\np0\\n(S\'server_info\'\\np1\\n(tI0\\ntp2\\ntp3\\n."\np1\ntp2\n.0000000')
     pickle.loads(s)
     pickle.__import__ = my_pickle_import
 
 
 
-def __start_embedded_debugger(_rpdb2_pwd, fAllowUnencrypted, fAllowRemote, timeout, source_provider, fDebug):
+def __start_embedded_debugger(_rpdb2_pwd, fAllowUnencrypted, fAllowRemote, timeout, source_provider, fDebug, depth):
     global g_server
     global g_debugger
     global g_fDebug
@@ -13802,12 +14111,12 @@ def __start_embedded_debugger(_rpdb2_pwd, fAllowUnencrypted, fAllowRemote, timeo
         g_server_lock.acquire()
         
         if g_debugger is not None and timeout == 0:
-            f = sys._getframe(2)
+            f = sys._getframe(depth)
             g_debugger.settrace(f, f_break_on_init = False)
             return
 
         if g_debugger is not None:
-            f = sys._getframe(2)
+            f = sys._getframe(depth)
             g_debugger.record_client_heartbeat(0, True, False)
             g_debugger.setbreak(f)
             return
@@ -13823,7 +14132,7 @@ def __start_embedded_debugger(_rpdb2_pwd, fAllowUnencrypted, fAllowRemote, timeo
         if (not fAllowUnencrypted) and not is_encryption_supported():
             raise EncryptionNotSupported
         
-        f = sys._getframe(2)
+        f = sys._getframe(depth)
         filename = calc_frame_path(f)
 
         #
@@ -13832,13 +14141,13 @@ def __start_embedded_debugger(_rpdb2_pwd, fAllowUnencrypted, fAllowRemote, timeo
         #
         if sys.path[0] == '':
             try:
-                g_initial_cwd = [os.getcwd(), os.getcwdu()]
+                g_initial_cwd = [getcwd(), getcwdu()]
     
             except UnicodeDecodeError:
                 #
                 # This exception can be raised in py3k (alpha) on nt.
                 #
-                g_initial_cwd = [os.getcwdu()]
+                g_initial_cwd = [getcwdu()]
 
             
         atexit.register(_atexit)
@@ -13874,7 +14183,7 @@ def StartServer(args, fchdir, _rpdb2_pwd, fAllowUnencrypted, fAllowRemote, rid):
             os.chdir(os.path.dirname(_path))
 
         if ExpandedFilename in g_found_unicode_files:
-            prefix = os.path.join(os.getcwdu(), '')
+            prefix = os.path.join(getcwdu(), '')
             _path = _path.replace(winlower(prefix), '')
         
     except IOError:
@@ -13991,6 +14300,7 @@ def PrintUsage(fExtended = False):
                     screen rpdb2 -s [options] [<script-name> [<script-args>...]]
     -c, --chdir     Change the working directory to that of the launched 
                     script.
+    -v, --version   Print version information.
     --debug         Debug prints.
 
     Note that each option is available in short form (example -e) and in a 
@@ -14011,7 +14321,7 @@ def PrintUsage(fExtended = False):
 
 
 
-def main(StartClient_func = StartClient):
+def main(StartClient_func = StartClient, version = RPDB_TITLE):
     global g_fScreen
     global g_fDebug
     global g_fFirewallTest
@@ -14024,13 +14334,12 @@ def main(StartClient_func = StartClient):
     try:
         options, _rpdb2_args = getopt.getopt(
                             argv[1:], 
-                            'hdao:rtep:sc', 
-                            ['help', 'debugee', 'debuggee', 'attach', 'host=', 'remote', 'plaintext', 'encrypt', 'pwd=', 'rid=', 'screen', 'chdir', 'base64=', 'nofwtest', 'debug']
+                            'hdao:rtep:scv', 
+                            ['help', 'debugee', 'debuggee', 'attach', 'host=', 'remote', 'plaintext', 'encrypt', 'pwd=', 'rid=', 'screen', 'chdir', 'base64=', 'nofwtest', 'version', 'debug']
                             )
 
     except getopt.GetoptError:
-        e = sys.exc_info()[1]
-        _print(e)
+        PrintUsage()
         return 2
         
     fWrap = False
@@ -14049,6 +14358,9 @@ def main(StartClient_func = StartClient):
     for o, a in options:
         if o in ['-h', '--help']:
             PrintUsage()
+            return 0
+        if o in ['-v', '--version']:
+            _print(version)
             return 0
         if o in ['--debug']:
             g_fDebug = True 

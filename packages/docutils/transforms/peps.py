@@ -1,7 +1,5 @@
-# Author: David Goodger
-# Contact: goodger@users.sourceforge.net
-# Revision: $Revision: 3909 $
-# Date: $Date: 2005-09-26 20:17:31 +0200 (Mon, 26 Sep 2005) $
+# $Id: peps.py 4564 2006-05-21 20:44:42Z wiemann $
+# Author: David Goodger <goodger@python.org>
 # Copyright: This module has been placed in the public domain.
 
 """
@@ -33,9 +31,9 @@ class Headers(Transform):
 
     default_priority = 360
 
-    pep_url = 'pep-%04d.html'
-    pep_cvs_url = ('http://cvs.sourceforge.net/cgi-bin/viewcvs.cgi/python/'
-                   'python/nondist/peps/pep-%04d.txt')
+    pep_url = 'pep-%04d'
+    pep_cvs_url = ('http://svn.python.org/view/*checkout*'
+                   '/peps/trunk/pep-%04d.txt')
     rcs_keyword_substitutions = (
           (re.compile(r'\$' r'RCSfile: (.+),v \$$', re.IGNORECASE), r'\1'),
           (re.compile(r'\$[a-zA-Z]+: (.+) \$$'), r'\1'),)

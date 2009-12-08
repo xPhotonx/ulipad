@@ -1,7 +1,5 @@
-# Authors: David Goodger
-# Contact: goodger@python.org
-# Revision: $Revision: 3598 $
-# Date: $Date: 2005-06-27 13:19:35 +0200 (Mon, 27 Jun 2005) $
+# $Id: examples.py 4800 2006-11-12 18:02:01Z goodger $
+# Author: David Goodger <goodger@python.org>
 # Copyright: This module has been placed in the public domain.
 
 """
@@ -74,13 +72,17 @@ def html_body(input_string, source_path=None, destination_path=None,
     return fragment
 
 def internals(input_string, source_path=None, destination_path=None,
-              input_encoding='unicode'):
+              input_encoding='unicode', settings_overrides=None):
     """
     Return the document tree and publisher, for exploring Docutils internals.
 
     Parameters: see `html_parts()`.
     """
-    overrides = {'input_encoding': input_encoding}
+    if settings_overrides:
+        overrides = settings_overrides.copy()
+    else:
+        overrides = {}
+    overrides['input_encoding'] = input_encoding
     output, pub = core.publish_programmatically(
         source_class=io.StringInput, source=input_string,
         source_path=source_path,

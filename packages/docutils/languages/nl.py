@@ -1,7 +1,5 @@
-# Author: Martijn Pieters
-# Contact: mjpieters@users.sourceforge.net
-# Revision: $Revision: 3058 $
-# Date: $Date: 2005-03-18 21:09:22 +0100 (Fri, 18 Mar 2005) $
+# $Id: nl.py 4564 2006-05-21 20:44:42Z wiemann $
+# Author: Martijn Pieters <mjpieters@users.sourceforge.net>
 # Copyright: This module has been placed in the public domain.
 
 # New language mappings are welcome.  Before doing a new translation, please

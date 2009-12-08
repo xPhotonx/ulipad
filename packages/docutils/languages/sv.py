@@ -1,7 +1,5 @@
-# Author:    Adam Chodorowski
-# Contact:   chodorowski@users.sourceforge.net
-# Revision:  $Revision: 2224 $
-# Date:      $Date: 2004-06-05 21:40:46 +0200 (Sat, 05 Jun 2004) $
+# $Id: sv.py 4564 2006-05-21 20:44:42Z wiemann $
+# Author: Adam Chodorowski <chodorowski@users.sourceforge.net>
 # Copyright: This module has been placed in the public domain.
 
 # New language mappings are welcome.  Before doing a new translation, please

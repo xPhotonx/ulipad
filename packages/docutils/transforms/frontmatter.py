@@ -1,7 +1,5 @@
-# Authors: David Goodger, Ueli Schlaepfer
-# Contact: goodger@users.sourceforge.net
-# Revision: $Revision: 4242 $
-# Date: $Date: 2006-01-06 00:28:53 +0100 (Fri, 06 Jan 2006) $
+# $Id: frontmatter.py 5618 2008-07-28 08:37:32Z strank $
+# Author: David Goodger, Ueli Schlaepfer <goodger@python.org>
 # Copyright: This module has been placed in the public domain.
 
 """
@@ -390,7 +388,7 @@ class DocInfo(Transform):
             try:
                 name = field[0][0].astext()
                 normedname = nodes.fully_normalize_name(name)
-                if not (len(field) == 2 and bibliofields.has_key(normedname)
+                if not (len(field) == 2 and normedname in bibliofields
                         and self.check_empty_biblio_field(field, name)):
                     raise TransformError
                 canonical = bibliofields[normedname]

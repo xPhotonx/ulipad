@@ -1,7 +1,5 @@
-# Author: David Goodger
-# Contact: goodger@users.sourceforge.net
-# Revision: $Revision: 2224 $
-# Date: $Date: 2004-06-05 21:40:46 +0200 (Sat, 05 Jun 2004) $
+# $Id: __init__.py 5618 2008-07-28 08:37:32Z strank $
+# Author: David Goodger <goodger@python.org>
 # Copyright: This module has been placed in the public domain.
 
 # Internationalization details are documented in
@@ -16,7 +14,7 @@ __docformat__ = 'reStructuredText'
 _languages = {}
 
 def get_language(language_code):
-    if _languages.has_key(language_code):
+    if language_code in _languages:
         return _languages[language_code]
     module = __import__(language_code, globals(), locals())
     _languages[language_code] = module

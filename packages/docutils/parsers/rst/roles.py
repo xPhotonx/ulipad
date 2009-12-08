@@ -1,7 +1,5 @@
-# Author: Edward Loper
-# Contact: edloper@gradient.cis.upenn.edu
-# Revision: $Revision: 3155 $
-# Date: $Date: 2005-04-02 23:57:06 +0200 (Sat, 02 Apr 2005) $
+# $Id: roles.py 6121 2009-09-10 12:05:04Z milde $
+# Author: Edward Loper <edloper@gradient.cis.upenn.edu>
 # Copyright: This module has been placed in the public domain.
 
 """
@@ -103,7 +101,7 @@ def role(role_name, language_module, lineno, reporter):
     messages = []
     msg_text = []
 
-    if _roles.has_key(normname):
+    if normname in _roles:
         return _roles[normname], messages
 
     if role_name:
@@ -137,7 +135,7 @@ def role(role_name, language_module, lineno, reporter):
         messages.append(message)
 
     # Look the role up in the registry, and return it.
-    if _role_registry.has_key(canonicalname):
+    if canonicalname in _role_registry:
         role_fn = _role_registry[canonicalname]
         register_local_role(normname, role_fn)
         return role_fn, messages
@@ -173,7 +171,7 @@ def set_implicit_options(role_fn):
     """
     if not hasattr(role_fn, 'options') or role_fn.options is None:
         role_fn.options = {'class': directives.class_option}
-    elif not role_fn.options.has_key('class'):
+    elif 'class' not in role_fn.options:
         role_fn.options['class'] = directives.class_option
 
 def register_generic_role(canonical_name, node_class):
@@ -266,7 +264,8 @@ def pep_reference_role(role, rawtext, text, lineno, inliner,
         prb = inliner.problematic(rawtext, rawtext, msg)
         return [prb], [msg]
     # Base URL mainly used by inliner.pep_reference; so this is correct:
-    ref = inliner.document.settings.pep_base_url + inliner.pep_url % pepnum
+    ref = (inliner.document.settings.pep_base_url
+           + inliner.document.settings.pep_file_url_template % pepnum)
     set_classes(options)
     return [nodes.reference(rawtext, 'PEP ' + utils.unescape(text), refuri=ref,
                             **options)], []
@@ -295,7 +294,11 @@ def rfc_reference_role(role, rawtext, text, lineno, inliner,
 register_canonical_role('rfc-reference', rfc_reference_role)
 
 def raw_role(role, rawtext, text, lineno, inliner, options={}, content=[]):
-    if not options.has_key('format'):
+    if not inliner.document.settings.raw_enabled:
+        msg = inliner.reporter.warning('raw (and derived) roles disabled')
+        prb = inliner.problematic(rawtext, rawtext, msg)
+        return [prb], [msg]
+    if 'format' not in options:
         msg = inliner.reporter.error(
             'No format (Writer name) is associated with this role: "%s".\n'
             'The "raw" role cannot be used directly.\n'
@@ -341,7 +344,7 @@ def set_classes(options):
     Auxiliary function to set options['classes'] and delete
     options['class'].
     """
-    if options.has_key('class'):
-        assert not options.has_key('classes')
+    if 'class' in options:
+        assert 'classes' not in options
         options['classes'] = options['class']
         del options['class']

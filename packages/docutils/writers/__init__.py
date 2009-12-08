@@ -1,7 +1,5 @@
-# Authors: David Goodger
-# Contact: goodger@users.sourceforge.net
-# Revision: $Revision: 4163 $
-# Date: $Date: 2005-12-09 05:21:34 +0100 (Fri, 09 Dec 2005) $
+# $Id: __init__.py 6111 2009-09-02 21:36:05Z milde $
+# Author: David Goodger <goodger@python.org>
 # Copyright: This module has been placed in the public domain.
 
 """
@@ -36,7 +34,7 @@ class Writer(Component):
         return Component.get_transforms(self) + [
             universal.Messages,
             universal.FilterMessages,
-            ]
+            universal.StripClassesAndElements,]
 
     document = None
     """The document to write (Docutils doctree); set by `write`."""
@@ -54,7 +52,7 @@ class Writer(Component):
 
     def __init__(self):
 
-        # Currently only used by HTML writer for output fragments:
+        # Used by HTML and LaTex writer for output fragments:
         self.parts = {}
         """Mapping of document part names to fragments of `self.output`.
         Values are Unicode strings; encoding is up to the client.  The 'whole'
@@ -96,6 +94,8 @@ class Writer(Component):
     def assemble_parts(self):
         """Assemble the `self.parts` dictionary.  Extend in subclasses."""
         self.parts['whole'] = self.output
+        self.parts['encoding'] = self.document.settings.output_encoding
+        self.parts['version'] = docutils.__version__
 
 
 class UnfilteredWriter(Writer):
@@ -127,7 +127,7 @@ _writer_aliases = {
 def get_writer_class(writer_name):
     """Return the Writer class from the `writer_name` module."""
     writer_name = writer_name.lower()
-    if _writer_aliases.has_key(writer_name):
+    if writer_name in _writer_aliases:
         writer_name = _writer_aliases[writer_name]
     module = __import__(writer_name, globals(), locals())
     return module.Writer

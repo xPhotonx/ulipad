@@ -1,7 +1,5 @@
-# Author: Martin Blais
-# Contact: blais@furius.ca
-# Revision: $Revision: 4006 $
-# Date: $Date: 2005-11-08 03:38:20 +0100 (Tue, 08 Nov 2005) $
+# $Id: doctree.py 4564 2006-05-21 20:44:42Z wiemann $
+# Author: Martin Blais <blais@furius.ca>
 # Copyright: This module has been placed in the public domain.
 
 """Reader for existing document trees."""

@@ -1,7 +1,6 @@
-# Authors: Engelbert Gruber; Felix Wiemann
-# Contact: grubert@users.sourceforge.net
-# Revision: $Revision: 4229 $
-# Date: $Date: 2005-12-23 00:46:16 +0100 (Fri, 23 Dec 2005) $
+# $Id: de.py 5174 2007-05-31 00:01:52Z wiemann $
+# Authors: Engelbert Gruber <grubert@users.sourceforge.net>;
+#          Lea Wiemann <LeWiemann@gmail.com>
 # Copyright: This module has been placed in the public domain.
 
 # New language mappings are welcome.  Before doing a new translation, please

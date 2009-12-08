@@ -1,7 +1,5 @@
-# Author: Ivan Vilata i Balaguer
-# Contact: ivan@selidor.net
-# Revision: $Revision: 3276 $
-# Date: $Date: 2005-04-30 13:34:52 +0200 (Sat, 30 Apr 2005) $
+# $Id: ca.py 4564 2006-05-21 20:44:42Z wiemann $
+# Author: Ivan Vilata i Balaguer <ivan@selidor.net>
 # Copyright: This module has been placed in the public domain.
 
 # New language mappings are welcome.  Before doing a new translation, please

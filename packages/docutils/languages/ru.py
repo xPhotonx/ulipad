@@ -1,7 +1,5 @@
-# Author: Roman Suzi
-# Contact: rnd@onego.ru
-# Revision: $Revision: 2999 $
-# Date: $Date: 2005-03-03 20:35:02 +0100 (Thu, 03 Mar 2005) $
+# $Id: ru.py 4564 2006-05-21 20:44:42Z wiemann $
+# Author: Roman Suzi <rnd@onego.ru>
 # Copyright: This module has been placed in the public domain.
 
 # New language mappings are welcome.  Before doing a new translation, please

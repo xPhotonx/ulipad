@@ -1,9 +1,6 @@
-# Author: Chris Liechti
-# Contact: cliechti@gmx.net
-# Author: David Goodger
-# Contact: goodger@python.org
-# Revision: $Revision: 4223 $
-# Date: $Date: 2005-12-18 00:52:30 +0100 (Sun, 18 Dec 2005) $
+# $Id: __init__.py 5889 2009-04-01 20:00:21Z gbrandl $
+# Authors: Chris Liechti <cliechti@gmx.net>;
+#          David Goodger <goodger@python.org>
 # Copyright: This module has been placed in the public domain.
 
 """
@@ -20,6 +17,7 @@ import docutils
 from docutils import frontend, nodes, utils
 from docutils.writers import html4css1
 from docutils.parsers.rst import directives
+from docutils._compat import b
 
 themes_dir_path = utils.relative_path(
     os.path.join(os.getcwd(), 'dummy'),
@@ -57,15 +55,28 @@ class Writer(html4css1.Writer):
          ('Allow existing theme files in the ``ui/<theme>`` directory to be '
           'overwritten.  The default is not to overwrite theme files.',
           ['--overwrite-theme-files'],
-          {'action': 'store_true'}),
+          {'action': 'store_true', 'validator': frontend.validate_boolean}),
          ('Keep existing theme files in the ``ui/<theme>`` directory; do not '
           'overwrite any.  This is the default.',
           ['--keep-theme-files'],
           {'dest': 'overwrite_theme_files', 'action': 'store_false'}),
+         ('Set the initial view mode to "slideshow" [default] or "outline".',
+          ['--view-mode'],
+          {'choices': ['slideshow', 'outline'], 'default': 'slideshow',
+           'metavar': '<mode>'}),
+         ('Normally hide the presentation controls in slideshow mode. '
+          'This is the default.',
+          ['--hidden-controls'],
+          {'action': 'store_true', 'default': True,
+           'validator': frontend.validate_boolean}),
+         ('Always show the presentation controls in slideshow mode.  '
+          'The default is to hide the controls.',
+          ['--visible-controls'],
+          {'dest': 'hidden_controls', 'action': 'store_false'}),
          ('Enable the current slide indicator ("1 / 15").  '
           'The default is to disable it.',
           ['--current-slide'],
-          {'action': 'store_true'}),
+          {'action': 'store_true', 'validator': frontend.validate_boolean}),
          ('Disable the current slide indicator.  This is the default.',
           ['--no-current-slide'],
           {'dest': 'current_slide', 'action': 'store_false'}),))
@@ -82,14 +93,10 @@ class Writer(html4css1.Writer):
 
 class S5HTMLTranslator(html4css1.HTMLTranslator):
 
-    doctype = (
-        '<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"'
-        ' "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">\n')
-
     s5_stylesheet_template = """\
 <!-- configuration parameters -->
-<meta name="defaultView" content="slideshow" />
-<meta name="controlVis" content="hidden" />
+<meta name="defaultView" content="%(view_mode)s" />
+<meta name="controlVis" content="%(control_visibility)s" />
 <!-- style sheet links -->
 <script src="%(path)s/slides.js" type="text/javascript"></script>
 <link rel="stylesheet" href="%(path)s/slides.css"
@@ -148,8 +155,13 @@ class S5HTMLTranslator(html4css1.HTMLTranslator):
         #insert S5-specific stylesheet and script stuff:
         self.theme_file_path = None
         self.setup_theme()
+        view_mode = self.document.settings.view_mode
+        control_visibility = ('visible', 'hidden')[self.document.settings
+                                                   .hidden_controls]
         self.stylesheet.append(self.s5_stylesheet_template
-                               % {'path': self.theme_file_path})
+                               % {'path': self.theme_file_path,
+                                  'view_mode': view_mode,
+                                  'control_visibility': control_visibility})
         if not self.document.settings.current_slide:
             self.stylesheet.append(self.disable_current_slide)
         self.add_meta('<meta name="version" content="S5 1.1" />\n')
@@ -240,7 +252,7 @@ class S5HTMLTranslator(html4css1.HTMLTranslator):
         """
         source = os.path.join(source_dir, name)
         dest = os.path.join(dest_dir, name)
-        if self.theme_files_copied.has_key(dest):
+        if dest in self.theme_files_copied:
             return 1
         else:
             self.theme_files_copied[dest] = 1
@@ -257,7 +269,9 @@ class S5HTMLTranslator(html4css1.HTMLTranslator):
                 dest_file = open(dest, 'wb')
                 dest_dir = dest_dir.replace(os.sep, '/')
                 dest_file.write(src_data.replace(
-                    'ui/default', dest_dir[dest_dir.rfind('ui/'):]))
+                    b('ui/default'),
+                    dest_dir[dest_dir.rfind('ui/'):].encode(
+                    sys.getfilesystemencoding())))
                 dest_file.close()
                 settings.record_dependencies.add(source)
             return 1
@@ -322,5 +336,5 @@ class S5HTMLTranslator(html4css1.HTMLTranslator):
         else:
             html4css1.HTMLTranslator.visit_subtitle(self, node)
 
-    def visit_title(self, node, move_ids=0):
-        html4css1.HTMLTranslator.visit_title(self, node, move_ids=move_ids)
+    def visit_title(self, node):
+        html4css1.HTMLTranslator.visit_title(self, node)

@@ -1,7 +1,5 @@
-# Author: David Goodger
-# Contact: goodger@users.sourceforge.net
-# Revision: $Revision: 4152 $
-# Date: $Date: 2005-12-08 00:46:30 +0100 (Thu, 08 Dec 2005) $
+# $Id: tableparser.py 4564 2006-05-21 20:44:42Z wiemann $
+# Author: David Goodger <goodger@python.org>
 # Copyright: This module has been placed in the public domain.
 
 """
