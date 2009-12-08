@@ -1,14 +1,9 @@
-# Author: David Goodger
-# Contact: goodger@users.sourceforge.net
-# Revision: $Revision: 3038 $
-# Date: $Date: 2005-03-14 17:16:57 +0100 (Mon, 14 Mar 2005) $
+# $Id: __init__.py 5618 2008-07-28 08:37:32Z strank $
+# Author: David Goodger <goodger@python.org>
 # Copyright: This module has been placed in the public domain.
 
 """
 This package contains the Python Source Reader modules.
-
-It requires Python 2.2 or higher (`moduleparser` depends on the
-`compiler` and `tokenize` modules).
 """
 
 __docformat__ = 'reStructuredText'
@@ -99,7 +94,7 @@ class DocstringFormattingVisitor(nodes.SparseNodeVisitor):
         visitation, so parser instances are cached.
         """
         parser_name = parsers._parser_aliases.get(parser_name, parser_name)
-        if not self.parsers.has_key(parser_name):
+        if parser_name not in self.parsers:
             cls = parsers.get_parser_class(parser_name)
             self.parsers[parser_name] = cls()
         return self.parsers[parser_name]

@@ -1,7 +1,5 @@
-# Author: David Goodger
-# Contact: goodger@python.org
-# Revision: $Revision: 4235 $
-# Date: $Date: 2005-12-30 04:00:25 +0100 (Fri, 30 Dec 2005) $
+# $Id: urischemes.py 4564 2006-05-21 20:44:42Z wiemann $
+# Author: David Goodger <goodger@python.org>
 # Copyright: This module has been placed in the public domain.
 
 """

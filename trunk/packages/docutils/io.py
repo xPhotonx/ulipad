@@ -1,7 +1,5 @@
-# Author: David Goodger
-# Contact: goodger@users.sourceforge.net
-# Revision: $Revision: 3654 $
-# Date: $Date: 2005-07-03 17:02:15 +0200 (Sun, 03 Jul 2005) $
+# $Id: io.py 6125 2009-09-11 14:24:35Z milde $
+# Author: David Goodger <goodger@python.org>
 # Copyright: This module has been placed in the public domain.
 
 """
@@ -16,8 +14,9 @@ try:
     import locale
 except:
     pass
-from types import UnicodeType
+import re
 from docutils import TransformSpec
+from docutils._compat import b
 
 
 class Input(TransformSpec):
@@ -68,29 +67,42 @@ class Input(TransformSpec):
             locale.setlocale(locale.LC_ALL, '')
         """
         if self.encoding and self.encoding.lower() == 'unicode':
-            assert isinstance(data, UnicodeType), (
+            assert isinstance(data, unicode), (
                 'input encoding is "unicode" '
                 'but input is not a unicode object')
-        if isinstance(data, UnicodeType):
+        if isinstance(data, unicode):
             # Accept unicode even if self.encoding != 'unicode'.
             return data
-        encodings = [self.encoding]
-        if not self.encoding:
-            # Apply heuristics only if no encoding is explicitly given.
-            encodings.append('utf-8')
-            try:
-                encodings.append(locale.nl_langinfo(locale.CODESET))
-            except:
-                pass
-            try:
-                encodings.append(locale.getlocale()[1])
-            except:
-                pass
-            try:
-                encodings.append(locale.getdefaultlocale()[1])
-            except:
-                pass
-            encodings.append('latin-1')
+        if self.encoding:
+            # We believe the user/application when the encoding is
+            # explicitly given.
+            encodings = [self.encoding]
+        else:
+            data_encoding = self.determine_encoding_from_data(data)
+            if data_encoding:
+                # If the data declares its encoding (explicitly or via a BOM),
+                # we believe it.
+                encodings = [data_encoding]
+            else:
+                # Apply heuristics only if no encoding is explicitly given and
+                # no BOM found.  Start with UTF-8, because that only matches
+                # data that *IS* UTF-8:
+                encodings = ['utf-8']
+                try:
+                    # for Python 2.2 compatibility
+                    encodings.append(locale.nl_langinfo(locale.CODESET))
+                except:
+                    pass
+                try:
+                    encodings.append(locale.getlocale()[1])
+                except:
+                    pass
+                try:
+                    encodings.append(locale.getdefaultlocale()[1])
+                except:
+                    pass
+                # fallback encoding:
+                encodings.append('latin-1')
         error = None
         error_details = ''
         for enc in encodings:
@@ -101,8 +113,9 @@ class Input(TransformSpec):
                 self.successful_encoding = enc
                 # Return decoded, removing BOMs.
                 return decoded.replace(u'\ufeff', u'')
-            except (UnicodeError, LookupError), error:
-                pass
+            except (UnicodeError, LookupError), tmperror:
+                error = tmperror  # working around Python 3 deleting the
+                                  # error variable after the except clause
         if error is not None:
             error_details = '\n(%s: %s)' % (error.__class__.__name__, error)
         raise UnicodeError(
@@ -110,6 +123,32 @@ class Input(TransformSpec):
             '%s.%s'
             % (', '.join([repr(enc) for enc in encodings if enc]),
                error_details))
+
+    coding_slug = re.compile(b("coding[:=]\s*([-\w.]+)"))
+    """Encoding declaration pattern."""
+
+    byte_order_marks = ((b('\xef\xbb\xbf'), 'utf-8'),
+                        (b('\xfe\xff'), 'utf-16-be'),
+                        (b('\xff\xfe'), 'utf-16-le'),)
+    """Sequence of (start_bytes, encoding) tuples to for encoding detection.
+    The first bytes of input data are checked against the start_bytes strings.
+    A match indicates the given encoding."""
+
+    def determine_encoding_from_data(self, data):
+        """
+        Try to determine the encoding of `data` by looking *in* `data`.
+        Check for a byte order mark (BOM) or an encoding declaration.
+        """
+        # check for a byte order mark:
+        for start_bytes, encoding in self.byte_order_marks:
+            if data.startswith(start_bytes):
+                return encoding
+        # check for an encoding declaration pattern in first 2 lines of file:
+        for line in data.splitlines()[:2]:
+            match = self.coding_slug.search(line)
+            if match:
+                return match.group(1).decode('ascii')
+        return None
 
 
 class Output(TransformSpec):
@@ -149,34 +188,15 @@ class Output(TransformSpec):
 
     def encode(self, data):
         if self.encoding and self.encoding.lower() == 'unicode':
-            assert isinstance(data, UnicodeType), (
+            assert isinstance(data, unicode), (
                 'the encoding given is "unicode" but the output is not '
                 'a Unicode string')
             return data
-        if not isinstance(data, UnicodeType):
+        if not isinstance(data, unicode):
             # Non-unicode (e.g. binary) output.
             return data
         else:
-            try:
-                return data.encode(self.encoding, self.error_handler)
-            except ValueError:
-                # ValueError is raised if there are unencodable chars
-                # in data and the error_handler isn't found.
-                if self.error_handler == 'xmlcharrefreplace':
-                    # We are using xmlcharrefreplace with a Python
-                    # version that doesn't support it (2.1 or 2.2), so
-                    # we emulate its behavior.
-                    return ''.join([self.xmlcharref_encode(char)
-                                    for char in data])
-                else:
-                    raise
-
-    def xmlcharref_encode(self, char):
-        """Emulate Python 2.3's 'xmlcharrefreplace' encoding error handler."""
-        try:
-            return char.encode(self.encoding, 'strict')
-        except UnicodeError:
-            return '&#%i;' % ord(char)
+            return data.encode(self.encoding, self.error_handler)
 
 
 class FileInput(Input):
@@ -205,15 +225,15 @@ class FileInput(Input):
         if source is None:
             if source_path:
                 try:
-                    self.source = open(source_path)
+                    self.source = open(source_path, 'rb')
                 except IOError, error:
                     if not handle_io_errors:
                         raise
                     print >>sys.stderr, '%s: %s' % (error.__class__.__name__,
                                                     error)
-                    print >>sys.stderr, (
-                        'Unable to open source file for reading (%r).  Exiting.'
-                        % source_path)
+                    print >>sys.stderr, ('Unable to open source file for '
+                                         "reading ('%s').  Exiting." %
+                                         source_path)
                     sys.exit(1)
             else:
                 self.source = sys.stdin
@@ -234,6 +254,17 @@ class FileInput(Input):
             if self.autoclose:
                 self.close()
         return self.decode(data)
+
+    def readlines(self):
+        """
+        Return lines of a single file as list of Unicode strings.
+        """
+        try:
+            lines = self.source.readlines()
+        finally:
+            if self.autoclose:
+                self.close()
+        return [self.decode(line) for line in lines]
 
     def close(self):
         self.source.close()
@@ -283,8 +314,8 @@ class FileOutput(Output):
                 raise
             print >>sys.stderr, '%s: %s' % (error.__class__.__name__,
                                             error)
-            print >>sys.stderr, ('Unable to open destination file for writing '
-                                 '(%r).  Exiting.' % self.destination_path)
+            print >>sys.stderr, ('Unable to open destination file for writing'
+                                 " ('%s').  Exiting." % self.destination_path)
             sys.exit(1)
         self.opened = 1
 
@@ -303,6 +334,24 @@ class FileOutput(Output):
     def close(self):
         self.destination.close()
         self.opened = None
+
+
+class BinaryFileOutput(FileOutput):
+    """
+    A version of docutils.io.FileOutput which writes to a binary file.
+    """
+    def open(self):
+        try:
+            self.destination = open(self.destination_path, 'wb')
+        except IOError, error:
+            if not self.handle_io_errors:
+                raise
+            print >>sys.stderr, '%s: %s' % (error.__class__.__name__,
+                                            error)
+            print >>sys.stderr, ('Unable to open destination file for writing '
+                                 "('%s').  Exiting." % self.destination_path)
+            sys.exit(1)
+        self.opened = 1
 
 
 class StringInput(Input):

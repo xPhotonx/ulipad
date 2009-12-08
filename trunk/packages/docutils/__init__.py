@@ -1,7 +1,5 @@
-# Author: David Goodger
-# Contact: goodger@python.org
-# Revision: $Revision: 4260 $
-# Date: $Date: 2006-01-09 19:28:09 +0100 (Mon, 09 Jan 2006) $
+# $Id: __init__.py 6164 2009-10-11 11:00:11Z grubert $
+# Author: David Goodger <goodger@python.org>
 # Copyright: This module has been placed in the public domain.
 
 """
@@ -51,7 +49,7 @@ Subpackages:
 
 __docformat__ = 'reStructuredText'
 
-__version__ = '0.4'
+__version__ = '0.6'
 """``major.minor.micro`` version number.  The micro number is bumped for API
 changes, for new functionality, and for interim project releases.  The minor
 number is bumped whenever there is a significant project release.  The major
@@ -82,22 +80,32 @@ class SettingsSpec:
 
     - Option group title (string or `None` which implies no group, just a list
       of single options).
-    
+
     - Description (string or `None`).
-    
+
     - A sequence of option tuples.  Each consists of:
 
       - Help text (string)
-      
+
       - List of option strings (e.g. ``['-Q', '--quux']``).
-      
-      - Dictionary of keyword arguments.  It contains arguments to the
-        OptionParser/OptionGroup ``add_option`` method, possibly with the
-        addition of a 'validator' keyword (see the
-        `docutils.frontend.OptionParser.validators` instance attribute).  Runtime
-        settings names are derived implicitly from long option names
+
+      - Dictionary of keyword arguments sent to the OptionParser/OptionGroup
+        ``add_option`` method.
+
+        Runtime setting names are derived implicitly from long option names
         ('--a-setting' becomes ``settings.a_setting``) or explicitly from the
-        'dest' keyword argument.  See optparse docs for more details.
+        'dest' keyword argument.
+
+        Most settings will also have a 'validator' keyword & function.  The
+        validator function validates setting values (from configuration files
+        and command-line option arguments) and converts them to appropriate
+        types.  For example, the ``docutils.frontend.validate_boolean``
+        function, **required by all boolean settings**, converts true values
+        ('1', 'on', 'yes', and 'true') to 1 and false values ('0', 'off',
+        'no', 'false', and '') to 0.  Validators need only be set once per
+        setting.  See the `docutils.frontend.validate_*` functions.
+
+        See the optparse docs for more details.
 
     - More triples of group title, description, options, as many times as
       needed.  Thus, `settings_spec` tuples can be simply concatenated.
@@ -153,9 +161,10 @@ class TransformSpec:
     unknown_reference_resolvers = ()
     """List of functions to try to resolve unknown references.  Unknown
     references have a 'refname' attribute which doesn't correspond to any
-    target in the document.  Called when FinalCheckVisitor is unable to find a
-    correct target.  The list should contain functions which will try to
-    resolve unknown references, with the following signature::
+    target in the document.  Called when the transforms in
+    `docutils.tranforms.references` are unable to find a correct target.  The
+    list should contain functions which will try to resolve unknown
+    references, with the following signature::
 
         def reference_resolver(node):
             '''Returns boolean: true if resolved, false if not.'''
@@ -184,7 +193,7 @@ class Component(SettingsSpec, TransformSpec):
 
     supported = ()
     """Names for this component.  Override in subclasses."""
-    
+
     def supports(self, format):
         """
         Is `format` supported by this component?

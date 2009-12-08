@@ -1,7 +1,5 @@
-# Authors: David Goodger, Ueli Schlaepfer
-# Contact: goodger@users.sourceforge.net
-# Revision: $Revision: 3892 $
-# Date: $Date: 2005-09-20 22:04:53 +0200 (Tue, 20 Sep 2005) $
+# $Id: __init__.py 4975 2007-03-01 18:08:32Z wiemann $
+# Authors: David Goodger <goodger@python.org>; Ueli Schlaepfer
 # Copyright: This module has been placed in the public domain.
 
 """
@@ -19,10 +17,8 @@ to Docutils components. Tree transforms serve a variety of purposes:
   transforms may be used to construct (for example) indexes and tables
   of contents.
 
-Each transform is an optional step that a Docutils Reader may choose to
-perform on the parsed document, depending on the input context. A Docutils
-Reader may also perform Reader-specific transforms before or after performing
-these standard transforms.
+Each transform is an optional step that a Docutils component may
+choose to perform on the parsed document.
 """
 
 __docformat__ = 'reStructuredText'

@@ -1,7 +1,5 @@
-# Author: David Goodger
-# Contact: goodger@users.sourceforge.net
-# Revision: $Revision: 3909 $
-# Date: $Date: 2005-09-26 20:17:31 +0200 (Mon, 26 Sep 2005) $
+# $Id: misc.py 4564 2006-05-21 20:44:42Z wiemann $
+# Author: David Goodger <goodger@python.org>
 # Copyright: This module has been placed in the public domain.
 
 """

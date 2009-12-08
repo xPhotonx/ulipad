@@ -1,7 +1,6 @@
-# Author: Nicola Larosa, Lele Gaifax
-# Contact: docutils@tekNico.net, lele@seldati.it
-# Revision: $Revision: 4229 $
-# Date: $Date: 2005-12-23 00:46:16 +0100 (Fri, 23 Dec 2005) $
+# $Id: it.py 4564 2006-05-21 20:44:42Z wiemann $
+# Authors: Nicola Larosa <docutils@tekNico.net>;
+#          Lele Gaifax <lele@seldati.it>
 # Copyright: This module has been placed in the public domain.
 
 # Beware: the italian translation of the reStructuredText documentation

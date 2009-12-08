@@ -1,13 +1,7 @@
 #! /usr/bin/env python
-
-"""
-:Author: David Goodger
-:Contact: goodger@users.sourceforge.net
-:Revision: $Revision: 1881 $
-:Date: $Date: 2004-03-24 00:21:11 +0100 (Wed, 24 Mar 2004) $
-:Copyright: This module has been placed in the public domain.
-
-"""
+# $Id: pynodes.py 4564 2006-05-21 20:44:42Z wiemann $
+# Author: David Goodger <goodger@python.org>
+# Copyright: This module has been placed in the public domain.
 
 from docutils import nodes
 from docutils.nodes import Element, TextElement, Structural, Inline, Part, \

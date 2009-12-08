@@ -1,7 +1,5 @@
-# Author: David Goodger
-# Contact: goodger@users.sourceforge.net
-# Revision: $Revision: 4152 $
-# Date: $Date: 2005-12-08 00:46:30 +0100 (Thu, 08 Dec 2005) $
+# $Id: statemachine.py 5968 2009-06-02 14:44:19Z milde $
+# Author: David Goodger <goodger@python.org>
 # Copyright: This module has been placed in the public domain.
 
 """
@@ -178,7 +176,7 @@ class StateMachine:
         self.states = None
 
     def run(self, input_lines, input_offset=0, context=None,
-            input_source=None):
+            input_source=None, initial_state=None):
         """
         Run the state machine on `input_lines`. Return results (a list).
 
@@ -198,6 +196,7 @@ class StateMachine:
           of the file.
         - `context`: application-specific storage.
         - `input_source`: name or path of source of `input_lines`.
+        - `initial_state`: name of initial state.
         """
         self.runtime_init()
         if isinstance(input_lines, StringList):
@@ -206,7 +205,7 @@ class StateMachine:
             self.input_lines = StringList(input_lines, source=input_source)
         self.input_offset = input_offset
         self.line_offset = -1
-        self.current_state = self.initial_state
+        self.current_state = initial_state or self.initial_state
         if self.debug:
             print >>sys.stderr, (
                 '\nStateMachine.run: input_lines (line_offset=%s):\n| %s'
@@ -379,7 +378,7 @@ class StateMachine:
             self.next_line(len(block) - 1)
             return block
         except UnexpectedIndentationError, error:
-            block, source, lineno = error
+            block, source, lineno = error.args
             self.next_line(len(block) - 1) # advance to last line of block
             raise
 
@@ -412,7 +411,7 @@ class StateMachine:
                   % (state.__class__.__name__, transitions))
         for name in transitions:
             pattern, method, next_state = state.transitions[name]
-            match = self.match(pattern)
+            match = pattern.match(self.line)
             if match:
                 if self.debug:
                     print >>sys.stderr, (
@@ -427,14 +426,6 @@ class StateMachine:
                       % state.__class__.__name__)
             return state.no_match(context, transitions)
 
-    def match(self, pattern):
-        """
-        Return the result of a regular expression match.
-
-        Parameter `pattern`: an `re` compiled regular expression.
-        """
-        return pattern.match(self.line)
-
     def add_state(self, state_class):
         """
         Initialize & add a `state_class` (`State` subclass) object.
@@ -443,7 +434,7 @@ class StateMachine:
         added.
         """
         statename = state_class.__name__
-        if self.states.has_key(statename):
+        if statename in self.states:
             raise DuplicateStateError(statename)
         self.states[statename] = state_class(self, self.debug)
 
@@ -631,9 +622,9 @@ class State:
         Exceptions: `DuplicateTransitionError`, `UnknownTransitionError`.
         """
         for name in names:
-            if self.transitions.has_key(name):
+            if name in self.transitions:
                 raise DuplicateTransitionError(name)
-            if not transitions.has_key(name):
+            if name not in transitions:
                 raise UnknownTransitionError(name)
         self.transition_order[:0] = names
         self.transitions.update(transitions)
@@ -646,7 +637,7 @@ class State:
 
         Exception: `DuplicateTransitionError`.
         """
-        if self.transitions.has_key(name):
+        if name in self.transitions:
             raise DuplicateTransitionError(name)
         self.transition_order[:0] = [name]
         self.transitions[name] = transition
@@ -1121,7 +1112,7 @@ class ViewList:
             assert i.step in (None, 1),  'cannot handle slice with stride'
             return self.__class__(self.data[i.start:i.stop],
                                   items=self.items[i.start:i.stop],
-                                  parent=self, parent_offset=i.start)
+                                  parent=self, parent_offset=i.start or 0)
         else:
             return self.data[i]
 
@@ -1134,8 +1125,8 @@ class ViewList:
             self.items[i.start:i.stop] = item.items
             assert len(self.data) == len(self.items), 'data mismatch'
             if self.parent:
-                self.parent[i.start + self.parent_offset
-                            : i.stop + self.parent_offset] = item
+                self.parent[(i.start or 0) + self.parent_offset
+                            : (i.stop or len(self)) + self.parent_offset] = item
         else:
             self.data[i] = item
             if self.parent:
@@ -1152,8 +1143,8 @@ class ViewList:
             del self.data[i.start:i.stop]
             del self.items[i.start:i.stop]
             if self.parent:
-                del self.parent[i.start + self.parent_offset
-                                : i.stop + self.parent_offset]
+                del self.parent[(i.start or 0) + self.parent_offset
+                                : (i.stop or len(self)) + self.parent_offset]
 
     def __add__(self, other):
         if isinstance(other, ViewList):
@@ -1412,7 +1403,7 @@ class StringList(ViewList):
             return                      # new in Python 2.4
         for i in range(len(self.data)):
             line = self.data[i]
-            if isinstance(line, types.UnicodeType):
+            if isinstance(line, unicode):
                 new = []
                 for char in line:
                     new.append(char)

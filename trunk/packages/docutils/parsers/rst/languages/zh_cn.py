@@ -1,8 +1,6 @@
 # -*- coding: utf-8 -*-
-# Author: Panjunyong
-# Contact: panjy@zopechina.com
-# Revision: $Revision: 4237 $
-# Date: $Date: 2006-01-01 03:35:00 +0100 (Sun, 01 Jan 2006) $
+# $Id: zh_cn.py 4564 2006-05-21 20:44:42Z wiemann $
+# Author: Panjunyong <panjy@zopechina.com>
 # Copyright: This module has been placed in the public domain.
 
 # New language mappings are welcome.  Before doing a new translation, please

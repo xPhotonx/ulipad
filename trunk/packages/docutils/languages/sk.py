@@ -1,8 +1,6 @@
-# :Author: Miroslav Vasko
-# :Contact: zemiak@zoznam.sk
-# :Revision: $Revision: 2224 $
-# :Date: $Date: 2004-06-05 21:40:46 +0200 (Sat, 05 Jun 2004) $
-# :Copyright: This module has been placed in the public domain.
+# $Id: sk.py 4564 2006-05-21 20:44:42Z wiemann $
+# Author: Miroslav Vasko <zemiak@zoznam.sk>
+# Copyright: This module has been placed in the public domain.
 
 # New language mappings are welcome.  Before doing a new translation, please
 # read <http://docutils.sf.net/docs/howto/i18n.html>.  Two files must be

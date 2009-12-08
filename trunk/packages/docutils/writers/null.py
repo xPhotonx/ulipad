@@ -1,7 +1,5 @@
-# Author: David Goodger
-# Contact: goodger@python.org
-# Revision: $Revision: 3892 $
-# Date: $Date: 2005-09-20 22:04:53 +0200 (Tue, 20 Sep 2005) $
+# $Id: null.py 4564 2006-05-21 20:44:42Z wiemann $
+# Author: David Goodger <goodger@python.org>
 # Copyright: This module has been placed in the public domain.
 
 """

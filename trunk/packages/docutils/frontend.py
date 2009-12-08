@@ -1,7 +1,5 @@
-# Author: David Goodger
-# Contact: goodger@users.sourceforge.net
-# Revision: $Revision: 4183 $
-# Date: $Date: 2005-12-12 05:12:02 +0100 (Mon, 12 Dec 2005) $
+# $Id: frontend.py 6154 2009-10-05 19:08:10Z milde $
+# Author: David Goodger <goodger@python.org>
 # Copyright: This module has been placed in the public domain.
 
 """
@@ -31,17 +29,14 @@ __docformat__ = 'reStructuredText'
 import os
 import os.path
 import sys
-import types
 import warnings
 import ConfigParser as CP
 import codecs
 import docutils
-try:
-    import optparse
-    from optparse import SUPPRESS_HELP
-except ImportError:
-    import optik as optparse
-    from optik import SUPPRESS_HELP
+import docutils.utils
+import docutils.nodes
+import optparse
+from optparse import SUPPRESS_HELP
 
 
 def store_multiple(option, opt, value, parser, *args, **kwargs):
@@ -80,7 +75,7 @@ def validate_encoding_error_handler(setting, value, option_parser,
                                     config_parser=None, config_section=None):
     try:
         codecs.lookup_error(value)
-    except AttributeError:              # prior to Python 2.3
+    except AttributeError:    # TODO: remove (only needed prior to Python 2.3)
         if value not in ('strict', 'ignore', 'replace', 'xmlcharrefreplace'):
             raise (LookupError(
                 'unknown encoding error handler: "%s" (choices: '
@@ -119,7 +114,7 @@ def validate_encoding_and_error_handler(
 
 def validate_boolean(setting, value, option_parser,
                      config_parser=None, config_section=None):
-    if isinstance(value, types.StringType):
+    if isinstance(value, unicode):
         try:
             return option_parser.booleans[value.strip().lower()]
         except KeyError:
@@ -147,7 +142,7 @@ def validate_threshold(setting, value, option_parser,
 
 def validate_colon_separated_string_list(
     setting, value, option_parser, config_parser=None, config_section=None):
-    if isinstance(value, types.StringType):
+    if isinstance(value, unicode):
         value = value.split(':')
     else:
         last = value.pop()
@@ -163,12 +158,25 @@ def validate_url_trailing_slash(
     else:
         return value + '/'
 
-def validate_dependency_file(
-    setting, value, option_parser, config_parser=None, config_section=None):
+def validate_dependency_file(setting, value, option_parser,
+                             config_parser=None, config_section=None):
     try:
         return docutils.utils.DependencyList(value)
     except IOError:
         return docutils.utils.DependencyList(None)
+
+def validate_strip_class(setting, value, option_parser,
+                         config_parser=None, config_section=None):
+    if config_parser:                   # validate all values
+        class_values = value
+    else:                               # just validate the latest value
+        class_values = [value[-1]]
+    for class_value in class_values:
+        normalized = docutils.nodes.make_id(class_value)
+        if class_value != normalized:
+            raise ValueError('invalid class value %r (perhaps %r?)'
+                             % (class_value, normalized))
+    return value
 
 def make_paths_absolute(pathdict, keys, base_path=None):
     """
@@ -180,9 +188,9 @@ def make_paths_absolute(pathdict, keys, base_path=None):
     if base_path is None:
         base_path = os.getcwd()
     for key in keys:
-        if pathdict.has_key(key):
+        if key in pathdict:
             value = pathdict[key]
-            if isinstance(value, types.ListType):
+            if isinstance(value, list):
                 value = [make_one_path_absolute(base_path, path)
                          for path in value]
             elif value:
@@ -212,7 +220,7 @@ class Values(optparse.Values):
             other_dict = other_dict.__dict__
         other_dict = other_dict.copy()
         for setting in option_parser.lists.keys():
-            if (hasattr(self, setting) and other_dict.has_key(setting)):
+            if (hasattr(self, setting) and setting in other_dict):
                 value = getattr(self, setting)
                 if value:
                     value += other_dict[setting]
@@ -281,6 +289,13 @@ class OptionParser(optparse.OptionParser, docutils.SettingsSpec):
               '0': 0, 'off': 0, 'no': 0, 'false': 0, '': 0}
     """Lookup table for boolean configuration file settings."""
 
+    try:
+        default_error_encoding = sys.stderr.encoding or 'ascii'
+    except AttributeError:
+        default_error_encoding = 'ascii'
+
+    # TODO: variable no longer needed since 'backslashreplace' is
+    # part of Python >= 2.3 (required since Docutils 0.6)
     if hasattr(codecs, 'backslashreplace_errors'):
         default_error_encoding_error_handler = 'backslashreplace'
     else:
@@ -289,11 +304,9 @@ class OptionParser(optparse.OptionParser, docutils.SettingsSpec):
     settings_spec = (
         'General Docutils Options',
         None,
-        (('Specify the document title as metadata (not part of the document '
-          'body).  Overrides a document-provided title.  There is no default.',
+        (('Specify the document title as metadata.',
           ['--title'], {}),
-         ('Include a "Generated by Docutils" credit and link at the end '
-          'of the document.',
+         ('Include a "Generated by Docutils" credit and link.',
           ['--generator', '-g'], {'action': 'store_true',
                                   'validator': validate_boolean}),
          ('Do not include a generator credit.',
@@ -301,154 +314,135 @@ class OptionParser(optparse.OptionParser, docutils.SettingsSpec):
          ('Include the date at the end of the document (UTC).',
           ['--date', '-d'], {'action': 'store_const', 'const': '%Y-%m-%d',
                              'dest': 'datestamp'}),
-         ('Include the time & date at the end of the document (UTC).',
+         ('Include the time & date (UTC).',
           ['--time', '-t'], {'action': 'store_const',
                              'const': '%Y-%m-%d %H:%M UTC',
                              'dest': 'datestamp'}),
          ('Do not include a datestamp of any kind.',
           ['--no-datestamp'], {'action': 'store_const', 'const': None,
                                'dest': 'datestamp'}),
-         ('Include a "View document source" link (relative to destination).',
+         ('Include a "View document source" link.',
           ['--source-link', '-s'], {'action': 'store_true',
                                     'validator': validate_boolean}),
-         ('Use the supplied <URL> verbatim for a "View document source" '
-          'link; implies --source-link.',
+         ('Use <URL> for a source link; implies --source-link.',
           ['--source-url'], {'metavar': '<URL>'}),
          ('Do not include a "View document source" link.',
           ['--no-source-link'],
           {'action': 'callback', 'callback': store_multiple,
            'callback_args': ('source_link', 'source_url')}),
-         ('Enable backlinks from section headers to table of contents '
-          'entries.  This is the default.',
+         ('Link from section headers to TOC entries.  (default)',
           ['--toc-entry-backlinks'],
           {'dest': 'toc_backlinks', 'action': 'store_const', 'const': 'entry',
            'default': 'entry'}),
-         ('Enable backlinks from section headers to the top of the table of '
-          'contents.',
+         ('Link from section headers to the top of the TOC.',
           ['--toc-top-backlinks'],
           {'dest': 'toc_backlinks', 'action': 'store_const', 'const': 'top'}),
          ('Disable backlinks to the table of contents.',
           ['--no-toc-backlinks'],
           {'dest': 'toc_backlinks', 'action': 'store_false'}),
-         ('Enable backlinks from footnotes and citations to their '
-          'references.  This is the default.',
+         ('Link from footnotes/citations to references. (default)',
           ['--footnote-backlinks'],
           {'action': 'store_true', 'default': 1,
            'validator': validate_boolean}),
          ('Disable backlinks from footnotes and citations.',
           ['--no-footnote-backlinks'],
           {'dest': 'footnote_backlinks', 'action': 'store_false'}),
-         ('Enable Docutils section numbering (default: enabled).',
+         ('Enable section numbering by Docutils.  (default)',
           ['--section-numbering'],
           {'action': 'store_true', 'dest': 'sectnum_xform',
            'default': 1, 'validator': validate_boolean}),
-         ('Disable Docutils section numbering (default: enabled).',
+         ('Disable section numbering by Docutils.',
           ['--no-section-numbering'],
-          {'action': 'store_false', 'dest': 'sectnum_xform',
-           'validator': validate_boolean}),
-         ('Remove comment elements from the document tree '
-          '(default: leave them).',
+          {'action': 'store_false', 'dest': 'sectnum_xform'}),
+         ('Remove comment elements from the document tree.',
           ['--strip-comments'],
           {'action': 'store_true', 'validator': validate_boolean}),
-         ('Leave comment elements in the document tree '
-          '(this is the default).',
+         ('Leave comment elements in the document tree. (default)',
           ['--leave-comments'],
-          {'action': 'store_false', 'dest': 'strip_comments',
-           'validator': validate_boolean}),
-         ('Set verbosity threshold; report system messages at or higher than '
-          '<level> (by name or number: "info" or "1", warning/2, error/3, '
-          'severe/4; also, "none" or "5").  Default is 2 (warning).',
+          {'action': 'store_false', 'dest': 'strip_comments'}),
+         ('Remove all elements with classes="<class>" from the document tree. '
+          'Warning: potentially dangerous; use with caution. '
+          '(Multiple-use option.)',
+          ['--strip-elements-with-class'],
+          {'action': 'append', 'dest': 'strip_elements_with_classes',
+           'metavar': '<class>', 'validator': validate_strip_class}),
+         ('Remove all classes="<class>" attributes from elements in the '
+          'document tree. Warning: potentially dangerous; use with caution. '
+          '(Multiple-use option.)',
+          ['--strip-class'],
+          {'action': 'append', 'dest': 'strip_classes',
+           'metavar': '<class>', 'validator': validate_strip_class}),
+         ('Report system messages at or higher than <level>: "info" or "1", '
+          '"warning"/"2" (default), "error"/"3", "severe"/"4", "none"/"5"',
           ['--report', '-r'], {'choices': threshold_choices, 'default': 2,
                                'dest': 'report_level', 'metavar': '<level>',
                                'validator': validate_threshold}),
-         ('Report all system messages, info-level and higher.  (Same as '
-          '"--report=info".)',
+         ('Report all system messages.  (Same as "--report=1".)',
           ['--verbose', '-v'], {'action': 'store_const', 'const': 1,
                                 'dest': 'report_level'}),
-         ('Do not report any system messages.  (Same as "--report=none".)',
+         ('Report no system messages.  (Same as "--report=5".)',
           ['--quiet', '-q'], {'action': 'store_const', 'const': 5,
                               'dest': 'report_level'}),
-         ('Set the threshold (<level>) at or above which system messages are '
-          'converted to exceptions, halting execution immediately by '
-          'exiting (or propagating the exception if --traceback set).  '
-          'Levels as in --report.  Default is 4 (severe).',
+         ('Halt execution at system messages at or above <level>.  '
+          'Levels as in --report.  Default: 4 (severe).',
           ['--halt'], {'choices': threshold_choices, 'dest': 'halt_level',
                        'default': 4, 'metavar': '<level>',
                        'validator': validate_threshold}),
-         ('Same as "--halt=info": halt processing at the slightest problem.',
-          ['--strict'], {'action': 'store_const', 'const': 'info',
+         ('Halt at the slightest problem.  Same as "--halt=info".',
+          ['--strict'], {'action': 'store_const', 'const': 1,
                          'dest': 'halt_level'}),
-         ('Enable a non-zero exit status for normal exit if non-halting '
-          'system messages (at or above <level>) were generated.  Levels as '
-          'in --report.  Default is 5 (disabled).  Exit status is the maximum '
-          'system message level plus 10 (11 for INFO, etc.).',
+         ('Enable a non-zero exit status for non-halting system messages at '
+          'or above <level>.  Default: 5 (disabled).',
           ['--exit-status'], {'choices': threshold_choices,
                               'dest': 'exit_status_level',
                               'default': 5, 'metavar': '<level>',
                               'validator': validate_threshold}),
-         ('Report debug-level system messages and generate diagnostic output.',
+         ('Enable debug-level system messages and diagnostics.',
           ['--debug'], {'action': 'store_true', 'validator': validate_boolean}),
-         ('Do not report debug-level system messages or generate diagnostic '
-          'output.',
+         ('Disable debug output.  (default)',
           ['--no-debug'], {'action': 'store_false', 'dest': 'debug'}),
-         ('Send the output of system messages (warnings) to <file>.',
+         ('Send the output of system messages to <file>.',
           ['--warnings'], {'dest': 'warning_stream', 'metavar': '<file>'}),
-         ('Enable Python tracebacks when halt-level system messages and '
-          'other exceptions occur.  Useful for debugging, and essential for '
-          'issue reports.',
+         ('Enable Python tracebacks when Docutils is halted.',
           ['--traceback'], {'action': 'store_true', 'default': None,
                             'validator': validate_boolean}),
-         ('Disable Python tracebacks when errors occur; report just the error '
-          'instead.  This is the default.',
+         ('Disable Python tracebacks.  (default)',
           ['--no-traceback'], {'dest': 'traceback', 'action': 'store_false'}),
-         ('Specify the encoding of input text.  Default is locale-dependent.  '
-          'Optionally also specify the error handler for undecodable '
-          'characters, after a colon (":"); default is "strict".  (See '
-          '"--intput-encoding-error-handler".)',
+         ('Specify the encoding and optionally the '
+          'error handler of input text.  Default: <locale-dependent>:strict.',
           ['--input-encoding', '-i'],
           {'metavar': '<name[:handler]>',
            'validator': validate_encoding_and_error_handler}),
-         ('Specify the error handler for undecodable characters in '
-          'the input.  Acceptable values include "strict", "ignore", and '
-          '"replace".  Default is "strict".  '
-          'Usually specified as part of --input-encoding.',
+         ('Specify the error handler for undecodable characters.  '
+          'Choices: "strict" (default), "ignore", and "replace".',
           ['--input-encoding-error-handler'],
           {'default': 'strict', 'validator': validate_encoding_error_handler}),
-         ('Specify the text encoding for output.  Default is UTF-8.  '
-          'Optionally also specify the error handler for unencodable '
-          'characters, after a colon (":"); default is "strict".  (See '
-          '"--output-encoding-error-handler".)',
+         ('Specify the text encoding and optionally the error handler for '
+          'output.  Default: UTF-8:strict.',
           ['--output-encoding', '-o'],
           {'metavar': '<name[:handler]>', 'default': 'utf-8',
            'validator': validate_encoding_and_error_handler}),
-         ('Specify the error handler for unencodable characters in '
-          'the output.  Acceptable values include "strict", "ignore", '
-          '"replace", "xmlcharrefreplace", and '
-          '"backslashreplace" (in Python 2.3+).  Default is "strict".  '
-          'Usually specified as part of --output-encoding.',
+         ('Specify error handler for unencodable output characters; '
+          '"strict" (default), "ignore", "replace", '
+          '"xmlcharrefreplace", "backslashreplace".',
           ['--output-encoding-error-handler'],
           {'default': 'strict', 'validator': validate_encoding_error_handler}),
-         ('Specify the text encoding for error output.  Default is ASCII.  '
-          'Optionally also specify the error handler for unencodable '
-          'characters, after a colon (":"); default is "%s".  (See '
-          '"--output-encoding-error-handler".)'
-          % default_error_encoding_error_handler,
+         ('Specify text encoding and error handler for error output.  '
+          'Default: %s:%s.'
+          % (default_error_encoding, default_error_encoding_error_handler),
           ['--error-encoding', '-e'],
-          {'metavar': '<name[:handler]>', 'default': 'ascii',
+          {'metavar': '<name[:handler]>', 'default': default_error_encoding,
            'validator': validate_encoding_and_error_handler}),
          ('Specify the error handler for unencodable characters in '
-          'error output.  See --output-encoding-error-handler for acceptable '
-          'values.  Default is "%s".  Usually specified as part of '
-          '--error-encoding.' % default_error_encoding_error_handler,
+          'error output.  Default: %s.'
+          % default_error_encoding_error_handler,
           ['--error-encoding-error-handler'],
           {'default': default_error_encoding_error_handler,
            'validator': validate_encoding_error_handler}),
-         ('Specify the language of input text (ISO 639 2-letter identifier).'
-          '  Default is "en" (English).',
+         ('Specify the language (as 2-letter code).  Default: en.',
           ['--language', '-l'], {'dest': 'language_code', 'default': 'en',
                                  'metavar': '<name>'}),
-         ('Write dependencies (caused e.g. by file inclusions) to '
-          '<file>.  Useful in conjunction with programs like "make".',
+         ('Write output file dependencies to <file>.',
           ['--record-dependencies'],
           {'metavar': '<file>', 'validator': validate_dependency_file,
            'default': None}),           # default set in Values class
@@ -459,7 +453,7 @@ class OptionParser(optparse.OptionParser, docutils.SettingsSpec):
           ['--version', '-V'], {'action': 'version'}),
          ('Show this help message and exit.',
           ['--help', '-h'], {'action': 'help'}),
-         # Typically not useful for non-programmatical use.
+         # Typically not useful for non-programmatical use:
          (SUPPRESS_HELP, ['--id-prefix'], {'default': ''}),
          (SUPPRESS_HELP, ['--auto-id-prefix'], {'default': 'id'}),
          # Hidden options, for development use only:
@@ -478,15 +472,17 @@ class OptionParser(optparse.OptionParser, docutils.SettingsSpec):
 
     settings_defaults = {'_disable_config': None,
                          '_source': None,
-                         '_destination': None,}
+                         '_destination': None,
+                         '_config_files': None}
     """Defaults for settings that don't have command-line option equivalents."""
 
     relative_path_settings = ('warning_stream',)
 
     config_section = 'general'
 
-    version_template = ('%%prog (Docutils %s [%s])'
-                        % (docutils.__version__, docutils.__version_details__))
+    version_template = ('%%prog (Docutils %s [%s], Python %s, on %s)'
+                        % (docutils.__version__, docutils.__version_details__,
+                           sys.version.split()[0], sys.platform))
     """Default version message."""
 
     def __init__(self, components=(), defaults=None, read_config_files=None,
@@ -500,6 +496,9 @@ class OptionParser(optparse.OptionParser, docutils.SettingsSpec):
         self.lists = {}
         """Set of list-type settings."""
 
+        self.config_files = []
+        """List of paths of applied configuration files."""
+
         optparse.OptionParser.__init__(
             self, option_class=Option, add_help_option=None,
             formatter=optparse.TitledHelpFormatter(width=78),
@@ -510,13 +509,13 @@ class OptionParser(optparse.OptionParser, docutils.SettingsSpec):
         self.relative_path_settings = list(self.relative_path_settings)
         self.components = (self,) + tuple(components)
         self.populate_from_components(self.components)
-        self.set_defaults(**(defaults or {}))
+        self.set_defaults_from_dict(defaults or {})
         if read_config_files and not self.defaults['_disable_config']:
             try:
                 config_settings = self.get_standard_config_settings()
             except ValueError, error:
                 self.error(error)
-            self.set_defaults(**config_settings.__dict__)
+            self.set_defaults_from_dict(config_settings.__dict__)
 
     def populate_from_components(self, components):
         """
@@ -555,7 +554,19 @@ class OptionParser(optparse.OptionParser, docutils.SettingsSpec):
             config_files = os.environ['DOCUTILSCONFIG'].split(os.pathsep)
         except KeyError:
             config_files = self.standard_config_files
-        return [os.path.expanduser(f) for f in config_files if f.strip()]
+
+        # If 'HOME' is not set, expandvars() requires the 'pwd' module which is
+        # not available under certain environments, for example, within
+        # mod_python.  The publisher ends up in here, and we need to publish
+        # from within mod_python.  Therefore we need to avoid expanding when we
+        # are in those environments.
+        expand = os.path.expanduser
+        if 'HOME' not in os.environ:
+            try:
+                import pwd
+            except ImportError:
+                expand = lambda x: x
+        return [expand(f) for f in config_files if f.strip()]
 
     def get_standard_config_settings(self):
         settings = Values()
@@ -567,6 +578,7 @@ class OptionParser(optparse.OptionParser, docutils.SettingsSpec):
         """Returns a dictionary containing appropriate config file settings."""
         parser = ConfigParser()
         parser.read(config_file, self)
+        self.config_files.extend(parser._files)
         base_path = os.path.dirname(config_file)
         applied = {}
         settings = Values()
@@ -575,7 +587,7 @@ class OptionParser(optparse.OptionParser, docutils.SettingsSpec):
                 continue
             for section in (tuple(component.config_section_dependencies or ())
                             + (component.config_section,)):
-                if applied.has_key(section):
+                if section in applied:
                     continue
                 applied[section] = 1
                 settings.update(parser.get_section(section), self)
@@ -588,6 +600,7 @@ class OptionParser(optparse.OptionParser, docutils.SettingsSpec):
         values._source, values._destination = self.check_args(args)
         make_paths_absolute(values.__dict__, self.relative_path_settings,
                             os.getcwd())
+        values._config_files = self.config_files
         return values
 
     def check_args(self, args):
@@ -607,9 +620,14 @@ class OptionParser(optparse.OptionParser, docutils.SettingsSpec):
                        'destination.  It will clobber the source file.')
         return source, destination
 
+    def set_defaults_from_dict(self, defaults):
+        self.defaults.update(defaults)
+
     def get_default_values(self):
         """Needed to get custom `Values` instances."""
-        return Values(self.defaults)
+        defaults = Values(self.defaults)
+        defaults._config_files = self.config_files
+        return defaults
 
     def get_option_by_dest(self, dest):
         """
@@ -644,11 +662,34 @@ configuration files.  See <http://docutils.sf.net/docs/user/config.html>,
 section "Old-Format Configuration Files".
 """
 
+    not_utf8_error = """\
+Unable to read configuration file "%s": content not encoded as UTF-8.
+Skipping "%s" configuration file.
+"""
+
+    def __init__(self, *args, **kwargs):
+        CP.ConfigParser.__init__(self, *args, **kwargs)
+
+        self._files = []
+        """List of paths of configuration files read."""
+
     def read(self, filenames, option_parser):
-        if type(filenames) in (types.StringType, types.UnicodeType):
+        if type(filenames) in (str, unicode):
             filenames = [filenames]
         for filename in filenames:
-            CP.ConfigParser.read(self, filename)
+            try:
+                # Config files must be UTF-8-encoded:
+                fp = codecs.open(filename, 'r', 'utf-8')
+            except IOError:
+                continue
+            try:
+                CP.ConfigParser.readfp(self, fp, filename)
+            except UnicodeDecodeError:
+                sys.stderr.write(self.not_utf8_error % (filename, filename))
+                fp.close()
+                continue
+            fp.close()
+            self._files.append(filename)
             if self.has_section('options'):
                 self.handle_old_config(filename)
             self.validate_settings(filename, option_parser)
@@ -660,7 +701,7 @@ section "Old-Format Configuration Files".
         if not self.has_section('general'):
             self.add_section('general')
         for key, value in options.items():
-            if self.old_settings.has_key(key):
+            if key in self.old_settings:
                 section, setting = self.old_settings[key]
                 if not self.has_section(section):
                     self.add_section(section)

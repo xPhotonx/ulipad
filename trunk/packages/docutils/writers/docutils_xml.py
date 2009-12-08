@@ -1,7 +1,5 @@
-# Authors: David Goodger
-# Contact: goodger@users.sourceforge.net
-# Revision: $Revision: 3512 $
-# Date: $Date: 2005-06-19 17:26:13 +0200 (Sun, 19 Jun 2005) $
+# $Id: docutils_xml.py 4564 2006-05-21 20:44:42Z wiemann $
+# Author: David Goodger <goodger@python.org>
 # Copyright: This module has been placed in the public domain.
 
 """

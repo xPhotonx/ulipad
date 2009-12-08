@@ -1,7 +1,5 @@
-# Authors: David Goodger
-# Contact: goodger@users.sourceforge.net
-# Revision: $Revision: 1645 $
-# Date: $Date: 2003-08-27 22:50:43 +0200 (Wed, 27 Aug 2003) $
+# $Id: pseudoxml.py 4564 2006-05-21 20:44:42Z wiemann $
+# Author: David Goodger <goodger@python.org>
 # Copyright: This module has been placed in the public domain.
 
 """

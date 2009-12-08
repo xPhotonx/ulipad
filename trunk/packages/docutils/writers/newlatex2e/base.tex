@@ -1,27 +1,105 @@
+% System stylesheet for the new LaTeX writer, newlatex2e.
+
+% Major parts of the rendering are done in this stylesheet and not in the
+% Python module.
+
+% For development notes, see notes.txt.
+
+% User documentation (in the stylesheet for now; that may change though):
+
+% Naming conventions:
+% All uppercase letters in macro names have a specific meaning.
+% \D...: All macros introduced by the Docutils LaTeX writer start with "D".
+% \DS<name>: Setup function (called at the bottom of this stylesheet).
+% \DN<nodename>{<contents>}: Handler for Docutils document tree node `node`; called by
+%                            the Python module.
+% \DEV<name>: External variable, set by the Python module.
+% \DEC<name>: External command.  It is called by the Python module and must be
+%             defined in this stylesheet.
+% \DN<nodename>A<attribute>{<number>}{<attribute>}{<value>}{<nodename>}{<contents>}:
+%     Attribute handler for `attribute` set on nodes of type `nodename`.
+%     See below for a discussion of attribute handlers.
+% \DA<attribute>{<number>}{<attribute>}{<value>}{<nodename>}{<contents>}:
+%     Attribute handler for all `attribute`.  Called only when no specific
+%     \DN<nodename>A<attribute> handler is defined.
+% \DN<nodename>C<class>{<contents>}:
+%     Handler for `class`, when set on nodes of type `nodename`.
+% \DC<class>{<contents>}:
+%     Handler for `class`.  Called only when no specific \DN<nodename>C<class>
+%     handler is defined.
+% \D<name>: Generic variable or function.
+
+% Attribute handlers:
+% TODO
+
+% ---------------------------------------------------------------------------
+
+% Having to intersperse code with \makeatletter-\makeatother pairs is very
+% annoying, so we call \makeatletter at the top and \makeatother at the
+% bottom.   Just be aware that you cannot use "@" as a text character inside
+% this stylesheet.
 \makeatletter
 
-% Development notes at
-% http://docutils.python-hosting.com/wiki/NewLatex
-
-
+% Print-mode (as opposed to online mode e.g. with Adobe Reader).
+% This causes for example blue hyperlinks.
 \providecommand{\Dprinting}{false}
 
-
+% \DSearly is called right after \documentclass.
 \providecommand{\DSearly}{}
+% \DSlate is called at the end of the stylesheet (right before the document
+% tree).
 \providecommand{\DSlate}{}
 
+% Use the KOMA script article class.
 \providecommand{\Ddocumentclass}{scrartcl}
 \providecommand{\Ddocumentoptions}{a4paper}
+\providecommand{\DSdocumentclass}{
+  \documentclass[\Ddocumentoptions]{\Ddocumentclass} }
 
-\documentclass[\Ddocumentoptions]{\Ddocumentclass}
+% Todo: This should be movable to the bottom, but it isn't as long as
+% we use \usepackage commands at the top level of this stylesheet
+% (which we shouldn't).
+\DSdocumentclass
 
-\DSearly
-
+\providecommand{\DSpackages}{
+  % Load miscellaneous packages.
+  % Note 1: Many of the packages loaded here are used throughout this stylesheet.
+  % If one of these packages does not work on your system or in your scenario,
+  % please let us know, so we can consider making the package optional.
+  % Note 2: It would appear cleaner to load packages where they are used.
+  % However, since using a wrong package loading order can lead to *very*
+  % subtle bugs, we centralize the loading of most packages here.
+  \DSfontencoding % load font encoding packages
+  \DSlanguage % load babel
+  % Using \ifthenelse conditionals.
+  \usepackage{ifthen} % before hyperref (really!)
+  % There is not support for *not* using hyperref because it's used in many
+  % places.  If this is a problem (e.g. because hyperref doesn't work on your
+  % system), please let us know.
+  \usepackage[colorlinks=false,pdfborder={0 0 0}]{hyperref}
+  % Get color, e.g. for links and system messages.
+  \usepackage{color}
+  % Get \textnhtt macro (non-hyphenating type writer).
+  \usepackage{hyphenat}
+  % For sidebars.
+  \usepackage{picins}
+  % We use longtable to create tables.
+  \usepackage{longtable}
+  % Images.
+  \usepackage{graphicx}
+  % These packages might be useful (some just add magic pixie dust), so
+  % evaluate them:
+  %\usepackage{fixmath}
+  %\usepackage{amsmath}
+  % Add some missing symbols like \textonehalf.
+  \usepackage{textcomp}
+}
 
 \providecommand{\DSfontencoding}{
-  % Set up font encoding.
-  % AE is a T1-emulation.  It provides most characters and features
-  % as T1-encoded fonts but doesn't use ugly bitmap fonts.
+  % Set up font encoding.  Called by \DSpackages.
+  % AE is a T1 emulation.  It provides mostly the same characters and
+  % features as T1-encoded fonts but doesn't use bitmap fonts (which are
+  % unsuitable for online reading and subtle for printers).
   \usepackage{ae}
   % Provide the characters not contained in AE from EC bitmap fonts.
   \usepackage{aecompl}
@@ -29,15 +107,13 @@
   \usepackage{aeguill}
 }
 
-
 \providecommand{\DSsymbols}{%
   % Fix up symbols.
   % The Euro symbol in Computer Modern looks, um, funny.  Let's get a
   % proper Euro symbol.
-  \RequirePackage{eurosym}%
+  \usepackage{eurosym}%
   \renewcommand{\texteuro}{\euro}%
 }
-
 
 % Taken from
 % <http://groups.google.de/groups?selm=1i0n5tgtplti420e1omp4pctlv19jpuhbb%404ax.com>
@@ -52,28 +128,14 @@
   {}%
 }
 
-\providecommand{\Dprovidecounter}[1]{%
+\providecommand{\Dprovidecounter}[2]{%
   % Like \newcounter except that it doesn't crash if the counter
   % already exists.
-  \@ifundefined{c@#1}{\newcounter{#1}}{}
+  \@ifundefined{c@#1}{\newcounter{#1}\setcounter{#1}{#2}}{}
 }
 
 \Dprovidelength{\Dboxparindent}{\parindent}
-\providecommand{\Dmakeboxminipage}[1]{%
-  % Make minipage for use in a box created by \Dmakefbox.
-  \begin{minipage}[t]{0.9\linewidth}%
-    \setlength{\parindent}{\Dboxparindent}%
-    #1%
-  \end{minipage}%
-}
-\providecommand{\Dmakefbox}[1]{%
-  % Make a centered, framed box.  Useful e.g. for admonitions.
-  \vspace{0.4\baselineskip}%
-  \begin{center}%
-    \fbox{\Dmakeboxminipage{#1}}%
-  \end{center}%
-  \vspace{0.4\baselineskip}%
-}
+
 \providecommand{\Dmakebox}[1]{%
   % Make a centered, frameless box.  Useful e.g. for block quotes.
   % Do not use minipages here, but create pseudo-lists to allow
@@ -86,133 +148,52 @@
   }%
 }
 
+\providecommand{\Dmakefbox}[1]{%
+  % Make a centered, framed box.  Useful e.g. for admonitions.
+  \vspace{0.4\baselineskip}%
+  \begin{center}%
+    \fbox{%
+      \begin{minipage}[t]{0.9\linewidth}%
+        \setlength{\parindent}{\Dboxparindent}%
+        #1%
+      \end{minipage}%
+    }%
+  \end{center}%
+  \vspace{0.4\baselineskip}%
+}
 
-\RequirePackage{ifthen}
-\providecommand{\Dfrenchspacing}{true}
-\ifthenelse{\equal{\Dfrenchspacing}{true}}{\frenchspacing}{}
+% We do not currently recognize the difference between an end-sentence and a
+% mid-sentence period (".  " vs. ". " in plain text).  So \frenchspacing is
+% appropriate.
+\providecommand{\DSfrenchspacing}{\frenchspacing}
 
 
 \Dprovidelength{\Dblocklevelvspace}{%
   % Space between block-level elements other than paragraphs.
   0.7\baselineskip plus 0.3\baselineskip minus 0.2\baselineskip%
 }
-\providecommand{\Dauxiliaryspace}{%
+\providecommand{\DECauxiliaryspace}{%
   \ifthenelse{\equal{\Dneedvspace}{true}}{\vspace{\Dblocklevelvspace}}{}%
   \par\noindent%
 }
-\providecommand{\Dparagraphspace}{\par}
+\providecommand{\DECparagraphspace}{\par}
 \providecommand{\Dneedvspace}{true}
-
-
-\providecommand{\DSlinks}{
-  % Targets and references.
-  \RequirePackage[colorlinks=false,pdfborder={0 0 0}]{hyperref}
-
-  \providecommand{\Draisedlink}[1]{\Hy@raisedlink{##1}}
-  
-  % References.
-  % We're assuming here that the "refid" and "refuri" attributes occur
-  % only in inline context (in TextElements).
-  \providecommand{\DArefid}[5]{%
-    \ifthenelse{\equal{##4}{reference}}{%
-      \Dexplicitreference{\###3}{##5}%
-    }{%
-      % If this is not a target node (targets with refids are
-      % uninteresting and should be silently dropped).
-      \ifthenelse{\not\equal{##4}{target}}{%
-        % If this is a footnote reference, call special macro.
-        \ifthenelse{\equal{##4}{footnotereference}}{%
-          \Dimplicitfootnotereference{\###3}{##5}%
-        }{%
-          \ifthenelse{\equal{##4}{citationreference}}{%
-            \Dimplicitcitationreference{\###3}{##5}%
-          }{%
-            \Dimplicitreference{\###3}{##5}%
-          }%
-        }%
-      }{}%
-    }%
-  }
-  \providecommand{\DArefuri}[5]{%
-    \ifthenelse{\equal{##4}{target}}{%
-      % Hyperlink targets can (and should be) ignored because they are
-      % invisible.
-    }{%
-      % We only have explicit URI references, so one macro suffices.
-      \Durireference{##3}{##5}%
-    }%
-  }
-  % Targets.
-  \providecommand{\DAids}[5]{%
-    \label{##3}%
-    \ifthenelse{\equal{##4}{footnotereference}}{%
-      {%
-        \renewcommand{\HyperRaiseLinkDefault}{%
-          % Dirty hack to make backrefs to footnote references work.
-          % For some reason, \baselineskip is 0pt in fn references.
-          0.5\Doriginalbaselineskip%
-        }%
-        \Draisedlink{\hypertarget{##3}{}}##5%
-      }%
-    }{%
-      \Draisedlink{\hypertarget{##3}{}}##5%
-    }%
-  }
-  % Color in references.
-  \RequirePackage{color}
-  \providecommand{\Dimplicitreference}[2]{%
-    % Create implicit reference to ID.  Implicit references occur
-    % e.g. in TOC-backlinks of section titles.  Parameters:
-    % 1. Target.
-    % 2. Link text.
-    \href{##1}{##2}%
-  }
-  \providecommand{\Dimplicitfootnotereference}[2]{%
-    % Ditto, but for the special case of footnotes.
-    % We want them to be rendered like explicit references.
-    \Dexplicitreference{##1}{##2}%
-  }
-  \providecommand{\Dimplicitcitationreference}[2]{%
-    % Ditto for citation references.
-    \Dimplicitfootnotereference{##1}{##2}%
-  }
-  \ifthenelse{\equal{\Dprinting}{true}}{
-    \providecommand{\Dexplicitreferencecolor}{black}
-  }{
-    \providecommand{\Dexplicitreferencecolor}{blue}
-  }
-  \providecommand{\Dexplicitreference}[2]{%
-    % Create explicit reference to ID, e.g. created with "foo_".
-    % Parameters:
-    % 1. Target.
-    % 2. Link text.
-    \href{##1}{{\color{\Dexplicitreferencecolor}##2}}%
-  }
-  \providecommand{\Durireferencecolor}{\Dexplicitreferencecolor}
-  \providecommand{\Durireference}[2]{%
-    % Create reference to URI.  Parameters:
-    % 1. Target.
-    % 2. Link text.
-    \href{##1}{{\color{\Durireferencecolor}##2}}%
-  }
-}
-
 
 \providecommand{\DSlanguage}{%
   % Set up babel.
-  \ifthenelse{\equal{\Dlanguagebabel}{}}{}{
-    \RequirePackage[\Dlanguagebabel]{babel}
-  }
+  \usepackage[\DEVlanguagebabel]{babel}
 }
 
+\providecommand{\Difdefined}[3]{\@ifundefined{#1}{#3}{#2}}
 
-
-
+% Handler for 'classes' attribute (called for each class attribute).
 \providecommand{\DAclasses}[5]{%
+  % Dispatch to \DN<nodename>C<class>.
   \Difdefined{DN#4C#3}{%
     % Pass only contents, nothing else!
     \csname DN#4C#3\endcsname{#5}%
   }{%
+    % Otherwise, dispatch to \DC<class>.
     \Difdefined{DC#3}{%
       \csname DC#3\endcsname{#5}%
     }{%
@@ -221,30 +202,135 @@
   }%
 }
 
-\providecommand{\Difdefined}[3]{\@ifundefined{#1}{#3}{#2}}
-
-\providecommand{\Dattr}[5]{%
-  % Global attribute dispatcher.
+\providecommand{\DECattr}[5]{%
+  % Global attribute dispatcher, called inside the document tree.
   % Parameters:
   % 1. Attribute number.
   % 2. Attribute name.
   % 3. Attribute value.
   % 4. Node name.
   % 5. Node contents.
-  \Difdefined{DN#4A#2V#3}{%
-    \csname DN#4A#2V#3\endcsname{#1}{#2}{#3}{#4}{#5}%
-  }{\Difdefined{DN#4A#2}{%
+  \Difdefined{DN#4A#2}{%
+    % Dispatch to \DN<nodename>A<attribute>.
     \csname DN#4A#2\endcsname{#1}{#2}{#3}{#4}{#5}%
-  }{\Difdefined{DA#2V#3}{%
-    \csname DA#2V#3\endcsname{#1}{#2}{#3}{#4}{#5}%
   }{\Difdefined{DA#2}{%
+    % Otherwise dispatch to \DA<attribute>.
     \csname DA#2\endcsname{#1}{#2}{#3}{#4}{#5}%
-  }{#5%
-  }}}}%
+  }{%
+    % Otherwise simply run the contents without calling a handler.
+    #5%
+  }}%
 }
 
+% ---------- Link handling ----------
+% Targets and references.
+
+\providecommand{\Draisedlink}[1]{%
+  % Anchors are placed on the base line by default.  This is a bad thing for
+  % inline context, so we raise the anchor (normally by \baselineskip).
+  \Hy@raisedlink{#1}%
+}
+
+% References.
+% We're assuming here that the "refid" and "refuri" attributes occur
+% only in inline context (in TextElements).
+\providecommand{\DArefid}[5]{%
+  \ifthenelse{\equal{#4}{reference}}{%
+    \Dexplicitreference{\##3}{#5}%
+  }{%
+    % If this is not a target node (targets with refids are
+    % uninteresting and should be silently dropped).
+    \ifthenelse{\not\equal{#4}{target}}{%
+      % If this is a footnote reference, call special macro.
+      \ifthenelse{\equal{#4}{footnotereference}}{%
+        \Dimplicitfootnotereference{\##3}{#5}%
+      }{%
+        \ifthenelse{\equal{#4}{citationreference}}{%
+          \Dimplicitcitationreference{\##3}{#5}%
+        }{%
+          \Dimplicitreference{\##3}{#5}%
+        }%
+      }%
+    }{}%
+  }%
+}
+\providecommand{\DArefuri}[5]{%
+  \ifthenelse{\equal{#4}{target}}{%
+    % The node name is 'target', so this is a hyperlink target, like this:
+    % .. _mytarget: URI
+    % Hyperlink targets are ignored because they are invisible.
+  }{%
+    % If a non-target node has a refuri attribute, it must be an explicit URI
+    % reference (i.e. node name is 'reference').
+    \Durireference{#3}{#5}%
+  }%
+}
+% Targets.
+\providecommand{\DAids}[5]{%
+  \label{#3}%
+  \ifthenelse{\equal{#4}{footnotereference}}{%
+    {%
+      \renewcommand{\HyperRaiseLinkDefault}{%
+        % Dirty hack to make backrefs to footnote references work.
+        % For some reason, \baselineskip is 0pt in fn references.
+        0.5\Doriginalbaselineskip%
+      }%
+      \Draisedlink{\hypertarget{#3}{}}#5%
+    }%
+  }{%
+    \Draisedlink{\hypertarget{#3}{}}#5%
+  }%
+}
+\providecommand{\Dimplicitreference}[2]{%
+  % Create implicit reference to ID.  Implicit references occur
+  % e.g. in TOC-backlinks of section titles.  Parameters:
+  % 1. Target.
+  % 2. Link text.
+  \href{#1}{#2}%
+}
+\providecommand{\Dimplicitfootnotereference}[2]{%
+  % Ditto, but for the special case of footnotes.
+  % We want them to be rendered like explicit references.
+  \Dexplicitreference{#1}{#2}%
+}
+\providecommand{\Dimplicitcitationreference}[2]{%
+  % Ditto for citation references.
+  \Dimplicitfootnotereference{#1}{#2}%
+}
+\providecommand{\Dcolorexplicitreference}{%
+  \ifthenelse{\equal{\Dprinting}{true}}{\color{black}}{\color{blue}}%
+}
+\providecommand{\Dexplicitreference}[2]{%
+  % Create explicit reference to ID, e.g. created with "foo_".
+  % Parameters:
+  % 1. Target.
+  % 2. Link text.
+  \href{#1}{{\Dcolorexplicitreference#2}}%
+}
+\providecommand{\Dcolorurireference}{\Dcolorexplicitreference}
+\providecommand{\Durireference}[2]{%
+  % Create reference to URI.  Parameters:
+  % 1. Target.
+  % 2. Link text.
+  \href{#1}{{\Dcolorurireference#2}}%
+}
+
+\Dprovidecounter{Dpdfbookmarkid}{0}%
+\providecommand{\Dpdfbookmark}[1]{%
+  % Temporarily decrement Desctionlevel counter.
+  \addtocounter{Dsectionlevel}{-1}%
+  %\typeout{\arabic{Dsectionlevel}}%
+  %\typeout{#1}%
+  %\typeout{docutils\roman{Dpdfbookmarkid}}%
+  %\typeout{}%
+  \pdfbookmark[\arabic{Dsectionlevel}]{#1}{docutils\arabic{Dpdfbookmarkid}}%
+  \addtocounter{Dsectionlevel}{1}%
+  \addtocounter{Dpdfbookmarkid}{1}%
+}
+% ---------- End of Link Handling ----------
+
 \providecommand{\DNparagraph}[1]{%
-  \ifthenelse{\equal{\Dparagraphindented}{true}}{\indent}{\noindent}%
+  \ifthenelse{\equal{\DEVparagraphindented}{true}}{\indent}{\noindent}%
   #1%
 }
 \providecommand{\Dformatboxtitle}[1]{{\Large\textbf{#1}}}
@@ -252,8 +338,11 @@
 \providecommand{\Dtopictitle}[1]{%
   \Difinsidetoc{\vspace{1em}\par}{}%
   \noindent\Dformatboxtitle{#1}%
-  \ifthenelse{\equal{\Dhassubtitle}{false}}{\vspace{1em}}{\vspace{0.5em}}%
+  \ifthenelse{\equal{\DEVhassubtitle}{false}}{\vspace{1em}}{\vspace{0.5em}}%
   \par%
+}
+\providecommand{\Dadmonitiontitle}[1]{%
+  \Dtopictitle{#1}%
 }
 \providecommand{\Dtopicsubtitle}[1]{%
   \noindent\Dformatboxsubtitle{#1}%
@@ -264,7 +353,7 @@
 \providecommand{\Dsidebarsubtitle}[1]{\Dtopicsubtitle{#1}}
 \providecommand{\Ddocumenttitle}[1]{%
   \begin{center}{\Huge#1}\end{center}%
-  \ifthenelse{\equal{\Dhassubtitle}{true}}{\vspace{0.1cm}}{\vspace{1cm}}%
+  \ifthenelse{\equal{\DEVhassubtitle}{true}}{\vspace{0.1cm}}{\vspace{1cm}}%
 }
 \providecommand{\Ddocumentsubtitle}[1]{%
   \begin{center}{\huge#1}\end{center}%
@@ -276,7 +365,7 @@
 \providecommand{\Dbookmarksectiontitle}[1]{%
   % Return text suitable for use in \section*, \subsection*, etc.,
   % containing a PDF bookmark.  Parameter:  The title (as node tree).
-  \Draisedlink{\Dpdfbookmark{\Dtitleastext}}%
+  \Draisedlink{\Dpdfbookmark{\DEVtitleastext}}%
   #1%
 }
 \providecommand{\Dsectiontitlehook}[1]{#1}
@@ -317,29 +406,15 @@
     }%
   }%
 }
-% Boolean variable.
-\providecommand{\Dhassubtitle}{false}
 \providecommand{\DNtitle}[1]{%
-  \csname D\Dparent title\endcsname{#1}%
+  % Dispatch to \D<parent>title.
+  \csname D\DEVparent title\endcsname{#1}%
 }
 \providecommand{\DNsubtitle}[1]{%
-  \csname D\Dparent subtitle\endcsname{#1}%
-}
-\newcounter{Dpdfbookmarkid}
-\setcounter{Dpdfbookmarkid}{0}
-\providecommand{\Dpdfbookmark}[1]{%
-  % Temporarily decrement Desctionlevel counter.
-  \addtocounter{Dsectionlevel}{-1}%
-  %\typeout{\arabic{Dsectionlevel}}%
-  %\typeout{#1}%
-  %\typeout{docutils\roman{Dpdfbookmarkid}}%
-  %\typeout{}%
-  \pdfbookmark[\arabic{Dsectionlevel}]{#1}{docutils\arabic{Dpdfbookmarkid}}%
-  \addtocounter{Dsectionlevel}{1}%
-  \addtocounter{Dpdfbookmarkid}{1}%
+  % Dispatch to \D<parent>subtitle.
+  \csname D\DEVparent subtitle\endcsname{#1}%
 }
 
-%\providecommand{\DNliteralblock}[1]{\begin{quote}\ttfamily\raggedright#1\end{quote}}
 \providecommand{\DNliteralblock}[1]{%
   \Dmakelistenvironment{}{%
     \ifthenelse{\equal{\Dinsidetabular}{true}}{%
@@ -350,18 +425,14 @@
     \raggedright\item\noindent\nohyphens{\textnhtt{#1\Dfinalstrut}}%
   }%
 }
-\providecommand{\DNdoctestblock}[1]{%
-  % Treat doctest blocks the same as literal blocks.
-  \DNliteralblock{#1}%
-}
-\RequirePackage{hyphenat}
+\providecommand{\DNdoctestblock}[1]{\DNliteralblock{#1}}
 \providecommand{\DNliteral}[1]{\textnhtt{#1}}
 \providecommand{\DNemphasis}[1]{\emph{#1}}
 \providecommand{\DNstrong}[1]{\textbf{#1}}
-\providecommand{\Dvisitdocument}{\begin{document}\noindent}
-\providecommand{\Ddepartdocument}{\end{document}}
+\providecommand{\DECvisitdocument}{\begin{document}\noindent}
+\providecommand{\DECdepartdocument}{\end{document}}
 \providecommand{\DNtopic}[1]{%
-  \ifthenelse{\equal{\DcurrentNtopicAcontents}{1}}{%
+  \ifthenelse{\equal{\DEVcurrentNtopicAcontents}{1}}{%
     \addtocounter{Dtoclevel}{1}%
     \par\noindent%
     #1%
@@ -371,6 +442,9 @@
     \Dmakebox{#1}%
   }%
 }
+\providecommand{\DNadmonition}[1]{%
+  \DNtopic{#1}%
+}
 \providecommand{\Dformatrubric}[1]{\textbf{#1}}
 \Dprovidelength{\Dprerubricspace}{0.3em}
 \providecommand{\DNrubric}[1]{%
@@ -378,7 +452,7 @@
 }
 
 \providecommand{\Dbullet}{}
-\providecommand{\Dsetbullet}[1]{\renewcommand{\Dbullet}{#1}}
+\providecommand{\DECsetbullet}[1]{\renewcommand{\Dbullet}{#1}}
 \providecommand{\DNbulletlist}[1]{%
   \Difinsidetoc{%
     \Dtocbulletlist{#1}%
@@ -386,6 +460,7 @@
     \Dmakelistenvironment{\Dbullet}{}{#1}%
   }%
 }
+% Todo: So what on earth is @pnumwidth?
 \renewcommand{\@pnumwidth}{2.2em}
 \providecommand{\DNlistitem}[1]{%
   \Difinsidetoc{%
@@ -393,11 +468,11 @@
       {%
         \par\addvspace{1em}\noindent%
         \sectfont%
-        #1\hfill\pageref{\DcurrentNlistitemAtocrefid}%
+        #1\hfill\pageref{\DEVcurrentNlistitemAtocrefid}%
       }%
     }{%
       \@dottedtocline{0}{\Dtocindent}{0em}{#1}{%
-        \pageref{\DcurrentNlistitemAtocrefid}%
+        \pageref{\DEVcurrentNlistitemAtocrefid}%
       }%
     }%
   }{%
@@ -405,14 +480,14 @@
   }%
 }
 \providecommand{\DNenumeratedlist}[1]{#1}
-\newcounter{Dsectionlevel}
+\Dprovidecounter{Dsectionlevel}{0}
 \providecommand{\Dvisitsectionhook}{}
 \providecommand{\Ddepartsectionhook}{}
-\providecommand{\Dvisitsection}{%
+\providecommand{\DECvisitsection}{%
   \addtocounter{Dsectionlevel}{1}%
   \Dvisitsectionhook%
 }
-\providecommand{\Ddepartsection}{%
+\providecommand{\DECdepartsection}{%
   \Ddepartsectionhook%
   \addtocounter{Dsectionlevel}{-1}%
 }
@@ -420,7 +495,7 @@
 % Using \_ will cause hyphenation after _ even in \textnhtt-typewriter
 % because the hyphenat package redefines \_.  So we use
 % \textunderscore here.
-\providecommand{\Dtextunderscore}{\textunderscore}
+\providecommand{\DECtextunderscore}{\textunderscore}
 
 \providecommand{\Dtextinlineliteralfirstspace}{{ }}
 \providecommand{\Dtextinlineliteralsecondspace}{{~}}
@@ -484,7 +559,7 @@
 \providecommand{\DAlastitem}[5]{#5\Dfinalstrut}
 
 \Dprovidelength{\Ditemsep}{0pt}
-\providecommand{\Dmakeenumeratedlist}[6]{%
+\providecommand{\DECmakeenumeratedlist}[6]{%
   % Make enumerated list.
   % Parameters:
   % - prefix
@@ -520,7 +595,7 @@
 % Single quote in literal mode.  \textquotesingle from package
 % textcomp has wrong width when using package ae, so we use a normal
 % single curly quote here.
-\providecommand{\Dtextliteralsinglequote}{'}
+\providecommand{\DECtextliteralsinglequote}{'}
 
 
 % "Tabular lists" are field lists and options lists (not definition
@@ -677,7 +752,7 @@
 \providecommand{\Dlineblockindentation}{2.5em}
 \providecommand{\DNlineblock}[1]{%
   \Dmakelistenvironment{}{%
-    \ifthenelse{\equal{\Dparent}{lineblock}}{%
+    \ifthenelse{\equal{\DEVparent}{lineblock}}{%
       % Parent is a line block, so indent.
       \setlength{\leftmargin}{\Dlineblockindentation}%
     }{%
@@ -692,11 +767,9 @@
 }
 \providecommand{\DNline}[1]{\item#1}
 
-
 \providecommand{\DNtransition}{%
   \raisebox{0.25em}{\parbox{\linewidth}{\hspace*{\fill}\hrulefill\hrulefill\hspace*{\fill}}}%
 }
-
 
 \providecommand{\Dformatblockquote}[1]{%
   % Format contents of block quote.
@@ -716,7 +789,6 @@
 
 
 % Sidebars:
-\RequirePackage{picins}
 % Vertical and horizontal margins.
 \Dprovidelength{\Dsidebarvmargin}{0.5em}
 \Dprovidelength{\Dsidebarhmargin}{1em}
@@ -780,6 +852,8 @@
   % See ltfloat.dtx for details.
   {%
     \insert\footins{%
+      % BUG: This is too small if the user adds
+      % \onehalfspacing or \doublespace.
       \vspace{\Dfootnotesep}%
       \Dsetfootnotespacing%
       \Dformatfootnote{#1}%
@@ -799,24 +873,25 @@
 }
 \providecommand{\Dthislabel}{}
 \providecommand{\DNlabel}[1]{%
-  \renewcommand{\Dthislabel}{#1}
-  \ifthenelse{\not\equal{\Dsinglebackref}{}}{%
+  % Footnote or citatation label.
+  \renewcommand{\Dthislabel}{#1}%
+  \ifthenelse{\not\equal{\DEVsinglebackref}{}}{%
     \let\Doriginallabel=\Dthislabel%
     \def\Dthislabel{%
-      \Dsinglefootnotebacklink{\Dsinglebackref}{\Doriginallabel}%
+      \Dsinglefootnotebacklink{\DEVsinglebackref}{\Doriginallabel}%
     }%
   }{}%
-  \ifthenelse{\equal{\Dparent}{footnote}}{%
+  \ifthenelse{\equal{\DEVparent}{footnote}}{%
     % Footnote label.
     \Dformatfootnotelabel{\Dthislabel}%
   }{%
-    \ifthenelse{\equal{\Dparent}{citation}}{%
+    \ifthenelse{\equal{\DEVparent}{citation}}{%
       % Citation label.
       \Dformatcitationlabel{\Dthislabel}%
     }{}%
   }%
   % If there are multiple backrefs, add them now.
-  \Dformatmultiplebackrefs{\Dmultiplebackrefs}%
+  \Dformatmultiplebackrefs{\DEVmultiplebackrefs}%
 }
 \providecommand{\Dsinglefootnotebacklink}[2]{%
   % Create normal backlink of a footnote label.  Parameters:
@@ -825,7 +900,7 @@
   % Treat like a footnote reference.
   \Dimplicitfootnotereference{\##1}{#2}%
 }
-\providecommand{\Dmultifootnotebacklink}[2]{%
+\providecommand{\DECmultifootnotebacklink}[2]{%
   % Create generated backlink, as in (1, 2).  Parameters:
   % 1. ID.
   % 2. Link text.
@@ -833,11 +908,10 @@
   \Dimplicitfootnotereference{\##1}{#2}%
 }
 \providecommand{\Dsinglecitationbacklink}[2]{\Dsinglefootnotebacklink{#1}{#2}}
-\providecommand{\Dmulticitationbacklink}[2]{\Dmultifootnotebacklink{#1}{#2}}
+\providecommand{\DECmulticitationbacklink}[2]{\DECmultifootnotebacklink{#1}{#2}}
 
 
-\RequirePackage{longtable}
-\providecommand{\Dmaketable}[2]{%
+\providecommand{\DECmaketable}[2]{%
   % Make table.  Parameters:
   % 1. Table spec (like "|p|p|").
   % 2. Table contents.
@@ -875,17 +949,17 @@
     }%
   }%
 }
-\providecommand{\Dcolspan}[2]{%
+\providecommand{\DECcolspan}[2]{%
   % Take care of the morecols attribute (but incremented by 1).
   &%
   \Dcompensatingmulticol{#1}{l|}{#2}%
 }
-\providecommand{\Dcolspanleft}[2]{%
+\providecommand{\DECcolspanleft}[2]{%
   % Like \Dmorecols, but called for the leftmost entries in a table
   % row.
   \Dcompensatingmulticol{#1}{|l|}{#2}%
 }
-\providecommand{\Dsubsequententry}[1]{%
+\providecommand{\DECsubsequententry}[1]{%
   &#1%
 }
 \providecommand{\DNentry}[1]{%
@@ -896,7 +970,7 @@
     \vspace{-1em}\vspace{-\parskip}\par%
   }{}%
   #1%
-  % No need to add an ampersand ("&"); that's done by \Dsubsequententry.
+  % No need to add an ampersand ("&"); that's done by \DECsubsequententry.
 }
 \providecommand{\DAtableheaderentry}[5]{\Dformattableheaderentry{#5}}
 \providecommand{\Dformattableheaderentry}[1]{{\bfseries#1}}
@@ -942,7 +1016,6 @@
 }
 
 
-\RequirePackage{graphicx}
 % Maximum width of an image.
 \providecommand{\Dimagemaxwidth}{\linewidth}
 \providecommand{\Dfloatimagemaxwidth}{0.5\linewidth}
@@ -975,7 +1048,7 @@
   % Insert image.  We treat the URI like a path here.
   \renewcommand{\Dimagepath}{\Dimagebase#3}%
   \Difdefined{DcurrentNimageAwidth}{%
-    \Dwidthimage{\DcurrentNimageAwidth}{\Dimagepath}%
+    \Dwidthimage{\DEVcurrentNimageAwidth}{\Dimagepath}%
   }{%
     \Dsimpleimage{\Dimagepath}%
   }%
@@ -1020,17 +1093,17 @@
 % Figures.
 \providecommand{\DNfigureAalign}[5]{%
   % Hack to make it work Right Now.
-  %\def\DcurrentNimageAwidth{\DcurrentNfigureAwidth}%
+  %\def\DEVcurrentNimageAwidth{\DEVcurrentNfigureAwidth}%
   %
-    %\def\DcurrentNimageAwidth{\linewidth}%
+    %\def\DEVcurrentNimageAwidth{\linewidth}%
     \DNimageAalign{#1}{#2}{#3}{#4}{%
       \begin{minipage}[b]{0.4\linewidth}#5\end{minipage}}%
-    %\let\DcurrentNimageAwidth=\relax%
+    %\let\DEVcurrentNimageAwidth=\relax%
   %
-  %\let\DcurrentNimageAwidth=\relax%
+  %\let\DEVcurrentNimageAwidth=\relax%
 }
 \providecommand{\DNcaption}[1]{\par\noindent{\slshape#1}}
-\providecommand{\DNlegend}[1]{\Dauxiliaryspace#1}
+\providecommand{\DNlegend}[1]{\DECauxiliaryspace#1}
 
 \providecommand{\DCborder}[1]{\fbox{#1}}
 % No padding between image and border.
@@ -1039,16 +1112,15 @@
 
 % Need to replace with language-specific stuff.  Maybe look at
 % csquotes.sty and ask the author for permission to use parts of it.
-\providecommand{\Dtextleftdblquote}{``}
-\providecommand{\Dtextrightdblquote}{''}
+\providecommand{\DECtextleftdblquote}{``}
+\providecommand{\DECtextrightdblquote}{''}
 
 % Table of contents:
 \Dprovidelength{\Dtocininitialsectnumwidth}{2.4em}
 \Dprovidelength{\Dtocadditionalsectnumwidth}{0.7em}
 % Level inside a table of contents.  While this is at -1, we are not
 % inside a TOC.
-\Dprovidecounter{Dtoclevel}%
-\setcounter{Dtoclevel}{-1}
+\Dprovidecounter{Dtoclevel}{-1}%
 \providecommand{\Dlocaltoc}{false}%
 \providecommand{\DNtopicClocal}[1]{%
   \renewcommand{\Dlocaltoc}{true}%
@@ -1088,20 +1160,20 @@
 }
 
 
-% For \Dpixelunit, the length value is pre-multiplied with 0.75, so by
+% For \DECpixelunit, the length value is pre-multiplied with 0.75, so by
 % specifying "pt" we get the same notion of "pixel" as graphicx.
-\providecommand{\Dpixelunit}{pt}
+\providecommand{\DECpixelunit}{pt}
 % Normally lengths are relative to the current linewidth.
-\providecommand{\Drelativeunit}{\linewidth}
+\providecommand{\DECrelativeunit}{\linewidth}
 
 
-%\RequirePackage{fixmath}
-%\RequirePackage{amsmath}
+% ACTION: These commands actually *do* something.
+% Ultimately, everything should be done here, and no active content should be
+% above (not even \usepackage).
 
-
-\DSfontencoding
-\DSlanguage
-\DSlinks
+\DSearly
+\DSpackages
+\DSfrenchspacing
 \DSsymbols
 \DSlate
 

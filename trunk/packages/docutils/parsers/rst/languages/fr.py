@@ -1,7 +1,5 @@
-# Authors: David Goodger; William Dode
-# Contact: goodger@users.sourceforge.net
-# Revision: $Revision: 4229 $
-# Date: $Date: 2005-12-23 00:46:16 +0100 (Fri, 23 Dec 2005) $
+# $Id: fr.py 4564 2006-05-21 20:44:42Z wiemann $
+# Authors: David Goodger <goodger@python.org>; William Dode
 # Copyright: This module has been placed in the public domain.
 
 # New language mappings are welcome.  Before doing a new translation, please

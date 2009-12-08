@@ -1,7 +1,5 @@
-# Author: David Goodger
-# Contact: goodger@users.sourceforge.net
-# Revision: $Revision: 4258 $
-# Date: $Date: 2006-01-09 04:29:23 +0100 (Mon, 09 Jan 2006) $
+# $Id: states.py 6141 2009-09-25 18:50:30Z milde $
+# Author: David Goodger <goodger@python.org>
 # Copyright: This module has been placed in the public domain.
 
 """
@@ -108,13 +106,14 @@ __docformat__ = 'reStructuredText'
 import sys
 import re
 import roman
-from types import TupleType
+from types import FunctionType, MethodType
 from docutils import nodes, statemachine, utils, urischemes
 from docutils import ApplicationError, DataError
 from docutils.statemachine import StateMachineWS, StateWS
 from docutils.nodes import fully_normalize_name as normalize_name
 from docutils.nodes import whitespace_normalize_name
 from docutils.utils import escape2null, unescape, column_width
+import docutils.parsers.rst
 from docutils.parsers.rst import directives, languages, tableparser, roles
 from docutils.parsers.rst.languages import en as _fallback_language_module
 
@@ -208,6 +207,7 @@ class RSTState(StateWS):
     """
 
     nested_sm = NestedStateMachine
+    nested_sm_cache = []
 
     def __init__(self, state_machine, debug=0):
         self.nested_sm_kwargs = {'state_classes': state_classes,
@@ -256,16 +256,30 @@ class RSTState(StateWS):
         Create a new StateMachine rooted at `node` and run it over the input
         `block`.
         """
+        use_default = 0
         if state_machine_class is None:
             state_machine_class = self.nested_sm
+            use_default += 1
         if state_machine_kwargs is None:
             state_machine_kwargs = self.nested_sm_kwargs
+            use_default += 1
         block_length = len(block)
-        state_machine = state_machine_class(debug=self.debug,
-                                            **state_machine_kwargs)
+
+        state_machine = None
+        if use_default == 2:
+            try:
+                state_machine = self.nested_sm_cache.pop()
+            except IndexError:
+                pass
+        if not state_machine:
+            state_machine = state_machine_class(debug=self.debug,
+                                                **state_machine_kwargs)
         state_machine.run(block, input_offset, memo=self.memo,
                           node=node, match_titles=match_titles)
-        state_machine.unlink()
+        if use_default == 2:
+            self.nested_sm_cache.append(state_machine)
+        else:
+            state_machine.unlink()
         new_offset = state_machine.abs_line_offset()
         # No `block.parent` implies disconnected -- lines aren't in sync:
         if block.parent and (len(block) - block_length) != 0:
@@ -425,7 +439,7 @@ def build_regexp(definition, compile=1):
     name, prefix, suffix, parts = definition
     part_strings = []
     for part in parts:
-        if type(part) is TupleType:
+        if type(part) is tuple:
             part_strings.append(build_regexp(part, None))
         else:
             part_strings.append(part)
@@ -505,16 +519,20 @@ class Inliner:
             processed += self.implicit_inline(remaining, lineno)
         return processed, messages
 
-    openers = '\'"([{<'
-    closers = '\'")]}>'
-    start_string_prefix = (r'((?<=^)|(?<=[-/: \n%s]))' % re.escape(openers))
-    end_string_suffix = (r'((?=$)|(?=[-/:.,;!? \n\x00%s]))'
-                         % re.escape(closers))
+    openers = u'\'"([{<\u2018\u201c\xab\u00a1\u00bf' # see quoted_start below
+    closers = u'\'")]}>\u2019\u201d\xbb!?'
+    unicode_delimiters = u'\u2010\u2011\u2012\u2013\u2014\u00a0'
+    start_string_prefix = (u'((?<=^)|(?<=[-/: \\n\u2019%s%s]))'
+                           % (re.escape(unicode_delimiters),
+                              re.escape(openers)))
+    end_string_suffix = (r'((?=$)|(?=[-/:.,; \n\x00%s%s]))'
+                         % (re.escape(unicode_delimiters),
+                            re.escape(closers)))
     non_whitespace_before = r'(?<![ \n])'
     non_whitespace_escape_before = r'(?<![ \n\x00])'
     non_whitespace_after = r'(?![ \n])'
-    # Alphanumerics with isolated internal [-._] chars (i.e. not 2 together):
-    simplename = r'(?:(?!_)\w)+(?:[-._](?:(?!_)\w)+)*'
+    # Alphanumerics with isolated internal [-._+:] chars (i.e. not 2 together):
+    simplename = r'(?:(?!_)\w)+(?:[-._+:](?:(?!_)\w)+)*'
     # Valid URI characters (see RFC 2396 & RFC 2732);
     # final \x00 allows backslash escapes in URIs:
     uric = r"""[-_.!~*'()[\];/:@&=+$,%a-zA-Z0-9\x00]"""
@@ -902,8 +920,8 @@ class Inliner:
         return self.reference(match, lineno, anonymous=1)
 
     def standalone_uri(self, match, lineno):
-        if not match.group('scheme') or urischemes.schemes.has_key(
-              match.group('scheme').lower()):
+        if (not match.group('scheme')
+                or match.group('scheme').lower() in urischemes.schemes):
             if match.group('email'):
                 addscheme = 'mailto:'
             else:
@@ -915,8 +933,6 @@ class Inliner:
         else:                   # not a valid scheme
             raise MarkupMismatch
 
-    pep_url = 'pep-%04d.html'
-
     def pep_reference(self, match, lineno):
         text = match.group(0)
         if text.startswith('pep-'):
@@ -925,7 +941,8 @@ class Inliner:
             pepnum = int(match.group('pepnum2'))
         else:
             raise MarkupMismatch
-        ref = self.document.settings.pep_base_url + self.pep_url % pepnum
+        ref = (self.document.settings.pep_base_url
+               + self.document.settings.pep_file_url_template % pepnum)
         unescaped = unescape(text, 0)
         return [nodes.reference(unescape(text, 1), unescaped, refuri=ref)]
 
@@ -1050,7 +1067,7 @@ class Body(RSTState):
               pats['enum'], re.escape(enum.formatinfo[format].suffix))
 
     patterns = {
-          'bullet': r'[-+*]( +|$)',
+          'bullet': u'[-+*\u2022\u2023\u2043]( +|$)',
           'enumerator': r'(%(parens)s|%(rparen)s|%(period)s)( +|$)' % pats,
           'field_marker': r':(?![: ])([^:\\]|\\.)*(?<! ):( +|$)',
           'option_marker': r'%(option)s(, %(option)s)*(  +| ?$)' % pats,
@@ -1080,68 +1097,91 @@ class Body(RSTState):
         """Block quote."""
         indented, indent, line_offset, blank_finish = \
               self.state_machine.get_indented()
-        blockquote, messages = self.block_quote(indented, line_offset)
-        self.parent += blockquote
-        self.parent += messages
+        elements = self.block_quote(indented, line_offset)
+        self.parent += elements
         if not blank_finish:
             self.parent += self.unindent_warning('Block quote')
         return context, next_state, []
 
     def block_quote(self, indented, line_offset):
-        blockquote_lines, attribution_lines, attribution_offset = \
-              self.check_attribution(indented, line_offset)
-        blockquote = nodes.block_quote()
-        self.nested_parse(blockquote_lines, line_offset, blockquote)
-        messages = []
-        if attribution_lines:
-            attribution, messages = self.parse_attribution(attribution_lines,
-                                                           attribution_offset)
-            blockquote += attribution
-        return blockquote, messages
+        elements = []
+        while indented:
+            (blockquote_lines,
+             attribution_lines,
+             attribution_offset,
+             indented,
+             new_line_offset) = self.split_attribution(indented, line_offset)
+            blockquote = nodes.block_quote()
+            self.nested_parse(blockquote_lines, line_offset, blockquote)
+            elements.append(blockquote)
+            if attribution_lines:
+                attribution, messages = self.parse_attribution(
+                    attribution_lines, attribution_offset)
+                blockquote += attribution
+                elements += messages
+            line_offset = new_line_offset
+            while indented and not indented[0]:
+                indented = indented[1:]
+                line_offset += 1
+        return elements
 
-    # u'\u2014' is an em-dash:
-    attribution_pattern = re.compile(ur'(---?(?!-)|\u2014) *(?=[^ \n])')
+    # U+2014 is an em-dash:
+    attribution_pattern = re.compile(u'(---?(?!-)|\u2014) *(?=[^ \\n])')
 
-    def check_attribution(self, indented, line_offset):
+    def split_attribution(self, indented, line_offset):
         """
-        Check for an attribution in the last contiguous block of `indented`.
+        Check for a block quote attribution and split it off:
 
-        * First line after last blank line must begin with "--" (etc.).
+        * First line after a blank line must begin with a dash ("--", "---",
+          em-dash; matches `self.attribution_pattern`).
         * Every line after that must have consistent indentation.
+        * Attributions must be preceded by block quote content.
 
-        Return a 3-tuple: (block quote lines, attribution lines,
-        attribution offset).
+        Return a tuple of: (block quote content lines, content offset,
+        attribution lines, attribution offset, remaining indented lines).
         """
-        #import pdb ; pdb.set_trace()
         blank = None
-        nonblank_seen = None
-        indent = 0
-        for i in range(len(indented) - 1, 0, -1): # don't check first line
-            this_line_blank = not indented[i].strip()
-            if nonblank_seen and this_line_blank:
-                match = self.attribution_pattern.match(indented[i + 1])
-                if match:
-                    blank = i
-                break
-            elif not this_line_blank:
-                nonblank_seen = 1
-        if blank and len(indented) - blank > 2: # multi-line attribution
-            indent = (len(indented[blank + 2])
-                      - len(indented[blank + 2].lstrip()))
-            for j in range(blank + 3, len(indented)):
-                if ( indented[j]        # may be blank last line
-                     and indent != (len(indented[j])
-                                    - len(indented[j].lstrip()))):
-                    # bad shape
-                    blank = None
-                    break
-        if blank:
-            a_lines = indented[blank + 1:]
-            a_lines.trim_left(match.end(), end=1)
-            a_lines.trim_left(indent, start=1)
-            return (indented[:blank], a_lines, line_offset + blank + 1)
+        nonblank_seen = False
+        for i in range(len(indented)):
+            line = indented[i].rstrip()
+            if line:
+                if nonblank_seen and blank == i - 1: # last line blank
+                    match = self.attribution_pattern.match(line)
+                    if match:
+                        attribution_end, indent = self.check_attribution(
+                            indented, i)
+                        if attribution_end:
+                            a_lines = indented[i:attribution_end]
+                            a_lines.trim_left(match.end(), end=1)
+                            a_lines.trim_left(indent, start=1)
+                            return (indented[:i], a_lines,
+                                    i, indented[attribution_end:],
+                                    line_offset + attribution_end)
+                nonblank_seen = True
+            else:
+                blank = i
         else:
-            return (indented, None, None)
+            return (indented, None, None, None, None)
+
+    def check_attribution(self, indented, attribution_start):
+        """
+        Check attribution shape.
+        Return the index past the end of the attribution, and the indent.
+        """
+        indent = None
+        i = attribution_start + 1
+        for i in range(attribution_start + 1, len(indented)):
+            line = indented[i].rstrip()
+            if not line:
+                break
+            if indent is None:
+                indent = len(line) - len(line.lstrip())
+            elif len(line) - len(line.lstrip()) != indent:
+                return None, None       # bad shape; not an attribution
+        else:
+            # return index of line after last attribution line:
+            i += 1
+        return i, (indent or 0)
 
     def parse_attribution(self, indented, line_offset):
         text = '\n'.join(indented).rstrip()
@@ -1276,7 +1316,7 @@ class Body(RSTState):
         """
         Check validity based on the ordinal value and the second line.
 
-        Return true iff the ordinal is valid and the second line is blank,
+        Return true if the ordinal is valid and the second line is blank,
         indented, or starts with the next enumerator or an auto-enumerator.
         """
         if ordinal is None:
@@ -1391,9 +1431,8 @@ class Body(RSTState):
             self.parent += msg
             indented, indent, line_offset, blank_finish = \
                   self.state_machine.get_first_known_indented(match.end())
-            blockquote, messages = self.block_quote(indented, line_offset)
-            self.parent += blockquote
-            self.parent += messages
+            elements = self.block_quote(indented, line_offset)
+            self.parent += elements
             if not blank_finish:
                 self.parent += self.unindent_warning('Option list')
             return [], next_state, []
@@ -1720,6 +1759,7 @@ class Body(RSTState):
                             (
                               _               # anonymous target
                             |               # *OR*
+                              (?!_)           # no underscore at the beginning
                               (?P<quote>`?)   # optional open quote
                               (?![ `])        # first char. not space or
                                               # backquote
@@ -1965,24 +2005,23 @@ class Body(RSTState):
     def directive(self, match, **option_presets):
         """Returns a 2-tuple: list of nodes, and a "blank finish" boolean."""
         type_name = match.group(1)
-        directive_function, messages = directives.directive(
+        directive_class, messages = directives.directive(
             type_name, self.memo.language, self.document)
         self.parent += messages
-        if directive_function:
+        if directive_class:
             return self.run_directive(
-                directive_function, match, type_name, option_presets)
+                directive_class, match, type_name, option_presets)
         else:
             return self.unknown_directive(type_name)
 
-    def run_directive(self, directive_fn, match, type_name, option_presets):
+    def run_directive(self, directive, match, type_name, option_presets):
         """
         Parse a directive then run its directive function.
 
         Parameters:
 
-        - `directive_fn`: The function implementing the directive.  Uses
-          function attributes ``arguments``, ``options``, and/or ``content``
-          if present.
+        - `directive`: The class implementing the directive.  Must be
+          a subclass of `rst.Directive`.
 
         - `match`: A regular expression match object which matched the first
           line of the directive.
@@ -1996,6 +2035,9 @@ class Body(RSTState):
 
         Returns a 2-tuple: list of nodes, and a "blank finish" boolean.
         """
+        if isinstance(directive, (FunctionType, MethodType)):
+            from docutils.parsers.rst import convert_directive_function
+            directive = convert_directive_function(directive)
         lineno = self.state_machine.abs_line_number()
         initial_line_offset = self.state_machine.line_offset
         indented, indent, line_offset, blank_finish \
@@ -2006,34 +2048,45 @@ class Body(RSTState):
         try:
             arguments, options, content, content_offset = (
                 self.parse_directive_block(indented, line_offset,
-                                           directive_fn, option_presets))
+                                           directive, option_presets))
         except MarkupError, detail:
             error = self.reporter.error(
                 'Error in "%s" directive:\n%s.' % (type_name,
                                                    ' '.join(detail.args)),
                 nodes.literal_block(block_text, block_text), line=lineno)
             return [error], blank_finish
-        result = directive_fn(type_name, arguments, options, content, lineno,
-                              content_offset, block_text, self,
-                              self.state_machine)
+        directive_instance = directive(
+            type_name, arguments, options, content, lineno,
+            content_offset, block_text, self, self.state_machine)
+        try:
+            result = directive_instance.run()
+        except docutils.parsers.rst.DirectiveError, error:
+            msg_node = self.reporter.system_message(error.level, error.msg,
+                                        source=error.source, line=error.line)
+            msg_node += nodes.literal_block(block_text, block_text)
+            msg_node['line'] = lineno
+            result = [msg_node]
+        assert isinstance(result, list), \
+               'Directive "%s" must return a list of nodes.' % type_name
+        for i in range(len(result)):
+            assert isinstance(result[i], nodes.Node), \
+                   ('Directive "%s" returned non-Node object (index %s): %r'
+                    % (type_name, i, result[i]))
         return (result,
                 blank_finish or self.state_machine.is_next_line_blank())
 
-    def parse_directive_block(self, indented, line_offset, directive_fn,
+    def parse_directive_block(self, indented, line_offset, directive,
                               option_presets):
-        arguments = []
-        options = {}
-        argument_spec = getattr(directive_fn, 'arguments', None)
-        if argument_spec and argument_spec[:2] == (0, 0):
-            argument_spec = None
-        option_spec = getattr(directive_fn, 'options', None)
-        content_spec = getattr(directive_fn, 'content', None)
+        option_spec = directive.option_spec
+        has_content = directive.has_content
         if indented and not indented[0].strip():
             indented.trim_start()
             line_offset += 1
         while indented and not indented[-1].strip():
             indented.trim_end()
-        if indented and (argument_spec or option_spec):
+        if indented and (directive.required_arguments
+                         or directive.optional_arguments
+                         or option_spec):
             for i in range(len(indented)):
                 if not indented[i].strip():
                     break
@@ -2052,13 +2105,18 @@ class Body(RSTState):
         if option_spec:
             options, arg_block = self.parse_directive_options(
                 option_presets, option_spec, arg_block)
-            if arg_block and not argument_spec:
+            if arg_block and not (directive.required_arguments
+                                  or directive.optional_arguments):
                 raise MarkupError('no arguments permitted; blank line '
                                   'required before content block')
-        if argument_spec:
+        else:
+            options = {}
+        if directive.required_arguments or directive.optional_arguments:
             arguments = self.parse_directive_arguments(
-                argument_spec, arg_block)
-        if content and not content_spec:
+                directive, arg_block)
+        else:
+            arguments = []
+        if content and not has_content:
             raise MarkupError('no content permitted')
         return (arguments, options, content, content_offset)
 
@@ -2080,15 +2138,16 @@ class Body(RSTState):
                 raise MarkupError(data)
         return options, arg_block
 
-    def parse_directive_arguments(self, argument_spec, arg_block):
-        required, optional, last_whitespace = argument_spec
+    def parse_directive_arguments(self, directive, arg_block):
+        required = directive.required_arguments
+        optional = directive.optional_arguments
         arg_text = '\n'.join(arg_block)
         arguments = arg_text.split()
         if len(arguments) < required:
             raise MarkupError('%s argument(s) required, %s supplied'
                               % (required, len(arguments)))
         elif len(arguments) > required + optional:
-            if last_whitespace:
+            if directive.final_argument_whitespace:
                 arguments = arg_text.split(None, required + optional - 1)
             else:
                 raise MarkupError(
@@ -2209,7 +2268,8 @@ class Body(RSTState):
             if expmatch:
                 try:
                     return method(self, expmatch)
-                except MarkupError, (message, lineno): # never reached?
+                except MarkupError, error: # never reached?
+                    message, lineno = error.args
                     errors.append(self.reporter.warning(message, line=lineno))
                     break
         nodelist, blank_finish = self.comment(match)

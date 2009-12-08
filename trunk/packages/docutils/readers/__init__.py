@@ -1,7 +1,5 @@
-# Authors: David Goodger; Ueli Schlaepfer
-# Contact: goodger@users.sourceforge.net
-# Revision: $Revision: 4183 $
-# Date: $Date: 2005-12-12 05:12:02 +0100 (Mon, 12 Dec 2005) $
+# $Id: __init__.py 5618 2008-07-28 08:37:32Z strank $
+# Authors: David Goodger <goodger@python.org>; Ueli Schlaepfer
 # Copyright: This module has been placed in the public domain.
 
 """
@@ -22,8 +20,8 @@ class Reader(Component):
 
     Each reader module or package must export a subclass also called 'Reader'.
 
-    The three steps of a Reader's responsibility are defined: `scan()`,
-    `parse()`, and `transform()`. Call `read()` to process a document.
+    The two steps of a Reader's responsibility are `scan()` and
+    `parse()`.  Call `read()` to process a document.
     """
 
     component_type = 'reader'
@@ -103,7 +101,7 @@ _reader_aliases = {}
 def get_reader_class(reader_name):
     """Return the Reader class from the `reader_name` module."""
     reader_name = reader_name.lower()
-    if _reader_aliases.has_key(reader_name):
+    if reader_name in _reader_aliases:
         reader_name = _reader_aliases[reader_name]
     module = __import__(reader_name, globals(), locals())
     return module.Reader
