@@ -1250,7 +1250,7 @@ def confirm_eol(win):
 
 def afteropenfile(win, filename):
     if win.lineendingsaremixed:
-        confirm_eol(win)
+        wx.CallAfter(confirm_eol, win)
     else:
         eolmodestr = win.eolstr[win.eolmode]
         common.set_line_ending(eolmodestr)
