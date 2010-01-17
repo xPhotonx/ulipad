@@ -29,7 +29,7 @@ from modules.Debug import error
 from modules import common
 from modules import meide as ui
 try:
-    import set
+    set
 except:
     from sets import Set as set
 

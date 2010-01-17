@@ -35,7 +35,11 @@ Bob Gao <lulihummel@gmail.com>                  Provide patch
 Gaël Barrachon <gael.barrachon@gmail.com>       Commit French translation
 Jose Jachuf <jjachuf@gmail.com>                 Fix Spanish translation
 xw_max <xw_max@163.com>                         Provide patch about passing parameters to winpdb
-Wang Eric <glitch.wang@gmail.com>               Improve UliPad announcement, and provide patch=======
+Wang Eric <glitch.wang@gmail.com>               Improve UliPad announcement, and provide 
+hase shao <typobj@googlemail.com>		Improve German translation
+
+patch=======
+
 cjacker                                         Provide a patch #179
 d4ljoyn <d4ljoyn@gmail.com>                     Provide a patch
 sunyin51					Provide patches #218, and answer questions
