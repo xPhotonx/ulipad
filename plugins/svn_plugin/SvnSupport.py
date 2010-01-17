@@ -321,7 +321,7 @@ class Command(object):
                 path = 'At version %d' % event['revision'].number
             else:
                 path = event['path']
-            self.result.add([action, path])
+            self.result.add([action, common.decode_string(path, 'utf8')])
             
     def cbk_ssl_server_trust_prompt(self, trust_data):
         realm = trust_data['realm']
