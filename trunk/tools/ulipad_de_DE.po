@@ -1,6 +1,6 @@
 msgid ""
 msgstr ""
-"PO-Revision-Date: 2009-11-30 08:57+0800\n"
+"PO-Revision-Date: 2010-01-17 10:19+0800\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Project-Id-Version: UliPad 3.9\n"
 "Generated-By: pygettext.py 1.5\n"
@@ -854,7 +854,7 @@ msgstr "Neue Name Eingeben:"
 
 #: ..\mixins\FtpClass.py:437
 msgid "Name Input"
-msgstr ""
+msgstr "Name Impotieren"
 
 #: ..\mixins\FtpClass.py:461
 #: ..\mixins\FtpClass.py:507
@@ -936,7 +936,7 @@ msgstr "Update"
 
 #: ..\mixins\FtpClass.py:681
 msgid "The FTP site already exists. Choose a different name."
-msgstr ""
+msgstr "Name ist vorhanden, wählen Sie einen anderen Name."
 
 #: ..\mixins\FtpClass.py:756
 msgid "FTP site: %s"
@@ -1297,6 +1297,8 @@ msgid ""
 "The document %s is already opened.\n"
 "Please choose a different name for the document."
 msgstr ""
+"Das Dokument %s ist geöffnet. \n"
+"Wählen Sie bitte einen anderen Name für dieses Dokument."
 
 #: ..\mixins\Import.py:361
 #: ..\mixins\mEditorCtrl.py:271
@@ -1576,7 +1578,7 @@ msgstr "Datei wieder Öffnen..."
 #: ..\mixins\Import.py:951
 #: ..\mixins\mRecentFile.py:85
 msgid "Maximum number of recent files:"
-msgstr ""
+msgstr "maximale Anzahl für zuletzt verwendete Dateien."
 
 #: ..\mixins\Import.py:981
 #: ..\mixins\mSearch.py:32
@@ -2608,7 +2610,7 @@ msgstr "Klasse-Übersicht"
 #: ..\mixins\Import.py:3517
 #: ..\mixins\mRun.py:69
 msgid "The last process didn't stop yet. Please stop it and try again."
-msgstr ""
+msgstr "Letzte Bearbeitung ist noch nicht fertig. Sie können es beenden und nochmal versuchen."
 
 #: ..\mixins\Import.py:3533
 #: ..\mixins\mRun.py:85
@@ -2633,7 +2635,7 @@ msgstr "Fertig!"
 #: ..\mixins\Import.py:3709
 #: ..\mixins\mRun.py:273
 msgid "Maxmize message window lines(0 no limited)"
-msgstr ""
+msgstr "Anzhal für maximale Zeile des Nachricht-Fensters(0 ist keine Begrenzung)"
 
 #: ..\mixins\Import.py:3730
 #: ..\mixins\mScript.py:37
@@ -3018,7 +3020,7 @@ msgstr "Seite Einrichten..."
 #: ..\mixins\Import.py:4813
 #: ..\mixins\mPrint.py:37
 msgid "Selects a printer and printer connection."
-msgstr ""
+msgstr "Einen Drucker und eine Druker-Verbindung auszuwählen."
 
 #: ..\mixins\Import.py:4814
 #: ..\mixins\mPrint.py:38
@@ -3187,7 +3189,7 @@ msgstr "Dateien Herunterladen"
 #: ..\mixins\Import.py:5280
 #: ..\mixins\mFtp.py:205
 msgid "FTP"
-msgstr ""
+msgstr "FTP"
 
 #: ..\mixins\Import.py:5310
 #: ..\mixins\mWindow.py:31
@@ -3221,7 +3223,7 @@ msgstr "Unten-Fenster Anzeigen oder Ausblenden."
 #: ..\mixins\mWindow.py:38
 #: ..\mixins\mWindow.py:160
 msgid "Shows the Shell pane."
-msgstr ""
+msgstr "Shell-Panel anzeigen."
 
 #: ..\mixins\Import.py:5317
 #: ..\mixins\mWindow.py:38
@@ -3233,7 +3235,7 @@ msgstr "Shell-Fenster"
 #: ..\mixins\mWindow.py:39
 #: ..\mixins\mWindow.py:161
 msgid "Shows the Messages pane."
-msgstr ""
+msgstr "Nachricht-Panel anzeigen."
 
 #: ..\mixins\Import.py:5318
 #: ..\mixins\mWindow.py:39
@@ -3316,12 +3318,12 @@ msgstr "Nachrichten"
 #: ..\mixins\mSyntaxCheck.py:61
 #: ..\mixins\mWindow.py:192
 msgid "Python"
-msgstr ""
+msgstr "Python"
 
 #: ..\mixins\Import.py:5464
 #: ..\mixins\mWindow.py:192
 msgid "Placement of the Shell pane is:"
-msgstr ""
+msgstr "Platzierung  vom Shell-Panel ist: "
 
 #: ..\mixins\Import.py:5492
 #: ..\mixins\mRegister.py:39
@@ -3753,7 +3755,7 @@ msgstr "Notiz"
 #: ..\mixins\Import.py:6801
 #: ..\mixins\mPad.py:40
 msgid "Shows the window Easy Memo for writing notes."
-msgstr ""
+msgstr "\"Easy Memo\"-Fenster(für kurze Notiz) anzeigen."
 
 #: ..\mixins\Import.py:6825
 #: ..\mixins\mPad.py:64
@@ -3799,7 +3801,7 @@ msgstr "TODO-Fenster automatisch Öffnen bei der Öffnung einer Datei, die einen
 #: ..\mixins\Import.py:6947
 #: ..\mixins\mTodoWindow.py:58
 msgid "TODO"
-msgstr ""
+msgstr "TODO"
 
 #: ..\mixins\Import.py:7067
 #: ..\mixins\mMessageWindow.py:34
@@ -3979,7 +3981,7 @@ msgstr "zu die Definition Springen"
 #: ..\mixins\Import.py:7820
 #: ..\mixins\mCTags.py:34
 msgid "Jumps to head of line containing variable or function definition."
-msgstr ""
+msgstr "geh zu der Zeile, die die Variable oder Funktionsdefinition enthält."
 
 #: ..\mixins\Import.py:7828
 #: ..\mixins\mCTags.py:42
@@ -4031,7 +4033,7 @@ msgstr "Personal"
 #: ..\mixins\Import.py:8101
 #: ..\mixins\mRegex.py:27
 msgid "Regex"
-msgstr ""
+msgstr "Regex"
 
 #: ..\mixins\Import.py:8114
 #: ..\mixins\mRegex.py:40
@@ -4379,11 +4381,11 @@ msgstr "Selektieren"
 
 #: ..\mixins\InterpreterDialog.py:163
 msgid "Parameters:"
-msgstr ""
+msgstr "Die Parameter:"
 
 #: ..\mixins\InterpreterDialog.py:167
 msgid "Parameters of script:"
-msgstr ""
+msgstr "Die Parameter für Skript:"
 
 #: ..\mixins\InterpreterDialog.py:170
 #, fuzzy
@@ -4449,7 +4451,7 @@ msgstr "Beenden"
 
 #: ..\mixins\MainFrame.py:44
 msgid "Exits the application."
-msgstr ""
+msgstr "Anwendung beenden."
 
 #: ..\mixins\MessageWindow.py:37
 #: ..\mixins\ShellWindow.py:41
@@ -4581,27 +4583,27 @@ msgstr "Flags"
 
 #: ..\mixins\RegexWindow.py:79
 msgid "Ignore Case(I)"
-msgstr ""
+msgstr "Klein- und Großschreibung ignorieren."
 
 #: ..\mixins\RegexWindow.py:80
 msgid "Locale(L)"
-msgstr ""
+msgstr "Lokale(L)"
 
 #: ..\mixins\RegexWindow.py:81
 msgid "Multi Line(M)"
-msgstr ""
+msgstr "Mehrzeilig(M)"
 
 #: ..\mixins\RegexWindow.py:82
 msgid "Dot All(S)"
-msgstr ""
+msgstr "Alle punktieren(S)"
 
 #: ..\mixins\RegexWindow.py:83
 msgid "Unicode(U)"
-msgstr ""
+msgstr "Unicode(U)"
 
 #: ..\mixins\RegexWindow.py:84
 msgid "Verbose(V)"
-msgstr ""
+msgstr "Wortreich(V)"
 
 #: ..\mixins\RegexWindow.py:99
 msgid "Items"
@@ -4629,7 +4631,7 @@ msgstr ""
 
 #: ..\mixins\ReloadMixins.py:109
 msgid "after restarting this program, the changes will be taken effect!"
-msgstr ""
+msgstr "Die Änderungen werden angenommen, nachdem Sie das Programm neu starten."
 
 #: ..\mixins\ScriptDialog.py:33
 #, fuzzy
@@ -4776,11 +4778,11 @@ msgstr "Inhalt des Shell-Fensters Leeren."
 
 #: ..\mixins\ShellWindow.py:52
 msgid "Restart Shell"
-msgstr ""
+msgstr "Shell neu starten"
 
 #: ..\mixins\ShellWindow.py:52
 msgid "Restarts the shell"
-msgstr ""
+msgstr "Shell neu starten."
 
 #: ..\mixins\SyntaxCheck.py:48
 msgid "There are some unknown errors, please check error.txt"
@@ -4833,5 +4835,5 @@ msgstr "Zeilenumbruch:"
 
 #: ..\modules\common.py:521
 msgid "Encoding: "
-msgstr "Encoding:"
+msgstr "Kodierung:"
 
