@@ -169,7 +169,7 @@ class EditorFactory(FNB.FlatNotebook, Mixin.Mixin):
         return -1
 
     def getDoc(self, index):
-        if index < 0 or index > len(self.getDocuments()):
+        if index < 0 or index >= len(self.getDocuments()):
             return None
         return self.getDocuments()[index]
     
@@ -358,13 +358,13 @@ class EditorFactory(FNB.FlatNotebook, Mixin.Mixin):
 #        self.document.SetFocus()
         #if the page to close is not selected, no need to switch page
         if index == selected: 
-            if index > 0:
+            if index >= 0:
                 if index >= len(self.getDocuments()):
                     index = len(self.getDocuments())-1
                 # only swith page when there is a page to switch to
                 self.switch(self.getDoc(index))
             else:
-              self.new()
+                self.new()
         self.document.SetFocus()
 
         self.callplugin('afterclosefile', self)
