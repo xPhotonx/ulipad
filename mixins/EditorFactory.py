@@ -358,7 +358,8 @@ class EditorFactory(FNB.FlatNotebook, Mixin.Mixin):
 #        self.document.SetFocus()
         #if the page to close is not selected, no need to switch page
         if index == selected: 
-            if index >= 0:
+            #if index > 0:
+            if len(self.getDocuments()) > 0:
                 if index >= len(self.getDocuments()):
                     index = len(self.getDocuments())-1
                 # only swith page when there is a page to switch to
