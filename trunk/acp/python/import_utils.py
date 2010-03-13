@@ -82,12 +82,16 @@ def getWord(win, whole=None):
 
 
 def evaluate(win, word, syncvar=None):
+#    from modules.callinmainthread import CallFunctionOnMainThread
+#    
+#    _import = CallFunctionOnMainThread(import_document)
     try:
         obj = eval(word, namespace)
         return obj
     except:
         try:
             import_document(win, syncvar)
+#            _import(win, syncvar)
             obj = eval(word, namespace)
             return obj
         except:
@@ -193,6 +197,9 @@ def autoComplete(win, word=None, syncvar=None):
             return words
     
 def getAutoCompleteList(win, command='', syncvar=None):
+    from modules.callinmainthread import CallFunctionOnMainThread
+    
+    _getattributes = CallFunctionOnMainThread(getattributes)
 #    if not hasattr(win, 'syntax_info') or not win.syntax_info:
 #        return []
 
@@ -210,7 +217,7 @@ def getAutoCompleteList(win, command='', syncvar=None):
     pout(INDENT, 'ready to output:', flag, object)
     if object:
         if flag == 'obj':
-            return getattributes(object) + r_idens
+            return _getattributes(object) + r_idens
         else:
             if object.type == 'class':
                 return getClassAttributes(win, object, syncvar) + r_idens
