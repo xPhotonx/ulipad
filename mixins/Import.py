@@ -600,7 +600,8 @@ Mixin.setMixin('mainframe', 'DoSTCBuildIn', DoSTCBuildIn)
 def afterinit(win):
     wx.EVT_UPDATE_UI(win, win.IDM_EDIT_CUT, win.OnUpdateUI)
     wx.EVT_UPDATE_UI(win, win.IDM_EDIT_COPY, win.OnUpdateUI)
-    wx.EVT_UPDATE_UI(win, win.IDM_EDIT_PASTE, win.OnUpdateUI)
+    if wx.Platform == '__WXMSW__':
+        wx.EVT_UPDATE_UI(win, win.IDM_EDIT_PASTE, win.OnUpdateUI)
     wx.EVT_UPDATE_UI(win, win.IDM_EDIT_UNDO, win.OnUpdateUI)
     wx.EVT_UPDATE_UI(win, win.IDM_EDIT_REDO, win.OnUpdateUI)
 Mixin.setPlugin('mainframe', 'afterinit', afterinit)
