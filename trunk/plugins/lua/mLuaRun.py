@@ -75,6 +75,16 @@ def add_pref(preflist):
     ])
 Mixin.setPlugin('preference', 'add_pref', add_pref)
 
+def add_luaftype_menu(menulist):
+    menulist.extend([('IDM_LUA', #parent menu id
+        [
+            (120, '', '-', wx.ITEM_SEPARATOR, None, ''),
+            (130, 'IDM_LUA_RUN', tr('Run')+u'\tE=F5', wx.ITEM_NORMAL, 'OnLuaRun', tr('Runs the Lua program.')),
+            (140, 'IDM_LUA_SETARGS', tr('Set Arguments...'), wx.ITEM_NORMAL, 'OnLuaSetArgs', tr('Sets the command-line arguments for a Lua program.')),
+            (150, 'IDM_LUA_END', tr('Stop Program'), wx.ITEM_NORMAL, 'OnLuaEnd', tr('Stops the current Lua program.')),
+        ]),
+    ])
+Mixin.setPlugin('luafiletype', 'add_menu', add_luaftype_menu)
 
 def editor_init(win):
     win.args = ''
@@ -400,3 +410,11 @@ class LuaArgsDialog(wx.Dialog):
 
     def OnChanged(self, event):
         self.parameter.SetValue(self.pref.lua_default_paramters.get(self.interpreter.GetValue(), ''))
+
+def goto_error_line(msgwin, line, lineno):
+    import re
+    r = re.compile('(\S+):(\d+)')
+    b = r.search(common.encode_string(line, common.defaultfilesystemencoding))
+    if b:
+        return True, b.groups()
+Mixin.setPlugin('messagewindow', 'goto_error_line', goto_error_line)

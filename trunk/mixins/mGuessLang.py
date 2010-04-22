@@ -21,19 +21,18 @@
 #
 #   $Id$
 
+import re
 from modules import Mixin
 
+r_lang = re.compile('^#!\s*/usr/bin/env\s+(\w+)')
 def guess_language(win, language):
     l = win.GetLine(0).lower()
-    lang = None
-    if l[:2]=="#!":
-        #if begin with "#! /usr/bin/env python"
-        if l.find("python")!=-1:
-            lang = "python"
-        #if begin with #! /usr/bin/env lua
-        elif l.find("lua")!=-1:
-            lang = "lua"
-            
+    lang = language
+    if not lang and l[:2]=="#!":
+        b = r_lang.search(l)
+        if b:
+            lang = b.groups()[0]
+
     return lang
 Mixin.setPlugin('editor', 'guess_lang', guess_language)
 

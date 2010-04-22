@@ -4429,6 +4429,13 @@ def on_leave(mainframe, filename, languagename):
     ret = mainframe.Disconnect(mainframe.IDM_PYTHON_END, -1, wx.wxEVT_UPDATE_UI)
 Mixin.setPlugin('pythonfiletype', 'on_leave', on_leave)
 
+def goto_error_line(msgwin, line, lineno):
+    import re
+    r = re.compile('File\s+"(.*?)",\s+line\s+(\d+)')
+    b = r.search(common.encode_string(line, common.defaultfilesystemencoding))
+    if b:
+        return True, b.groups()
+Mixin.setPlugin('messagewindow', 'goto_error_line', goto_error_line)
 
 from modules import meide as ui
 
@@ -7071,9 +7078,7 @@ def read_todos(editor):
 #-----------------------  mMessageWindow.py ------------------
 
 import wx
-import re
 from modules import Mixin
-from modules import common
 from modules import Globals
 
 def other_popup_menu(win, menus):
@@ -7085,12 +7090,11 @@ def other_popup_menu(win, menus):
     ])
 Mixin.setPlugin('messagewindow', 'other_popup_menu', other_popup_menu)
 
-r = re.compile('File\s+"(.*?)",\s+line\s+(\d+)')
 def OnGoto(win, event):
-    line = win.GetCurLine()[0]
-    b = r.search(common.encode_string(line, common.defaultfilesystemencoding))
-    if b:
-        filename, lineno = b.groups()
+    line = win.GetCurLine()
+    ret = win.execplugin('goto_error_line', win, *line)
+    if ret:
+        filename, lineno = ret
         Globals.mainframe.editctrl.new(filename)
         wx.CallAfter(Globals.mainframe.document.goto, int(lineno))
 Mixin.setMixin('messagewindow', 'OnGoto', OnGoto)
@@ -9138,18 +9142,17 @@ Mixin.setPlugin('prefdialog', 'savepreferencevalues', savepreferencevalues)
 
 #-----------------------  mGuessLang.py ------------------
 
+import re
 from modules import Mixin
 
+r_lang = re.compile('^#!\s*/usr/bin/env\s+(\w+)')
 def guess_language(win, language):
     l = win.GetLine(0).lower()
-    lang = None
-    if l[:2]=="#!":
-        #if begin with "#! /usr/bin/env python"
-        if l.find("python")!=-1:
-            lang = "python"
-        #if begin with #! /usr/bin/env lua
-        elif l.find("lua")!=-1:
-            lang = "lua"
+    lang = language
+    if not lang and l[:2]=="#!":
+        b = r_lang.search(l)
+        if b:
+            lang = b.groups()[0]
 
     return lang
 Mixin.setPlugin('editor', 'guess_lang', guess_language)
