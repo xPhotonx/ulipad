@@ -13,7 +13,8 @@ Mario Lacunza <mlacunza@gmail.com>              Commit Spanish translation file 
 Ye Naiquan <Naiquan.Ye@marintek.sintef.no>      Commit Patch
 Kelie Feng                                      Create a great video about UliPad and put in ShowMeDo site, and other helps
 Jaime Wyant <pyogrammer.py@gmail.com>           Provide patches, plugins, and many suggestions
-Boštjan Mejak <vinetouu@gmail.com>              Fix typos and provide patches
+Bo?tjan Mejak <vinetouu@gmail.com>              Fix typos and provide patches
+zhangchunlin <zhangchunlin@gmail.com>           Give some plugins, such as: mGuessLang.py and lua plugin
 
 Also thanks a lot:
 
@@ -32,12 +33,12 @@ Hawker                                          Linux memory display patch
 shmakes <shmakes@gmail.com>                     Good advices and code patch
 LP <liupengf12@gmail.com>                       Report bugs and commit Patch
 Bob Gao <lulihummel@gmail.com>                  Provide patch
-Gaël Barrachon <gael.barrachon@gmail.com>       Commit French translation
+Ga?l Barrachon <gael.barrachon@gmail.com>       Commit French translation
 Jose Jachuf <jjachuf@gmail.com>                 Fix Spanish translation
 xw_max <xw_max@163.com>                         Provide patch about passing parameters to winpdb
 Wang Eric <glitch.wang@gmail.com>               Improve UliPad announcement, and provide 
-hase shao <typobj@googlemail.com>		        Improve German translation
-sunyin51					                    Provide patches #218, and answer questions
+hase shao <typobj@googlemail.com>               Improve German translation
+sunyin51                                        Provide patches #218, and answer questions
 
 patch=======
 
