@@ -57,7 +57,7 @@ def add_lexer(lexer):
             wx.stc.STC_LEX_HTML, 'asp.stx', LexerClass1.ASPLexer),
         (LexerRst.RstLexer.metaname, 'reStructuredText|*.rst',
             wx.stc.STC_LEX_CONTAINER, 'rst.stx', LexerRst.RstLexer),
-        (LexerClass1.LuaLexer.metaname, 'Lua|*.lua',
+        (LexerClass1.LuaLexer.metaname, 'Lua|*.lua;*.wlua',
             wx.stc.STC_LEX_LUA, 'lua.stx', LexerClass1.LuaLexer),
         (LexerClass1.SliceLexer.metaname, 'Slice|*.ice',
             wx.stc.STC_LEX_CPP, 'slice.stx', LexerClass1.SliceLexer),

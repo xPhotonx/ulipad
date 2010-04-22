@@ -22,9 +22,7 @@
 #   $Id$
 
 import wx
-import os.path
 from modules import Mixin
-from modules import Globals
 
 def init(pref):
     pref.ruby_classbrowser_show = False
@@ -94,13 +92,12 @@ Mixin.setPlugin('rubyfiletype', 'on_leave', on_leave)
 
 def add_images(images):
     s = [
-        ('CLASS_OPEN', 'minus.gif'),
-        ('CLASS_CLOSE', 'plus.gif'),
-        ('METHOD', 'method.gif'),
-        ('MODULE', 'module.gif'),
+        ('CLASS_OPEN', 'images/minus.gif'),
+        ('CLASS_CLOSE', 'images/plus.gif'),
+        ('METHOD', 'images/method.gif'),
+        ('MODULE', 'images/module.gif'),
         ]
-    for name, f in s:
-        images[name] = os.path.join(Globals.workpath, 'images/%s' % f)
+    images.extend(s)
 Mixin.setPlugin('outlinebrowser', 'add_images', add_images)
 
 def parsetext(win, editor):
@@ -109,20 +106,24 @@ def parsetext(win, editor):
         nodes = Parser.parseString(editor.GetText())
 
         imports = nodes['import']
-        for info, lineno in imports:
-            win.addnode(None, info, win.get_image_id('MODULE'), None, lineno)
+        for i, v in enumerate(imports):
+            info, lineno = v
+            win.replacenode(None, i, info, win.get_image_id('MODULE'), None, {'data':lineno}, win.get_image_id('MODULE'))
         functions = nodes['function'].values()
         functions.sort()
-        for info, lineno in functions:
-            win.addnode(None, info, win.get_image_id('METHOD'), None,  lineno)
+        for i, v in enumerate(functions):
+            info, lineno = v
+            win.replacenode(None, i, info, win.get_image_id('METHOD'), None,  {'data':lineno}, win.get_image_id('METHOD'))
         classes = nodes['class'].values()
         classes.sort()
-        for c in classes:
-            _id, node = win.addnode(None, c.info, win.get_image_id('CLASS_CLOSE'), win.get_image_id('CLASS_OPEN'), c.lineno)
+        for i, c in enumerate(classes):
+            _id, node = win.replacenode(None, i, c.info, win.get_image_id('CLASS_CLOSE'), win.get_image_id('CLASS_OPEN'), {'data':c.lineno},
+                win.get_image_id('CLASS_CLOSE'))
             functions = c.methods.values()
             functions.sort()
-            for info, lineno in functions:
-                win.addnode(node, info, win.get_image_id('METHOD'), None,  lineno)
+            for j, v in enumerate(functions):
+                info, lineno = v
+                win.replacenode(node, j, info, win.get_image_id('METHOD'), None,  {'data':lineno}, win.get_image_id('METHOD'))
             win.tree.Expand(node)
 Mixin.setPlugin('outlinebrowser', 'parsetext', parsetext)
 
