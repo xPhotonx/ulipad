@@ -234,7 +234,6 @@ class TextEditor(wx.stc.StyledTextCtrl, Mixin.Mixin, DocumentBase.DocumentBase):
                 self.disable_onmodified = False
                 
                 language = self.execplugin('guess_lang', self, language) or language
-                print 'language', language
             else:
                 self.callplugin('openfileencoding', self, '', [''], encoding)
                 if defaulttext:
