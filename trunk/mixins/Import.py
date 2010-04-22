@@ -9136,3 +9136,24 @@ Mixin.setPlugin('prefdialog', 'savepreferencevalues', savepreferencevalues)
 
 
 
+#-----------------------  mGuessLang.py ------------------
+
+from modules import Mixin
+
+def guess_language(win, language):
+    l = win.GetLine(0).lower()
+    lang = None
+    if l[:2]=="#!":
+        #if begin with "#! /usr/bin/env python"
+        if l.find("python")!=-1:
+            lang = "python"
+        #if begin with #! /usr/bin/env lua
+        elif l.find("lua")!=-1:
+            lang = "lua"
+
+    return lang
+Mixin.setPlugin('editor', 'guess_lang', guess_language)
+
+
+
+
