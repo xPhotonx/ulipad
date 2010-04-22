@@ -1,8 +1,9 @@
-﻿$Rev$
+$Rev$
 [2010/04/22]
 mGuessLang.py       Add #! /usr/bin/env python support thanks for zhangchunlin
 plugin/ruby/mClassBrowser.py
-                    Fix ruby class browser bug.
+                    Fix ruby class browser bug
+Add Lua plugin      Thanks to zhangchunlin.
 
 [2008/06/02]
 mEncoding.py EncodingDialog.py
