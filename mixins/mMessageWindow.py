@@ -22,9 +22,7 @@
 #   $Id$
 
 import wx
-import re
 from modules import Mixin
-from modules import common
 from modules import Globals
 
 def other_popup_menu(win, menus):
@@ -36,12 +34,11 @@ def other_popup_menu(win, menus):
     ])
 Mixin.setPlugin('messagewindow', 'other_popup_menu', other_popup_menu)
 
-r = re.compile('File\s+"(.*?)",\s+line\s+(\d+)')
 def OnGoto(win, event):
-    line = win.GetCurLine()[0]
-    b = r.search(common.encode_string(line, common.defaultfilesystemencoding))
-    if b:
-        filename, lineno = b.groups()
+    line = win.GetCurLine()
+    ret = win.execplugin('goto_error_line', win, *line)
+    if ret:
+        filename, lineno = ret
         Globals.mainframe.editctrl.new(filename)
         wx.CallAfter(Globals.mainframe.document.goto, int(lineno))
 Mixin.setMixin('messagewindow', 'OnGoto', OnGoto)

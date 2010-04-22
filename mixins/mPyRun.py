@@ -298,6 +298,13 @@ def on_leave(mainframe, filename, languagename):
     ret = mainframe.Disconnect(mainframe.IDM_PYTHON_END, -1, wx.wxEVT_UPDATE_UI)
 Mixin.setPlugin('pythonfiletype', 'on_leave', on_leave)
 
+def goto_error_line(msgwin, line, lineno):
+    import re
+    r = re.compile('File\s+"(.*?)",\s+line\s+(\d+)')
+    b = r.search(common.encode_string(line, common.defaultfilesystemencoding))
+    if b:
+        return True, b.groups()
+Mixin.setPlugin('messagewindow', 'goto_error_line', goto_error_line)
 
 ################################# Dialogs
 from modules import meide as ui
