@@ -839,6 +839,10 @@ Description:
         self.pref.save()
         
     def addsnippet(self, filename, type='open', expand=True):
+        #test if the filename is existed
+        if not os.path.exists(filename):
+            common.showerror(tr("Can't open the file %s") % filename)
+            return
         files = self.getTopSnippets()
         filename = common.uni_file(filename)
         if filename not in files:
