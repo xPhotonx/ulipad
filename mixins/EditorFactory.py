@@ -335,7 +335,7 @@ class EditorFactory(FNB.FlatNotebook, Mixin.Mixin):
             wx.CallAfter(self.SetPageText, self.getIndex(ctrl), title)
 
     def showTitle(self, ctrl):
-        title = u"%s – %s" % (self.app.appname, self.getDispTitle(ctrl))
+        title = u"%s - %s" % (self.app.appname, self.getDispTitle(ctrl))
         if title != self.mainframe.GetTitle():
             self.mainframe.SetTitle(title)
 
