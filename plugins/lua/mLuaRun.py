@@ -23,7 +23,6 @@
 
 import wx
 import os
-import sys
 
 from modules import common
 from modules import Mixin
@@ -56,10 +55,8 @@ def pref_init(pref):
     pref.lua_show_args = False
     pref.lua_save_before_run = False
     pref.lua_default_paramters = {}
-    '''
     for i in s:
-        pref.lua_default_paramters[i[0]] = '-u'
-    '''
+        pref.lua_default_paramters[i[0]] = '-e "io.stdout:setvbuf \'no\'"'
 Mixin.setPlugin('preference', 'init', pref_init)
 
 def OnSetInterpreter(win, event):
@@ -413,8 +410,8 @@ class LuaArgsDialog(wx.Dialog):
 
 def goto_error_line(msgwin, line, lineno):
     import re
-    r = re.compile('(\S+):(\d+)')
+    r = re.compile('((\w:)?[^:\t\n\r\?\;]+):(\d+)')
     b = r.search(common.encode_string(line, common.defaultfilesystemencoding))
     if b:
-        return True, b.groups()
+        return True, (b.groups()[0],b.groups()[2])
 Mixin.setPlugin('messagewindow', 'goto_error_line', goto_error_line)
