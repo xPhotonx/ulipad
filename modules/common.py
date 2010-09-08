@@ -515,7 +515,7 @@ def string_width(text):
     return s
             
 def set_line_ending(ending):
-    Globals.mainframe.SetStatusText(tr('Line ending: ') + ending, 3)
+    Globals.mainframe.SetStatusText(tr('Line ending: ') + ending, 4)
     
 def set_encoding(encoding):
-    Globals.mainframe.SetStatusText(tr('Encoding: ') + encoding, 4)
+    Globals.mainframe.SetStatusText(tr('Encoding: ') + encoding, 5)

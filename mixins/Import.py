@@ -1145,6 +1145,11 @@ def on_document_enter(win, document):
         win.mainframe.SetStatusText(tr("Column: %d") % (document.GetColumn(document.GetCurrentPos())+1), 2)
 Mixin.setPlugin('editctrl', 'on_document_enter', on_document_enter)
 
+def on_update_ui(win, event):
+    win.mainframe.SetStatusText(tr("Selected: %d") % len(win.GetSelectedText()), 3)
+Mixin.setPlugin('editor', 'on_update_ui', on_update_ui)
+
+
 
 
 #-----------------------  mLineending.py ------------------
