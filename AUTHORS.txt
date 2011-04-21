@@ -15,6 +15,7 @@ Kelie Feng                                      Create a great video about UliPa
 Jaime Wyant <pyogrammer.py@gmail.com>           Provide patches, plugins, and many suggestions
 Bo?tjan Mejak <vinetouu@gmail.com>              Fix typos and provide patches
 zhangchunlin <zhangchunlin@gmail.com>           Give some plugins, such as: mGuessLang.py and lua plugin
+Helio Perroni Filho <xperroni@gmail.com>	Give 3 patches, such as: configurable memo path, etc.
 
 Also thanks a lot:
 

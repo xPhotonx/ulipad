@@ -1,4 +1,13 @@
-$Rev$
+﻿$Rev$
+[2011/04/21]
+mPad.py             Add configurable memo file support. So you can set something like this:
+                    
+                    [default]
+                    memo = "C:\\path\\to\\memo.txt"
+scriptils.py        Add some useful methods to support scripts files. Such as emptytab, newtab, etc.
+LexerClass1.py mLexer.py Add Bash support.
+
+All above thanks to Helio Perroni Filho <xperroni@gmail.com>
 [2010/04/22]
 mGuessLang.py       Add #! /usr/bin/env python support thanks for zhangchunlin
 plugin/ruby/mClassBrowser.py

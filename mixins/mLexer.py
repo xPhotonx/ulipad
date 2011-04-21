@@ -61,6 +61,8 @@ def add_lexer(lexer):
             wx.stc.STC_LEX_LUA, 'lua.stx', LexerClass1.LuaLexer),
         (LexerClass1.SliceLexer.metaname, 'Slice|*.ice',
             wx.stc.STC_LEX_CPP, 'slice.stx', LexerClass1.SliceLexer),
+        (LexerClass1.BashLexer.metaname, 'Bash|*.sh',
+             wx.stc.STC_LEX_BASH, 'bash.stx', LexerClass1.BashLexer)
     ])
 Mixin.setPlugin('lexerfactory', 'add_lexer', add_lexer)
 
@@ -81,5 +83,6 @@ def add_new_files(new_files):
         ('reStructuredText', LexerRst.RstLexer.metaname),
         ('Lua', LexerClass1.LuaLexer.metaname),
         ('Slice', LexerClass1.SliceLexer.metaname),
+        ('Bash', LexerClass1.BashLexer.metaname)
     ])
 Mixin.setPlugin('mainframe', 'add_new_files', add_new_files)
