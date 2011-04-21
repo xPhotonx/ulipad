@@ -3948,6 +3948,8 @@ def add_lexer(lexer):
             wx.stc.STC_LEX_LUA, 'lua.stx', LexerClass1.LuaLexer),
         (LexerClass1.SliceLexer.metaname, 'Slice|*.ice',
             wx.stc.STC_LEX_CPP, 'slice.stx', LexerClass1.SliceLexer),
+        (LexerClass1.BashLexer.metaname, 'Bash|*.sh',
+             wx.stc.STC_LEX_BASH, 'bash.stx', LexerClass1.BashLexer)
     ])
 Mixin.setPlugin('lexerfactory', 'add_lexer', add_lexer)
 
@@ -3968,6 +3970,7 @@ def add_new_files(new_files):
         ('reStructuredText', LexerRst.RstLexer.metaname),
         ('Lua', LexerClass1.LuaLexer.metaname),
         ('Slice', LexerClass1.SliceLexer.metaname),
+        ('Bash', LexerClass1.BashLexer.metaname)
     ])
 Mixin.setPlugin('mainframe', 'add_new_files', add_new_files)
 
@@ -6812,7 +6815,7 @@ Mixin.setPlugin('preference', 'add_pref', add_pref)
 
 import wx
 import os
-from modules import Mixin
+from modules import common, Mixin
 
 def mainframe_init(win):
     win.memo_win = None
@@ -6838,7 +6841,7 @@ def OnToolMemo(win, event):
     else:
         import Pad
         from modules import Globals
-        pad = Pad.PAD(win, os.path.join(Globals.userpath, 'memo.txt'), tr('Easy Memo'))
+        pad = Pad.PAD(win, os.path.join(Globals.userpath, common.get_config_file_obj().default.get('memo', 'memo.txt')), tr('Easy Memo'))
         pad.Show()
         win.memo_win = pad
 Mixin.setMixin('mainframe', 'OnToolMemo', OnToolMemo)

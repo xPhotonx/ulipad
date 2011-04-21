@@ -1,10 +1,10 @@
 #   Programmer:     limodou
 #   E-mail:         limodou@gmail.com
-#  
+#
 #   Copyleft 2006 limodou
-#  
+#
 #   Distributed under the terms of the GPL (GNU Public License)
-#  
+#
 #   UliPad is free software; you can redistribute it and/or modify
 #   it under the terms of the GNU General Public License as published by
 #   the Free Software Foundation; either version 2 of the License, or
@@ -79,7 +79,7 @@ puts "Hello World!"
         self.addSyntaxItem('identifier',        'Identifiers',          wx.stc.STC_P_IDENTIFIER,        self.STC_STYLE_IDENTIFIER)
         self.addSyntaxItem('commentblock',      'Comment blocks',       wx.stc.STC_P_COMMENTBLOCK,      self.STC_STYLE_COMMENT)
         self.addSyntaxItem('stringeol',         'EOL unclosed string',  wx.stc.STC_P_STRINGEOL,         self.STC_STYLE_STRINGEOL)
-        
+
 class PerlLexer(LexerBase):
     metaname = 'perl'
 
@@ -154,7 +154,7 @@ print "Hello World!";
         self.addSyntaxItem('string_qx',         'string_qx',            wx.stc.STC_PL_STRING_QX,                self.STC_STYLE_STRING)
         self.addSyntaxItem('string_qr',         'string_qr',            wx.stc.STC_PL_STRING_QR,                self.STC_STYLE_STRING)
         self.addSyntaxItem('string_qw',         'string_qw',            wx.stc.STC_PL_STRING_QW,                self.STC_STYLE_STRING)
-        
+
 class CSSLexer(LexerBase):
     metaname = 'css'
 
@@ -197,7 +197,7 @@ body:before {
         self.addSyntaxItem('directive',             'Directive',            wx.stc.STC_CSS_DIRECTIVE,               self.STC_STYLE_TEXT)
         self.addSyntaxItem('doublestring',          'Double String',        wx.stc.STC_CSS_DOUBLESTRING,            self.STC_STYLE_STRING)
         self.addSyntaxItem('singlestring',          'Single String',        wx.stc.STC_CSS_SINGLESTRING,            self.STC_STYLE_CHARACTER)
-        
+
 class JSLexer(LexerClass.CLexer):
     metaname = 'js'
 
@@ -329,7 +329,7 @@ print "Hello world"
 
 class SliceLexer(LexerClass.CLexer):
     metaname = "slice"
-    
+
     keywords = ("""
 bool enum implements module struct
 byte exception int Object throws
@@ -363,3 +363,53 @@ interface Area {
         win.enablefolder = True
         win.SetProperty("fold", "1")
         win.SetProperty("fold.compact", "1")
+
+class BashLexer(LexerBase):
+    metaname = 'bash'
+
+    keywords = (
+        "break continue eval newgrp return ulimit cd exec pwd"
+        "shift umask chdir exit read test wait"
+        "kill readonly trap contained elif else then"
+        "case esac do done for in if then fi until"
+        "while set export unset function alias fg"
+        "integer printf times autoload functions jobs r"
+        "true bg getopts let stop type false hash"
+        "nohup suspend unalias fc history print time"
+        "whence typeset while select bind disown local"
+        "popd shopt builtin enable logout pushdsource dirs"
+        "help declare chmod chown chroot clear du egrep"
+        "expr fgrep find gnufind gnugrep grep install"
+        "less ls cp mkdir mv reload restart rm rmdir"
+        "rpm sed su sleep start status sort strip"
+        "tail touch complete stop echo",
+    )
+
+    preview_code = """#!/bin/bash
+#
+# Hello World in Bash
+
+echo "Hello World!"
+"""
+
+    def pre_colourize(self, win):
+        #FOLDING
+        win.enablefolder = True
+        win.SetProperty("fold", "1")
+        win.SetProperty("fold.compact", "1")
+
+    def initSyntaxItems(self):
+        self.addSyntaxItem('sh_default',  'Default',             wx.stc.STC_SH_DEFAULT,     self.STC_STYLE_TEXT)
+        self.addSyntaxItem('commentline', 'Comment line',        wx.stc.STC_SH_COMMENTLINE, self.STC_STYLE_COMMENT)
+        self.addSyntaxItem('number',      'Number',              wx.stc.STC_SH_NUMBER,      self.STC_STYLE_NUMBER)
+        self.addSyntaxItem('keyword',     'Keyword',             wx.stc.STC_SH_WORD,        self.STC_STYLE_KEYWORD1)
+        self.addSyntaxItem('string',      'String',              wx.stc.STC_SH_STRING,      self.STC_STYLE_STRING)
+        self.addSyntaxItem('character',   'Character',           wx.stc.STC_SH_CHARACTER,   self.STC_STYLE_TEXT)
+        self.addSyntaxItem('operator',    'Operator',            wx.stc.STC_SH_OPERATOR,    self.STC_STYLE_OPERATOR)
+        self.addSyntaxItem('identifier',  'Identifier',          wx.stc.STC_SH_IDENTIFIER,  self.STC_STYLE_IDENTIFIER)
+        self.addSyntaxItem('scalar',      'Scalar',              wx.stc.STC_SH_SCALAR,      self.STC_STYLE_NUMBER)
+        self.addSyntaxItem('param',       'Param',               wx.stc.STC_SH_PARAM,       self.STC_STYLE_IDENTIFIER)
+        self.addSyntaxItem('backticks',   'Backticks',           wx.stc.STC_SH_BACKTICKS,   self.STC_STYLE_KEYWORD1)
+        self.addSyntaxItem('here_delim',  'Here document start', wx.stc.STC_SH_HERE_DELIM,  self.STC_STYLE_STRING)
+        self.addSyntaxItem('here_q',      'Here document end',   wx.stc.STC_SH_HERE_Q,      self.STC_STYLE_STRING)
+        self.addSyntaxItem('sh_error',    'Bash error',          wx.stc.STC_SH_ERROR,       self.STC_STYLE_ERROR)

@@ -1,10 +1,10 @@
 #   Programmer:     limodou
 #   E-mail:         limodou@gmail.com
-#  
+#
 #   Copyleft 2006 limodou
-#  
+#
 #   Distributed under the terms of the GPL (GNU Public License)
-#  
+#
 #   UliPad is free software; you can redistribute it and/or modify
 #   it under the terms of the GNU General Public License as published by
 #   the Free Software Foundation; either version 2 of the License, or
@@ -23,7 +23,7 @@
 
 import wx
 import os
-from modules import Mixin
+from modules import common, Mixin
 
 def mainframe_init(win):
     win.memo_win = None
@@ -49,7 +49,7 @@ def OnToolMemo(win, event):
     else:
         import Pad
         from modules import Globals
-        pad = Pad.PAD(win, os.path.join(Globals.userpath, 'memo.txt'), tr('Easy Memo'))
+        pad = Pad.PAD(win, os.path.join(Globals.userpath, common.get_config_file_obj().default.get('memo', 'memo.txt')), tr('Easy Memo'))
         pad.Show()
         win.memo_win = pad
 Mixin.setMixin('mainframe', 'OnToolMemo', OnToolMemo)
