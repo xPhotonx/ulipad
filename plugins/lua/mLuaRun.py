@@ -59,14 +59,14 @@ def pref_init(pref):
         pref.lua_default_paramters[i[0]] = '-e "io.stdout:setvbuf \'no\'"'
 Mixin.setPlugin('preference', 'init', pref_init)
 
-def OnSetInterpreter(win, event):
+def OnSetLuaInterpreter(win, event):
     dlg = LuaInterpreterDialog(win, win.pref)
     dlg.ShowModal()
-Mixin.setMixin('prefdialog', 'OnSetInterpreter', OnSetInterpreter)
+Mixin.setMixin('prefdialog', 'OnSetLuaInterpreter', OnSetLuaInterpreter)
 
 def add_pref(preflist):
     preflist.extend([
-        ('Lua', 150, 'button', 'lua_interpreter', tr('Setup Lua interpreter...'), 'OnSetInterpreter'),
+        ('Lua', 150, 'button', 'lua_interpreter', tr('Setup Lua interpreter...'), 'OnSetLuaInterpreter'),
         ('Lua', 155, 'check', 'lua_show_args', tr('Show the Select Arguments dialog at Lua program run'), None),
         ('Lua', 156, 'check', 'lua_save_before_run', tr('Save the modified document at Lua program run'), None),
     ])
@@ -248,7 +248,7 @@ class SelectInterpreter(ui.SimpleDialog):
 
 class LuaInterpreterDialog(wx.Dialog):
     def __init__(self, parent, pref):
-        wx.Dialog.__init__(self, parent, -1, tr('Interpreter Setup'))
+        wx.Dialog.__init__(self, parent, -1, tr('Lua Interpreter Setup'))
         self.parent = parent
         self.pref = pref
 
