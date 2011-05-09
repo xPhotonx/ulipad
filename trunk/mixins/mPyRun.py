@@ -58,15 +58,15 @@ def pref_init(pref):
         pref.python_default_paramters[i[0]] = '-u'
 Mixin.setPlugin('preference', 'init', pref_init)
 
-def OnSetInterpreter(win, event):
+def OnSetPythonInterpreter(win, event):
     from InterpreterDialog import InterpreterDialog
     dlg = InterpreterDialog(win, win.pref)
     dlg.ShowModal()
-Mixin.setMixin('prefdialog', 'OnSetInterpreter', OnSetInterpreter)
+Mixin.setMixin('prefdialog', 'OnSetPythonInterpreter', OnSetPythonInterpreter)
 
 def add_pref(preflist):
     preflist.extend([
-        ('Python', 150, 'button', 'python_interpreter', tr('Setup Python interpreter...'), 'OnSetInterpreter'),
+        ('Python', 150, 'button', 'python_interpreter', tr('Setup Python interpreter...'), 'OnSetPythonInterpreter'),
         ('Python', 155, 'check', 'python_show_args', tr('Show the Select Arguments dialog at Python program run'), None),
         ('Python', 156, 'check', 'python_save_before_run', tr('Save the modified document at Python program run'), None),
     ])
