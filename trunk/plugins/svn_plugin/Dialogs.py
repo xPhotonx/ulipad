@@ -68,17 +68,28 @@ class AddDialog(wx.Dialog):
                 if not files.get(self.path, False):
                     wx.CallAfter(self.list.addline, ['.'], flag=True)
                 _len = len(self.path)
-                for curpath, dirs, fs in os.walk(self.path):
-                    if '.svn' in curpath:
-                        continue
-                    for fname in fs:
-                        ext = os.path.splitext(fname)[1]
-                        if ext in ignore:
+                
+                def get_path(base, path):
+                    p = os.path.join(base, path)
+                    for f in os.listdir(p):
+                        if '.svn' == f:
                             continue
-                        filename = os.path.join(curpath, fname)
-                        if not files.get(filename, False):
-                              wx.CallAfter(self.list.addline, [filename[_len+1:]], flag=True)
-
+                        filename = os.path.join(p, f)
+                        if os.path.isdir(filename):
+                            yield filename+'/'
+                            for x in get_path(base, os.path.join(path, f)):
+                                yield x
+                        else:
+                            ext = os.path.splitext(filename)[1]
+                            if ext in ignore:
+                                continue
+                            yield os.path.join(path, f).replace('\\', '/')
+                
+                for f in get_path(self.path, ''):
+                    filename = os.path.join(self.path, f)
+                    if not files.get(filename, False):
+                          wx.CallAfter(self.list.addline, [filename[_len+1:]], flag=True)
+                    
         wrap_run(f)
         
     def GetValue(self):
