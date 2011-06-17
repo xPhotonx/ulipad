@@ -848,7 +848,7 @@ class DirBrowser(wx.Panel, Mixin.Mixin):
             os.spawnl(os.P_NOWAIT, self.pref.command_line, r" /k %s && cd %s" % (os.path.split(filename)[0][:2], filename))
         else:
             cmdline = self.pref.command_line.replace('{path}', filename)
-            wx.Shell(cmdline)
+            wx.Execute(cmdline)
 
     def is_ok(self, item):
         return item.IsOk() and item != self.root
