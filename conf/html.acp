@@ -2,10 +2,10 @@
 
 [autostring]
 <link<space> = "<link href=\"!^.css\" rel=\"stylesheet\" type=\"text/css\" />"
-<script<space> = "<script type=\"text/javascript\" src=\"!^.js\"></script>"
+<script<space> = "<script type=\"text/javascript\"${1: src=\"${2:}.js\"}>${0}</script>"
 <! = <!-- !^ -->
 <style<space> = "<style type=\"text/css\">\n<!--\n!^\n-->\n</style>\n"
-<a<space> = "<a href=\"!^\"></a>"
+<a<space> = "<a href=\"${1:}\">${0}</a>"
 <inputtext<space> = "<input type=\"text\" name=\"!^\" value=\"\"/>"
 <inputarea<space> = "<textarea rows=\"3\" cols=\"40\" name=\"!^\"></textarea>"
 <inputbtn<space> = "<input type=\"button\" name=\"!^\" value=\"\"/>"
