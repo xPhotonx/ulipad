@@ -791,10 +791,15 @@ class InputAssistant(Mixin.Mixin):
         try:
             if not self.editor:
                 return
+            result = []
             for f in self.editor.input_locals:
                 r = f(self.editor, line, word, syncvar)
                 if r:
-                    return r
+#                    return r
+                    result.extend(r[1])
+            if result:
+                return len(word), list(set(result))
+            
         except StopException:
             pass
         except:
