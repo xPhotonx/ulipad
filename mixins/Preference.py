@@ -44,7 +44,7 @@ class Preference(Mixin.Mixin):
         self.callplugin('init', self)
         self.preflist.sort()
         
-    def get_defulat_inifile(self):
+    def get_default_inifile(self):
         return os.path.join(Globals.workpath, 'ulipad.ini')
     
     def clone(self):
@@ -54,7 +54,7 @@ class Preference(Mixin.Mixin):
         _lock.acquire()
         try:
             if not filename:
-                filename = self.get_defulat_inifile()
+                filename = self.get_default_inifile()
             try:
                 obj2ini.dump(self, filename, encoding='utf-8')
             except:
@@ -67,7 +67,7 @@ class Preference(Mixin.Mixin):
 
     def load(self, filename=''):
         if not filename:
-            filename = self.get_defulat_inifile()
+            filename = self.get_default_inifile()
         if os.path.exists(filename):
             try:
                 obj2ini.load(filename, obj=self, encoding='utf-8')

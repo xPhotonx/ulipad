@@ -86,7 +86,7 @@ class AsyncAction(threading.Thread):
         '''
         you should judge if not self.empty to quit the process, because
         it means that there is proceed infos need to process, so current
-        one should ba cancelled
+        one should be cancelled
         '''
         pass
     
