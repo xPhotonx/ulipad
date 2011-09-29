@@ -7,6 +7,7 @@
 
 import os, sys
 from optparse import OptionParser
+import copy
 
 def env(app, dir='', nomodel=False):
     import gluon.html as html
@@ -15,9 +16,10 @@ def env(app, dir='', nomodel=False):
     from gluon.languages import translator
     from gluon.cache import Cache
     from gluon.globals import Request, Response, Session
-    from gluon.sql import SQLDB, SQLField
     from gluon.sqlhtml import SQLFORM, SQLTABLE
-
+    from gluon.dal import BaseAdapter, SQLDB, SQLField, DAL, Field
+    from gluon.compileapp import local_import_aux, LoadFactory
+    
     request=Request()
     response=Response()
     session=Session()
@@ -28,28 +30,52 @@ def env(app, dir='', nomodel=False):
         request.folder = dir
         
     environment={}
-    for key in html.__all__: environment[key]=eval('html.%s' % key)
-    for key in validators.__all__: environment[key]=eval('validators.%s' % key)
+#    for key in html.__all__: environment[key]=eval('html.%s' % key)
+#    for key in validators.__all__: environment[key]=eval('validators.%s' % key)
+    for key in html.__all__:
+        environment[key] = getattr(html, key)
+    for key in validators.__all__:
+        environment[key] = getattr(validators, key)
+    global __builtins__
+    environment['__builtins__'] = __builtins__
     environment['T']=translator(request)
-    environment['HTTP']=HTTP
-    environment['redirect']=redirect
-    environment['request']=request
-    environment['response']=response
-    environment['session']=session
-    environment['cache']=Cache(request)
-    environment['SQLDB']=SQLDB
-    SQLDB._set_thread_folder(os.path.join(request.folder,'databases'))
-    environment['SQLField']=SQLField
-    environment['SQLFORM']=SQLFORM
-    environment['SQLTABLE']=SQLTABLE
-    
-    if not nomodel:
-        model_path = os.path.join(request.folder,'models', '*.py')
-        from glob import glob
-        for f in glob(model_path):
-            fname, ext = os.path.splitext(f)
-            execfile(f, environment)
-#            print 'Imported "%s" model file' % fname
+#    environment['HTTP']=HTTP
+#    environment['redirect']=redirect
+#    environment['request']=request
+#    environment['response']=response
+#    environment['session']=session
+#    environment['cache']=Cache(request)
+#    environment['SQLDB']=SQLDB
+#    SQLDB._set_thread_folder(os.path.join(request.folder,'databases'))
+#    environment['SQLField']=SQLField
+#    environment['SQLFORM']=SQLFORM
+#    environment['SQLTABLE']=SQLTABLE
+#    
+#    if not nomodel:
+#        model_path = os.path.join(request.folder,'models', '*.py')
+#        from glob import glob
+#        for f in glob(model_path):
+#            fname, ext = os.path.splitext(f)
+#            execfile(f, environment)
+##            print 'Imported "%s" model file' % fname
+
+    environment['HTTP'] = HTTP
+    environment['redirect'] = redirect
+    environment['request'] = request
+    environment['response'] = response
+    environment['session'] = session
+    environment['DAL'] = DAL
+    environment['Field'] = Field
+    environment['SQLDB'] = SQLDB        # for backward compatibility
+    environment['SQLField'] = SQLField  # for backward compatibility
+    environment['SQLFORM'] = SQLFORM
+    environment['SQLTABLE'] = SQLTABLE
+    environment['LOAD'] = LoadFactory(environment)
+    environment['local_import'] = \
+        lambda name, reload=False, app=request.application:\
+        local_import_aux(name,reload,app)
+    BaseAdapter.set_folder(os.path.join(request.folder, 'databases'))
+    response._view_environment = copy.copy(environment)
     
     return environment
 
