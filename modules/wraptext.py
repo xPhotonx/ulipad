@@ -17,6 +17,8 @@
 #    indent     非首行缩近量
 #    firstindent首行缩近量
 #    skipchar   行首忽略字符，如果存在则在处理前会清除每前开始前有skipchar的文本
+#    remove_tailingchar   行尾忽略字符，如果存在则在处理前会清除每行行尾匹配的文本
+#    add_tailingchar   添加行尾字符，如果存在则在处理后每行最后添加此文本
 #
 # 功能描述
 #  1.支持unicode和非unicode文本，如果为非unicode文本，则会使用encoding指定的编
@@ -37,7 +39,8 @@
 #  msg = '''中文 中文hello, world'''
 #  wraptext(msg, 10)
 
-def wraptext(text, width=75, encoding='utf-8', cr=None, indent='', firstindent=None, skipchar=None):
+def wraptext(text, width=75, encoding='utf-8', cr=None, indent='', 
+    firstindent=None, skipchar=None, remove_tailingchar='', add_tailingchar=''):
     import unicodedata
     import re
     if isinstance(text, unicode):
@@ -63,6 +66,9 @@ def wraptext(text, width=75, encoding='utf-8', cr=None, indent='', firstindent=N
     text = re.sub(r'\s+$', '\n', text)
     if skipchar:
         text = re.sub(r'(?m)^%s' % skipchar, '', text)
+    if remove_tailingchar:
+        _r = re.compile('%s\n' % re.escape(remove_tailingchar), re.MULTILINE)
+        text = _r.sub('\n', text)
         
     lines = re.split(r'(\n\s*\n+|\r\r+)', text)
     rx = re.compile(u"[\u2e80-\uffff]+", re.UNICODE)
@@ -74,6 +80,9 @@ def wraptext(text, width=75, encoding='utf-8', cr=None, indent='', firstindent=N
     if isinstance(firstindent, int):
         firstindent = ' ' * firstindent
     
+    def _add_line(line, buf, tailing=add_tailingchar):
+        line.append(buf + tailing)
+        
     def _wrap(text, width, indent, firstindent):
         if not text:
             return ''
@@ -122,7 +131,8 @@ def wraptext(text, width=75, encoding='utf-8', cr=None, indent='', firstindent=N
 #            print 'length', length, s[0].encode('gbk')
             if length == w:
                 buf.append(i)
-                t.append(step + ' '.join(buf))
+                _add_line(t, step + ' '.join(buf))
+#                t.append(step + ' '.join(buf))
                 x = 1
                 buf = []
                 y = 0
@@ -132,14 +142,16 @@ def wraptext(text, width=75, encoding='utf-8', cr=None, indent='', firstindent=N
                     rest = w-y-buf_len
                     buf.append(i[:rest/factor])
 #                    print '----', w, y, buf_len, (w-y-buf_len-1), buf
-                    t.append(step + ' '.join(buf))
+                    _add_line(t, step + ' '.join(buf))
+#                    t.append(step + ' '.join(buf))
                     x = 1
                     s.insert(0, i[rest/factor:])
                     buf = []
                     y = 0
                     continue
                 else:
-                    t.append(step + ' '.join(buf))
+                    _add_line(t, step + ' '.join(buf))
+#                    t.append(step + ' '.join(buf))
                     x = 1
                     s.insert(0, i)
                     buf = []
@@ -151,7 +163,8 @@ def wraptext(text, width=75, encoding='utf-8', cr=None, indent='', firstindent=N
                 y += factor * len(i)
                 
         if buf:
-            t.append(step + ' '.join(buf))
+            _add_line(t, step + ' '.join(buf), '')
+#            t.append(step + ' '.join(buf))
         return cr.join(t)
     
     s = []
@@ -170,7 +183,8 @@ def wraptext(text, width=75, encoding='utf-8', cr=None, indent='', firstindent=N
         
 def test():
     msg =u"""首先这个框架是一个试验品，或者说是主要是个人使用，因此我将有完全的控制权，这一点很重要。我可以用它学到许多框架的知识。以前只是使用，学习，象学过：cherrypy, Karrigell, snakelets等，不过没有做过什么开发；zope则是我学得最早了，不过也早就放弃了；django投入的精力最多，也开发了不少东西；再后来就是 web2py了，不过重用搞得我很不爽，而且有些想法不被认同。但这些更多的还是集中在开发方面，对于框架本身了解有限，这次造轮是一个好机会。"""
-    print wraptext(msg, 75, indent='', skipchar='#').encode('gbk')
+    print wraptext(msg, 75, indent='', skipchar='#', remove_tailingchar='', 
+        add_tailingchar='\\').encode('gbk')
 
 if __name__ == '__main__':
 #    from timeit import Timer

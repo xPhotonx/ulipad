@@ -36,6 +36,8 @@ class WrapTextDialog(wx.Dialog):
         grid.add(tr('Indent'), ui.Text(''), name='indent')
         grid.add(tr('First Line Indent'), ui.Text(''), name='firstindent')
         grid.add(tr('Skip Beginning Characters'), ui.Text(''), name='skipchar')
+        grid.add(tr('Remove Tailing Characters'), ui.Text(''), name='remove_tailingchar')
+        grid.add(tr('Add Tailing Characters'), ui.Text(''), name='add_tailingchar')
         box.add(ui.simple_buttons(), flag=wx.ALIGN_CENTER|wx.BOTTOM)
         
         box.auto_fit(2)
@@ -50,7 +52,7 @@ def add_mainframe_menu(menulist):
     menulist.extend([
         ('IDM_EDIT_FORMAT',
         [
-            (126, 'IDM_EDIT_FORMAT_WRAP', tr('Wrap Text...'), wx.ITEM_NORMAL, 'OnEditFormatWrap', tr('Wraps selected text.')),
+            (126, 'IDM_EDIT_FORMAT_WRAP', tr('Wrap Text...')+'\tCtrl+Shift+T', wx.ITEM_NORMAL, 'OnEditFormatWrap', tr('Wraps selected text.')),
         ]),
     ])
 Mixin.setPlugin('mainframe', 'add_menu', add_mainframe_menu)
@@ -59,7 +61,7 @@ def add_editor_menu(popmenulist):
     popmenulist.extend([
         ('IDPM_FORMAT',
         [
-            (126, 'IDPM_FORMAT_WRAP', tr('Wrap Text...'), wx.ITEM_NORMAL, 'OnFormatWrap', tr('Wraps selected text.')),
+            (126, 'IDPM_FORMAT_WRAP', tr('Wrap Text...')+'\tE=Ctrl+Shift+T', wx.ITEM_NORMAL, 'OnFormatWrap', tr('Wraps selected text.')),
         ]),
     ])
 Mixin.setPlugin('editor', 'add_menu', add_editor_menu)
@@ -73,12 +75,16 @@ def pref_init(pref):
     pref.wrap_indent = ''
     pref.wrap_firstindent = ''
     pref.wrap_skipchar = ''
+    pref.wrap_remove_tailingchar = ''
+    pref.wrap_add_tailingchar = ''
 Mixin.setPlugin('preference', 'init', pref_init)
 
 def OnFormatWrap(win, event):
     pref = Globals.pref
     v = {'width':pref.wrap_width, 'indent':pref.wrap_indent,
-        'firstindent':pref.wrap_firstindent, 'skipchar':pref.wrap_skipchar}
+        'firstindent':pref.wrap_firstindent, 'skipchar':pref.wrap_skipchar,
+        'remove_tailingchar':pref.wrap_remove_tailingchar,
+        'add_tailingchar':pref.wrap_add_tailingchar}
     dlg = WrapTextDialog(values=v)
     value = None
     if dlg.ShowModal() == wx.ID_OK:
@@ -87,6 +93,8 @@ def OnFormatWrap(win, event):
         pref.wrap_indent = value['indent']
         pref.wrap_firstindent = value['firstindent']
         pref.wrap_skipchar = value['skipchar']
+        pref.wrap_remove_tailingchar = value['remove_tailingchar']
+        pref.wrap_add_tailingchar = value['add_tailingchar']
         pref.save()
     dlg.Destroy()
     if value:
@@ -94,7 +102,8 @@ def OnFormatWrap(win, event):
         from modules.wraptext import wraptext
         text = wraptext(text, value['width'], cr=win.getEOLChar(), 
             indent=value['indent'], firstindent=value['firstindent'],
-            skipchar=value['skipchar'])
+            skipchar=value['skipchar'], remove_tailingchar=value['remove_tailingchar'],
+            add_tailingchar=value['add_tailingchar'])
         start, end = win.GetSelection()
         win.SetTargetStart(start)
         win.SetTargetEnd(end)
