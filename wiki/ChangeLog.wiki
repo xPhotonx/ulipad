@@ -3,6 +3,49 @@
 
 Current lastest version is 3.8.1
 
+= 4.1 Version 2011/11/06 =
+
+It's mainly bug vix version.
+
+ # Upgrade winpdb version to 1.4.8
+ # Improve Edit->Format->Wrap Text functionality to suit for reStructuredText wrap
+ # Made memo file configurable thanks to Helio Perroni Filho
+ # Add Bash support thanks to Helio Perroni Filho
+ # Add some useful methods to support scripts files. Such as emptytab, newtab, etc. thanks to Helio Perroni Filho
+ # Add Lua support thanks to zhangchunlin
+ # Improve python file detect according to #! /usr/bin/env python thanks to zhangchunlin
+ # Add default color theme support, you can set it in Preference
+ # Add Create Python Package menu in context menu of Directory Browser Window
+ # Improve web2py plugin
+ # Improve regex window, and when you set Unicode flag, it'll automatically convert \uXXXX to unichr
+ # Fix strip tailing spaces bug
+
+= 4.0 Version 2008/04/24 =
+
+ # Add config menu, and add toggle input assistant menu item
+ # Fix refresh directory bug
+ # Add wrap text feature
+ # Add copy filename to clipboard menu on document area tab context menu
+ # When add path, it'll automatically pop up project setting dialog
+ # Add slice syntax support
+ # Can remember the last new file type
+ # Improve preference dialog input assistant checkbox process.
+ # Add line ending mixture check when saving file feature
+ # Add search text count
+ # Add web2py plugin
+ # Improve ReST document render, and fix the setfocus lost bug when auto modified the html output, thanks a lot to ygao
+ # Add auto detect python interpreter in windows platform
+ # Fix script filename cannot be unicode(chinese) bug
+ # Add icon set theme support.
+ # Change DDE to asyncore and asynchat framework
+ # Add new snippet
+ # add php.acp thanks for 魏振 <etggy@163.com>
+ # Add Canvas Test plugin, you can directly test DC api
+
+= 3.9 Version 2007/12/12 =
+
+ # Fix webopen twice open bug
+
 = 3.8.1 Version 2007/12/12 =
 
 It's a bug fix version:
