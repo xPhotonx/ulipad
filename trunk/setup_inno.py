@@ -8,7 +8,8 @@
 
 from distutils.core import setup
 import py2exe
-import os
+import os, sys
+from glob import glob
 
 ################################################################
 # A program using wxPython
@@ -271,6 +272,13 @@ dirs = ['acp', 'plugins', 'wizard', 'scripts', 'lang',
     'doc', 'packages', 'images', 'tools', 'conf', 'resources']
 for d in dirs:
     my_copytree(d, 'dist')
+
+data_files = [
+        ('', ['ulipad.ico', 'COPYLEFT.txt', 'INFO.txt', 'UliPad.exe.manifest']),
+]
+
+if sys.winver >= '2.6':
+    data_files.append(("", glob(r'Microsoft.VC90.CRT\*.*')))
     
 setup(
         version = version,
@@ -289,9 +297,7 @@ setup(
                         "icon_resources": [(1, "ulipad.ico")]
                 }
         ],
-        data_files = [
-                ('', ['ulipad.ico', 'COPYLEFT.txt', 'INFO.txt', 'UliPad.exe.manifest']),
-        ],
+        data_files = data_files,
     # use out build_installer class as extended py2exe build command
     cmdclass = {"py2exe": build_installer},
     )
