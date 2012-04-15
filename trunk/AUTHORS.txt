@@ -19,6 +19,7 @@ Helio Perroni Filho <xperroni@gmail.com>	Give 3 patches, such as: configurable m
 
 Also thanks a lot:
 
+江文 <jiangwen365@gmail.com>			Provide new slash image
 Cheng XiaoSan <chengxiaosan@gmail.com>          Report bugs and proposal suggestions
 nmweizi <nmweizi@163.com>                       Report bugs and commit Patch
 Mkdir <ivan.pirog@gmail.com>                    Report bugs and commit Patch
