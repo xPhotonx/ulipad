@@ -4648,6 +4648,15 @@ def app_init(app, filenames):
         x = common.get_config_file_obj()
         port = x.server.get('port', 50000)
         if DDE.senddata('\r\n'.join(filenames), port=port):
+            print """Found previous instance of UliPad and the files will be
+opened in it, current instance will be quit. If you have not
+seen the UliPad started, please change the DDE support port at
+config.ini with :
+
+    [server]
+    port=50001 #or other port number
+
+If it's alreay exit, contact ulipad author to get help."""
             sys.exit(0)
         else:
             DDE.run(port=port)
