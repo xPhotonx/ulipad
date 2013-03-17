@@ -4646,7 +4646,7 @@ from modules import common
 def app_init(app, filenames):
     if app.ddeflag:
         x = common.get_config_file_obj()
-        port = x.server.get('port', 50000)
+        port = x.server.get('port', 50009)
         if DDE.senddata('\r\n'.join(filenames), port=port):
             print """Found previous instance of UliPad and the files will be
 opened in it, current instance will be quit. If you have not

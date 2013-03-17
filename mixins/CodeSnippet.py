@@ -462,7 +462,7 @@ Description:
                 
                     return '<#' + values['name'] + '#>'
                 
-                r = re.compile("<#{(.*?)}#>")
+                r = re.compile("<#\{(.*?)\}#>")
                 text = re.sub(r, dosup, text)
                 if elements:
                     from modules.EasyGuider import EasyDialog
