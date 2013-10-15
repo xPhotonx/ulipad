@@ -1,4 +1,7 @@
 ﻿$Rev$
+[2013/10/15]
+InputAssistant.py   Fix get_calltip bug.
+
 [2011/04/21]
 mPad.py             Add configurable memo file support. So you can set something like this:
                     
