@@ -31,7 +31,7 @@ def get_calltip(win, word, syncvar):
             return filter(None, [signature, doc])
         else:
             if object.type == 'function':
-                return '\n'.join([object.info, object.docstring])
+                return unicode('\n'.join([object.info, object.docstring]), 'utf8')
             elif object.type == 'class':
                 s = []
                 s.append(object.docstring)
@@ -47,7 +47,7 @@ def get_calltip(win, word, syncvar):
                     s.append("\n")
                     s.append(_obj1.info)
                     s.append(_obj1.docstring)
-                return '\n'.join(s)
+                return unicode('\n'.join(s), 'utf8')
                 
     pout(INDENT, 'return:', None)
     return None
